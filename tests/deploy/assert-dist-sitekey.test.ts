@@ -41,7 +41,7 @@ function runOn(files: Record<string, string>): Result {
 describe("the dist guard refuses a build that cannot take signups", () => {
   it("passes a build that carries a real sitekey", () => {
     expect(
-      runOn({ "subscribe.html": '<div data-sitekey="0x4AAAAAAEQqCldZbFvXQvQr"></div>' }).code,
+      runOn({ "subscribe.html": '<div data-sitekey="0x4AAAAAAFF1b4zzEwdZwWSX"></div>' }).code,
     ).toBe(0);
   });
 

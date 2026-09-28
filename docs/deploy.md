@@ -4,10 +4,10 @@ The system runs on the Workers Free plan.
 
 ## 1. The branch model
 
-| Branch | Site            | Worker | Trigger                 |
-| ------ | --------------- | ------ | ----------------------- |
-| `main` | none            | none   | never                   |
-| `live` | `rupeefund.org` | `trf`  | the maintainer, by hand |
+| Branch | Site            | Worker          | Trigger                 |
+| ------ | --------------- | --------------- | ----------------------- |
+| `main` | none            | none            | never                   |
+| `live` | `rupeefund.org` | `rupeefund-web` | the maintainer, by hand |
 
 Cloudflare Workers Builds watches `live`. Its build command is `pnpm run build`, its deploy command is `npx wrangler deploy`, and non-production branch builds are off. Leave them off. Every branch build would keep the production bindings.
 
@@ -27,7 +27,7 @@ pnpm test:e2e     # Playwright against the local build
 `pnpm preview` uses the always-pass Turnstile test pair, so the form completes with no real widget. Read the local rows:
 
 ```sh
-pnpm wrangler d1 execute trf-rupeefund --local --command "SELECT email, consent_at FROM waitlist"
+pnpm wrangler d1 execute rupeefund-waitlist --local --command "SELECT email, consent_at FROM waitlist"
 ```
 
 ## 3. How to promote
@@ -52,8 +52,8 @@ The deployment applies no migration. You apply each one by hand, in this order:
 1. Fast-forward `live`.
 
 ```sh
-pnpm wrangler d1 export trf-rupeefund --remote --output /tmp/trf-backup.sql &&
-  pnpm wrangler d1 migrations apply trf-rupeefund --remote
+pnpm wrangler d1 export rupeefund-waitlist --remote --output /tmp/rupeefund-waitlist-backup.sql &&
+  pnpm wrangler d1 migrations apply rupeefund-waitlist --remote
 ```
 
 Keep the `&&`. It stops the apply when the export fails.
@@ -63,7 +63,7 @@ Keep the `&&`. It stops the apply when the export fails.
 Wrangler matches a migration by file name only. A changed file that has run does nothing. A reused file name runs nothing and reports no error. `tests/migrations/replay.test.ts` refuses the retired names. `wrangler d1 migrations list` proves only that the names agree. To check the schema, query the tables:
 
 ```sh
-pnpm wrangler d1 execute trf-rupeefund --remote --json --command \
+pnpm wrangler d1 execute rupeefund-waitlist --remote --json --command \
   "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
 ```
 
@@ -80,6 +80,8 @@ The Workers Builds settings hold no variable. One Turnstile widget serves the si
 ```sh
 pnpm wrangler secret put TURNSTILE_SECRET
 ```
+
+A `--remote` command needs the Cloudflare account. Put `CLOUDFLARE_ACCOUNT_ID` in `.env`. Wrangler reads `.env` itself, and a value set on the command line wins over it. Without it, wrangler asks which account to use. Do not put the account in `wrangler.jsonc`.
 
 Local work needs no environment file. The `preview` script in `package.json` carries the always-pass test values itself, and passes them to `astro build` and to `wrangler dev`.
 
@@ -98,7 +100,7 @@ curl -sI https://rupeefund.org/ | grep -i -e content-security-policy -e strict-t
 The sitekey must not be `1x00000000000000000000AA`. Complete the form one time, then read the row:
 
 ```sh
-pnpm wrangler d1 execute trf-rupeefund --remote --command "SELECT email, consent_at FROM waitlist"
+pnpm wrangler d1 execute rupeefund-waitlist --remote --command "SELECT email, consent_at FROM waitlist"
 ```
 
 ## 7. How to remove a person
@@ -106,7 +108,7 @@ pnpm wrangler d1 execute trf-rupeefund --remote --command "SELECT email, consent
 A removal request comes by email to `rupeefund@fossunited.org`. There is no endpoint. Mark the row:
 
 ```sh
-pnpm wrangler d1 execute trf-rupeefund --remote --command \
+pnpm wrangler d1 execute rupeefund-waitlist --remote --command \
   "UPDATE waitlist SET unsubscribed_at = unixepoch() * 1000, updated_at = unixepoch() * 1000
    WHERE email = 'someone@example.com' AND unsubscribed_at IS NULL"
 ```
@@ -128,7 +130,29 @@ The export is incremental. Each row goes out one time. A row that an operator ed
 
 ## 9. How to move to a different account
 
-1. Make the database with `pnpm wrangler d1 create`. Copy the `database_id` into `wrangler.jsonc`.
-1. Apply every migration to it with `pnpm wrangler d1 migrations apply trf-rupeefund --remote`.
-1. Make one Turnstile widget for `rupeefund.org`. Put its sitekey in `src/lib/turnstile.ts`, and set its secret with `wrangler secret put`.
-1. Add the `rupeefund.org` custom domain in that account.
+The domain uses Cloudflare Registrar. A move to a different Cloudflare account takes only the registration. You make the zone, the Worker, the database and the Turnstile widget again in the new account.
+
+A Worker custom domain needs an active zone, and the zone becomes active only after the registration moves. So the site is down from the move until the first deploy in the new account. After the move, the domain cannot move again for 30 days.
+
+Before the move:
+
+1. Turn off DNSSEC on the old zone. Wait until `dig +short DS rupeefund.org @a0.org.afilias-nst.info` returns nothing.
+1. Add `rupeefund.org` to the new account on a plan. Copy the DNS records, the redirect rule, Always Use HTTPS and Bot Fight Mode from the old zone. Do not add an apex record. The custom domain makes it.
+1. Make the database with `pnpm wrangler d1 create`. Copy the `database_id` into `wrangler.jsonc`. Apply every migration with `pnpm wrangler d1 migrations apply rupeefund-waitlist --remote`.
+1. Make one Turnstile widget for `rupeefund.org`. Put its sitekey in `src/lib/turnstile.ts`. Set its secret with `pnpm wrangler secret put TURNSTILE_SECRET`.
+1. Copy the rows. Give each command its account:
+
+   ```sh
+   CLOUDFLARE_ACCOUNT_ID=<old> pnpm wrangler d1 export <old-database> --remote --no-schema --table waitlist --output /tmp/waitlist-rows.sql
+   CLOUDFLARE_ACCOUNT_ID=<new> pnpm wrangler d1 execute rupeefund-waitlist --remote --file /tmp/waitlist-rows.sql
+   ```
+
+   Delete `/tmp/waitlist-rows.sql` after the move. It holds the list.
+
+The move:
+
+1. Disconnect Workers Builds in the old account. Connect it in the new account, with the settings in section 1.
+1. In the old account, open **Domain Registration**, then the domain, then **Configuration**, and move it to the new account. Accept the move in the new account.
+1. When the zone is active, promote. The deploy makes the custom domain.
+1. Verify with section 6. Look for rows that the old Worker took after the copy, and copy them.
+1. Turn on DNSSEC in the new zone.

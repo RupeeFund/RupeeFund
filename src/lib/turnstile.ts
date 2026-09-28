@@ -1,6 +1,6 @@
 export const TURNSTILE_TEST_SITEKEY = "1x00000000000000000000AA";
 
-export const TURNSTILE_SITEKEY = "0x4AAAAAAEQqCldZbFvXQvQr";
+export const TURNSTILE_SITEKEY = "0x4AAAAAAFF1b4zzEwdZwWSX";
 
 export const TURNSTILE_ACTION = "waitlist_signup";
 

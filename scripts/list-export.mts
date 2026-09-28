@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 
-const DB_NAME = "trf-rupeefund";
+const DB_NAME = "rupeefund-waitlist";
 const BATCH = 500;
 
 export const SELECT_PENDING = `SELECT id, email, name, source, consent_at,

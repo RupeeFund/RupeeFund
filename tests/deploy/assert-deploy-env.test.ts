@@ -98,7 +98,7 @@ describe("the sitekey comes from the repository, so no dashboard field can be mi
   }
 
   it("refuses a Turnstile secret pasted where the sitekey goes", () => {
-    const dir = repoWith({ lib: withSitekey("0x4AAAAAAEQqCldZbFvXQvQrAAAAAAAAAAA") });
+    const dir = repoWith({ lib: withSitekey("0x4AAAAAAFF1b4zzEwdZwWSXAAAAAAAAAAA") });
     const { code, stderr } = run({}, dir);
     expect(code).toBe(1);
     expect(stderr).toContain("the secret");
@@ -180,7 +180,7 @@ describe("the project ships exactly one environment", () => {
   it("names one database and one migrations directory", () => {
     const dbs = config().d1_databases as Record<string, string>[];
     expect(dbs).toHaveLength(1);
-    expect(dbs[0].database_name).toBe("trf-rupeefund");
+    expect(dbs[0].database_name).toBe("rupeefund-waitlist");
     expect(dbs[0].migrations_dir).toBe("migrations");
   });
 });

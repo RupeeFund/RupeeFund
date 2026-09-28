@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "trf",
+  "name": "rupeefund-web",
   "main": "./src/worker/index.ts",
   "compatibility_date": "2026-06-20",
   "compatibility_flags": ["nodejs_compat"],
@@ -16,8 +16,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "trf-rupeefund",
-      "database_id": "1eea6b53-5e03-4475-aaa2-7c1950b744c3",
+      "database_name": "rupeefund-waitlist",
+      "database_id": "ba3924ec-33bd-41e6-b1b4-92eb5a58ec61",
       "migrations_dir": "migrations",
     },
   ],
