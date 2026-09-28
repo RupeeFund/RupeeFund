@@ -3,7 +3,7 @@ import "@fontsource-variable/inter";
 import "../index.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { seoForPath, OG_IMAGE, SITE_NAME, SITE_URL, INITIATIVE } from "../lib/seo.ts";
+import { seoForPath, OG_IMAGE, LOGO_IMAGE, SITE_NAME, SITE_URL, INITIATIVE } from "../lib/seo.ts";
 
 const seo = seoForPath(Astro.url.pathname);
 
@@ -12,7 +12,7 @@ const orgLd = {
   "@type": "Organization",
   name: SITE_NAME,
   url: SITE_URL,
-  logo: OG_IMAGE,
+  logo: LOGO_IMAGE,
   description: `${INITIATIVE}, run by volunteers, funding FOSS in India through small monthly contributions.`,
   disambiguatingDescription: `${INITIATIVE}. Run by community volunteers.`,
 };
