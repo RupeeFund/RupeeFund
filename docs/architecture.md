@@ -93,4 +93,4 @@ There is no environment suffix. There is one environment.
 
 ## 8. Security headers
 
-`public/_headers` sets `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`, and `Referrer-Policy` on every page. The policy permits inline scripts because Bot Fight Mode on the zone injects one. `tests/site/csp.test.ts` fails when a page loads a host the policy does not name.
+`public/_headers` sets `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`, and `Referrer-Policy` on every page. The policy permits inline scripts because Bot Fight Mode on the zone injects one. It permits `static.cloudflareinsights.com` because Web Analytics on the zone injects its beacon. `tests/site/csp.test.ts` fails when a page loads a host the policy does not name.

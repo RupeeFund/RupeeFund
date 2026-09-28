@@ -92,6 +92,10 @@ describe("head metadata", () => {
     expect(html).toContain('rel="apple-touch-icon"');
   });
 
+  it("links the web manifest", () => {
+    expect(html).toContain('<link rel="manifest" href="/site.webmanifest">');
+  });
+
   it("emits Open Graph and Twitter card tags", () => {
     expect(html).toContain('property="og:image"');
     expect(html).toContain('name="twitter:card"');

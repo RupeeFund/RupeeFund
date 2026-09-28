@@ -109,6 +109,10 @@ describe("the policy permits everything the built pages actually load", () => {
     expect(policy()["script-src"]).toContain("'unsafe-inline'");
   });
 
+  it("allows the Web Analytics beacon Cloudflare injects into every response", () => {
+    expect(allows("script-src", "https://static.cloudflareinsights.com")).toBe(true);
+  });
+
   it("names no payment origin, now that no page loads one", () => {
     const line = headers()
       .split("\n")
