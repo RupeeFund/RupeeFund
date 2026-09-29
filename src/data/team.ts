@@ -23,7 +23,10 @@ export const COMMUNITY_TEAM: readonly TeamMember[] = [
   },
   {
     name: "Khitab",
-    bio: "Khitab is a FOSS United volunteer who builds and maintains The Rupee Fund’s website. He’s a data engineer drawn to how open source underpins India’s Digital Public Infrastructure (DPI) and Digital Public Goods (DPG).",
+    bio:
+      "Khitab is a FOSS United volunteer who builds and maintains The\u00a0Rupee\u00a0Fund’s " +
+      "website. He’s a data engineer drawn to how open source underpins India’s Digital " +
+      "Public Infrastructure (DPI) and Digital Public Goods (DPG).",
     profileUrl: "https://www.linkedin.com/in/khitab/",
     username: "khitab",
     photoUrl: "https://github.com/khitab.png?size=128",

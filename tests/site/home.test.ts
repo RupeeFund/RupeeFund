@@ -6,7 +6,7 @@ describe("Home page (/)", () => {
 
   it("names the fund in its one h1, before the tagline", () => {
     const main = html.split("<main")[1];
-    expect(main.match(/<h1[^>]*>([^<]*)<\/h1>/)?.[1]).toBe("The Rupee Fund");
+    expect(main.match(/<h1[^>]*>([^<]*)<\/h1>/)?.[1]).toBe("The&nbsp;Rupee&nbsp;Fund");
     expect(main.indexOf("<h1")).toBeLessThan(main.indexOf("Keep FOSS in India alive"));
   });
 

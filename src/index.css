@@ -251,7 +251,7 @@
     @apply text-sm text-ink-2 mb-6;
   }
 
-  .policy > :last-child {
+  .policy > :is(p, ul):last-child {
     @apply mb-0;
   }
 
