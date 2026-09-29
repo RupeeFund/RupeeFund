@@ -1,16 +1,10 @@
-import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
-import { DUMMY_SITEKEYS, TEST_SITEKEY } from "./helpers.ts";
+import { DUMMY_SITEKEYS, type Result, TEST_SITEKEY, runNode } from "./helpers.ts";
 
 const GUARD = resolve("scripts/assert-dist-sitekey.mjs");
-
-interface Result {
-  code: number;
-  stderr: string;
-}
 
 const temporary: string[] = [];
 
@@ -27,8 +21,7 @@ function runOn(files: Record<string, string>): Result {
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, body);
   }
-  const out = spawnSync(process.execPath, [GUARD], { cwd: dir, encoding: "utf8" });
-  return { code: out.status ?? -1, stderr: out.stderr };
+  return runNode(GUARD, { cwd: dir });
 }
 
 describe("the dist guard refuses a build that cannot take signups", () => {

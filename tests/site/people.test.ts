@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { read } from "./dist.ts";
+import { headerOf, read } from "./dist.ts";
 import { COMMUNITY_TEAM } from "../../src/data/team.ts";
-
-const header = (html: string): string =>
-  html.slice(html.indexOf("<header"), html.indexOf("</header>"));
 
 describe("People page (/people)", () => {
   const html = read("people.html");
@@ -51,8 +48,6 @@ describe("People navigation", () => {
   });
 
   it("marks People as the current page in both header menus", () => {
-    expect(header(read("people.html")).match(/href="\/people" aria-current="page"/g)).toHaveLength(
-      2,
-    );
+    expect(headerOf("people.html").match(/href="\/people" aria-current="page"/g)).toHaveLength(2);
   });
 });

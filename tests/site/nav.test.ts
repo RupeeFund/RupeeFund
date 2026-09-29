@@ -1,21 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { read, styles } from "./dist.ts";
-
-const header = (page: string): string => {
-  const html = read(page);
-  return html.slice(html.indexOf("<header"), html.indexOf("</header>"));
-};
+import { headerOf, styles } from "./dist.ts";
 
 describe("header", () => {
   it("offers the signup link on every page but the form itself, where it offers a way back", () => {
-    expect(header("people.html")).toContain('href="/subscribe"');
-    expect(header("subscribe.html")).not.toContain('href="/subscribe"');
-    expect(header("subscribe.html")).toContain('aria-label="Back to home"');
+    expect(headerOf("people.html")).toContain('href="/subscribe"');
+    expect(headerOf("subscribe.html")).not.toContain('href="/subscribe"');
+    expect(headerOf("subscribe.html")).toContain('aria-label="Back to home"');
   });
 
   it("starts the header signup button compact on home only, where the hero button shows", () => {
-    expect(header("index.html")).toMatch(/<a [^>]*data-header-cta[^>]*data-compact/);
-    expect(header("people.html")).not.toContain("data-compact");
+    expect(headerOf("index.html")).toMatch(/<a [^>]*data-header-cta[^>]*data-compact/);
+    expect(headerOf("people.html")).not.toContain("data-compact");
   });
 
   it("grows the link line only for a pointer that can hover", () => {

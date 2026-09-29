@@ -1,21 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { SELECT_PENDING } from "../../scripts/list-export.mts";
+import { BATCH, COUNT_PENDING, SELECT_PENDING, stampExported } from "../../scripts/list-export.mts";
 import { createRepo } from "../../src/worker/lib/db.ts";
 import type { Repo, WaitlistEntry } from "../../src/worker/types.ts";
 import { migratedD1, rowsOf } from "./d1-adapter.ts";
 import type { DatabaseSync } from "node:sqlite";
 
-const EXPORT_BATCH = 500;
-
-const COUNT_PENDING_AS_THE_EXPORTER_RUNS_IT =
-  "SELECT COUNT(*) AS n FROM waitlist WHERE exported_at IS NULL AND unsubscribed_at IS NULL";
-
 function stampExportedAsTheExporterRunsIt(raw: DatabaseSync, ids: number[], at: number): number {
-  const res = raw
-    .prepare(
-      `UPDATE waitlist SET exported_at = ${at} WHERE exported_at IS NULL AND id IN (${ids.join(",")})`,
-    )
-    .run();
+  const res = raw.prepare(stampExported(ids, at)).run();
   return Number(res.changes);
 }
 
@@ -184,20 +175,20 @@ describe("the export SQL that scripts/list-export.mts itself runs, against a mig
   });
 
   it("takes one batch at a time, and reports what is still pending after it", async () => {
-    for (let i = 0; i < EXPORT_BATCH + 20; i += 1) {
+    for (let i = 0; i < BATCH + 20; i += 1) {
       await repo.addToWaitlist(entry({ email: `p${String(i).padStart(4, "0")}@example.com` }));
     }
 
     const first = pending(raw);
-    expect(first).toHaveLength(EXPORT_BATCH);
+    expect(first).toHaveLength(BATCH);
     expect(
       stampExportedAsTheExporterRunsIt(
         raw,
         first.map((r) => r.id),
         9000,
       ),
-    ).toBe(EXPORT_BATCH);
-    expect(rowsOf(raw, COUNT_PENDING_AS_THE_EXPORTER_RUNS_IT)).toEqual([{ n: 20 }]);
+    ).toBe(BATCH);
+    expect(rowsOf(raw, COUNT_PENDING)).toEqual([{ n: 20 }]);
 
     const second = pending(raw);
     expect(second).toHaveLength(20);
@@ -208,6 +199,6 @@ describe("the export SQL that scripts/list-export.mts itself runs, against a mig
         9001,
       ),
     ).toBe(20);
-    expect(rowsOf(raw, COUNT_PENDING_AS_THE_EXPORTER_RUNS_IT)).toEqual([{ n: 0 }]);
+    expect(rowsOf(raw, COUNT_PENDING)).toEqual([{ n: 0 }]);
   });
 });

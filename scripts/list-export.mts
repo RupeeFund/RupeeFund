@@ -1,11 +1,17 @@
 import { execFileSync } from "node:child_process";
 
 const DB_NAME = "rupeefund-waitlist";
-const BATCH = 500;
+export const BATCH = 500;
 
 export const SELECT_PENDING = `SELECT id, email, name, source, consent_at,
      created_at, updates_opt_in FROM waitlist
      WHERE exported_at IS NULL AND unsubscribed_at IS NULL ORDER BY id LIMIT ${BATCH}`;
+
+export const COUNT_PENDING =
+  "SELECT COUNT(*) AS n FROM waitlist WHERE exported_at IS NULL AND unsubscribed_at IS NULL";
+
+export const stampExported = (ids: readonly number[], at: number): string =>
+  `UPDATE waitlist SET exported_at = ${at} WHERE exported_at IS NULL AND id IN (${ids.join(",")})`;
 
 export type Row = Record<string, unknown>;
 
@@ -79,14 +85,8 @@ function main() {
   }
 
   const ids = rows.map((r) => Number(r.id)).filter(Number.isInteger);
-  query(
-    `UPDATE waitlist SET exported_at = ${Date.now()} WHERE exported_at IS NULL AND id IN (${ids.join(",")})`,
-    remote,
-  );
-  const stillPending = query(
-    "SELECT COUNT(*) AS n FROM waitlist WHERE exported_at IS NULL AND unsubscribed_at IS NULL",
-    remote,
-  );
+  query(stampExported(ids, Date.now()), remote);
+  const stillPending = query(COUNT_PENDING, remote);
   const remaining = Number(stillPending[0]?.n ?? 0);
   process.stderr.write(`${ids.length} row(s) exported and stamped\n`);
   if (remaining > 0) {

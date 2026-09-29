@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { MIGRATIONS_DIR, migrationFiles } from "./d1-adapter.ts";
 
 const EXPECTED_TABLES = ["waitlist"];
 
@@ -19,25 +19,17 @@ const LEDGER_DDL =
 const PRE_0002_INSERT = `INSERT INTO waitlist
   (email, name, consent_at, source, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`;
 
-const DIR = fileURLToPath(new URL("../../migrations", import.meta.url));
-
-function migrationFiles(): string[] {
-  return readdirSync(DIR)
-    .filter((f) => f.endsWith(".sql"))
-    .sort();
-}
-
 function replay(alreadyRecorded: string[] = []): DatabaseSync {
   const db = new DatabaseSync(":memory:");
   db.exec(LEDGER_DDL);
   for (const name of alreadyRecorded) {
-    db.exec(readFileSync(`${DIR}/${name}`, "utf8"));
+    db.exec(readFileSync(`${MIGRATIONS_DIR}/${name}`, "utf8"));
     db.prepare("INSERT INTO d1_migrations (name) VALUES (?)").run(name);
   }
   for (const name of migrationFiles()) {
     const seen = db.prepare("SELECT COUNT(*) AS n FROM d1_migrations WHERE name = ?").get(name);
     if ((seen as { n: number }).n > 0) continue;
-    db.exec(readFileSync(`${DIR}/${name}`, "utf8"));
+    db.exec(readFileSync(`${MIGRATIONS_DIR}/${name}`, "utf8"));
     db.prepare("INSERT INTO d1_migrations (name) VALUES (?)").run(name);
   }
   return db;
@@ -70,7 +62,7 @@ describe("one migrations directory feeds both databases", () => {
   });
 
   it("holds no per-environment subdirectory, which is what let the two copies drift", () => {
-    const entries = readdirSync(DIR, { withFileTypes: true });
+    const entries = readdirSync(MIGRATIONS_DIR, { withFileTypes: true });
     expect(entries.filter((e) => e.isDirectory()).map((e) => e.name)).toEqual([]);
   });
 
@@ -146,10 +138,10 @@ describe("the waitlist table records consent and export state", () => {
 
   it("opts in every row that exists when 0003 runs, and no row written after it", () => {
     const db = new DatabaseSync(":memory:");
-    db.exec(readFileSync(`${DIR}/0001_init.sql`, "utf8"));
-    db.exec(readFileSync(`${DIR}/0002_contribution_intent.sql`, "utf8"));
+    db.exec(readFileSync(`${MIGRATIONS_DIR}/0001_init.sql`, "utf8"));
+    db.exec(readFileSync(`${MIGRATIONS_DIR}/0002_contribution_intent.sql`, "utf8"));
     db.prepare(PRE_0002_INSERT).run("before@example.com", "B", 1000, "subscribe", 1000, 1000);
-    db.exec(readFileSync(`${DIR}/0003_updates_opt_in.sql`, "utf8"));
+    db.exec(readFileSync(`${MIGRATIONS_DIR}/0003_updates_opt_in.sql`, "utf8"));
     db.prepare(PRE_0002_INSERT).run("after@example.com", "A", 2000, "subscribe", 2000, 2000);
     const rows = db.prepare("SELECT email, updates_opt_in FROM waitlist ORDER BY id").all() as {
       email: string;
@@ -168,10 +160,10 @@ describe("the waitlist table records consent and export state", () => {
       "0002_contribution_intent.sql",
       "0003_updates_opt_in.sql",
     ]) {
-      db.exec(readFileSync(`${DIR}/${name}`, "utf8"));
+      db.exec(readFileSync(`${MIGRATIONS_DIR}/${name}`, "utf8"));
     }
     db.prepare(PRE_0002_INSERT).run("before@example.com", "B", 1000, "subscribe", 1000, 1000);
-    db.exec(readFileSync(`${DIR}/0004_audience_roles.sql`, "utf8"));
+    db.exec(readFileSync(`${MIGRATIONS_DIR}/0004_audience_roles.sql`, "utf8"));
     db.prepare(
       `INSERT INTO waitlist (email, name, consent_at, source, created_at, updated_at,
          is_foss_user, is_foss_contributor, is_student) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,

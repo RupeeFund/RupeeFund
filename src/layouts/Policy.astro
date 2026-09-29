@@ -1,0 +1,19 @@
+---
+import Base from "./Base.astro";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Base>
+  <div class="wrap section-y">
+    <div class="policy max-w-xl">
+      <h1 class="page-title text-ink mb-4">{title}</h1>
+      <p>Effective date: 25 September 2026.</p>
+      <slot />
+    </div>
+  </div>
+</Base>

@@ -16,6 +16,13 @@ const SOCIALS: readonly Social[] = [
   { slug: "youtube", name: "YouTube", href: "https://www.youtube.com/c/fossunited" },
   { slug: "telegram", name: "Telegram", href: "https://t.me/fossunited" },
 ];
+
+const LINKS = [
+  { href: "/people", label: "People" },
+  { href: "https://fossunited.org/about", label: "About FOSS United" },
+  { href: "https://forum.fossunited.org", label: "Community forum" },
+  { href: "https://github.com/RupeeFund/RupeeFund", label: "Source on GitHub" },
+] as const;
 ---
 
 <footer class="bg-ink text-paper [--focus:var(--color-white)] pt-16 pb-10">
@@ -38,31 +45,23 @@ const SOCIALS: readonly Social[] = [
       </p>
     </div>
     <ul class="flex flex-wrap justify-center gap-x-2 text-sm">
-      <li><a href="/people" class="foot-link">People</a></li>
-      <li>
-        <a
-          href="https://fossunited.org/about"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="foot-link">About FOSS United</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://forum.fossunited.org"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="foot-link">Community forum</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/RupeeFund/RupeeFund"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="foot-link">Source on GitHub</a
-        >
-      </li>
+      {
+        LINKS.map(({ href, label }) => {
+          const external = href.startsWith("https://");
+          return (
+            <li>
+              <a
+                href={href}
+                target={external ? "_blank" : undefined}
+                rel={external ? "noopener noreferrer" : undefined}
+                class="foot-link"
+              >
+                {label}
+              </a>
+            </li>
+          );
+        })
+      }
     </ul>
     <div class="grid justify-items-center gap-1">
       <p class="text-lg font-semibold">

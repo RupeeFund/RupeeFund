@@ -3,7 +3,13 @@ import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
 import type { D1Database } from "@cloudflare/workers-types";
 
-const MIGRATIONS_DIR = fileURLToPath(new URL("../../migrations", import.meta.url));
+export const MIGRATIONS_DIR = fileURLToPath(new URL("../../migrations", import.meta.url));
+
+export function migrationFiles(): string[] {
+  return readdirSync(MIGRATIONS_DIR)
+    .filter((f) => f.endsWith(".sql"))
+    .sort();
+}
 
 type Row = Record<string, unknown>;
 
@@ -27,12 +33,9 @@ export function migratedD1(): {
   db: D1Database;
   raw: DatabaseSync;
 } {
-  const dir = MIGRATIONS_DIR;
   const raw = new DatabaseSync(":memory:");
-  for (const name of readdirSync(dir)
-    .filter((f) => f.endsWith(".sql"))
-    .sort()) {
-    raw.exec(readFileSync(`${dir}/${name}`, "utf8"));
+  for (const name of migrationFiles()) {
+    raw.exec(readFileSync(`${MIGRATIONS_DIR}/${name}`, "utf8"));
   }
   const db = {
     prepare: (sql: string) => statementFor(raw, sql, []),

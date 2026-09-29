@@ -243,6 +243,18 @@
     @apply grid-cols-[0fr] opacity-0;
   }
 
+  .policy h2 {
+    @apply text-xl text-ink mt-10 mb-3;
+  }
+
+  .policy :is(p, ul) {
+    @apply text-sm text-ink-2 mb-6;
+  }
+
+  .policy > :last-child {
+    @apply mb-0;
+  }
+
   .faq {
     @apply border-t border-ink/15 py-3;
   }

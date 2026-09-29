@@ -1,16 +1,10 @@
-import { spawnSync } from "node:child_process";
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
-import { DUMMY_SITEKEYS } from "./helpers.ts";
+import { DUMMY_SITEKEYS, type Result, runNode } from "./helpers.ts";
 
 const GUARD = resolve("scripts/assert-deploy-env.mjs");
-
-interface Result {
-  code: number;
-  stderr: string;
-}
 
 function config(): Record<string, unknown> {
   const raw = readFileSync("wrangler.jsonc", "utf8");
@@ -51,12 +45,7 @@ function repoWith(mutate: Fixture): string {
 
 function run(env: Record<string, string>, cwd = process.cwd()): Result {
   const guard = cwd === process.cwd() ? GUARD : join(cwd, "scripts", "assert-deploy-env.mjs");
-  const out = spawnSync(process.execPath, [guard], {
-    cwd,
-    env: { PATH: process.env.PATH ?? "", ...env },
-    encoding: "utf8",
-  });
-  return { code: out.status ?? -1, stderr: out.stderr };
+  return runNode(guard, { cwd, env: { PATH: process.env.PATH ?? "", ...env } });
 }
 
 function withSitekey(value: string) {

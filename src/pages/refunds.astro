@@ -1,46 +1,40 @@
 ---
-import Base from "../layouts/Base.astro";
+import Policy from "../layouts/Policy.astro";
 import { REFUND_ADDRESS, REMOVAL_ADDRESS } from "../lib/launch.ts";
 ---
 
-<Base>
-  <div class="wrap section-y">
-    <div class="max-w-xl">
-      <h1 class="page-title text-ink mb-4">Refunds</h1>
-      <p class="text-sm text-ink-2 mb-6">Effective date: 25 September 2026.</p>
-      <p class="text-sm text-ink-2 mb-6">
-        The Rupee Fund is a FOSS United community initiative run by community members. We adopt the
-        donation-refund principles in the FOSS United <a
-          href="https://fossunited.org/refund-transfer-policy"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-link">refund and transfer policy</a
-        >, as reviewed on 7 September 2026: submit claims promptly, provide transaction details, and
-        review donations made in error on an individual basis. The local rules below apply to this
-        fund and take precedence where the source differs. Ticket-transfer rules do not apply. Later
-        changes to the source do not change this policy automatically.
-      </p>
-      <h2 class="text-xl text-ink mt-10 mb-3">Before launch</h2>
-      <p class="text-sm text-ink-2 mb-6">
-        This site takes no payments at this stage. Joining the launch notification list does not
-        charge you or create a payment obligation. We will publish the payment recipient, refund
-        contact, claim period, and recurring-payment cancellation process before contributions open.
-      </p>
-      <h2 class="text-xl text-ink mt-10 mb-3">Donations made to the Foundation</h2>
-      <p class="text-sm text-ink-2 mb-6">
-        If you donated directly to FOSS United Foundation, its policy asks you to email{" "}
-        <a href={`mailto:${REFUND_ADDRESS}`} class="inline-link">{REFUND_ADDRESS}</a> within 15 days.
-        That process concerns donations to the Foundation. It does not identify the Foundation as the
-        recipient or refund decision-maker for future contributions to The Rupee Fund.
-      </p>
+<Policy title="Refunds">
+  <p>
+    The Rupee Fund is a FOSS United community initiative run by community members. We adopt the
+    donation-refund principles in the FOSS United <a
+      href="https://fossunited.org/refund-transfer-policy"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-link">refund and transfer policy</a
+    >, as reviewed on 7 September 2026: submit claims promptly, provide transaction details, and
+    review donations made in error on an individual basis. The local rules below apply to this fund
+    and take precedence where the source differs. Ticket-transfer rules do not apply. Later changes
+    to the source do not change this policy automatically.
+  </p>
+  <h2>Before launch</h2>
+  <p>
+    This site takes no payments at this stage. Joining the launch notification list does not charge
+    you or create a payment obligation. We will publish the payment recipient, refund contact, claim
+    period, and recurring-payment cancellation process before contributions open.
+  </p>
+  <h2>Donations made to the Foundation</h2>
+  <p>
+    If you donated directly to FOSS United Foundation, its policy asks you to email{" "}
+    <a href={`mailto:${REFUND_ADDRESS}`} class="inline-link">{REFUND_ADDRESS}</a> within 15 days. That
+    process concerns donations to the Foundation. It does not identify the Foundation as the recipient
+    or refund decision-maker for future contributions to The Rupee Fund.
+  </p>
 
-      <h2 class="text-xl text-ink mt-10 mb-3">Questions</h2>
-      <p class="text-sm text-ink-2">
-        For questions about The Rupee Fund, send an email to <a
-          href={`mailto:${REMOVAL_ADDRESS}`}
-          class="inline-link">{REMOVAL_ADDRESS}</a
-        >.
-      </p>
-    </div>
-  </div>
-</Base>
+  <h2>Questions</h2>
+  <p>
+    For questions about The Rupee Fund, send an email to <a
+      href={`mailto:${REMOVAL_ADDRESS}`}
+      class="inline-link">{REMOVAL_ADDRESS}</a
+    >.
+  </p>
+</Policy>
