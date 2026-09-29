@@ -17,7 +17,7 @@ Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy
 
 You prove every change on your own machine. No test reaches the live database.
 
-Run the gate in `docs/CONTRIBUTING.md`. `pnpm preview` uses the always-pass Turnstile test pair, so the form completes with no real widget. Read the local rows:
+Run the gate in `docs/CONTRIBUTING.md`. `pnpm dev` and the gate use the always-pass Turnstile test pair, so the form completes with no real widget. Read the local rows:
 
 ```sh
 pnpm wrangler d1 execute rupeefund-waitlist --local --command "SELECT email, consent_at FROM waitlist"
@@ -76,9 +76,9 @@ pnpm wrangler secret put TURNSTILE_SECRET
 
 A `--remote` command needs the Cloudflare account. Put `CLOUDFLARE_ACCOUNT_ID` in `.env`. Wrangler reads `.env` itself, and a value set on the command line wins over it. Without it, wrangler asks which account to use. Do not put the account in `wrangler.jsonc`.
 
-Local work needs no environment file. The `preview` script in `package.json` carries the always-pass test values itself, and passes them to `astro build` and to `wrangler dev`.
+For local work, `.env` holds the always-pass test values. Make it with `cp .env.example .env`. `astro build` and `wrangler dev` read it, and direnv loads it into your shell through `.envrc`. Do not also make a `.dev.vars` file, or wrangler ignores `.env`. The `preview` script carries the same values itself, for Playwright in CI, where no `.env` exists.
 
-That script sets `PUBLIC_ALLOW_TEST_SITEKEY=true` beside the test sitekey. Never set that opt-in in the Workers Builds settings. A deployed build with the test sitekey refuses every signup, and `pnpm run build` exits 1 before and after `astro build` when it finds one. `tests/deploy/sitekey-literal.test.ts` refuses a script that names the test sitekey without the opt-in.
+`.env.example` and `preview` set `PUBLIC_ALLOW_TEST_SITEKEY=true` beside the test sitekey. Never set that opt-in in the Workers Builds settings. A deployed build with the test sitekey refuses every signup, and `pnpm run build` exits 1 before and after `astro build` when it finds one. For this reason, `pnpm run build` fails while `.env` exists. Rename `.env` before you run the deploy build on your machine. `tests/deploy/sitekey-literal.test.ts` refuses a script or an `.env.example` that names the test sitekey without the opt-in.
 
 ## 6. How to verify a deployment
 

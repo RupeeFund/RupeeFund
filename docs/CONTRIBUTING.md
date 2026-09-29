@@ -12,11 +12,13 @@ The site collects a mailing list only. Do not add a way to pay or to vote.
 
 ```sh
 pnpm install
+cp .env.example .env
+direnv allow
 pnpm db:reset
-pnpm preview
+pnpm dev
 ```
 
-`pnpm dev` shows the pages with no Worker and no database. The signup form needs `pnpm preview`.
+`pnpm dev` builds the site and serves it with the Worker and the local database on `http://localhost:8787`. It does not reload on an edit. Stop it and run it again. `direnv allow` needs [direnv](https://direnv.net). `pnpm dev` works without it.
 
 ## The gate
 
@@ -32,7 +34,7 @@ pnpm test:e2e     # Playwright against the local build
 
 The `site` vitest project builds the whole site first. A change to one page can fail a test that does not name that page.
 
-CI also runs `pnpm run build`, the same command Workers Builds runs on `live`. That build refuses the Turnstile test sitekey and an open preview setting. Keep `scripts/build.mjs` running those guards.
+CI also runs `pnpm run build`, the same command Workers Builds runs on `live`. That build refuses the Turnstile test sitekey and an open preview setting. Keep `scripts/build.mjs` running those guards. While `.env` exists, the build fails on your machine. [deploy.md](deploy.md) section 5 tells why.
 
 Do not make a rule less strict to pass the gate. If a rule is wrong for this repository, turn it off in `.oxlintrc.json` with a comment that says why.
 
@@ -77,4 +79,4 @@ The brand guidelines own the look: colours, type, links, buttons, forms, cards, 
 - Every button is `btn` with `btn-primary` or `btn-quiet`, and `btn-lg` or `btn-block` for size. Add `btn-on-white` to a quiet button on a white surface. Put no spacing or width utility on a button in the markup. For a new size, add a modifier to `src/index.css`.
 - Style UI state from an attribute, for example `aria-pressed`. Do not paint classes from JavaScript.
 - The season accents are in `SEASONS` in `src/lib/launch.ts`. `src/lib/launch.test.ts` keeps white text on each accent at 4.5:1.
-- Check each visual change in a browser at 360 × 640 and 1440 × 900, with and without reduced motion. Use `pnpm preview`.
+- Check each visual change in a browser at 360 × 640 and 1440 × 900, with and without reduced motion. Use `pnpm dev`.

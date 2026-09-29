@@ -12,7 +12,7 @@
   "author": "FOSS United Community",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro build --outDir dist-preview && wrangler dev --assets dist-preview",
     "build": "node scripts/build.mjs",
     "preview": "PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA astro build --outDir dist-preview && TURNSTILE_SECRET=1x0000000000000000000000000000000AA wrangler dev --assets dist-preview --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
     "brand:sync": "node scripts/brand-sync.mts",

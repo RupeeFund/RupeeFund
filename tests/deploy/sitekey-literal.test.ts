@@ -9,6 +9,7 @@ const CARRIERS = [
   "tests/site/build.setup.ts",
   "tests/deploy/assert-deploy-env.test.ts",
   "tests/deploy/assert-dist-sitekey.test.ts",
+  ".env.example",
 ] as const;
 
 function read(path: string): string {
@@ -32,6 +33,10 @@ describe("every build path that uses the test sitekey opts in explicitly", () =>
       expect(body).toContain("PUBLIC_ALLOW_TEST_SITEKEY=true");
     });
   }
+
+  it(".env.example sets PUBLIC_ALLOW_TEST_SITEKEY beside the test sitekey", () => {
+    expect(read(".env.example")).toContain('PUBLIC_ALLOW_TEST_SITEKEY="true"');
+  });
 
   it("never lets CI reach for the test sitekey, so the deploy guard runs as it does in production", () => {
     expect(read(".github/workflows/ci.yml")).not.toContain(TEST_SITEKEY);

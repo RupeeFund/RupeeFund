@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   TURNSTILE_SITEKEY,
   TURNSTILE_TEST_SITEKEY,
@@ -42,7 +42,12 @@ describe("resolveSitekey", () => {
 });
 
 describe("getSitekey", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("answers with the committed sitekey when the build sets no override", () => {
+    vi.stubEnv("PUBLIC_TURNSTILE_SITEKEY", undefined);
     expect(getSitekey()).toBe(TURNSTILE_SITEKEY);
   });
 });
