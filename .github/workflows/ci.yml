@@ -30,6 +30,7 @@ jobs:
           fi
       - run: pnpm format:check
       - run: pnpm check
+      - run: pnpm audit --prod --audit-level=moderate
 
   build:
     runs-on: ubuntu-latest
