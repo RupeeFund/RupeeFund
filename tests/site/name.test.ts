@@ -9,6 +9,9 @@ const pageText = (html: string): string =>
 
 describe("The name in page text", () => {
   it.each(PAGES)("never breaks across two lines on %s", (page) => {
-    expect(pageText(read(page))).not.toMatch(/The[ \t\n]+Rupee[ \t\n]+Fund/);
+    const gaps = [...pageText(read(page)).matchAll(/The(.{1,8}?)Rupee(.{1,8}?)Fund/gs)].flatMap(
+      ([, first, second]) => [first, second],
+    );
+    expect(gaps.filter((gap) => !/^(&nbsp;|&#160;|\u00a0)$/.test(gap))).toEqual([]);
   });
 });
