@@ -67,16 +67,14 @@ To add an endpoint, write a handler in `src/worker/routes/` and connect it in `s
 
 ## Design
 
-The brand guidelines own the look: colours, type, links, buttons, forms, cards, icons, motion and words. This repository owns the layout of its pages.
+The brand guidelines are the source of truth for the look: colours, type, links, buttons, forms, cards, icons, motion and words. Read each rule there. This file adds no design rule. The list below tells how the code builds the rules.
 
-- Keep the look. Change it only for a defect, a brand rule or a request from the maintainer.
-- When the site needs a rule that the brand guidelines do not have, or departs from one on purpose, change the guidelines in `RupeeFund/brand` in the same piece of work.
-- Reuse a class in `src/index.css` before you add one. Put a new class in that file.
-- Home sections below the hero span the page with `wrap section-y`. Give each section a different tone from the section above it: paper, white, ink or brand green. Use brand green for one section at most, with ink text.
-- Every other page starts on the left edge of the logo with `wrap section-y`. Cap text at `max-w-xl`, so that a line holds 75 characters or fewer. A status page centres its message in the height of `main`.
-- The home `h1` is the name of the fund, set with `section-title`. Use `display` for the home tagline, `page-title` for the `h1` of a text page, and `section-title` for the title `h2` of a home section.
+- Change the look only for a defect, a brand rule or a request from the maintainer.
+- When the site needs a rule that the brand guidelines do not have, or must depart from one, change the guidelines in `RupeeFund/brand` in the same piece of work. Then build it here.
+- Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it.
+- `src/index.css` builds the brand rules that the brand files do not hold: the type scale and the classes for links, buttons, cards and forms. Reuse a class before you add one. Put a new class in that file.
 - `text-sm` is the body size, 17 px. The theme in `src/index.css` changes the Tailwind scale.
-- Every button is `btn` with `btn-primary` or `btn-quiet`, and `btn-lg` or `btn-block` for size. Add `btn-on-white` to a quiet button on a white surface. `btn-collapsible` with `data-compact` shows the icon alone: the header button on home stays compact while the hero button is in view. Put no spacing or width utility on a button in the markup. For a new size, add a modifier to `src/index.css`.
-- Style UI state from an attribute, for example `aria-pressed`. Do not paint classes from JavaScript.
+- A button is `btn` with `btn-primary` or `btn-quiet`, the Primary and Quiet buttons of the brand. Add `btn-on-white` to a quiet button on a white surface. Give it a size with a modifier from `src/index.css`, not with utilities in the markup.
+- Style a UI state from an attribute, for example `aria-pressed`. Do not set classes from JavaScript.
 - The season accents are in `SEASONS` in `src/lib/launch.ts`. `src/lib/launch.test.ts` keeps white text on each accent at 4.5:1.
-- Check each visual change in a browser at 360 × 640 and 1440 × 900, with and without reduced motion. Use `pnpm dev`.
+- Check each visual change in a browser at 360 × 640 and 1440 × 900, with and without reduced motion.
