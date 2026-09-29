@@ -27,13 +27,20 @@ async function awaitTurnstileToken(form: HTMLFormElement, timeoutMs = 20000): Pr
   }
 }
 
+export function errorForStatus(status: number): string {
+  if (status === 400)
+    return "We could not add you to the list. Check your name, email address and amount, then try again.";
+  if (status === 429) return "We could not add you to the list yet. Wait a minute, then try again.";
+  if (status === 403) return "The bot check did not pass. Reload the page, then try again.";
+  return "We could not save your signup. Try again in a few minutes.";
+}
+
 export async function submitWaitlist(
   form: HTMLFormElement,
-  deps: { fetchImpl: typeof fetch; tokenTimeoutMs?: number },
+  deps: { fetchImpl: typeof fetch; navigate: (path: string) => void; tokenTimeoutMs?: number },
 ): Promise<void> {
   const doc = form.ownerDocument;
   const err = doc.getElementById("waitlist-error");
-  const success = doc.getElementById("waitlist-success");
   const submit = doc.getElementById("waitlist-submit") as HTMLButtonElement | null;
 
   showError(err, "");
@@ -70,14 +77,13 @@ export async function submitWaitlist(
     });
     if (!res.ok) {
       resetTurnstile(doc);
-      showError(err, "Something went wrong. Please try again.");
+      showError(err, errorForStatus(res.status));
       return;
     }
-    form.style.display = "none";
-    success?.classList.remove("hidden");
+    deps.navigate("/waitlist-confirmed");
   } catch {
     resetTurnstile(doc);
-    showError(err, "Network error. Please try again.");
+    showError(err, "We could not reach the server. Check your connection, then try again.");
   } finally {
     if (submit) {
       submit.disabled = false;
@@ -92,12 +98,20 @@ export function linkOtherAmount(form: HTMLFormElement): void {
     'input[name="amount"][value="other"]',
   ) as HTMLInputElement | null;
   if (typed === null || choice === null) return;
+  const requireTyped = (): void => {
+    typed.required = choice.checked;
+  };
+  form.addEventListener("change", requireTyped);
   typed.addEventListener("input", () => {
     if (typed.value.trim().length > 0) choice.checked = true;
+    requireTyped();
   });
 }
 
-function initWaitlistForm(doc: Document, deps: { fetchImpl: typeof fetch }): void {
+function initWaitlistForm(
+  doc: Document,
+  deps: { fetchImpl: typeof fetch; navigate: (path: string) => void },
+): void {
   const form = doc.getElementById("waitlist-form") as HTMLFormElement | null;
   if (!form) return;
   linkOtherAmount(form);
@@ -115,6 +129,9 @@ function onReady(run: () => void): void {
 
 export function initSubscribePage(): void {
   onReady(() => {
-    initWaitlistForm(document, { fetchImpl: window.fetch.bind(window) });
+    initWaitlistForm(document, {
+      fetchImpl: window.fetch.bind(window),
+      navigate: (path) => window.location.assign(path),
+    });
   });
 }

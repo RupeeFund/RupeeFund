@@ -1,12 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { linkOtherAmount, submitWaitlist } from "./subscribe.ts";
+import { errorForStatus, linkOtherAmount, submitWaitlist } from "./subscribe.ts";
 
 function okJson(body: unknown, status = 200) {
   return { ok: status >= 200 && status < 300, status, json: async () => body };
 }
 
+const navigate = vi.fn<(path: string) => void>();
+
 describe("submitWaitlist", () => {
   beforeEach(() => {
+    navigate.mockReset();
     document.body.innerHTML = `
       <form id="waitlist-form">
         <input name="name" value="Ada" />
@@ -24,25 +27,32 @@ describe("submitWaitlist", () => {
         <input name="cf-turnstile-response" value="tok" />
         <button id="waitlist-submit">Sign up</button>
         <p id="waitlist-error"></p>
-      </form>
-      <div id="waitlist-success" class="hidden"></div>`;
+      </form>`;
   });
 
-  it("hides the form and reveals success on ok", async () => {
+  it("opens the confirmation page on ok, so the result is in view", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
-    expect(form.style.display).toBe("none");
-    expect(document.getElementById("waitlist-success")?.classList.contains("hidden")).toBe(false);
+    expect(navigate).toHaveBeenCalledWith("/waitlist-confirmed");
+  });
+
+  it("stays on the form when the server rejects the request", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: false }, 400));
+    const form = document.getElementById("waitlist-form") as HTMLFormElement;
+
+    await submitWaitlist(form, { fetchImpl, navigate });
+
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it("sends the bot-check token the widget produced", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
     const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
     expect(body.turnstileToken).toBe("tok");
@@ -52,7 +62,7 @@ describe("submitWaitlist", () => {
     const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
     const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
     expect(body).toMatchObject({
@@ -67,7 +77,7 @@ describe("submitWaitlist", () => {
     const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
     const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
     expect(body.updates).toBe("");
@@ -78,7 +88,7 @@ describe("submitWaitlist", () => {
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
     (form.querySelector('input[name="updates"]') as HTMLInputElement).checked = true;
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
     const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
     expect(body.updates).toBe("1");
@@ -88,7 +98,7 @@ describe("submitWaitlist", () => {
     const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
     const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
     expect(body).toMatchObject({ is_foss_user: "", is_foss_contributor: "", is_student: "" });
@@ -100,7 +110,7 @@ describe("submitWaitlist", () => {
     (form.querySelector('input[name="is_foss_user"]') as HTMLInputElement).checked = true;
     (form.querySelector('input[name="is_student"]') as HTMLInputElement).checked = true;
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
     const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
     expect(body).toMatchObject({ is_foss_user: "1", is_foss_contributor: "", is_student: "1" });
@@ -112,7 +122,7 @@ describe("submitWaitlist", () => {
     (form.querySelector('input[value="other"]') as HTMLInputElement).checked = true;
     (form.querySelector('input[name="amount_other"]') as HTMLInputElement).value = "250";
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
     const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
     expect(body).toMatchObject({ amount: "other", amount_other: "250" });
@@ -128,6 +138,22 @@ describe("submitWaitlist", () => {
     typed.dispatchEvent(new Event("input"));
 
     expect(choice.checked).toBe(true);
+  });
+
+  it("requires a typed amount only while the other option is chosen", () => {
+    const form = document.getElementById("waitlist-form") as HTMLFormElement;
+    const typed = form.querySelector('input[name="amount_other"]') as HTMLInputElement;
+    const other = form.querySelector('input[value="other"]') as HTMLInputElement;
+    const fixed = form.querySelector('input[value="128"]') as HTMLInputElement;
+    linkOtherAmount(form);
+
+    other.checked = true;
+    other.dispatchEvent(new Event("change", { bubbles: true }));
+    const whileOther = typed.required;
+    fixed.checked = true;
+    fixed.dispatchEvent(new Event("change", { bubbles: true }));
+
+    expect([whileOther, typed.required]).toEqual([true, false]);
   });
 
   it("leaves the chosen option alone while the typed amount is only whitespace", () => {
@@ -152,7 +178,7 @@ describe("submitWaitlist", () => {
       field.value = "late-token";
     }, 150);
 
-    await submitWaitlist(form, { fetchImpl, tokenTimeoutMs: 4000 });
+    await submitWaitlist(form, { fetchImpl, navigate, tokenTimeoutMs: 4000 });
 
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     expect(JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body)).turnstileToken).toBe(
@@ -165,7 +191,7 @@ describe("submitWaitlist", () => {
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
     (form.querySelector('input[name="cf-turnstile-response"]') as HTMLInputElement).value = "";
 
-    await submitWaitlist(form, { fetchImpl, tokenTimeoutMs: 120 });
+    await submitWaitlist(form, { fetchImpl, navigate, tokenTimeoutMs: 120 });
 
     expect(fetchImpl).not.toHaveBeenCalled();
   });
@@ -175,7 +201,7 @@ describe("submitWaitlist", () => {
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
     (form.querySelector('input[name="cf-turnstile-response"]') as HTMLInputElement).value = "";
 
-    await submitWaitlist(form, { fetchImpl, tokenTimeoutMs: 0 });
+    await submitWaitlist(form, { fetchImpl, navigate, tokenTimeoutMs: 0 });
 
     expect((document.getElementById("waitlist-submit") as HTMLButtonElement).disabled).toBe(false);
   });
@@ -188,7 +214,7 @@ describe("submitWaitlist", () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response("{}", { status: 500 }));
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
     expect(resets).toEqual(["#waitlist-turnstile"]);
     delete (window as unknown as { turnstile?: unknown }).turnstile;
@@ -199,9 +225,22 @@ describe("submitWaitlist", () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response("{}", { status: 500 }));
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
 
-    await submitWaitlist(form, { fetchImpl });
+    await submitWaitlist(form, { fetchImpl, navigate });
 
-    expect(document.getElementById("waitlist-error")?.textContent).toMatch(/went wrong/i);
+    expect(document.getElementById("waitlist-error")?.textContent).toMatch(
+      /try again in a few minutes/i,
+    );
+  });
+
+  it("tells the person to check their connection when the request cannot reach the server", async () => {
+    const fetchImpl = vi.fn().mockRejectedValue(new TypeError("Failed to fetch"));
+    const form = document.getElementById("waitlist-form") as HTMLFormElement;
+
+    await submitWaitlist(form, { fetchImpl, navigate });
+
+    expect(document.getElementById("waitlist-error")?.textContent).toMatch(
+      /check your connection/i,
+    );
   });
 
   it("says the bot check did not load rather than posting a request that must fail", async () => {
@@ -209,9 +248,27 @@ describe("submitWaitlist", () => {
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
     form.querySelector('input[name="cf-turnstile-response"]')!.remove();
 
-    await submitWaitlist(form, { fetchImpl, tokenTimeoutMs: 0 });
+    await submitWaitlist(form, { fetchImpl, navigate, tokenTimeoutMs: 0 });
 
     expect(fetchImpl).not.toHaveBeenCalled();
     expect(document.getElementById("waitlist-error")?.textContent).toMatch(/bot check/i);
+  });
+});
+
+describe("errorForStatus", () => {
+  it("names every field the server checks when it rejects the input", () => {
+    expect(errorForStatus(400)).toMatch(/name, email address and amount/i);
+  });
+
+  it("asks the person to wait when they are rate limited", () => {
+    expect(errorForStatus(429)).toMatch(/wait a minute/i);
+  });
+
+  it("asks the person to reload when the bot check fails", () => {
+    expect(errorForStatus(403)).toMatch(/reload the page/i);
+  });
+
+  it("does not blame the input when the server fails", () => {
+    expect(errorForStatus(500)).not.toMatch(/email address/i);
   });
 });
