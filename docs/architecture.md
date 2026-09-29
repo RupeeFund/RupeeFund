@@ -95,7 +95,7 @@ There is no environment suffix. There is one environment.
 - `src/brand/colors.css`, the `--color-*` theme that `src/index.css` imports;
 - `src/brand/colors.json`, which `Base.astro` reads for `theme-color`;
 - `theme_color` and `background_color` in `public/site.webmanifest`;
-- the icons, `logo.svg`, `logo-dark.svg` and `og-card.png` in `public/`.
+- the icons, `logo.svg` and `logo-dark.svg` in `public/`.
 
 The committed files are the only brand input to the build. The build and CI do not fetch from the brand site. Do not edit these files by hand. CI does not compare them with the brand site, so review each sync diff before you commit it.
 

@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Faq from "../components/Faq.astro";
 import Icon from "../components/Icon.astro";
 import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
+import { TAGLINE } from "../lib/seo.ts";
 ---
 
 <Base>
@@ -11,9 +12,7 @@ import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
       <h1 class="section-title mb-0 text-ink lg:col-start-2 lg:row-start-1">
         The&nbsp;Rupee&nbsp;Fund
       </h1>
-      <p class="display text-ink lg:col-start-1 lg:row-span-3 lg:row-start-1">
-        Keep FOSS in India alive, one rupee at a time
-      </p>
+      <p class="display text-ink lg:col-start-1 lg:row-span-3 lg:row-start-1">{TAGLINE}</p>
       <p class="lede max-w-[36rem] text-ink-2 lg:col-start-2 lg:row-start-2">
         Free software isn’t free. The&nbsp;Rupee&nbsp;Fund is a community initiative from FOSS
         United. The fund pools small monthly UPI contributions and routes them to indie FOSS

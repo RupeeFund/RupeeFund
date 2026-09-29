@@ -100,4 +100,18 @@ describe("head metadata", () => {
     expect(html).toContain('property="og:image"');
     expect(html).toContain('name="twitter:card"');
   });
+
+  it("gives every page the site card with its size, type and alt text", () => {
+    for (const page of PAGES) {
+      expect(read(page), `${page} lacks the site card`).toContain(
+        '<meta property="og:image" content="https://rupeefund.org/og/site.png">' +
+          '<meta property="og:image:type" content="image/png">' +
+          '<meta property="og:image:width" content="1200">' +
+          '<meta property="og:image:height" content="630">' +
+          '<meta property="og:image:alt" content="The logo of The Rupee Fund. ' +
+          "Keep FOSS in India alive, one rupee at a time. " +
+          'A community initiative from FOSS United.">',
+      );
+    }
+  });
 });
