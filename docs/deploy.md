@@ -17,14 +17,7 @@ Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy
 
 You prove every change on your own machine. No test reaches the live database.
 
-```sh
-pnpm db:reset     # build the local database from the migrations
-pnpm preview      # build to dist-preview, then serve it with wrangler dev
-pnpm check        # types, lint, astro check, vitest
-pnpm test:e2e     # Playwright against the local build
-```
-
-`pnpm preview` uses the always-pass Turnstile test pair, so the form completes with no real widget. Read the local rows:
+Run the gate in `docs/CONTRIBUTING.md`. `pnpm preview` uses the always-pass Turnstile test pair, so the form completes with no real widget. Read the local rows:
 
 ```sh
 pnpm wrangler d1 execute rupeefund-waitlist --local --command "SELECT email, consent_at FROM waitlist"
@@ -60,7 +53,7 @@ Keep the `&&`. It stops the apply when the export fails.
 
 **Make each migration additive.** During a promote two Worker versions read the one live database. Add a column with a default or with NULL permitted. A change that removes a column needs two promotes: one that stops the code from reading it, and a later one that drops it.
 
-Wrangler matches a migration by file name only. A changed file that has run does nothing. A reused file name runs nothing and reports no error. `tests/migrations/replay.test.ts` refuses the retired names. `wrangler d1 migrations list` proves only that the names agree. To check the schema, query the tables:
+Never edit a migration that has run. Never reuse a file name. Wrangler matches a migration by file name only. A changed file that has run does nothing. A reused file name runs nothing and reports no error. `tests/migrations/replay.test.ts` refuses the retired names. `wrangler d1 migrations list` proves only that the names agree. To check the schema, query the tables:
 
 ```sh
 pnpm wrangler d1 execute rupeefund-waitlist --remote --json --command \

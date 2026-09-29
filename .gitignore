@@ -10,7 +10,6 @@ worker-configuration.d.ts
 .env.*
 .dev.vars
 .dev.vars.*
-!.dev.vars.example
 .scratchpad/
 
 playwright-report
@@ -22,5 +21,6 @@ test-results
 !.vscode/
 .idea/
 
-# Agent instructions are checked in. A global ignore usually excludes AGENTS.md.
+# Agent instructions are checked in. A global ignore usually excludes them.
 !AGENTS.md
+!CLAUDE.md

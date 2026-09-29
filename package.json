@@ -2,16 +2,14 @@
   "name": "rupeefund",
   "version": "0.0.0",
   "private": true,
-  "description": "Recurring UPI AutoPay donations for The Rupee Fund — a community initiative from FOSS United, on Cloudflare Workers + D1.",
+  "description": "The site of The Rupee Fund, an independent community fund for free and open-source software in India.",
   "keywords": [
     "cloudflare-workers",
     "d1",
-    "donations",
-    "foss-united",
-    "razorpay"
+    "foss-united"
   ],
   "license": "MIT",
-  "author": "FOSS United community",
+  "author": "FOSS United Community",
   "type": "module",
   "scripts": {
     "dev": "astro dev",

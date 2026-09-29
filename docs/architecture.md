@@ -4,7 +4,7 @@
 
 The system shows public pages and collects a mailing list. It takes no payment and holds no vote.
 
-For each person on the list, the system stores a name, an email address, the time of consent, the amount and the duration the person intends to contribute, a free-text question, a yes or no for monthly updates, and which of FOSS user, FOSS contributor and student the person ticked. It stores no payment instrument.
+Section 5 lists what the system stores for each person. It stores no payment instrument.
 
 ## 2. The parts
 
@@ -19,14 +19,7 @@ Only a request to `/api/*` reaches the Worker. Cloudflare serves every other pat
 
 ## 3. The one environment
 
-| Item     | Value                |
-| -------- | -------------------- |
-| Branch   | `live`               |
-| Address  | `rupeefund.org`      |
-| Worker   | `rupeefund-web`      |
-| Database | `rupeefund-waitlist` |
-
-There is no second environment and no preview URL. A second address for `rupeefund-web` would keep the production bindings and write to the true mailing list, so the configuration refuses one. You prove a change on your own machine, against a local database.
+The one environment is `live` at `rupeefund.org`. Section 7 names its resources. There is no second environment and no preview URL. A second address for `rupeefund-web` would keep the production bindings and write to the true mailing list, so the configuration refuses one. You prove a change on your own machine, against a local database.
 
 ## 4. How a person joins the list
 
@@ -52,7 +45,7 @@ The `Content-Type` header selects the path:
 
 ## 5. The database
 
-`migrations/` holds every migration. The live database keeps its own ledger, so `wrangler d1 migrations apply` runs only the files it has not seen. Wrangler matches a migration by file name only. Never change a migration that has run, and never reuse a file name. Refer to `docs/deploy.md` section 4.
+`migrations/` holds every migration. The live database keeps its own ledger, so `wrangler d1 migrations apply` runs only the files it has not seen. `docs/deploy.md` section 4 gives the rules for a new migration.
 
 The `waitlist` table:
 
@@ -93,4 +86,17 @@ There is no environment suffix. There is one environment.
 
 ## 8. Security headers
 
-`public/_headers` sets `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`, and `Referrer-Policy` on every page. The policy permits inline scripts because Bot Fight Mode on the zone injects one. It permits `static.cloudflareinsights.com` because Web Analytics on the zone injects its beacon. `tests/site/csp.test.ts` fails when a page loads a host the policy does not name.
+`public/_headers` sets the security headers on every page. The content security policy permits inline scripts because Bot Fight Mode on the zone injects one. It permits `static.cloudflareinsights.com` because Web Analytics on the zone injects its beacon. `tests/site/csp.test.ts` fails when a page loads a host the policy does not name.
+
+## 9. Brand files
+
+`RupeeFund/brand` is the only source of the brand colours and the brand files. `pnpm brand:sync` reads them from the published brand site, `https://brand.rupeefund.org`, and writes:
+
+- `src/brand/colors.css`, the `--color-*` theme that `src/index.css` imports;
+- `src/brand/colors.json`, which `Base.astro` reads for `theme-color`;
+- `theme_color` and `background_color` in `public/site.webmanifest`;
+- the icons, `logo.svg`, `logo-dark.svg` and `og-card.png` in `public/`.
+
+The committed files are the only brand input to the build. The build and CI do not fetch from the brand site. Do not edit these files by hand. CI does not compare them with the brand site, so review each sync diff before you commit it.
+
+To take a brand update, wait for the brand site to deploy, run `pnpm brand:sync`, and commit the result. To sync from a local brand checkout before it deploys, set `BRAND_DIR` to the checkout. The script then reads `exports/` in that checkout.
