@@ -1,0 +1,61 @@
+name: Promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      migrations_applied:
+        description: I applied each new migration to the live database (docs/deploy.md section 4).
+        type: boolean
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: promote
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SHA: ${{ github.sha }}
+      MIGRATIONS_APPLIED: ${{ inputs.migrations_applied }}
+    steps:
+      - name: Require a run on main
+        run: |
+          if [ "$GITHUB_REF" != refs/heads/main ]; then
+            echo "::error::Run Promote on main, not $GITHUB_REF."
+            exit 1
+          fi
+      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Require a passed CI run on this commit
+        run: |
+          conclusion=$(gh run list --workflow ci.yml --commit "$SHA" --event push \
+            --status completed --limit 1 --json conclusion --jq '.[0].conclusion')
+          if [ "$conclusion" != "success" ]; then
+            echo "::error::CI has not passed on $SHA (latest: ${conclusion:-none})."
+            echo "Wait for CI to pass, then run again."
+            exit 1
+          fi
+      - name: Stop on a migration that live has not applied
+        run: |
+          added=$(git diff --name-only --no-renames --diff-filter=A \
+            origin/live "$SHA" -- migrations/)
+          if [ -n "$added" ] && [ "$MIGRATIONS_APPLIED" != "true" ]; then
+            echo "::error::This promote adds migrations. Apply them first (docs/deploy.md 4)."
+            echo "Then run again with the box ticked. The new migrations:"
+            echo "$added"
+            exit 1
+          fi
+      - name: Fast-forward live
+        run: |
+          git push origin "$SHA:refs/heads/live"
+          echo "live is now at $SHA." >> "$GITHUB_STEP_SUMMARY"

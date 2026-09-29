@@ -1,0 +1,104 @@
+name: Brand sync
+
+on:
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: brand-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
+      gate: ${{ steps.gate.outputs.result }}
+    steps:
+      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: pnpm brand:sync
+      - name: Stop when the site matches the brand
+        id: diff
+        run: |
+          if [ -z "$(git status --porcelain -- src/brand public)" ]; then
+            echo "The site matches brand.rupeefund.org."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git add -- src/brand public
+            git diff --cached --stat
+            git diff --cached --binary > brand.patch
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run the gate on the synced files
+        id: gate
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          if pnpm format:check && pnpm check && pnpm run build; then
+            echo "result=passed" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=failed" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.diff.outputs.changed == 'true'
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: brand-patch
+          path: brand.patch
+          retention-days: 7
+
+  publish:
+    needs: sync
+    if: needs.sync.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      BRANCH: chore/brand-sync
+      GATE: ${{ needs.sync.outputs.gate }}
+    steps:
+      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: brand-patch
+      - name: Open or update the brand pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$RUN_ID"
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git apply --index brand.patch
+          git commit -m "chore(brand): sync from brand.rupeefund.org"
+          git push --force "$remote" "$BRANCH"
+          body="Synced from https://brand.rupeefund.org by the brand sync workflow.
+
+          The gate ${GATE}: ${run_url}
+
+          CI does not run on this pull request. The gate ran format:check, check and build.
+          It did not run the browser tests or the audit."
+          if gh pr view "$BRANCH" --json state --jq .state | grep -q OPEN; then
+            gh pr edit "$BRANCH" --body "$body"
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "chore(brand): sync from brand.rupeefund.org" --body "$body"
+          fi
+      - name: Fail the run when the site differs from the brand
+        run: |
+          echo "::error::The site differs from brand.rupeefund.org. Gate: ${GATE}."
+          echo "Review and merge the brand pull request."
+          exit 1
