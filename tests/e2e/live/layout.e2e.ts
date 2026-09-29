@@ -37,6 +37,21 @@ for (const width of [320, 768, 1440]) {
   });
 }
 
+for (const width of [320, 1440]) {
+  test(`every text link stays on one line at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of routes) {
+      await page.goto(route);
+      const broken = await page
+        .locator("a.inline-link")
+        .evaluateAll((links) =>
+          links.filter((a) => a.getClientRects().length > 1).map((a) => a.textContent?.trim()),
+        );
+      expect(broken, route).toEqual([]);
+    }
+  });
+}
+
 for (const size of [
   { width: 320, height: 568 },
   { width: 360, height: 640 },

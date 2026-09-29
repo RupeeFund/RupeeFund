@@ -19,89 +19,81 @@ const SOCIALS: readonly Social[] = [
 ---
 
 <footer class="bg-ink text-paper [--focus:var(--color-white)] pt-16 pb-10">
-  <div class="wrap">
-    <div class="mb-12 grid gap-8 lg:grid-cols-2 lg:gap-16">
-      <div>
-        <a href="/" aria-label="The Rupee Fund — home" class="mb-4 inline-flex rounded-sm">
-          <img
-            src="/logo-dark.svg"
-            alt="The Rupee Fund"
-            width="184"
-            height="80"
-            loading="lazy"
-            decoding="async"
-            class="h-16 w-auto"
-          />
-        </a>
-        <p class="max-w-sm text-sm text-paper">
-          The Rupee Fund is a community initiative from FOSS United, run by volunteers. We support
-          small, independent FOSS maintainers and builders across India.
-        </p>
-      </div>
-      <div class="grid gap-8 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-16">
-        <div>
-          <h2 class="eyebrow text-paper mb-4">Quick links</h2>
-          <ul class="text-sm text-paper [&_a]:items-start">
-            <li><a href="/team" class="foot-link -mx-2">Team</a></li>
-            <li>
-              <a
-                href="https://fossunited.org/about"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="foot-link -mx-2">About FOSS United</a
-              >
-            </li>
-            <li>
-              <a
-                href="https://forum.fossunited.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="foot-link -mx-2">Community forum</a
-              >
-            </li>
-            <li>
-              <a
-                href="https://github.com/RupeeFund/RupeeFund"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="foot-link -mx-2">Source on GitHub</a
-              >
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h2 class="eyebrow text-paper mb-4">Contact</h2>
-          <p class="text-xl leading-snug font-semibold mb-2 text-white">
-            <a href={`mailto:${REMOVAL_ADDRESS}`} class="foot-link -mx-2 items-start"
-              >{REMOVAL_ADDRESS.split("@")[0]}<wbr />@{REMOVAL_ADDRESS.split("@")[1]}</a
+  <div class="wrap grid justify-items-center gap-10 text-center">
+    <div class="grid justify-items-center gap-4">
+      <a href="/" aria-label="The Rupee Fund — home" class="rounded-sm">
+        <img
+          src="/logo-dark.svg"
+          alt="The Rupee Fund"
+          width="184"
+          height="80"
+          loading="lazy"
+          decoding="async"
+          class="h-20 w-auto"
+        />
+      </a>
+      <p class="max-w-[36rem] text-sm text-paper text-pretty">
+        The Rupee Fund is a community initiative from FOSS United, run by volunteers. We support
+        small, independent FOSS maintainers and builders across India.
+      </p>
+    </div>
+    <ul class="flex flex-wrap justify-center gap-x-2 text-sm">
+      <li><a href="/people" class="foot-link">People</a></li>
+      <li>
+        <a
+          href="https://fossunited.org/about"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="foot-link">About FOSS United</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://forum.fossunited.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="foot-link">Community forum</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://github.com/RupeeFund/RupeeFund"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="foot-link">Source on GitHub</a
+        >
+      </li>
+    </ul>
+    <div class="grid justify-items-center gap-1">
+      <p class="text-lg font-semibold">
+        <a href={`mailto:${REMOVAL_ADDRESS}`} class="foot-link"
+          >{REMOVAL_ADDRESS.split("@")[0]}<wbr />@{REMOVAL_ADDRESS.split("@")[1]}</a
+        >
+      </p>
+      <div class="flex flex-wrap justify-center gap-1 text-xs">
+        {
+          SOCIALS.map((s) => (
+            <a
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`FOSS United on ${s.name} (opens in a new tab)`}
+              class="foot-link foot-icon link-plain min-w-11 justify-center"
             >
-          </p>
-          <div class="-ml-3 flex flex-wrap gap-x-1 gap-y-1 text-xs text-paper">
-            {
-              SOCIALS.map((s) => (
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`FOSS United on ${s.name} (opens in a new tab)`}
-                  class="foot-link foot-icon link-plain min-w-11 justify-center"
-                >
-                  <SocialIcon name={s.slug} />
-                </a>
-              ))
-            }
-          </div>
-        </div>
+              <SocialIcon name={s.slug} />
+            </a>
+          ))
+        }
       </div>
     </div>
-    <div class="border-t border-white/10 pt-6 text-center text-xs text-paper">
-      <div class="mb-3 flex flex-wrap justify-center gap-x-1 gap-y-1">
+    <div class="grid w-full justify-items-center gap-3 border-t border-white/10 pt-6 text-xs">
+      <div class="flex flex-wrap justify-center gap-x-2">
         <a href="/privacy" class="foot-link">Privacy</a>
         <a href="/terms" class="foot-link">Terms</a>
         <a href="/refunds" class="foot-link">Refunds</a>
         <a href="/code-of-conduct" class="foot-link">Code of conduct</a>
       </div>
-      <p class="text-paper">© 2026 The Rupee Fund, by the FOSS United community.</p>
+      <p>© 2026 The Rupee Fund, by the FOSS United community.</p>
     </div>
   </div>
 </footer>

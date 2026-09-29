@@ -17,7 +17,7 @@ import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
         India.
       </p>
       <div class="sm:mt-3 lg:col-start-2 lg:row-start-3">
-        <a href="/subscribe" class="btn btn-primary btn-lg">
+        <a href="/subscribe" class="btn btn-primary btn-lg" data-hero-cta>
           <Icon name="bell" size={18} />
           {SUBSCRIBE_CTA}
         </a>
@@ -25,39 +25,12 @@ import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
     </div>
   </section>
 
-  <section
-    class="wrap section-y grid items-start bg-brand text-ink [--focus:var(--color-ink)] lg:grid-cols-2 lg:gap-16"
-  >
+  <section class="wrap section-y grid items-start bg-brand text-ink lg:grid-cols-2 lg:gap-16">
     <h2 class="section-title lg:mb-0">Not charity — membership in a commons</h2>
-    <div>
-      <p class="lede mb-8 max-w-[36rem]">
-        Every rupee in this fund comes from someone like you, and your continued membership decides
-        which deserving projects get funded — a community layer that drives sustainability.
-      </p>
-      <p class="mb-4 text-sm">
-        <a
-          href="https://fossunited.org/grants"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="underline decoration-ink/40 underline-offset-4 hover:decoration-ink rounded-sm"
-          >FOSS United Foundation’s separate grant programme</a
-        >
-      </p>
-      <dl class="grid grid-cols-3 gap-4 sm:gap-6">
-        <div class="flex flex-col-reverse">
-          <dt class="stat-label text-ink">disbursed</dt>
-          <dd class="stat-value">₹3cr+</dd>
-        </div>
-        <div class="flex flex-col-reverse">
-          <dt class="stat-label text-ink">projects</dt>
-          <dd class="stat-value">27+</dd>
-        </div>
-        <div class="flex flex-col-reverse">
-          <dt class="stat-label text-ink">events</dt>
-          <dd class="stat-value">83+</dd>
-        </div>
-      </dl>
-    </div>
+    <p class="lede max-w-[36rem]">
+      Every rupee in this fund comes from someone like you, and your continued membership decides
+      which deserving projects get funded — a community layer that drives sustainability.
+    </p>
   </section>
 
   <section class="wrap section-y bg-paper">
@@ -122,31 +95,31 @@ import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
 
       <div class="flex flex-col">
         <h2 class="section-title text-ink">Funding seasons</h2>
-        <div class="grid flex-1 grid-cols-2 grid-rows-2 gap-3">
+        <ul>
           {
             SEASONS.map((s) => (
-              <div
-                class="relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl bg-white season-tint px-3 py-5 text-center shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ink)_10%,transparent)]"
-                style={`--season: ${s.accent}`}
-              >
-                <div class="grid h-16 w-16 shrink-0 place-items-center">
-                  <img
-                    src={`/seasons/${s.spriteSlug}.svg`}
-                    alt=""
-                    width="44"
-                    height="44"
-                    class="h-11 w-11"
-                  />
+              <li class="flex items-center gap-4 border-t border-ink/15 py-4">
+                <img
+                  src={`/seasons/${s.spriteSlug}.svg`}
+                  alt=""
+                  width="40"
+                  height="40"
+                  class="h-10 w-10 shrink-0"
+                />
+                <div class="min-w-0 flex-1">
+                  <h3 class="text-lg text-ink">{s.name}</h3>
+                  <p class="text-sm text-ink-2">{s.months}</p>
                 </div>
-                <h3 class="text-lg text-ink">{s.name}</h3>
-                <p class="eyebrow text-ink-3">{s.months}</p>
-                <span class="eyebrow mt-auto rounded-md bg-[var(--season)] px-2 py-0.5 text-white">
+                <span
+                  class="eyebrow shrink-0 rounded-md px-2 py-0.5 text-white"
+                  style={`background-color: ${s.accent}`}
+                >
                   {s.duration}
                 </span>
-              </div>
+              </li>
             ))
           }
-        </div>
+        </ul>
       </div>
     </div>
   </section>
@@ -261,12 +234,14 @@ import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
       <div class="faq">
         <p class="faq-ghost">
           <span>More questions?</span>
-          <a
-            href={`mailto:${REMOVAL_ADDRESS}?subject=Question%20about%20The%20Rupee%20Fund`}
-            class="inline-link"
-          >
-            Email us
-          </a>
+          <span>
+            <a
+              href={`mailto:${REMOVAL_ADDRESS}?subject=Question%20about%20The%20Rupee%20Fund`}
+              class="inline-link"
+            >
+              Email us
+            </a>
+          </span>
         </p>
       </div>
     </div>

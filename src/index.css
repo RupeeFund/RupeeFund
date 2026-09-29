@@ -76,6 +76,10 @@
   /* The colour is a gradient tile, not a `background-color`: WebKit masks an
      inline box with one layer and leaves the box outside the tile unmasked. */
   @supports (mask-image: linear-gradient(#000, #000)) {
+    a[target="_blank"]:not(.link-plain) {
+      --tail: 1.13em;
+    }
+
     a[target="_blank"]:not(.link-plain)::after {
       --arrow-size: 0.7em;
       content: "\00A0";
@@ -143,43 +147,62 @@
     outline: none;
   }
 
-  .nav-link {
-    @apply inline-flex items-center min-h-11 px-1 text-[0.9375rem] font-medium text-ink rounded-sm;
-    @apply bg-[linear-gradient(var(--color-brand),var(--color-brand))] bg-no-repeat;
-    @apply bg-position-[0_calc(100%-0.625rem)] bg-size-[0_2px] hover:bg-size-[100%_2px];
-    @apply motion-safe:transition-[background-size] motion-safe:duration-300;
-    @apply motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)];
+  .nav-link,
+  .foot-link,
+  .inline-link {
+    --grown: calc(100% - var(--inset, 0px) - var(--tail, 0px));
+    background-image: linear-gradient(var(--color-brand), var(--color-brand));
+    background-position: calc(50% - var(--tail, 0px) / 2) var(--line-y, 100%);
+    background-size: 0 2px;
+    @apply bg-no-repeat motion-safe:transition-[background-size];
+    @apply motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)];
   }
 
-  /* The current page already says so in `aria-current`. Read that, not a class. */
-  .nav-link[aria-current="page"] {
-    @apply bg-[linear-gradient(var(--color-brand-fg),var(--color-brand-fg))] bg-size-[100%_2px];
+  @media (hover: hover) {
+    :is(.nav-link, .foot-link, .inline-link):hover {
+      background-size: var(--grown) 2px;
+    }
+  }
+
+  .nav-link {
+    --inset: 0.5rem;
+    --line-y: calc(50% + 0.7em);
+    @apply inline-flex items-center min-h-11 px-1 text-[0.9375rem] font-medium text-ink rounded-sm;
+    @apply forced-colors:hover:underline;
   }
 
   .foot-link {
-    @apply inline-flex items-center min-h-11 px-2 text-white hover:underline;
-    @apply transition-colors duration-150 ease-out rounded-sm;
+    --inset: 1rem;
+    --line-y: calc(50% + 0.7em);
+    @apply inline-flex items-center min-h-11 px-2 text-white rounded-sm;
+    @apply forced-colors:hover:underline;
   }
 
   .foot-icon {
-    @apply bg-[linear-gradient(var(--color-brand),var(--color-brand))] bg-no-repeat;
-    @apply bg-position-[50%_calc(100%-0.375rem)] bg-size-[0_2px] hover:bg-size-[1.25rem_2px];
-    @apply motion-safe:transition-[background-size] motion-safe:duration-300;
-    @apply motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)];
+    --grown: 1.25rem;
+    --line-y: calc(100% - 0.375rem);
   }
 
   .inline-link {
-    @apply text-brand-fg underline decoration-brand-fg/40 hover:decoration-brand-fg;
-    @apply decoration-1 underline-offset-3 transition-colors duration-150 ease-out rounded-sm;
+    --rest: color-mix(in oklab, currentColor 40%, transparent);
+    background-image:
+      linear-gradient(var(--color-brand), var(--color-brand)),
+      linear-gradient(var(--rest), var(--rest));
+    background-position:
+      calc(50% - var(--tail, 0px) / 2) 100%,
+      0 100%;
+    background-size:
+      0 2px,
+      var(--grown) 1px;
+    @apply text-brand-fg whitespace-nowrap focus-visible:rounded-sm forced-colors:underline;
   }
 
-  .stat-value {
-    @apply text-[clamp(1.75rem,3.2vw,2.5rem)] leading-none font-semibold tracking-[-0.033em];
-    @apply tabular-nums text-ink mb-2;
-  }
-
-  .stat-label {
-    @apply text-xs font-medium text-ink-3;
+  @media (hover: hover) {
+    .inline-link:hover {
+      background-size:
+        var(--grown) 2px,
+        var(--grown) 1px;
+    }
   }
 
   .step {
@@ -192,11 +215,11 @@
 
   .step-badge {
     @apply relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center;
-    @apply rounded-lg bg-brand-fg;
+    @apply rounded-lg bg-brand;
   }
 
   .step-number {
-    @apply text-sm font-semibold tabular-nums text-white;
+    @apply text-sm font-semibold tabular-nums text-ink;
   }
 
   .step-title {
@@ -205,6 +228,19 @@
 
   .step-body {
     @apply max-w-[36rem] text-sm text-ink-2 text-pretty mb-1;
+  }
+
+  .btn-label {
+    @apply grid grid-cols-[1fr] motion-safe:transition-[grid-template-columns,opacity];
+    @apply motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)];
+  }
+
+  .btn-label > span {
+    @apply overflow-hidden whitespace-nowrap;
+  }
+
+  [data-compact] > .btn-label {
+    @apply grid-cols-[0fr] opacity-0;
   }
 
   .faq {
@@ -237,7 +273,8 @@
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 min-h-12 px-[1.375rem] text-sm rounded-full;
   @apply font-semibold;
-  @apply motion-safe:transition-[translate,background-color,box-shadow] motion-safe:duration-300;
+  @apply motion-safe:transition-[translate,background-color,box-shadow,padding,gap];
+  @apply motion-safe:duration-300;
   @apply motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] forced-colors:border;
 }
 
@@ -265,12 +302,11 @@
   @apply w-full;
 }
 
-@utility season-tint {
-  background-image: linear-gradient(
-    to bottom,
-    color-mix(in oklab, var(--season) 16%, transparent) 0%,
-    transparent 55%
-  );
+@utility btn-collapsible {
+  &[data-compact] {
+    gap: 0;
+    padding-inline: 0.9375rem;
+  }
 }
 
 @utility wrap {
@@ -332,7 +368,7 @@
     interpolate-size: allow-keywords;
   }
 
-  details::details-content {
+  details:not([data-menu])::details-content {
     overflow: hidden;
     block-size: 0;
     opacity: 0;
@@ -342,7 +378,7 @@
       content-visibility 220ms ease-out allow-discrete;
   }
 
-  details[open]::details-content {
+  details[open]:not([data-menu])::details-content {
     block-size: auto;
     opacity: 1;
   }

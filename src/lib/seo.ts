@@ -66,10 +66,10 @@ const ROUTE_SEO: readonly RouteSeo[] = [
     indexable: true,
   },
   {
-    path: "/team",
-    title: "Team — The Rupee Fund",
+    path: "/people",
+    title: "People — The Rupee Fund",
     description: `Meet the volunteers who run The Rupee Fund and maintain its website. ${INITIATIVE}.`,
-    ogTitle: "Team — The Rupee Fund",
+    ogTitle: "People — The Rupee Fund",
     ogDescription: `Meet the volunteers who run The Rupee Fund. ${INITIATIVE}.`,
     indexable: true,
   },

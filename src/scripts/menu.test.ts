@@ -5,7 +5,7 @@ function setup(): { menu: HTMLDetailsElement; summary: HTMLElement; link: HTMLAn
   document.body.innerHTML = `
     <details id="menu" open>
       <summary>Menu</summary>
-      <nav><a id="inside" href="/team">Team</a></nav>
+      <nav><a id="inside" href="/people">People</a></nav>
     </details>
     <a id="outside" href="/">Next</a>`;
   const menu = document.getElementById("menu") as HTMLDetailsElement;

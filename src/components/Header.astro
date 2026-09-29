@@ -1,16 +1,14 @@
 ---
 import Icon from "./Icon.astro";
+import { SUBSCRIBE_CTA } from "../lib/launch.ts";
 import { normalizePath } from "../lib/seo.ts";
 
 const path = normalizePath(Astro.url.pathname);
 
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/team", label: "Team" },
-];
+const links = [{ href: "/people", label: "People" }];
 
-const subscribeCta = { href: "/subscribe", label: "I am interested" };
-const showCta = path !== subscribeCta.href;
+const onForm = path === "/subscribe";
+const heroShowsCta = path === "/";
 ---
 
 <header
@@ -34,9 +32,22 @@ const showCta = path !== subscribeCta.href;
           ))
         }
         {
-          showCta && (
-            <a href={subscribeCta.href} class="btn btn-quiet">
-              {subscribeCta.label}
+          onForm ? (
+            <a href="/" class="btn btn-quiet" aria-label="Back to home">
+              <Icon name="arrow-left" size={18} />
+              Back
+            </a>
+          ) : (
+            <a
+              href="/subscribe"
+              class="btn btn-quiet btn-collapsible"
+              data-header-cta
+              data-compact={heroShowsCta ? "" : undefined}
+            >
+              <Icon name="bell" size={18} />
+              <span class="btn-label">
+                <span>{SUBSCRIBE_CTA}</span>
+              </span>
             </a>
           )
         }
@@ -65,9 +76,14 @@ const showCta = path !== subscribeCta.href;
             ))
           }
           {
-            showCta && (
-              <a href={subscribeCta.href} class="btn btn-quiet btn-block btn-on-white">
-                {subscribeCta.label}
+            onForm ? (
+              <a href="/" class="btn btn-quiet btn-block btn-on-white" aria-label="Back to home">
+                <Icon name="arrow-left" size={18} />
+                Back
+              </a>
+            ) : (
+              <a href="/subscribe" class="btn btn-quiet btn-block btn-on-white">
+                {SUBSCRIBE_CTA}
               </a>
             )
           }
@@ -78,6 +94,8 @@ const showCta = path !== subscribeCta.href;
 </header>
 
 <script>
+  import { initHeaderCta } from "../scripts/header-cta.ts";
   import { initMenus } from "../scripts/menu.ts";
   initMenus();
+  initHeaderCta();
 </script>

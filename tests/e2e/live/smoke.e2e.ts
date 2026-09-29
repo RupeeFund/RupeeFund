@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 const ROUTES = [
   "/",
   "/subscribe",
-  "/team",
+  "/people",
   "/privacy",
   "/terms",
   "/refunds",
@@ -32,6 +32,11 @@ test.describe("public pages smoke", () => {
       await expect(page.locator("main#main")).toHaveCount(1);
     });
   }
+
+  test("the old team path redirects to the people page", async ({ page }) => {
+    const response = await page.request.fetch("/team", { maxRedirects: 0 });
+    expect([response.status(), response.headers()["location"]]).toEqual([302, "/people"]);
+  });
 
   test("an unknown route serves the 404 page", async ({ page }) => {
     const response = await page.goto("/no-such-page");

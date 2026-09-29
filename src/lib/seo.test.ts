@@ -28,9 +28,9 @@ describe("seoForPath", () => {
     expect(seoForPath("/waitlist-confirmed/")).toEqual(seoForPath("/waitlist-confirmed"));
   });
 
-  it("matches the team route", () => {
-    expect(seoForPath("/team")).toMatchObject({
-      canonical: "https://rupeefund.org/team",
+  it("matches the people route", () => {
+    expect(seoForPath("/people")).toMatchObject({
+      canonical: "https://rupeefund.org/people",
       indexable: true,
     });
   });

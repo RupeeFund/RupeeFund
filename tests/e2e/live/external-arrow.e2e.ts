@@ -15,6 +15,7 @@ test.describe("the external-link arrow on a wrapped link", () => {
     const link = page.locator('main a[target="_blank"]').first();
     await link.evaluate((el) => {
       el.textContent = "External resource link";
+      el.style.whiteSpace = "normal";
       el.parentElement!.style.width = "100px";
     });
     const seen = await link.evaluate((el) => ({

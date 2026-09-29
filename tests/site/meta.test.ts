@@ -21,7 +21,7 @@ describe("sitemap", () => {
       "/privacy",
       "/refunds",
       "/subscribe",
-      "/team",
+      "/people",
       "/terms",
       "/code-of-conduct",
     ]) {

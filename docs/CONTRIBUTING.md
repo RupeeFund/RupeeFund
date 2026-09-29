@@ -61,7 +61,7 @@ A change to the database needs a new migration file. Read [deploy.md](deploy.md)
 
 ## Pages and endpoints
 
-To add a page, write a `.astro` file in `src/pages/` and add an entry to `src/lib/seo.ts`. The build fails without one. The page must work with no JavaScript. Put page behaviour in `src/scripts/<page>.ts` with a test beside it.
+To add a page, write a `.astro` file in `src/pages/` and add an entry to `src/lib/seo.ts`. The build fails without one. To rename a page, add a `302` line from the old path to `public/_redirects`. The page must work with no JavaScript. Put page behaviour in `src/scripts/<page>.ts` with a test beside it.
 
 To add an endpoint, write a handler in `src/worker/routes/` and connect it in `src/worker/index.ts`. Keep it under `/api/`. [architecture.md](architecture.md) section 2 tells why.
 
@@ -76,7 +76,7 @@ The brand guidelines own the look: colours, type, links, buttons, forms, cards, 
 - Every other page starts on the left edge of the logo with `wrap section-y`. Cap text at `max-w-xl`, so that a line holds 75 characters or fewer. A status page centres its message in the height of `main`.
 - The home `h1` is the name of the fund, set with `section-title`. Use `display` for the home tagline, `page-title` for the `h1` of a text page, and `section-title` for the title `h2` of a home section.
 - `text-sm` is the body size, 17 px. The theme in `src/index.css` changes the Tailwind scale.
-- Every button is `btn` with `btn-primary` or `btn-quiet`, and `btn-lg` or `btn-block` for size. Add `btn-on-white` to a quiet button on a white surface. Put no spacing or width utility on a button in the markup. For a new size, add a modifier to `src/index.css`.
+- Every button is `btn` with `btn-primary` or `btn-quiet`, and `btn-lg` or `btn-block` for size. Add `btn-on-white` to a quiet button on a white surface. `btn-collapsible` with `data-compact` shows the icon alone: the header button on home stays compact while the hero button is in view. Put no spacing or width utility on a button in the markup. For a new size, add a modifier to `src/index.css`.
 - Style UI state from an attribute, for example `aria-pressed`. Do not paint classes from JavaScript.
 - The season accents are in `SEASONS` in `src/lib/launch.ts`. `src/lib/launch.test.ts` keeps white text on each accent at 4.5:1.
 - Check each visual change in a browser at 360 × 640 and 1440 × 900, with and without reduced motion. Use `pnpm dev`.
