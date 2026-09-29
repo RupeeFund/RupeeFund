@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { read } from "./dist.ts";
 import { COMMUNITY_TEAM } from "../../src/data/team.ts";
 
-describe("People page (/team)", () => {
+describe("Team page (/team)", () => {
   const html = read("team.html");
 
   it("renders every team entry", () => {
@@ -38,7 +38,7 @@ describe("People page (/team)", () => {
   });
 });
 
-describe("People navigation", () => {
+describe("Team navigation", () => {
   const home = read("index.html");
 
   it("links to the team page from the footer", () => {
@@ -51,14 +51,14 @@ describe("People navigation", () => {
     expect(header.match(/href="\/team"/g)).toHaveLength(2);
   });
 
-  it("names the page People in the title, the heading and every link to it", () => {
+  it("names the page Team in the title, the heading and every link to it", () => {
     const team = read("team.html");
-    expect(team).toMatch(/<title>People — The Rupee Fund<\/title>/);
-    expect(team).toMatch(/<h1[^>]*>People<\/h1>/);
-    expect(home.match(/href="\/team"[^>]*>\s*People\s*</g)).toHaveLength(3);
+    expect(team).toMatch(/<title>Team — The Rupee Fund<\/title>/);
+    expect(team).toMatch(/<h1[^>]*>Team<\/h1>/);
+    expect(home.match(/href="\/team"[^>]*>\s*Team\s*</g)).toHaveLength(3);
   });
 
-  it("marks People as current in both navigation menus", () => {
+  it("marks Team as current in both navigation menus", () => {
     const team = read("team.html");
     const header = team.slice(team.indexOf("<header"), team.indexOf("</header>"));
     expect(header.match(/href="\/team" aria-current="page"/g)).toHaveLength(2);

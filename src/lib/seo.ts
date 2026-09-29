@@ -5,7 +5,7 @@ export const SITE_URL = "https://rupeefund.org";
 export const OG_IMAGE = `${SITE_URL}/og-card.png`;
 export const LOGO_IMAGE = `${SITE_URL}/icon-512.png`;
 
-export const INITIATIVE = "An independent community fund, run by volunteers";
+export const INITIATIVE = "A community initiative from FOSS United";
 
 export interface RouteSeo {
   readonly path: string;
@@ -19,10 +19,10 @@ export interface RouteSeo {
 const ROUTE_SEO: readonly RouteSeo[] = [
   {
     path: "/",
-    title: "The Rupee Fund — Small monthly contributions for FOSS in India",
-    description: `Small monthly contributions that make FOSS in India sustainable. ${INITIATIVE}.`,
-    ogTitle: "The Rupee Fund — Small monthly contributions for FOSS in India",
-    ogDescription: `Small monthly contributions that make FOSS in India sustainable. ${INITIATIVE}.`,
+    title: "The Rupee Fund — A FOSS United Community Initiative",
+    description: `Small monthly contributions that make FOSS in India sustainable. ${INITIATIVE}, run by volunteers.`,
+    ogTitle: "The Rupee Fund — A FOSS United Community Initiative",
+    ogDescription: `Small monthly contributions that make FOSS in India sustainable. ${INITIATIVE}, run by volunteers.`,
     indexable: true,
   },
   {
@@ -67,9 +67,9 @@ const ROUTE_SEO: readonly RouteSeo[] = [
   },
   {
     path: "/team",
-    title: "People — The Rupee Fund",
+    title: "Team — The Rupee Fund",
     description: `Meet the volunteers who run The Rupee Fund and maintain its website. ${INITIATIVE}.`,
-    ogTitle: "People — The Rupee Fund",
+    ogTitle: "Team — The Rupee Fund",
     ogDescription: `Meet the volunteers who run The Rupee Fund. ${INITIATIVE}.`,
     indexable: true,
   },
