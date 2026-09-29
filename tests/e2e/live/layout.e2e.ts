@@ -52,6 +52,37 @@ for (const width of [320, 1440]) {
   });
 }
 
+for (const width of [1024, 1440]) {
+  test(`every text block at ${width}px spans the page or sits in a grid`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of routes) {
+      await page.goto(route);
+      const lonely = await page.locator("main :is(p, ul, ol, h1, h2)").evaluateAll((blocks) => {
+        const tracks = (el: Element) =>
+          getComputedStyle(el)
+            .gridTemplateColumns.split(" ")
+            .filter((track) => track.endsWith("px")).length;
+        return blocks
+          .filter((block) => {
+            const wrap = block.closest<HTMLElement>(".wrap");
+            const box = block.getBoundingClientRect();
+            if (!wrap || box.width <= 1) return false;
+            let el = block.parentElement;
+            while (el && el !== wrap.parentElement) {
+              if (tracks(el) > 1) return false;
+              el = el.parentElement;
+            }
+            const pad = parseFloat(getComputedStyle(wrap).paddingInlineEnd);
+            const right = wrap.getBoundingClientRect().right - pad;
+            return right - box.right > (wrap.clientWidth - pad * 2) / 3;
+          })
+          .map((block) => block.textContent?.trim().slice(0, 40));
+      });
+      expect(lonely, route).toEqual([]);
+    }
+  });
+}
+
 for (const size of [
   { width: 320, height: 568 },
   { width: 360, height: 640 },
