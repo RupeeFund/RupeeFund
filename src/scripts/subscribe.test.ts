@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { errorForStatus, linkOtherAmount, submitWaitlist } from "./subscribe.ts";
+import { errorForStatus, guardWaitlistForm, linkOtherAmount, submitWaitlist } from "./subscribe.ts";
 
 function okJson(body: unknown, status = 200) {
   return { ok: status >= 200 && status < 300, status, json: async () => body };
@@ -270,5 +270,109 @@ describe("errorForStatus", () => {
 
   it("does not blame the input when the server fails", () => {
     expect(errorForStatus(500)).not.toMatch(/email address/i);
+  });
+});
+
+describe("guardWaitlistForm", () => {
+  const onValid = vi.fn<() => void>();
+
+  beforeEach(() => {
+    onValid.mockReset();
+    document.body.innerHTML = `
+      <form id="waitlist-form">
+        <input id="waitlist-name" name="name" required aria-describedby="waitlist-name-error" />
+        <p id="waitlist-name-error"></p>
+        <input id="waitlist-email" name="email" type="email" required aria-describedby="waitlist-email-error" />
+        <p id="waitlist-email-error"></p>
+        <input type="radio" name="amount" value="15" required aria-describedby="waitlist-amount-error" />
+        <input type="radio" name="amount" value="other" required aria-describedby="waitlist-amount-error" />
+        <input name="amount_other" aria-describedby="waitlist-amount-error" />
+        <p id="waitlist-amount-error"></p>
+      </form>`;
+  });
+
+  const form = () => document.getElementById("waitlist-form") as HTMLFormElement;
+  const field = (name: string) => form().querySelector(`[name="${name}"]`) as HTMLInputElement;
+  const error = (id: string) => document.getElementById(`waitlist-${id}-error`)?.textContent;
+  const submit = () => form().dispatchEvent(new Event("submit", { cancelable: true }));
+
+  it("marks each field that fails and says under it how to fix it", () => {
+    guardWaitlistForm(form(), onValid);
+    field("email").value = "ada";
+
+    submit();
+
+    expect(field("name").getAttribute("aria-invalid")).toBe("true");
+    expect(error("name")).toBe("Enter your full name.");
+    expect(error("email")).toBe("Enter an email address like name@example.com.");
+    expect(error("amount")).toBe("Choose a monthly amount.");
+    expect(onValid).not.toHaveBeenCalled();
+  });
+
+  it("moves focus to the first field that fails", () => {
+    guardWaitlistForm(form(), onValid);
+    field("name").value = "Ada";
+
+    submit();
+
+    expect(document.activeElement).toBe(field("email"));
+  });
+
+  it("asks for the typed amount when the other option has none", () => {
+    guardWaitlistForm(form(), onValid);
+    linkOtherAmount(form());
+    field("name").value = "Ada";
+    field("email").value = "ada@example.com";
+    const other = form().querySelector('input[value="other"]') as HTMLInputElement;
+    other.checked = true;
+    other.dispatchEvent(new Event("change", { bubbles: true }));
+
+    submit();
+
+    expect(field("amount_other").getAttribute("aria-invalid")).toBe("true");
+    expect(error("amount")).toBe("Enter an amount in rupees.");
+  });
+
+  it("clears an error once the person fixes the field", () => {
+    guardWaitlistForm(form(), onValid);
+    submit();
+
+    field("name").value = "Ada";
+    field("name").dispatchEvent(new Event("input", { bubbles: true }));
+
+    expect(field("name").hasAttribute("aria-invalid")).toBe(false);
+    expect(error("name")).toBe("");
+  });
+
+  it("sends the form only when every field passes", () => {
+    guardWaitlistForm(form(), onValid);
+    field("name").value = "Ada";
+    field("email").value = "ada@example.com";
+    (form().querySelector('input[value="15"]') as HTMLInputElement).checked = true;
+
+    submit();
+
+    expect(onValid).toHaveBeenCalledOnce();
+  });
+
+  it("holds the form on a required field with no error text of its own", () => {
+    guardWaitlistForm(form(), onValid);
+    field("name").value = "Ada";
+    field("email").value = "ada@example.com";
+    (form().querySelector('input[value="15"]') as HTMLInputElement).checked = true;
+    form().insertAdjacentHTML("beforeend", '<input name="city" required />');
+
+    submit();
+
+    expect(document.activeElement).toBe(field("city"));
+    expect(onValid).not.toHaveBeenCalled();
+  });
+
+  it("turns off the browser bubbles only once the script runs", () => {
+    expect(form().noValidate).toBe(false);
+
+    guardWaitlistForm(form(), onValid);
+
+    expect(form().noValidate).toBe(true);
   });
 });

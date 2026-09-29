@@ -14,13 +14,13 @@ const showCta = path !== subscribeCta.href;
 ---
 
 <header
-  class="sticky top-0 z-50 border-b border-ink/8 bg-paper/85 backdrop-blur-md backdrop-saturate-150"
+  class="sticky top-0 z-50 border-b border-ink/10 bg-paper/85 backdrop-blur-md backdrop-saturate-150"
 >
   <div class="wrap py-3">
     <div class="flex justify-between items-center">
       <a
         href="/"
-        class="flex items-center gap-2 min-h-11 rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-fg"
+        class="flex items-center gap-2 min-h-11 rounded-sm"
         aria-label="The Rupee Fund — home"
       >
         <img src="/logo.svg" alt="The Rupee Fund" width="83" height="36" class="h-9 w-auto" />
@@ -41,20 +41,25 @@ const showCta = path !== subscribeCta.href;
           )
         }
       </nav>
-      <details class="md:hidden" data-menu>
+      <details class="group md:hidden" data-menu>
         <summary
-          class="list-none inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-lg text-ink cursor-pointer transition duration-150 ease-out focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-fg [&::-webkit-details-marker]:hidden"
+          class="list-none inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-lg text-ink cursor-pointer transition duration-150 ease-out [&::-webkit-details-marker]:hidden"
           aria-label="Menu"
         >
-          <Icon name="menu" size={22} />
+          <Icon name="menu" class="group-open:hidden" />
+          <Icon name="close" class="hidden group-open:block" />
         </summary>
         <nav
-          class="wrap absolute inset-x-0 top-full z-50 flex flex-col items-start gap-1 border-b border-ink/8 bg-white py-3 shadow-card"
+          class="wrap absolute inset-x-0 top-full z-50 flex flex-col items-start gap-1 border-b border-ink/10 bg-white py-3 shadow-card"
           aria-label="Mobile"
         >
           {
             links.map((l) => (
-              <a href={l.href} aria-current={path === l.href ? "page" : undefined} class="nav-link">
+              <a
+                href={l.href}
+                aria-current={path === l.href ? "page" : undefined}
+                class="nav-link -mx-1"
+              >
                 {l.label}
               </a>
             ))

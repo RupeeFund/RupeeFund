@@ -108,6 +108,59 @@ export function linkOtherAmount(form: HTMLFormElement): void {
   });
 }
 
+const MISSING: Readonly<Record<string, string>> = {
+  name: "Enter your full name.",
+  email: "Enter your email address.",
+  amount: "Choose a monthly amount.",
+  amount_other: "Enter an amount in rupees.",
+};
+
+function fieldError(input: HTMLInputElement): string {
+  if (input.validity.valid) return "";
+  if (input.validity.typeMismatch) return "Enter an email address like name@example.com.";
+  return MISSING[input.name] ?? "Check this field.";
+}
+
+function showFieldErrors(form: HTMLFormElement): HTMLInputElement | undefined {
+  const inputs = Array.from(
+    form.querySelectorAll<HTMLInputElement>("input[required], input[aria-describedby]"),
+  );
+  const messages = new Map<string, string>();
+  let first: HTMLInputElement | undefined;
+  for (const input of inputs) {
+    const id = input.getAttribute("aria-describedby") ?? "";
+    const message = fieldError(input);
+    if (message.length === 0) {
+      input.removeAttribute("aria-invalid");
+      continue;
+    }
+    input.setAttribute("aria-invalid", "true");
+    if (!messages.has(id)) messages.set(id, message);
+    first ??= input;
+  }
+  for (const input of inputs) {
+    const id = input.getAttribute("aria-describedby") ?? "";
+    const target = form.ownerDocument.getElementById(id);
+    if (target) target.textContent = messages.get(id) ?? "";
+  }
+  return first;
+}
+
+export function guardWaitlistForm(form: HTMLFormElement, onValid: () => void): void {
+  form.noValidate = true;
+  const recheck = (): void => {
+    if (form.querySelector('[aria-invalid="true"]')) showFieldErrors(form);
+  };
+  form.addEventListener("input", recheck);
+  form.addEventListener("change", recheck);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const first = showFieldErrors(form);
+    if (first) first.focus();
+    else onValid();
+  });
+}
+
 function initWaitlistForm(
   doc: Document,
   deps: { fetchImpl: typeof fetch; navigate: (path: string) => void },
@@ -115,10 +168,7 @@ function initWaitlistForm(
   const form = doc.getElementById("waitlist-form") as HTMLFormElement | null;
   if (!form) return;
   linkOtherAmount(form);
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    void submitWaitlist(form, deps);
-  });
+  guardWaitlistForm(form, () => void submitWaitlist(form, deps));
 }
 
 function onReady(run: () => void): void {

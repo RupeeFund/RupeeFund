@@ -72,9 +72,9 @@ The brand guidelines own the look: colours, type, links, buttons, forms, cards, 
 - Keep the look. Change it only for a defect, a brand rule or a request from the maintainer.
 - When the site needs a rule that the brand guidelines do not have, or departs from one on purpose, change the guidelines in `RupeeFund/brand` in the same piece of work.
 - Reuse a class in `src/index.css` before you add one. Put a new class in that file.
-- Home sections below the hero span the page with `wrap section-y`. Give each section a different tone from the section above it: paper, white or ink.
-- Every other page centres one column with `mx-auto box-content px-gutter section-y` and a `max-w-*`. A text page uses `max-w-xl`, so that a line holds 75 characters or fewer.
-- Use `display` for the home `h1`, `page-title` for the `h1` of a text page, and `section-title` for the title `h2` of a home section.
+- Home sections below the hero span the page with `wrap section-y`. Give each section a different tone from the section above it: paper, white, ink or brand green. Use brand green for one section at most, with ink text.
+- Every other page starts on the left edge of the logo with `wrap section-y`. Cap text at `max-w-xl`, so that a line holds 75 characters or fewer. A status page centres its message in the height of `main`.
+- The home `h1` is the name of the fund, set with `section-title`. Use `display` for the home tagline, `page-title` for the `h1` of a text page, and `section-title` for the title `h2` of a home section.
 - `text-sm` is the body size, 17 px. The theme in `src/index.css` changes the Tailwind scale.
 - Every button is `btn` with `btn-primary` or `btn-quiet`, and `btn-lg` or `btn-block` for size. Add `btn-on-white` to a quiet button on a white surface. Put no spacing or width utility on a button in the markup. For a new size, add a modifier to `src/index.css`.
 - Style UI state from an attribute, for example `aria-pressed`. Do not paint classes from JavaScript.

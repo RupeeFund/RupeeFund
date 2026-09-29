@@ -55,6 +55,15 @@
     font-weight: 600;
   }
 
+  :focus-visible {
+    outline: 2px solid var(--focus, var(--color-brand-fg));
+    outline-offset: 3px;
+  }
+
+  main:focus-visible {
+    outline: none;
+  }
+
   h1,
   h2,
   h3,
@@ -95,23 +104,43 @@
   }
 
   .field {
-    @apply w-full px-3 py-2 text-sm border border-border rounded-lg;
+    @apply w-full min-h-11 px-3 text-sm bg-white border border-border rounded-lg;
     @apply focus:ring-2 focus:ring-brand-fg focus:border-transparent focus:outline-hidden;
   }
 
   .field-label {
-    @apply block text-xs font-semibold text-ink-2 mb-1;
+    @apply block text-xs font-semibold text-ink mb-1;
   }
 
   .field-optional {
     @apply font-normal;
   }
 
+  .field-error {
+    @apply mt-1 text-xs text-error empty:hidden;
+  }
+
+  .field[aria-invalid="true"] {
+    @apply border-error focus:ring-error;
+  }
+
+  .choice:has([aria-invalid="true"]) {
+    @apply border-error;
+  }
+
   .choice {
-    @apply flex items-center gap-2 min-h-11 px-3 rounded-lg border border-border;
+    @apply flex items-center gap-2 min-h-11 px-3 rounded-lg border border-border bg-white;
     @apply text-sm cursor-pointer transition-colors duration-150 ease-out;
     @apply hover:border-brand-fg has-checked:border-brand-fg has-checked:bg-brand-50;
-    @apply has-focus-visible:ring-2 has-focus-visible:ring-brand-fg;
+  }
+
+  .choice:has(:focus-visible) {
+    outline: 2px solid var(--focus, var(--color-brand-fg));
+    outline-offset: 3px;
+  }
+
+  .choice :focus-visible {
+    outline: none;
   }
 
   .nav-link {
@@ -120,7 +149,6 @@
     @apply bg-position-[0_calc(100%-0.625rem)] bg-size-[0_2px] hover:bg-size-[100%_2px];
     @apply motion-safe:transition-[background-size] motion-safe:duration-300;
     @apply motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)];
-    @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-fg;
   }
 
   /* The current page already says so in `aria-current`. Read that, not a class. */
@@ -131,7 +159,6 @@
   .foot-link {
     @apply inline-flex items-center min-h-11 px-2 text-white hover:underline;
     @apply transition-colors duration-150 ease-out rounded-sm;
-    @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white;
   }
 
   .foot-icon {
@@ -141,20 +168,9 @@
     @apply motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)];
   }
 
-  /* A horizontal row hides the 44px touch target, but a stacked list shows it
-     as a gap between the lines. Close the list up where the pointer is fine
-     and a small target costs nothing. A finger keeps the full 44px. The
-     tighter row is 32px, so WCAG 2.5.8 still holds either way. */
-  @media (pointer: fine) {
-    .foot-list .foot-link {
-      @apply min-h-8;
-    }
-  }
-
   .inline-link {
     @apply text-brand-fg underline decoration-brand-fg/40 hover:decoration-brand-fg;
-    @apply transition-colors duration-150 ease-out rounded-sm;
-    @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-fg;
+    @apply decoration-1 underline-offset-3 transition-colors duration-150 ease-out rounded-sm;
   }
 
   .stat-value {
@@ -164,6 +180,14 @@
 
   .stat-label {
     @apply text-xs font-medium text-ink-3;
+  }
+
+  .step {
+    @apply relative flex gap-4;
+  }
+
+  .step:not(:last-child)::before {
+    @apply absolute left-4 top-8 -bottom-8 w-px -translate-x-1/2 bg-ink/15 content-[''];
   }
 
   .step-badge {
@@ -180,39 +204,25 @@
   }
 
   .step-body {
-    @apply text-sm text-ink-2 text-pretty mb-1;
-  }
-
-  .hero-lockup {
-    @apply relative w-full max-w-[28rem] lg:max-w-none lg:w-[88%];
-  }
-
-  .hero-lockup svg {
-    @apply block h-auto w-full;
-  }
-
-  .hero-lockup::after {
-    @apply absolute inset-x-0 bottom-0 h-px bg-ink/12 content-[''];
+    @apply max-w-[36rem] text-sm text-ink-2 text-pretty mb-1;
   }
 
   .faq {
-    @apply py-3;
-  }
-
-  .faq + .faq {
-    @apply border-t border-ink/15;
+    @apply border-t border-ink/15 py-3;
   }
 
   .faq-summary {
     @apply min-h-12 gap-4 font-semibold text-lg text-balance cursor-pointer text-ink;
     @apply flex justify-between items-center;
     @apply transition-colors duration-150 ease-out hover:text-brand-fg rounded-sm;
-    @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-fg;
   }
 
   .faq-plus {
-    @apply text-brand-fg text-2xl leading-none group-open:rotate-45;
-    @apply transition-transform duration-200 ease-out;
+    @apply shrink-0 group-open:rotate-45 transition-transform duration-200 ease-out;
+  }
+
+  .icon > * {
+    vector-effect: non-scaling-stroke;
   }
 
   .faq-answer {
@@ -220,7 +230,7 @@
   }
 
   .faq-ghost {
-    @apply min-h-12 pt-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-semibold text-sm text-ink-2;
+    @apply min-h-12 flex flex-wrap items-center gap-x-3 gap-y-1 font-semibold text-sm text-ink-2;
   }
 }
 
@@ -229,8 +239,6 @@
   @apply font-semibold;
   @apply motion-safe:transition-[translate,background-color,box-shadow] motion-safe:duration-300;
   @apply motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] forced-colors:border;
-  @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-fg;
-  @apply focus-visible:ring-offset-2 focus-visible:ring-offset-white;
 }
 
 @utility btn-primary {
@@ -269,10 +277,6 @@
   padding-inline: max(clamp(1.25rem, 5vw, 4rem), (100% - 80rem) / 2);
 }
 
-@utility px-gutter {
-  padding-inline: clamp(1.25rem, 5vw, 4rem);
-}
-
 @utility section-y {
   padding-block: clamp(3.5rem, 9vh, 5.5rem);
 }
@@ -291,13 +295,15 @@
 @utility display {
   font-size: clamp(2.25rem, 4.4vw, 3.5rem);
   line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.033em;
+  text-wrap: balance;
 }
 
 @utility lede {
   font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
-  line-height: 1.55;
+  line-height: 1.6;
   text-wrap: pretty;
-  color: var(--color-ink-2);
 }
 
 @keyframes screen-enter {
@@ -339,55 +345,6 @@
   details[open]::details-content {
     block-size: auto;
     opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .hero-lockup::after {
-    transform-origin: 0 50%;
-    animation: lockup-draw 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .hero-lockup #block {
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    animation: lockup-rise 1000ms 250ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .hero-lockup #rupee {
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    animation: lockup-drop 800ms 800ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
-  }
-
-  .hero-lockup #wordmark path {
-    transform-box: fill-box;
-    animation: lockup-surface 900ms calc(900ms + var(--i) * 90ms) cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  @keyframes lockup-draw {
-    from {
-      transform: scaleX(0);
-    }
-  }
-
-  @keyframes lockup-rise {
-    from {
-      transform: scaleY(0);
-    }
-  }
-
-  @keyframes lockup-drop {
-    from {
-      opacity: 0;
-      transform: translateY(-35%) scale(0.92);
-    }
-  }
-
-  @keyframes lockup-surface {
-    from {
-      transform: translateY(105%);
-    }
   }
 }
 

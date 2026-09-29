@@ -14,18 +14,15 @@ const TURNSTILE_SITEKEY = getSitekey();
 ---
 
 <Base>
-  <div class="max-w-2xl mx-auto box-content px-gutter section-y">
+  <div class="wrap section-y grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-16">
+    <div class="lg:sticky lg:top-28">
+      <h1 class="page-title text-ink mb-4">{SUBSCRIBE_HEADING}</h1>
+      <p class="max-w-xl text-sm text-ink-2 text-pretty">
+        Nothing to pay today. Your pledge helps open the fund. Leave your email and the amount you
+        have in mind, and you hear first when it opens.
+      </p>
+    </div>
     <div class="card">
-      <div class="mb-6">
-        <h1 class="text-3xl text-ink mb-3">
-          {SUBSCRIBE_HEADING}
-        </h1>
-        <p class="text-ink-2 text-sm text-pretty">
-          Nothing to pay today. Your pledge helps open the fund. Leave your email and the amount you
-          have in mind, and you hear first when it opens.
-        </p>
-      </div>
-
       <form id="waitlist-form" class="space-y-4" action="/api/waitlist" method="post">
         <div>
           <label for="waitlist-name" class="field-label">Full name</label>
@@ -37,7 +34,9 @@ const TURNSTILE_SITEKEY = getSitekey();
             placeholder="Your name"
             class="field"
             required
+            aria-describedby="waitlist-name-error"
           />
+          <p id="waitlist-name-error" class="field-error"></p>
         </div>
         <div>
           <label for="waitlist-email" class="field-label">Email address</label>
@@ -50,7 +49,9 @@ const TURNSTILE_SITEKEY = getSitekey();
             placeholder="your.email@example.com"
             class="field"
             required
+            aria-describedby="waitlist-email-error"
           />
+          <p id="waitlist-email-error" class="field-error"></p>
         </div>
         <fieldset class="min-w-0">
           <legend class="field-label"
@@ -72,31 +73,50 @@ const TURNSTILE_SITEKEY = getSitekey();
           <div class="grid grid-cols-1 min-[400px]:grid-cols-3 gap-2">
             {
               AMOUNT_OPTIONS.map((option) => (
-                <label class="choice min-[400px]:justify-center">
-                  <input type="radio" name="amount" value={option} required />
+                <label class="choice">
+                  <input
+                    type="radio"
+                    name="amount"
+                    value={option}
+                    required
+                    aria-describedby="waitlist-amount-error"
+                  />
                   <span>₹{option}</span>
                 </label>
               ))
             }
           </div>
-          <div class="choice mt-2 flex-wrap gap-x-3">
-            <label class="flex shrink-0 items-center gap-2">
-              <input id="amount-other-choice" type="radio" name="amount" value="other" required />
+          <div class="mt-2 grid gap-2 min-[400px]:grid-cols-[auto_minmax(0,1fr)]">
+            <label class="choice">
+              <input
+                id="amount-other-choice"
+                type="radio"
+                name="amount"
+                value="other"
+                required
+                aria-describedby="waitlist-amount-error"
+              />
               <span>Another amount</span>
             </label>
-            <span class="flex min-w-24 flex-1 items-center gap-1">
-              <span aria-hidden="true" class="text-ink-3">₹</span>
+            <div class="relative">
+              <span
+                aria-hidden="true"
+                class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-ink-3"
+                >₹</span
+              >
               <input
                 id="waitlist-amount-other"
                 name="amount_other"
                 type="text"
                 placeholder="e.g. 250"
                 aria-label="Another amount in rupees each month"
+                aria-describedby="waitlist-amount-error"
                 maxlength={MAX_AMOUNT_LENGTH}
-                class="flex-1 min-w-0 bg-transparent text-sm focus:outline-hidden"
+                class="field pl-7"
               />
-            </span>
+            </div>
           </div>
+          <p id="waitlist-amount-error" class="field-error"></p>
         </fieldset>
         <div>
           <label for="waitlist-months" class="field-label"
@@ -146,7 +166,7 @@ const TURNSTILE_SITEKEY = getSitekey();
           data-action={TURNSTILE_ACTION}
         >
         </div>
-        <p id="waitlist-error" class="text-xs text-error text-center" role="alert"></p>
+        <p id="waitlist-error" class="text-xs text-error" role="alert"></p>
         <button id="waitlist-submit" type="submit" class="btn btn-primary btn-block">
           Sign up
         </button>

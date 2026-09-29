@@ -1,5 +1,5 @@
 ---
-type IconName = "heart" | "bell" | "menu";
+type IconName = "heart" | "bell" | "menu" | "close" | "plus";
 
 interface Props {
   name: IconName;
@@ -21,7 +21,7 @@ const { name, size = 24, class: cls, fill = "none" } = Astro.props;
   stroke-width="2"
   stroke-linecap="round"
   stroke-linejoin="round"
-  class={cls}
+  class:list={["icon", cls]}
   aria-hidden="true"
 >
   {
@@ -43,6 +43,22 @@ const { name, size = 24, class: cls, fill = "none" } = Astro.props;
         <line x1="4" x2="20" y1="6" y2="6" />
         <line x1="4" x2="20" y1="12" y2="12" />
         <line x1="4" x2="20" y1="18" y2="18" />
+      </Fragment>
+    )
+  }
+  {
+    name === "close" && (
+      <Fragment>
+        <line x1="6" x2="18" y1="6" y2="18" />
+        <line x1="18" x2="6" y1="6" y2="18" />
+      </Fragment>
+    )
+  }
+  {
+    name === "plus" && (
+      <Fragment>
+        <line x1="12" x2="12" y1="5" y2="19" />
+        <line x1="5" x2="19" y1="12" y2="12" />
       </Fragment>
     )
   }

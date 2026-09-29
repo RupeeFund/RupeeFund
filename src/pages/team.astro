@@ -12,7 +12,7 @@ const initials = (name: string) =>
 ---
 
 <Base>
-  <div class="max-w-5xl mx-auto box-content px-gutter section-y">
+  <div class="wrap section-y">
     <header class="mb-10">
       <h1 class="page-title text-ink mb-4">Team</h1>
       <p class="max-w-xl text-sm text-ink-2">
@@ -26,7 +26,7 @@ const initials = (name: string) =>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {
           COMMUNITY_TEAM.map((member) => (
-            <article class="flex items-start gap-4 rounded-2xl bg-white p-5 sm:p-6 shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ink)_10%,transparent)]">
+            <article class="card flex flex-col items-start gap-4 sm:flex-row">
               {member.photoUrl ? (
                 <img
                   src={member.photoUrl}
@@ -35,7 +35,7 @@ const initials = (name: string) =>
                   height="64"
                   loading="lazy"
                   decoding="async"
-                  class="h-16 w-16 shrink-0 rounded-full object-cover"
+                  class="h-16 w-16 shrink-0 rounded-full bg-brand-50 object-cover"
                 />
               ) : (
                 <div
@@ -60,16 +60,14 @@ const initials = (name: string) =>
                 ) : (
                   "Profile link to follow."
                 )}
-                <p class="mt-3 text-sm text-ink-2 leading-relaxed text-pretty">
-                  {member.bio ?? "Bio to follow."}
-                </p>
+                <p class="mt-3 text-sm text-ink-2 text-pretty">{member.bio ?? "Bio to follow."}</p>
               </div>
             </article>
           ))
         }
         <aside
           aria-labelledby="join-the-team"
-          class="flex items-start gap-4 rounded-2xl border border-dashed border-ink/20 bg-ink/3 p-5 sm:p-6"
+          class="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-ink/15 p-6 sm:flex-row sm:p-8"
         >
           <div
             class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-ink/8 text-2xl text-ink-3"
@@ -80,7 +78,7 @@ const initials = (name: string) =>
           <div class="min-w-0">
             <h3 id="join-the-team" class="text-lg text-ink-3 mb-1">You, or someone you know?</h3>
             <span class="text-sm text-ink-3">@yourname</span>
-            <p class="mt-3 text-sm text-ink-3 leading-relaxed text-pretty">
+            <p class="mt-3 text-sm text-ink-3 text-pretty">
               Bring ideas, skills, and a little time to the community team, or introduce someone who
               will.
             </p>
