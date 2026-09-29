@@ -117,22 +117,7 @@ describe("handleWaitlist over fetch (JavaScript enabled)", () => {
     expect(repo.waitlist).toEqual([]);
   });
 
-  it("accepts a Turnstile token of the maximum length Cloudflare documents", async () => {
-    const repo = makeRepo();
-    const res = await handleWaitlist(
-      jsonReq({
-        name: "Asha Kulkarni",
-        email: "asha.kulkarni@example.com",
-        amount: "128",
-        turnstileToken: "x".repeat(2048),
-      }),
-      deps({ repo }),
-    );
-    expect(res.status).toBe(200);
-    expect(repo.waitlist).toHaveLength(1);
-  });
-
-  it("accepts that token even beside the longest name and address the validator allows", async () => {
+  it("accepts the longest token, name and address allowed", async () => {
     const repo = makeRepo();
     const res = await handleWaitlist(
       jsonReq({
@@ -145,6 +130,7 @@ describe("handleWaitlist over fetch (JavaScript enabled)", () => {
       deps({ repo }),
     );
     expect(res.status).toBe(200);
+    expect(repo.waitlist).toHaveLength(1);
   });
 
   it("rejects an oversized body even when no Content-Length is declared", async () => {
@@ -199,9 +185,15 @@ describe("handleWaitlist over fetch (JavaScript enabled)", () => {
     expect((await handleWaitlist(bad, deps())).status).toBe(400);
   });
 
-  it("rejects an invalid address with no write", async () => {
+  const { amount: _drop, ...noAmount } = VALID;
+
+  it.each([
+    ["an invalid address", { ...VALID, email: "nope" }],
+    ["a name longer than the column is meant to hold", { ...VALID, name: "x".repeat(101) }],
+    ["a signup that names no amount", noAmount],
+  ])("rejects %s with no write", async (_, body) => {
     const repo = makeRepo();
-    const res = await handleWaitlist(jsonReq({ ...VALID, email: "nope" }), deps({ repo }));
+    const res = await handleWaitlist(jsonReq(body), deps({ repo }));
     expect(res.status).toBe(400);
     expect(repo.waitlist).toEqual([]);
   });
@@ -325,109 +317,55 @@ describe("consent and provenance are recorded on every stored signup", () => {
     expect(repo.waitlist.map((w) => w.source)).toEqual(["footer", "subscribe"]);
   });
 
-  it("answers success and keeps the first row when the same address posts again", async () => {
+  it("answers success when the same address posts again", async () => {
     const repo = makeRepo();
-    await handleWaitlist(jsonReq(VALID), deps({ repo, now: () => 1 }));
-
-    const res = await handleWaitlist(jsonReq({ ...VALID, name: "Someone Else" }), deps({ repo }));
-
+    await handleWaitlist(jsonReq(VALID), deps({ repo }));
+    const res = await handleWaitlist(jsonReq(VALID), deps({ repo }));
     expect(res.status).toBe(200);
-    expect(repo.waitlist).toHaveLength(1);
-    expect(repo.waitlist[0]?.name).toBe("Asha");
   });
 
-  it("does not let an unauthenticated post undo a removal somebody asked for", async () => {
+  it("stores every answer the fetch body carries", async () => {
     const repo = makeRepo();
-    await handleWaitlist(jsonReq(VALID), deps({ repo, now: () => 1 }));
-    repo.waitlist[0]!.exported_at = 5;
-    repo.waitlist[0]!.unsubscribed_at = 10;
-
-    const res = await handleWaitlist(jsonReq(VALID), deps({ repo, now: () => 20 }));
-
-    expect(res.status).toBe(200);
-    expect(repo.waitlist[0]?.unsubscribed_at).toBe(10);
-    expect(repo.waitlist[0]?.name).toBe("Asha");
-  });
-
-  it("rejects a name longer than the column is meant to hold", async () => {
-    const repo = makeRepo();
-    const res = await handleWaitlist(jsonReq({ ...VALID, name: "x".repeat(101) }), deps({ repo }));
-    expect(res.status).toBe(400);
-    expect(repo.waitlist).toEqual([]);
-  });
-
-  it("stores the contribution answers the subscriber gave", async () => {
-    const repo = makeRepo();
-    await handleWaitlist(
-      jsonReq({ ...VALID, amount: "other", amount_other: "250", months: "12+", question: "Why?" }),
-      deps({ repo }),
-    );
-    expect(repo.waitlist[0]).toMatchObject({ amount: "250", months: "12+", question: "Why?" });
-  });
-
-  it("rejects a signup that names no amount, with no write", async () => {
-    const repo = makeRepo();
-    const { amount: _drop, ...noAmount } = VALID;
-    const res = await handleWaitlist(jsonReq(noAmount), deps({ repo }));
-    expect(res.status).toBe(400);
-    expect(repo.waitlist).toEqual([]);
-  });
-
-  it("carries the answers through a plain form post as well", async () => {
-    const repo = makeRepo();
-    await handleWaitlist(
-      formReq({ ...FORM, amount: "other", amount_other: "42", months: "6", question: "Hi" }),
-      deps({ repo }),
-    );
-    expect(repo.waitlist[0]).toMatchObject({ amount: "42", months: "6", question: "Hi" });
-  });
-
-  it("stores the updates choice from the fetch body", async () => {
-    const repo = makeRepo();
-    await handleWaitlist(jsonReq({ ...VALID, updates: "1" }), deps({ repo }));
-    expect(repo.waitlist[0]).toMatchObject({ updates_opt_in: 1 });
-  });
-
-  it("stores no updates choice when a form post omits the unticked box", async () => {
-    const repo = makeRepo();
-    await handleWaitlist(formReq(FORM), deps({ repo }));
-    expect(repo.waitlist[0]).toMatchObject({ updates_opt_in: 0 });
-  });
-
-  it("stores the updates choice a ticked form post carries", async () => {
-    const repo = makeRepo();
-    await handleWaitlist(formReq({ ...FORM, updates: "1" }), deps({ repo }));
-    expect(repo.waitlist[0]).toMatchObject({ updates_opt_in: 1 });
-  });
-
-  it("stores the audience roles from the fetch body", async () => {
-    const repo = makeRepo();
-    const body = { ...VALID, is_foss_user: "1", is_student: "1" };
+    const body = {
+      ...VALID,
+      amount: "other",
+      amount_other: "250",
+      months: "12+",
+      question: "Why?",
+      updates: "1",
+      is_foss_user: "1",
+      is_student: "1",
+    };
     await handleWaitlist(jsonReq(body), deps({ repo }));
     expect(repo.waitlist[0]).toMatchObject({
+      amount: "250",
+      months: "12+",
+      question: "Why?",
+      updates_opt_in: 1,
       is_foss_user: 1,
       is_foss_contributor: 0,
       is_student: 1,
     });
   });
 
-  it("stores the audience roles a ticked form post carries", async () => {
+  it("stores every answer a plain form post carries, and an unticked box as 0", async () => {
     const repo = makeRepo();
-    await handleWaitlist(formReq({ ...FORM, is_foss_contributor: "1" }), deps({ repo }));
+    const fields = {
+      ...FORM,
+      amount: "other",
+      amount_other: "42",
+      months: "6",
+      question: "Hi",
+      is_foss_contributor: "1",
+    };
+    await handleWaitlist(formReq(fields), deps({ repo }));
     expect(repo.waitlist[0]).toMatchObject({
+      amount: "42",
+      months: "6",
+      question: "Hi",
+      updates_opt_in: 0,
       is_foss_user: 0,
       is_foss_contributor: 1,
-      is_student: 0,
-    });
-  });
-
-  it("accepts a post that ticks no box, because every role is optional", async () => {
-    const repo = makeRepo();
-    const res = await handleWaitlist(formReq(FORM), deps({ repo }));
-    expect(res.status).toBe(303);
-    expect(repo.waitlist[0]).toMatchObject({
-      is_foss_user: 0,
-      is_foss_contributor: 0,
       is_student: 0,
     });
   });

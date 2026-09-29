@@ -3,16 +3,9 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
+import { DUMMY_SITEKEYS, TEST_SITEKEY } from "./helpers.ts";
 
 const GUARD = resolve("scripts/assert-dist-sitekey.mjs");
-const TEST_SITEKEY = "1x00000000000000000000AA";
-const DUMMY_SITEKEYS = [
-  TEST_SITEKEY,
-  "2x00000000000000000000AB",
-  "1x00000000000000000000BB",
-  "2x00000000000000000000BB",
-  "3x00000000000000000000FF",
-] as const;
 
 interface Result {
   code: number;

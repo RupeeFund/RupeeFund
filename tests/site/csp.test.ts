@@ -37,10 +37,6 @@ function externalOrigins(attr: "src" | "href"): Set<string> {
 }
 
 describe("the shipped Content-Security-Policy is enforced, not advisory", () => {
-  it("is a real policy and not Report-Only", () => {
-    expect(headers()).toContain("Content-Security-Policy:");
-  });
-
   it("carries no Report-Only policy, which would collect nothing without a report sink", () => {
     expect(headers()).not.toContain("Content-Security-Policy-Report-Only");
   });

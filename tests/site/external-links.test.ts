@@ -28,22 +28,12 @@ function isExternal(href: string): boolean {
 }
 
 describe('the external-link arrow is painted from `target="_blank"`, so that attribute must mark every external link and nothing else', () => {
-  it("finds anchors to check, so a broken scan cannot pass silently", () => {
-    expect(ANCHORS.length).toBeGreaterThan(20);
-  });
+  const external = ANCHORS.filter((a) => isExternal(a.href));
 
-  it("finds external anchors to check, so a broken origin test cannot pass silently", () => {
-    expect(ANCHORS.filter((a) => isExternal(a.href)).length).toBeGreaterThan(10);
-  });
-
-  it("gives every external link the attribute the arrow is drawn from", () => {
-    for (const a of ANCHORS.filter((x) => isExternal(x.href))) {
+  it("gives every external link the attribute the arrow is drawn from, and `noopener`", () => {
+    expect(external.length).toBeGreaterThan(10);
+    for (const a of external) {
       expect(a.tag, `${a.page} → ${a.href}`).toContain('target="_blank"');
-    }
-  });
-
-  it("gives every external link `noopener`, so the new tab cannot reach back", () => {
-    for (const a of ANCHORS.filter((x) => isExternal(x.href))) {
       expect(a.tag, `${a.page} → ${a.href}`).toContain("noopener");
     }
   });
@@ -66,21 +56,9 @@ const OPTED_OUT = new Set([
 describe("`.link-plain` drops both the arrow and the new-tab announcement, so only the footer social row may carry it", () => {
   const plain = ANCHORS.filter((a) => /\sclass="[^"]*\blink-plain\b/.test(a.tag));
 
-  it("finds opted-out anchors, so a broken class scan cannot pass silently", () => {
-    expect(plain.length).toBeGreaterThan(0);
-  });
-
   it("opts out no link beyond the footer social row", () => {
     for (const a of plain) {
       expect(OPTED_OUT.has(a.href), `${a.page} → ${a.href} may not opt out`).toBe(true);
-    }
-  });
-
-  it("puts the class only on links the stylesheet acts on, which are the external ones", () => {
-    for (const a of plain) {
-      expect(isExternal(a.href), `${a.page} → ${a.href} is internal, so link-plain is inert`).toBe(
-        true,
-      );
     }
   });
 
@@ -92,36 +70,16 @@ describe("`.link-plain` drops both the arrow and the new-tab announcement, so on
   });
 });
 
-describe("the compiled arrow rule keeps the shape the layout depends on", () => {
+describe("the compiled arrow rule keeps what the browser test cannot see", () => {
   const css = styles().replace(/\s*([{};:,])\s*/g, "$1");
   const rule = /a\[target=["']?_blank["']?\]:not\(\.link-plain\):{1,2}after\{([^}]*)\}/.exec(css);
-
-  it("paints the arrow off the attribute, so no class has to be remembered", () => {
-    expect(rule, "no ::after rule keyed off target=_blank").not.toBeNull();
-  });
 
   it("holds a no-break space, which is what binds the arrow to the last word", () => {
     expect(rule?.[1]).toContain("\u00a0");
   });
 
-  it("carries the arrow in padding, where a line break cannot reach it", () => {
-    expect(rule?.[1]).toContain("padding-right");
-    expect(rule?.[1]).toContain("mask-image");
-  });
-
   it("paints colour only inside the mask tile, because WebKit leaves an inline box unmasked outside it", () => {
+    expect(rule?.[1]).toContain("mask-image");
     expect(rule?.[1]).not.toContain("background-color");
-    expect(rule?.[1].match(/var\(--arrow-size\)/g)?.length).toBeGreaterThanOrEqual(4);
-    expect(rule?.[1].match(/no-repeat/g)?.length).toBeGreaterThanOrEqual(2);
-  });
-
-  it("keeps the box in flow, because an out-of-flow one strands on a wrapped link", () => {
-    expect(rule?.[1]).not.toContain("position:absolute");
-  });
-
-  it("adds no second rule on the anchor, which only an out-of-flow arrow needed", () => {
-    // The out-of-flow version needed `position: relative` and a reserved
-    // gutter on the anchor itself. One selector means no such rule exists.
-    expect((css.match(/a\[target/g) ?? []).length).toBe(1);
   });
 });

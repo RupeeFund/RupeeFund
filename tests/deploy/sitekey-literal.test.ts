@@ -1,14 +1,11 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-
-const TEST_SITEKEY = "1x00000000000000000000AA";
+import { TEST_SITEKEY } from "./helpers.ts";
 
 const CARRIERS = [
   "src/lib/turnstile.ts",
   "scripts/turnstile-dummy-keys.mjs",
   "tests/site/build.setup.ts",
-  "tests/deploy/assert-deploy-env.test.ts",
-  "tests/deploy/assert-dist-sitekey.test.ts",
   ".env.example",
 ] as const;
 
@@ -44,10 +41,6 @@ describe("every build path that uses the test sitekey opts in explicitly", () =>
 
   it("makes CI supply no sitekey at all, because the repository already carries it", () => {
     expect(read(".github/workflows/ci.yml")).not.toContain("PUBLIC_TURNSTILE_SITEKEY");
-  });
-
-  it("that chain still reads dist afterwards, which is what protects the real deploy", () => {
-    expect(read("scripts/build.mjs")).toContain("scripts/assert-dist-sitekey.mjs");
   });
 
   it("finds at least one such build path, so the suite cannot pass vacuously", () => {

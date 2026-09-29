@@ -6,7 +6,7 @@ test.describe("waitlist signup with JavaScript disabled", () => {
   }) => {
     await page.goto("/subscribe");
     await page.fill("#waitlist-name", "No Script");
-    await page.fill("#waitlist-email", `nojs+${process.env.E2E_STAMP ?? "1"}@example.com`);
+    await page.fill("#waitlist-email", "nojs@example.com");
     await page.check('input[name="amount"][value="other"]');
     await page.fill("#waitlist-amount-other", "250");
     await page.check('input[name="is_foss_contributor"]');
@@ -17,16 +17,18 @@ test.describe("waitlist signup with JavaScript disabled", () => {
     await expect(page.locator("main")).toBeVisible();
   });
 
-  test("never puts the address in the URL, which a GET fallback would do", async ({ page }) => {
+  test("posts the form, so the address never lands in a URL", async ({ page }) => {
     await page.goto("/subscribe");
     await page.fill("#waitlist-name", "No Script");
-    await page.fill("#waitlist-email", `leak+${process.env.E2E_STAMP ?? "2"}@example.com`);
+    await page.fill("#waitlist-email", "leak@example.com");
     await page.check('input[name="amount"][value="15"]');
 
+    const sent = page.waitForRequest((r) => r.url().includes("/api/waitlist"));
     await Promise.all([page.waitForURL("**/waitlist-confirmed"), page.click("#waitlist-submit")]);
+    const request = await sent;
 
+    expect([request.method(), new URL(request.url()).search]).toEqual(["POST", ""]);
     expect(page.url()).not.toContain("@");
-    expect(page.url()).not.toContain("email=");
   });
 
   test("refuses to post until an amount is chosen, with no script to enforce it", async ({
@@ -34,7 +36,7 @@ test.describe("waitlist signup with JavaScript disabled", () => {
   }) => {
     await page.goto("/subscribe");
     await page.fill("#waitlist-name", "No Amount");
-    await page.fill("#waitlist-email", `noamount+${process.env.E2E_STAMP ?? "3"}@example.com`);
+    await page.fill("#waitlist-email", "noamount@example.com");
 
     await page.click("#waitlist-submit");
 

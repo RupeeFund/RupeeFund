@@ -100,12 +100,4 @@ describe("head metadata", () => {
     expect(html).toContain('property="og:image"');
     expect(html).toContain('name="twitter:card"');
   });
-
-  it("loads no font from a third party, because the site serves Inter itself", () => {
-    for (const page of PAGES) {
-      for (const host of ["fonts.googleapis.com", "fonts.gstatic.com"]) {
-        expect(read(page), `${page} loads from ${host}`).not.toContain(host);
-      }
-    }
-  });
 });

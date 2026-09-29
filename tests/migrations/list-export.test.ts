@@ -1,6 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { parseD1Json, toCsv, toCsvField } from "../../scripts/list-export.mts";
 
+function csvFields(line: string): string[] {
+  const field = /(?:"((?:[^"]|"")*)"|([^,"]*))(,|$)/y;
+  const fields: string[] = [];
+  for (let more = true; more;) {
+    const [, quoted, plain, comma] = field.exec(line)!;
+    fields.push(quoted === undefined ? plain : quoted.replaceAll('""', '"'));
+    more = comma === ",";
+  }
+  return fields;
+}
+
 describe("CSV escaping survives the names people actually have", () => {
   it("leaves a plain value alone", () => {
     expect(toCsvField("Asha")).toBe("Asha");
@@ -49,30 +60,34 @@ describe("the exported file is importable by a list manager", () => {
     },
   ];
 
-  it("starts with the header row", () => {
-    expect(toCsv(rows).split("\n")[0]).toBe("email,name,attributes");
-  });
-
   it("writes one line per subscriber plus the header and a trailing newline", () => {
     expect(toCsv(rows).split("\n")).toHaveLength(4);
   });
 
-  it("puts valid JSON in the attributes column of every row", () => {
-    for (const line of toCsv(rows).trim().split("\n").slice(1)) {
-      const attributes = line.slice(line.indexOf(',"{') + 2, -1).replaceAll('""', '"');
-      expect(() => JSON.parse(attributes)).not.toThrow();
-    }
-  });
-
-  it("carries the consent record into the attributes, not just the address", () => {
-    expect(toCsv(rows)).toContain("consent_at");
-    expect(toCsv(rows)).toContain("source");
-  });
-
-  it("carries the updates choice as a boolean attribute, so the list manager can segment", () => {
-    const lines = toCsv(rows).trim().split("\n");
-    expect(lines[1]).toContain('""updates_opt_in"":true');
-    expect(lines[2]).toContain('""updates_opt_in"":false');
+  it("carries the consent record and a boolean updates choice as JSON attributes", () => {
+    const records = toCsv(rows)
+      .trim()
+      .split("\n")
+      .slice(1)
+      .map(csvFields)
+      .map(([email, name, attributes, ...extra]) => [
+        email,
+        name,
+        JSON.parse(attributes),
+        ...extra,
+      ]);
+    expect(records).toEqual([
+      [
+        "a@example.com",
+        "Asha",
+        { source: "subscribe", consent_at: 10, signed_up_at: 10, updates_opt_in: true },
+      ],
+      [
+        "b@example.com",
+        'B, "the" one',
+        { source: "footer", consent_at: 20, signed_up_at: 20, updates_opt_in: false },
+      ],
+    ]);
   });
 
   it("emits only a header when nobody is pending", () => {
@@ -103,10 +118,6 @@ describe("a spreadsheet cannot be made to execute the export", () => {
       expect(toCsvField(payload).replace(/^"|"$/g, "").startsWith("'")).toBe(true);
     });
   }
-
-  it("leaves an ordinary name untouched", () => {
-    expect(toCsvField("Asha")).toBe("Asha");
-  });
 
   it("still quotes a neutralised field that also contains a comma", () => {
     expect(toCsvField("=cmd,x")).toBe(`"'=cmd,x"`);

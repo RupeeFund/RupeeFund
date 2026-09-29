@@ -48,96 +48,54 @@ describe("submitWaitlist", () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  it("sends the bot-check token the widget produced", async () => {
+  async function send(pick: (form: HTMLFormElement) => void = () => {}): Promise<unknown> {
     const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
     const form = document.getElementById("waitlist-form") as HTMLFormElement;
-
+    pick(form);
     await submitWaitlist(form, { fetchImpl, navigate });
+    return JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
+  }
 
-    const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
-    expect(body.turnstileToken).toBe("tok");
-  });
+  const tick = (form: HTMLFormElement, selector: string): void => {
+    (form.querySelector(selector) as HTMLInputElement).checked = true;
+  };
 
-  it("sends the contribution answers the subscriber gave", async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
-    const form = document.getElementById("waitlist-form") as HTMLFormElement;
-
-    await submitWaitlist(form, { fetchImpl, navigate });
-
-    const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
-    expect(body).toMatchObject({
+  it("sends the answers, the bot-check token and empty unticked boxes", async () => {
+    expect(await send()).toMatchObject({
+      name: "Ada",
+      email: "ada@example.com",
       amount: "128",
       amount_other: "",
       months: "12+",
       question: "Who audits this?",
+      updates: "",
+      is_foss_user: "",
+      is_foss_contributor: "",
+      is_student: "",
+      turnstileToken: "tok",
     });
   });
 
-  it("sends an empty updates value when the box is unticked", async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
-    const form = document.getElementById("waitlist-form") as HTMLFormElement;
-
-    await submitWaitlist(form, { fetchImpl, navigate });
-
-    const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
-    expect(body.updates).toBe("");
-  });
-
-  it("sends the updates value when the box is ticked", async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
-    const form = document.getElementById("waitlist-form") as HTMLFormElement;
-    (form.querySelector('input[name="updates"]') as HTMLInputElement).checked = true;
-
-    await submitWaitlist(form, { fetchImpl, navigate });
-
-    const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
-    expect(body.updates).toBe("1");
-  });
-
-  it("sends an empty role value for every box the subscriber left unticked", async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
-    const form = document.getElementById("waitlist-form") as HTMLFormElement;
-
-    await submitWaitlist(form, { fetchImpl, navigate });
-
-    const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
-    expect(body).toMatchObject({ is_foss_user: "", is_foss_contributor: "", is_student: "" });
-  });
-
-  it("sends the role values the subscriber ticked, and only those", async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
-    const form = document.getElementById("waitlist-form") as HTMLFormElement;
-    (form.querySelector('input[name="is_foss_user"]') as HTMLInputElement).checked = true;
-    (form.querySelector('input[name="is_student"]') as HTMLInputElement).checked = true;
-
-    await submitWaitlist(form, { fetchImpl, navigate });
-
-    const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
-    expect(body).toMatchObject({ is_foss_user: "1", is_foss_contributor: "", is_student: "1" });
+  it("sends the value of each ticked box, and only those", async () => {
+    const body = await send((form) => {
+      tick(form, 'input[name="updates"]');
+      tick(form, 'input[name="is_foss_user"]');
+      tick(form, 'input[name="is_student"]');
+    });
+    expect(body).toMatchObject({
+      updates: "1",
+      is_foss_user: "1",
+      is_foss_contributor: "",
+      is_student: "1",
+    });
   });
 
   it("sends the typed amount beside the other option, so the server can resolve it", async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: true }));
-    const form = document.getElementById("waitlist-form") as HTMLFormElement;
-    (form.querySelector('input[value="other"]') as HTMLInputElement).checked = true;
-    (form.querySelector('input[name="amount_other"]') as HTMLInputElement).value = "250";
-
-    await submitWaitlist(form, { fetchImpl, navigate });
-
-    const body = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
+    const body = await send((form) => {
+      tick(form, 'input[value="other"]');
+      (form.querySelector('input[name="amount_other"]') as HTMLInputElement).value = "250";
+    });
     expect(body).toMatchObject({ amount: "other", amount_other: "250" });
-  });
-
-  it("chooses the other option when the subscriber types an amount, so submit is not blocked", () => {
-    const form = document.getElementById("waitlist-form") as HTMLFormElement;
-    const typed = form.querySelector('input[name="amount_other"]') as HTMLInputElement;
-    const choice = form.querySelector('input[value="other"]') as HTMLInputElement;
-    linkOtherAmount(form);
-
-    typed.value = "250";
-    typed.dispatchEvent(new Event("input"));
-
-    expect(choice.checked).toBe(true);
   });
 
   it("requires a typed amount only while the other option is chosen", () => {
@@ -256,16 +214,13 @@ describe("submitWaitlist", () => {
 });
 
 describe("errorForStatus", () => {
-  it("names every field the server checks when it rejects the input", () => {
-    expect(errorForStatus(400)).toMatch(/name, email address and amount/i);
-  });
-
-  it("asks the person to wait when they are rate limited", () => {
-    expect(errorForStatus(429)).toMatch(/wait a minute/i);
-  });
-
-  it("asks the person to reload when the bot check fails", () => {
-    expect(errorForStatus(403)).toMatch(/reload the page/i);
+  it.each([
+    [400, /name, email address and amount/i],
+    [429, /wait a minute/i],
+    [403, /reload the page/i],
+    [500, /try again in a few minutes/i],
+  ])("says what to do next after a %i", (status, advice) => {
+    expect(errorForStatus(status)).toMatch(advice);
   });
 
   it("does not blame the input when the server fails", () => {

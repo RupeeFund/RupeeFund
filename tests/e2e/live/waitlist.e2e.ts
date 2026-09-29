@@ -6,7 +6,7 @@ test.describe("waitlist signup (pre-launch build)", () => {
     await expect(page.locator("#waitlist-form")).toBeVisible();
 
     await page.fill("#waitlist-name", "Asha Tester");
-    await page.fill("#waitlist-email", `asha+${process.env.E2E_STAMP ?? "1"}@example.com`);
+    await page.fill("#waitlist-email", "asha@example.com");
     await page.check('input[name="amount"][value="128"]');
     await page.fill("#waitlist-months", "12+");
     await page.fill("#waitlist-question", "Who audits the fund?");

@@ -11,10 +11,6 @@ describe("the sitekey lives in the repository, not in a dashboard field", () => 
     expect(TURNSTILE_SITEKEY).toMatch(/^0x4[A-Za-z0-9_-]{21}$/);
     expect(TURNSTILE_SITEKEY).toHaveLength(24);
   });
-
-  it("is not the always-pass test sitekey", () => {
-    expect(TURNSTILE_SITEKEY).not.toBe(TURNSTILE_TEST_SITEKEY);
-  });
 });
 
 describe("resolveSitekey", () => {

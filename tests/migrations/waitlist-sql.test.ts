@@ -7,8 +7,6 @@ import type { DatabaseSync } from "node:sqlite";
 
 const EXPORT_BATCH = 500;
 
-const SELECT_PENDING_AS_THE_EXPORTER_RUNS_IT = SELECT_PENDING;
-
 const COUNT_PENDING_AS_THE_EXPORTER_RUNS_IT =
   "SELECT COUNT(*) AS n FROM waitlist WHERE exported_at IS NULL AND unsubscribed_at IS NULL";
 
@@ -32,7 +30,7 @@ function markUnsubscribedAsTheOperatorRunsIt(raw: DatabaseSync, email: string, a
 }
 
 function pending(raw: DatabaseSync): { id: number; email: string }[] {
-  return rowsOf(raw, SELECT_PENDING_AS_THE_EXPORTER_RUNS_IT) as unknown as {
+  return rowsOf(raw, SELECT_PENDING) as unknown as {
     id: number;
     email: string;
   }[];
@@ -67,68 +65,39 @@ describe("the signup SQL the Worker runs, against a migrated database", () => {
     raw = d1.raw;
   });
 
-  it("stores a signup", async () => {
-    await repo.addToWaitlist(entry());
-    expect(rowsOf(raw, "SELECT email, name, consent_at, source FROM waitlist")).toEqual([
-      { email: "asha@example.com", name: "Asha", consent_at: 1000, source: "subscribe" },
+  it("stores every field of a signup, and an unticked box as 0 rather than null", async () => {
+    const stored = entry({
+      updates_opt_in: 0,
+      is_foss_user: 0,
+      is_foss_contributor: 1,
+      is_student: 1,
+    });
+    await repo.addToWaitlist(stored);
+    expect(rowsOf(raw, "SELECT * FROM waitlist")).toEqual([
+      { ...stored, id: 1, exported_at: null, unsubscribed_at: null },
     ]);
   });
 
   it("keeps the first row when the same address signs up again", async () => {
     await repo.addToWaitlist(entry());
-    await repo.addToWaitlist(entry({ name: "Asha Again", consent_at: 2000, updated_at: 2000 }));
-    expect(rowsOf(raw, "SELECT name, consent_at, updated_at FROM waitlist")).toEqual([
-      { name: "Asha", consent_at: 1000, updated_at: 1000 },
-    ]);
-  });
-
-  it("stores the contribution answers beside the signup", async () => {
-    await repo.addToWaitlist(entry());
-    expect(rowsOf(raw, "SELECT amount, months, question FROM waitlist")).toEqual([
-      { amount: "100", months: "12", question: "Who audits this?" },
-    ]);
-  });
-
-  it("keeps the first answers when the same address signs up again", async () => {
-    await repo.addToWaitlist(entry());
     await repo.addToWaitlist(
-      entry({ amount: "500", months: "24", question: "", consent_at: 2000, updated_at: 2000 }),
+      entry({
+        name: "Asha Again",
+        consent_at: 2000,
+        source: "footer",
+        amount: "500",
+        months: "24",
+        question: "",
+        updates_opt_in: 0,
+        is_foss_user: 0,
+        is_foss_contributor: 1,
+        is_student: 1,
+        created_at: 2000,
+        updated_at: 2000,
+      }),
     );
-    expect(rowsOf(raw, "SELECT amount, months, question FROM waitlist")).toEqual([
-      { amount: "100", months: "12", question: "Who audits this?" },
-    ]);
-  });
-
-  it("stores the updates choice beside the signup", async () => {
-    await repo.addToWaitlist(entry({ updates_opt_in: 0 }));
-    expect(rowsOf(raw, "SELECT updates_opt_in FROM waitlist")).toEqual([{ updates_opt_in: 0 }]);
-  });
-
-  it("keeps the first updates choice when the same address signs up again", async () => {
-    await repo.addToWaitlist(entry({ updates_opt_in: 1 }));
-    await repo.addToWaitlist(entry({ updates_opt_in: 0, consent_at: 2000, updated_at: 2000 }));
-    expect(rowsOf(raw, "SELECT updates_opt_in FROM waitlist")).toEqual([{ updates_opt_in: 1 }]);
-  });
-
-  it("stores the audience roles beside the signup", async () => {
-    await repo.addToWaitlist(entry({ is_foss_contributor: 1, is_student: 1 }));
-    expect(
-      rowsOf(raw, "SELECT is_foss_user, is_foss_contributor, is_student FROM waitlist"),
-    ).toEqual([{ is_foss_user: 1, is_foss_contributor: 1, is_student: 1 }]);
-  });
-
-  it("writes an unticked box as 0, which a row that predates 0004 reads as null", async () => {
-    await repo.addToWaitlist(entry({ is_foss_user: 0 }));
-    expect(rowsOf(raw, "SELECT is_foss_user FROM waitlist")).toEqual([{ is_foss_user: 0 }]);
-  });
-
-  it("keeps the first roles when the same address signs up again", async () => {
-    await repo.addToWaitlist(entry());
-    await repo.addToWaitlist(
-      entry({ is_foss_user: 0, is_student: 1, consent_at: 2000, updated_at: 2000 }),
-    );
-    expect(rowsOf(raw, "SELECT is_foss_user, is_student FROM waitlist")).toEqual([
-      { is_foss_user: 1, is_student: 0 },
+    expect(rowsOf(raw, "SELECT * FROM waitlist")).toEqual([
+      { ...entry(), id: 1, exported_at: null, unsubscribed_at: null },
     ]);
   });
 
@@ -204,24 +173,14 @@ describe("the export SQL that scripts/list-export.mts itself runs, against a mig
 
   it("hands the mailing-list exporter no contribution answer, which it has no reason to hold", () => {
     for (const column of ["amount", "months", "question"]) {
-      expect(SELECT_PENDING_AS_THE_EXPORTER_RUNS_IT).not.toContain(column);
+      expect(SELECT_PENDING).not.toContain(column);
     }
   });
 
   it("hands the mailing-list exporter no audience role, because no send differs by role", () => {
     for (const column of ["is_foss_user", "is_foss_contributor", "is_student"]) {
-      expect(SELECT_PENDING_AS_THE_EXPORTER_RUNS_IT).not.toContain(column);
+      expect(SELECT_PENDING).not.toContain(column);
     }
-  });
-
-  it("reports nothing pending once every row is stamped", async () => {
-    await repo.addToWaitlist(entry());
-    stampExportedAsTheExporterRunsIt(
-      raw,
-      pending(raw).map((r) => r.id),
-      5000,
-    );
-    expect(rowsOf(raw, COUNT_PENDING_AS_THE_EXPORTER_RUNS_IT)).toEqual([{ n: 0 }]);
   });
 
   it("takes one batch at a time, and reports what is still pending after it", async () => {

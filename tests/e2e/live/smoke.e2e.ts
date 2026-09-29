@@ -3,7 +3,10 @@ import { expect, test } from "@playwright/test";
 const ROUTES = [
   "/",
   "/subscribe",
+  "/team",
+  "/privacy",
   "/terms",
+  "/refunds",
   "/code-of-conduct",
   "/waitlist-confirmed",
   "/waitlist-problem",
@@ -20,12 +23,13 @@ test.describe("public pages smoke", () => {
   }
 
   for (const path of ROUTES) {
-    test(`${path} renders with a title and one heading`, async ({ page }) => {
+    test(`${path} renders with a title, one heading and one main landmark`, async ({ page }) => {
       const response = await page.goto(path);
       expect(response?.status()).toBe(200);
       await expect(page).toHaveTitle(/\S/);
       await expect(page.locator("h1")).toHaveCount(1);
       await expect(page.locator("h1")).toHaveText(/\S/);
+      await expect(page.locator("main#main")).toHaveCount(1);
     });
   }
 

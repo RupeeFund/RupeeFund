@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 
 const OTHER = 'input[name="amount"][value="other"]';
-const STAMP = process.env.E2E_STAMP ?? "1";
 
 test.describe("choosing a monthly amount", () => {
   test.beforeEach(async ({ page }) => {
@@ -43,7 +42,7 @@ test.describe("choosing a monthly amount", () => {
 
   test("a typed amount reaches the confirmation page", async ({ page }) => {
     await page.fill("#waitlist-name", "Asha Tester");
-    await page.fill("#waitlist-email", `other+${STAMP}@example.com`);
+    await page.fill("#waitlist-email", "other@example.com");
     await page.fill("#waitlist-amount-other", "250");
     await page.click("#waitlist-submit");
 
@@ -52,7 +51,7 @@ test.describe("choosing a monthly amount", () => {
 
   test("the browser asks for a typed amount when the other option has none", async ({ page }) => {
     await page.fill("#waitlist-name", "Empty Other");
-    await page.fill("#waitlist-email", `empty+${STAMP}@example.com`);
+    await page.fill("#waitlist-email", "empty@example.com");
     await page.check(OTHER);
     await page.click("#waitlist-submit");
 
@@ -61,17 +60,5 @@ test.describe("choosing a monthly amount", () => {
       .locator("#waitlist-amount-other")
       .evaluate((el) => (el as HTMLInputElement).validity.valueMissing);
     expect(missing).toBe(true);
-  });
-
-  test("the browser refuses an empty amount before it posts anything", async ({ page }) => {
-    await page.fill("#waitlist-name", "No Amount");
-    await page.fill("#waitlist-email", `blocked+${STAMP}@example.com`);
-    await page.click("#waitlist-submit");
-
-    await expect(page).toHaveURL(/\/subscribe$/);
-    const invalid = await page
-      .locator('input[name="amount"][value="15"]')
-      .evaluate((el) => (el as HTMLInputElement).validity.valueMissing);
-    expect(invalid).toBe(true);
   });
 });

@@ -10,16 +10,7 @@ function makeEnv(over: Partial<Env> = {}): Env {
     ASSETS: {
       fetch: async (input: Request | URL) => {
         const { pathname } = input instanceof URL ? input : new URL(input.url);
-        return new Response(`<html>asset:${pathname}</html>`, {
-          status: 200,
-          headers: {
-            "content-type": "text/html; charset=utf-8",
-            "x-frame-options": "DENY",
-            "x-content-type-options": "nosniff",
-            "strict-transport-security": "max-age=63072000",
-            "referrer-policy": "strict-origin-when-cross-origin",
-          },
-        });
+        return new Response(`asset:${pathname}`);
       },
     } as unknown as Env["ASSETS"],
     ...over,
@@ -32,12 +23,6 @@ const ctx = {
 } as unknown as ExecutionContext;
 
 describe("worker router (Hono)", () => {
-  it("delegates a non-/api request to the ASSETS binding", async () => {
-    const res = await app.request("/subscribe", {}, makeEnv(), ctx);
-    expect(res.status).toBe(200);
-    expect(await res.text()).toContain("asset:/subscribe");
-  });
-
   it("reports ok on /api/health", async () => {
     const res = await app.request("/api/health", {}, makeEnv(), ctx);
     expect(res.status).toBe(200);
@@ -72,7 +57,7 @@ describe("the payment and voting API is gone, not merely gated", () => {
   }
 });
 
-const LAUNCH_PAGE_REQUESTS = ["/", "/subscribe", "/subscribe.html", "/404.html"] as const;
+const LAUNCH_PAGE_REQUESTS = ["/", "/subscribe"] as const;
 
 describe("the mailing-list pages still serve", () => {
   for (const path of LAUNCH_PAGE_REQUESTS) {

@@ -37,23 +37,23 @@ describe("validateWaitlist", () => {
 
   it("rejects a malformed address", () => {
     const result = validateWaitlist({ ...base, email: "nope" });
-    expect(result.ok).toBe(false);
+    expect(result).toEqual({ ok: false, errors: ["email"] });
   });
 
   it("rejects an empty name", () => {
     const result = validateWaitlist({ ...base, name: "   " });
-    expect(result.ok).toBe(false);
+    expect(result).toEqual({ ok: false, errors: ["name"] });
   });
 
   it("rejects a name past the column budget", () => {
     const result = validateWaitlist({ ...base, name: "a".repeat(MAX_NAME_LENGTH + 1) });
-    expect(result.ok).toBe(false);
+    expect(result).toEqual({ ok: false, errors: ["name"] });
   });
 
   it("rejects an address past the column budget", () => {
     const long = `${"a".repeat(MAX_EMAIL_LENGTH)}@example.com`;
     const result = validateWaitlist({ ...base, email: long });
-    expect(result.ok).toBe(false);
+    expect(result).toEqual({ ok: false, errors: ["email"] });
   });
 
   it("falls back to the default source when the value is not on the allowlist", () => {
@@ -78,13 +78,6 @@ describe("validateWaitlist reads the contribution answers", () => {
     expect(validateWaitlist(noAmount)).toEqual({ ok: false, errors: ["amount"] });
   });
 
-  it("keeps a fixed option as the string the form sends", () => {
-    expect(validateWaitlist({ ...base, amount: "15" })).toMatchObject({
-      ok: true,
-      value: { amount: "15" },
-    });
-  });
-
   it("reads the typed amount when the subscriber chose other", () => {
     const result = validateWaitlist({ ...base, amount: "other", amount_other: " 250 " });
     expect(result).toMatchObject({ ok: true, value: { amount: "250" } });
@@ -107,10 +100,6 @@ describe("validateWaitlist reads the contribution answers", () => {
       amount_other: "9".repeat(MAX_AMOUNT_LENGTH + 1),
     });
     expect(result).toEqual({ ok: false, errors: ["amount"] });
-  });
-
-  it("accepts an absent months answer, because the team made it optional", () => {
-    expect(validateWaitlist(base)).toMatchObject({ ok: true, value: { months: "" } });
   });
 
   it("keeps the months answer as free text, so 12+ survives", () => {
@@ -139,10 +128,6 @@ describe("validateWaitlist reads the contribution answers", () => {
 });
 
 describe("validateWaitlist reads the updates checkbox", () => {
-  it("stores 0 when the checkbox is absent, which is how a form posts an unticked box", () => {
-    expect(validateWaitlist(base)).toMatchObject({ ok: true, value: { updates_opt_in: 0 } });
-  });
-
   it("stores 1 for the value the checkbox sends", () => {
     expect(validateWaitlist({ ...base, updates: "1" })).toMatchObject({
       ok: true,
@@ -160,27 +145,14 @@ describe("validateWaitlist reads the updates checkbox", () => {
 
 describe("validateWaitlist reads the audience checkboxes", () => {
   for (const field of ROLE_FIELDS) {
-    it(`stores 1 for the value the ${field} box sends`, () => {
-      expect(validateWaitlist({ ...base, [field]: "1" })).toMatchObject({
+    it(`stores 1 only for the ${field} box, so a crafted body cannot claim a role`, () => {
+      const crafted = { is_foss_user: "yes", is_foss_contributor: "yes", is_student: "yes" };
+      expect(validateWaitlist({ ...base, ...crafted, [field]: "1" })).toMatchObject({
         ok: true,
-        value: { [field]: 1 },
-      });
-    });
-
-    it(`stores 0 for any other ${field} string, so a crafted body cannot claim a role`, () => {
-      expect(validateWaitlist({ ...base, [field]: "yes" })).toMatchObject({
-        ok: true,
-        value: { [field]: 0 },
+        value: { is_foss_user: 0, is_foss_contributor: 0, is_student: 0, [field]: 1 },
       });
     });
   }
-
-  it("accepts a signup that ticks no box, because every role is optional", () => {
-    expect(validateWaitlist(base)).toMatchObject({
-      ok: true,
-      value: { is_foss_user: 0, is_foss_contributor: 0, is_student: 0 },
-    });
-  });
 
   it("accepts a signup that ticks every box, because the roles overlap", () => {
     const body = { ...base, is_foss_user: "1", is_foss_contributor: "1", is_student: "1" };

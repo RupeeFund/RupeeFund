@@ -10,8 +10,7 @@
     "eslint/no-self-compare": "error",
     "eslint/no-template-curly-in-string": "error",
     "vitest/no-identical-title": "error",
-    // tests/migrations/replay.test.ts compares schemas only when a later migration exists.
-    "vitest/no-conditional-expect": "off",
+    "vitest/no-conditional-expect": "error",
     // The fetch mocks in src/scripts/subscribe.test.ts take their type from mockResolvedValue.
     "vitest/require-mock-type-parameters": "off"
   },
