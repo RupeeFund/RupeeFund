@@ -2,10 +2,15 @@ import { SUBSCRIBE_HEADING } from "./launch.ts";
 
 export const SITE_NAME = "The Rupee Fund";
 export const SITE_URL = "https://rupeefund.org";
-export const OG_IMAGE = `${SITE_URL}/og-card.png`;
 export const LOGO_IMAGE = `${SITE_URL}/icon-512.png`;
 
 export const INITIATIVE = "A community initiative from FOSS United";
+export const TAGLINE = "Keep FOSS in India alive, one rupee at a time";
+
+export const OG_IMAGE = `${SITE_URL}/og/site.png`;
+export const OG_IMAGE_ALT = `The logo of The Rupee Fund. ${TAGLINE}. ${INITIATIVE}.`;
+export const OG_WIDTH = 1200;
+export const OG_HEIGHT = 630;
 
 export interface RouteSeo {
   readonly path: string;

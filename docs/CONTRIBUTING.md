@@ -65,6 +65,8 @@ To add a page, write a `.astro` file in `src/pages/` and add an entry to `src/li
 
 To add an endpoint, write a handler in `src/worker/routes/` and connect it in `src/worker/index.ts`. Keep it under `/api/`. [architecture.md](architecture.md) section 2 tells why.
 
+The build renders each link preview card to a PNG under `/og/`. `src/pages/og/site.png.ts` is the card for every page. The cards are [ogimagecn](https://ogimagecn.com) blocks in `src/components/og/`. To add a block, run `pnpm dlx shadcn@4.21.0 add @ogimagecn/<name>`. Then change its colours, type and logo to the brand rules.
+
 ## Design
 
 The brand guidelines are the source of truth for the look: colours, type, links, buttons, forms, cards, icons, motion and words. Read each rule there. This file adds no design rule. The list below tells how the code builds the rules.

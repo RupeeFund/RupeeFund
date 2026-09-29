@@ -16,7 +16,6 @@ const FILES: Record<string, string> = {
   "web/icon-512.png": "public/icon-512.png",
   "web/icon-maskable-512.png": "public/icon-maskable-512.png",
   "web/logo.svg": "public/logo.svg",
-  "web/og-card.png": "public/og-card.png",
   "web/logo-dark.svg": "public/logo-dark.svg",
 };
 
