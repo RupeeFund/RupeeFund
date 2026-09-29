@@ -97,6 +97,8 @@ There is no environment suffix. There is one environment.
 - `theme_color` and `background_color` in `public/site.webmanifest`;
 - the icons, `logo.svg` and `logo-dark.svg` in `public/`.
 
-The committed files are the only brand input to the build. The build and CI do not fetch from the brand site. Do not edit these files by hand. CI does not compare them with the brand site, so review each sync diff before you commit it.
+The committed files are the only brand input to the build. The build does not fetch from the brand site. Do not edit these files by hand.
 
-To take a brand update, wait for the brand site to deploy, run `pnpm brand:sync`, and commit the result. To sync from a local brand checkout before it deploys, set `BRAND_DIR` to the checkout. The script then reads `exports/` in that checkout.
+The `Brand sync` workflow runs `pnpm brand:sync` each day. When the files differ from the brand site, it runs the gate, opens or updates the pull request from `chore/brand-sync`, and fails. The workflow needs the repository setting “Allow GitHub Actions to create and approve pull requests”. To take a brand update, review and merge that pull request. CI does not run on it, so read the gate result in its description. To sync at once, run the workflow from the Actions tab.
+
+To sync from a local brand checkout before it deploys, set `BRAND_DIR` to the checkout and run `pnpm brand:sync`. The script then reads `exports/` in that checkout.

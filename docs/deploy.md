@@ -4,10 +4,10 @@ The system runs on the Workers Free plan.
 
 ## 1. The branch model
 
-| Branch | Site            | Worker          | Trigger                 |
-| ------ | --------------- | --------------- | ----------------------- |
-| `main` | none            | none            | never                   |
-| `live` | `rupeefund.org` | `rupeefund-web` | the maintainer, by hand |
+| Branch | Site            | Worker          | Trigger                                     |
+| ------ | --------------- | --------------- | ------------------------------------------- |
+| `main` | none            | none            | never                                       |
+| `live` | `rupeefund.org` | `rupeefund-web` | the maintainer, with the `Promote` workflow |
 
 Cloudflare Workers Builds watches `live`. Its build command is `pnpm run build`, its deploy command is `npx wrangler deploy`, and non-production branch builds are off. Leave them off. Every branch build would keep the production bindings.
 
@@ -25,14 +25,16 @@ pnpm wrangler d1 execute rupeefund-waitlist --local --command "SELECT email, con
 
 ## 3. How to promote
 
-Make sure CI passed on the commit. Then fast-forward `live`:
+Run the `Promote` workflow from the Actions tab on `main`. It fast-forwards `live` to the tip of `main`. It stops when CI has not passed on that commit. It also stops when the promote adds a migration, unless you tick the box that says you applied it (section 4).
+
+Without the workflow, make sure CI passed on the commit. Then fast-forward `live`:
 
 ```sh
 git fetch origin
 git push origin <sha>:live
 ```
 
-Use `main` as `<sha>` to take the tip of `main`. Do not force the push. `live` is always a prefix of `main`, so a promote takes a commit and everything before it. Promote often.
+Do not force the push. `live` is always a prefix of `main`, so a promote takes a commit and everything before it. Promote often.
 
 To go back, run `pnpm wrangler rollback`, then purge the zone cache. Do not delete the Worker. A deleted Worker loses its custom domain and every earlier deployment.
 
