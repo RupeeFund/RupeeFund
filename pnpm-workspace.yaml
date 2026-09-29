@@ -3,3 +3,5 @@ allowBuilds:
   sharp: true
   workerd: true
 shellEmulator: true
+overrides:
+  undici@7: ">=7.29.1 <8"

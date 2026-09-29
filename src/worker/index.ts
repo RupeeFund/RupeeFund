@@ -1,10 +1,20 @@
 import { Hono } from "hono";
+import { secureHeaders } from "hono/secure-headers";
 import { createRepo } from "./lib/db.ts";
 import { createTurnstile, parseHostnames } from "./lib/turnstile.ts";
 import { handleWaitlist, type WaitlistLimiter } from "./routes/waitlist.ts";
 import type { Env } from "./types.ts";
 
 export const app = new Hono<{ Bindings: Env }>();
+
+app.use(
+  "/api/*",
+  secureHeaders({
+    contentSecurityPolicy: { defaultSrc: ["'none'"], frameAncestors: ["'none'"] },
+    strictTransportSecurity: "max-age=63072000; includeSubDomains; preload",
+    xFrameOptions: "DENY",
+  }),
+);
 
 app.get("/api/health", (c) => c.json({ ok: true }));
 

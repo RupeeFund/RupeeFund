@@ -29,6 +29,15 @@ describe("worker router (Hono)", () => {
     expect(await res.json()).toEqual({ ok: true });
   });
 
+  it("sets security headers on /api responses", async () => {
+    const res = await app.request("/api/health", {}, makeEnv(), ctx);
+    expect(res.headers.get("x-content-type-options")).toBe("nosniff");
+    expect(res.headers.get("strict-transport-security")).toBe(
+      "max-age=63072000; includeSubDomains; preload",
+    );
+    expect(res.headers.get("content-security-policy")).toContain("default-src 'none'");
+  });
+
   it("returns 404 JSON for an unknown /api route", async () => {
     const res = await app.request("/api/nope", {}, makeEnv(), ctx);
     expect(res.status).toBe(404);
