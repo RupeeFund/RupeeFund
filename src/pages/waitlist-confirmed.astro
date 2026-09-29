@@ -4,8 +4,8 @@ import { REMOVAL_ADDRESS } from "../lib/launch.ts";
 ---
 
 <Base>
-  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-    <h1 class="text-2xl font-bold text-ink tracking-tight mb-3">You're on the list</h1>
+  <div class="max-w-xl mx-auto box-content px-gutter section-y text-center">
+    <h1 class="page-title text-ink mb-4">You’re on the list</h1>
     <p class="text-sm text-ink-2 mb-6">
       One email when we open, so you can set up UPI AutoPay. Monthly updates if you asked for them.
       No payment yet.
@@ -13,10 +13,8 @@ import { REMOVAL_ADDRESS } from "../lib/launch.ts";
     <p class="text-xs text-ink-3 mb-8">
       Changed your mind? Email <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link"
         >{REMOVAL_ADDRESS}</a
-      > and we'll remove you.
+      > and we’ll remove you.
     </p>
-    <div class="flex flex-col sm:flex-row gap-3 justify-center">
-      <a href="/" class="btn btn-primary btn-lg"> Back to home </a>
-    </div>
+    <a href="/" class="btn btn-primary btn-lg"> Back to home </a>
   </div>
 </Base>

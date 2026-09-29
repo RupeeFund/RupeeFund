@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -34,7 +35,7 @@ function externalModules(): string[] {
 }
 
 function amountGroup(): string {
-  const start = html.indexOf('<legend class="field-label">Monthly Amount');
+  const start = html.indexOf('<legend class="field-label">Monthly amount');
   return html.slice(start, html.indexOf("</fieldset>", start));
 }
 
@@ -108,10 +109,29 @@ describe("Subscribe page (/subscribe)", () => {
   });
 
   it("labels the role group and every box, so the question reads without the field names", () => {
-    expect(html).toContain('<legend class="field-label">I am a</legend>');
-    for (const label of ["FOSS User", "FOSS Contributor", "Student"]) {
+    expect(html).toContain('<legend class="field-label">I am a <span class="field-optional">');
+    for (const label of ["FOSS user", "FOSS contributor", "Student"]) {
       expect(html).toContain(`<span>${label}</span>`);
     }
+  });
+
+  it("marks a field optional exactly when it is not required, as the brand forms rule asks", () => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const marks = [...doc.querySelectorAll(".field-label")].map((label) => {
+      const control =
+        label.tagName === "LEGEND"
+          ? label.parentElement
+          : doc.getElementById(label.getAttribute("for") ?? "");
+      const text = label.textContent ?? "";
+      return {
+        text,
+        required: Boolean(control?.matches("[required]") || control?.querySelector("[required]")),
+        optional: text.includes("(optional)"),
+      };
+    });
+    expect(marks.length).toBeGreaterThan(0);
+    expect(marks.filter((m) => m.text.includes("*"))).toEqual([]);
+    expect(marks.filter((m) => m.optional === m.required)).toEqual([]);
   });
 
   it("caps the free-text answers at the lengths the columns hold", () => {

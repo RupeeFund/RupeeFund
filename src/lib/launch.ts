@@ -1,15 +1,13 @@
 import type { RoleField } from "../worker/lib/validation.ts";
 
-export const LAUNCH_EVENT = "IndiaFOSS 2026";
-export const LAUNCH_EVENT_URL = "https://fossunited.org/indiafoss/2026";
 export const SUBSCRIBE_CTA = "I am interested";
 export const SUBSCRIBE_HEADING = "I am interested!";
 
 export const ROLE_LEGEND = "I am a";
 
 export const ROLE_LABELS: Readonly<Record<RoleField, string>> = {
-  is_foss_user: "FOSS User",
-  is_foss_contributor: "FOSS Contributor",
+  is_foss_user: "FOSS user",
+  is_foss_contributor: "FOSS contributor",
   is_student: "Student",
 };
 
@@ -23,40 +21,35 @@ interface Season {
   months: string;
   duration: string;
   accent: string;
-  grad: string;
 }
 
 export const SEASONS: readonly Season[] = [
   {
     spriteSlug: "winter",
-    name: "WINTER",
-    months: "DEC – FEB",
-    duration: "3 MONTHS",
-    accent: "oklch(0.55 0.13 235)",
-    grad: "linear-gradient(to bottom, oklch(0.72 0.14 235 / 0.16) 0%, oklch(0.78 0.10 235 / 0.04) 55%, oklch(0.85 0.06 235 / 0) 100%)",
+    name: "Winter",
+    months: "Dec – Feb",
+    duration: "3 months",
+    accent: "#007bb2",
   },
   {
     spriteSlug: "summer",
-    name: "SUMMER",
-    months: "MAR – MAY",
-    duration: "3 MONTHS",
-    accent: "oklch(0.52 0.15 60)",
-    grad: "linear-gradient(to bottom, oklch(0.72 0.14 72 / 0.16) 0%, oklch(0.78 0.10 72 / 0.04) 55%, oklch(0.85 0.06 72 / 0) 100%)",
+    name: "Summer",
+    months: "Mar – May",
+    duration: "3 months",
+    accent: "#a44d00",
   },
   {
     spriteSlug: "monsoon",
-    name: "MONSOON",
-    months: "JUN – SEP",
-    duration: "4 MONTHS",
-    accent: "oklch(0.52 0.15 152)",
-    grad: "linear-gradient(to bottom, oklch(0.72 0.15 152 / 0.16) 0%, oklch(0.78 0.10 152 / 0.04) 55%, oklch(0.85 0.06 152 / 0) 100%)",
+    name: "Monsoon",
+    months: "Jun – Sep",
+    duration: "4 months",
+    accent: "#008039",
   },
   {
     spriteSlug: "post-monsoon",
-    name: "POST-MONSOON",
-    months: "OCT – NOV",
-    duration: "2 MONTHS",
-    accent: "oklch(0.55 0.22 330)",
-    grad: "linear-gradient(to bottom, oklch(0.72 0.18 330 / 0.16) 0%, oklch(0.78 0.13 330 / 0.04) 55%, oklch(0.85 0.07 330 / 0) 100%)",
+    name: "Post-monsoon",
+    months: "Oct – Nov",
+    duration: "2 months",
+    accent: "#b229ad",
   },
 ];

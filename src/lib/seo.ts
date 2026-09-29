@@ -5,7 +5,7 @@ export const SITE_URL = "https://rupeefund.org";
 export const OG_IMAGE = `${SITE_URL}/og-card.png`;
 export const LOGO_IMAGE = `${SITE_URL}/icon-512.png`;
 
-export const INITIATIVE = "A community initiative from FOSS United";
+export const INITIATIVE = "An independent community fund, run by volunteers";
 
 export interface RouteSeo {
   readonly path: string;
@@ -19,10 +19,10 @@ export interface RouteSeo {
 const ROUTE_SEO: readonly RouteSeo[] = [
   {
     path: "/",
-    title: "The Rupee Fund — A FOSS United Community Initiative",
-    description: `Small monthly contributions that make FOSS in India sustainable. ${INITIATIVE}, run by volunteers.`,
-    ogTitle: "The Rupee Fund — A FOSS United Community Initiative",
-    ogDescription: `Small monthly contributions that make FOSS in India sustainable. ${INITIATIVE}, run by volunteers.`,
+    title: "The Rupee Fund — Small monthly contributions for FOSS in India",
+    description: `Small monthly contributions that make FOSS in India sustainable. ${INITIATIVE}.`,
+    ogTitle: "The Rupee Fund — Small monthly contributions for FOSS in India",
+    ogDescription: `Small monthly contributions that make FOSS in India sustainable. ${INITIATIVE}.`,
     indexable: true,
   },
   {
@@ -43,9 +43,9 @@ const ROUTE_SEO: readonly RouteSeo[] = [
   },
   {
     path: "/code-of-conduct",
-    title: "Code of Conduct — The Rupee Fund",
+    title: "Code of conduct — The Rupee Fund",
     description: `Conduct standards for The Rupee Fund. ${INITIATIVE}.`,
-    ogTitle: "Code of Conduct — The Rupee Fund",
+    ogTitle: "Code of conduct — The Rupee Fund",
     ogDescription: `Conduct standards for The Rupee Fund. ${INITIATIVE}.`,
     indexable: true,
   },
@@ -60,41 +60,41 @@ const ROUTE_SEO: readonly RouteSeo[] = [
   {
     path: "/refunds",
     title: "Refunds — The Rupee Fund",
-    description: `How to claim a refund, where to send the claim, and the time limit. ${INITIATIVE}.`,
+    description: `This site takes no payments yet. What we publish before launch, and where to ask about a refund. ${INITIATIVE}.`,
     ogTitle: "Refunds — The Rupee Fund",
-    ogDescription: `How to claim a refund, and the time limit that applies. ${INITIATIVE}.`,
+    ogDescription: `This site takes no payments yet. Where to ask about a refund. ${INITIATIVE}.`,
     indexable: true,
   },
   {
     path: "/team",
-    title: "Team — The Rupee Fund",
+    title: "People — The Rupee Fund",
     description: `Meet the volunteers who run The Rupee Fund and maintain its website. ${INITIATIVE}.`,
-    ogTitle: "Team — The Rupee Fund",
+    ogTitle: "People — The Rupee Fund",
     ogDescription: `Meet the volunteers who run The Rupee Fund. ${INITIATIVE}.`,
     indexable: true,
   },
   {
     path: "/waitlist-confirmed",
-    title: "You're on the list — The Rupee Fund",
-    description: `You'll hear from us the day The Rupee Fund opens. ${INITIATIVE}.`,
-    ogTitle: "You're on the list — The Rupee Fund",
-    ogDescription: `You'll hear from us the day The Rupee Fund opens. ${INITIATIVE}.`,
+    title: "You’re on the list — The Rupee Fund",
+    description: `You’ll hear from us the day The Rupee Fund opens. ${INITIATIVE}.`,
+    ogTitle: "You’re on the list — The Rupee Fund",
+    ogDescription: `You’ll hear from us the day The Rupee Fund opens. ${INITIATIVE}.`,
     indexable: false,
   },
   {
     path: "/waitlist-problem",
-    title: "That didn't go through — The Rupee Fund",
-    description: `We couldn't add you to the list. ${INITIATIVE}.`,
-    ogTitle: "That didn't go through — The Rupee Fund",
-    ogDescription: `We couldn't add you to the list. ${INITIATIVE}.`,
+    title: "That didn’t go through — The Rupee Fund",
+    description: `We couldn’t add you to the list. ${INITIATIVE}.`,
+    ogTitle: "That didn’t go through — The Rupee Fund",
+    ogDescription: `We couldn’t add you to the list. ${INITIATIVE}.`,
     indexable: false,
   },
   {
     path: "/404",
     title: "Page not found — The Rupee Fund",
-    description: `That page doesn't exist. ${INITIATIVE}.`,
+    description: `That page doesn’t exist. ${INITIATIVE}.`,
     ogTitle: "Page not found — The Rupee Fund",
-    ogDescription: `That page doesn't exist. ${INITIATIVE}.`,
+    ogDescription: `That page doesn’t exist. ${INITIATIVE}.`,
     indexable: false,
   },
 ];

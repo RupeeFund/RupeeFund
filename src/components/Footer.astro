@@ -18,36 +18,36 @@ const SOCIALS: readonly Social[] = [
 ];
 ---
 
-<footer class="bg-ink footer-glow text-gray-300 py-10 border-t-2 border-brand">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col items-center text-center gap-4 pb-10">
-      <a href="/" aria-label="The Rupee Fund — home" class="inline-flex rounded-xl bg-white p-3">
-        <img
-          src="/logo.svg"
-          alt="The Rupee Fund"
-          width="221"
-          height="96"
-          loading="lazy"
-          decoding="async"
-          class="h-20 sm:h-24 w-auto"
-        />
-      </a>
-      <p class="text-sm text-gray-300">A community initiative from FOSS United</p>
-    </div>
+<footer class="bg-ink text-paper pt-16 pb-10 border-t-2 border-brand">
+  <div class="wrap">
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_1fr] gap-8 lg:gap-12 border-t border-white/10 pt-8 mb-8"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_1fr] gap-8 lg:gap-12 mb-12"
     >
-      <div class="md:col-span-2 lg:col-span-1">
-        <h2 class="font-semibold text-white mb-4 text-[0.875rem] tracking-wide">About the fund</h2>
-        <p class="max-w-sm text-sm leading-relaxed text-gray-300">
-          The Rupee Fund is a community initiative from FOSS United, run by volunteers. We support
-          small, independent FOSS maintainers and builders across India.
+      <div>
+        <a
+          href="/"
+          aria-label="The Rupee Fund — home"
+          class="mb-4 inline-flex rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
+        >
+          <img
+            src="/logo-dark.svg"
+            alt="The Rupee Fund"
+            width="184"
+            height="80"
+            loading="lazy"
+            decoding="async"
+            class="h-16 w-auto"
+          />
+        </a>
+        <p class="max-w-sm text-sm leading-relaxed text-paper">
+          An independent community fund, run by volunteers. FOSS United Foundation is its fiscal
+          host.
         </p>
       </div>
       <div>
-        <h2 class="font-semibold text-white mb-4 text-[0.875rem] tracking-wide">Quick Links</h2>
-        <ul class="foot-list text-sm text-gray-300 [&_a]:items-start">
-          <li><a href="/team" class="foot-link -mx-2">Team</a></li>
+        <h2 class="eyebrow text-white mb-4">Quick links</h2>
+        <ul class="foot-list text-sm text-paper [&_a]:items-start">
+          <li><a href="/team" class="foot-link -mx-2">People</a></li>
           <li>
             <a
               href="https://fossunited.org/about"
@@ -61,12 +61,12 @@ const SOCIALS: readonly Social[] = [
               href="https://forum.fossunited.org"
               target="_blank"
               rel="noopener noreferrer"
-              class="foot-link -mx-2">Community Forum</a
+              class="foot-link -mx-2">Community forum</a
             >
           </li>
           <li>
             <a
-              href="https://github.com/rupeefund/RupeeFund"
+              href="https://github.com/RupeeFund/RupeeFund"
               target="_blank"
               rel="noopener noreferrer"
               class="foot-link -mx-2">Source on GitHub</a
@@ -75,21 +75,21 @@ const SOCIALS: readonly Social[] = [
         </ul>
       </div>
       <div>
-        <h2 class="font-semibold text-white mb-4 text-[0.875rem] tracking-wide">Contact</h2>
-        <p class="text-[1.125rem] leading-relaxed font-medium mb-2 text-white">
-          <a href={`mailto:${REMOVAL_ADDRESS}`} class="foot-link -mx-2 items-start break-all"
-            >{REMOVAL_ADDRESS}</a
+        <h2 class="eyebrow text-white mb-4">Contact</h2>
+        <p class="text-xl leading-snug font-semibold mb-2 text-white">
+          <a href={`mailto:${REMOVAL_ADDRESS}`} class="foot-link -mx-2 items-start"
+            >{REMOVAL_ADDRESS.split("@")[0]}<wbr />@{REMOVAL_ADDRESS.split("@")[1]}</a
           >
         </p>
-        <div class="-ml-3 flex flex-wrap gap-x-1 gap-y-1 text-xs text-gray-300">
+        <div class="-ml-3 flex flex-wrap gap-x-1 gap-y-1 text-xs text-paper">
           {
             SOCIALS.map((s) => (
               <a
                 href={s.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`FOSS United on ${s.name}`}
-                class="foot-link link-plain min-w-11 justify-center"
+                aria-label={`FOSS United on ${s.name} (opens in a new tab)`}
+                class="foot-link foot-icon link-plain min-w-11 justify-center"
               >
                 <SocialIcon name={s.slug} />
               </a>
@@ -98,13 +98,13 @@ const SOCIALS: readonly Social[] = [
         </div>
       </div>
     </div>
-    <div class="border-t border-white/10 pt-6 text-center text-[0.875rem] text-gray-300">
+    <div class="text-center text-xs text-paper">
       <div class="mb-3 flex flex-wrap justify-center gap-x-1 gap-y-1">
         <a href="/privacy" class="foot-link">Privacy</a>
         <a href="/terms" class="foot-link">Terms</a>
-        <a href="/code-of-conduct" class="foot-link">Code of Conduct</a>
+        <a href="/code-of-conduct" class="foot-link">Code of conduct</a>
       </div>
-      <p class="text-gray-400">© 2026 The Rupee Fund, by the FOSS United community.</p>
+      <p class="text-paper">© 2026 FOSS United Community.</p>
     </div>
   </div>
 </footer>

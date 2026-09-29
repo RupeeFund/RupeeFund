@@ -4,10 +4,10 @@ import { REMOVAL_ADDRESS } from "../lib/launch.ts";
 ---
 
 <Base>
-  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-    <h1 class="text-2xl font-bold text-ink tracking-tight mb-3">That didn't go through</h1>
+  <div class="max-w-xl mx-auto box-content px-gutter section-y text-center">
+    <h1 class="page-title text-ink mb-4">That didn’t go through</h1>
     <p class="text-sm text-ink-2 mb-2">
-      We couldn't add you to the list. Check the email address and try once more.
+      We couldn’t add you to the list. Check the email address and try once more.
     </p>
     <p class="text-sm text-ink-2 mb-6">
       If you tried a few times in quick succession, wait a minute before trying again.
@@ -15,7 +15,7 @@ import { REMOVAL_ADDRESS } from "../lib/launch.ts";
     <p class="text-xs text-ink-3 mb-8">
       Still stuck? Email <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link"
         >{REMOVAL_ADDRESS}</a
-      > and we'll add you by hand.
+      > and we’ll add you by hand.
     </p>
     <a href="/subscribe" class="btn btn-primary"> Try again </a>
   </div>

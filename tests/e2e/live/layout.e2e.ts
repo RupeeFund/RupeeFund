@@ -37,6 +37,21 @@ for (const width of [320, 768, 1440]) {
   });
 }
 
+for (const size of [
+  { width: 320, height: 568 },
+  { width: 360, height: 640 },
+]) {
+  test(`the home page shows its primary action on a ${size.width} × ${size.height} screen`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(size);
+    await page.goto("/");
+    const box = await page.locator("main .btn-primary").first().boundingBox();
+    expect(box?.y ?? Infinity).toBeGreaterThan(0);
+    expect((box?.y ?? Infinity) + (box?.height ?? 0)).toBeLessThanOrEqual(size.height);
+  });
+}
+
 const LEGAL_PAGES = ["/privacy", "/refunds"] as const;
 const TALL = { width: 1280, height: 1600 };
 const MAX_DEAD_SPACE_RATIO = 0.25;

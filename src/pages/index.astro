@@ -1,232 +1,182 @@
 ---
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
-import {
-  LAUNCH_EVENT,
-  LAUNCH_EVENT_URL,
-  REMOVAL_ADDRESS,
-  SEASONS,
-  SUBSCRIBE_CTA,
-} from "../lib/launch.ts";
+import lockup from "../../public/logo.svg?raw";
+import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
+import { heroLockup } from "../lib/lockup.ts";
 ---
 
 <Base>
-  <section class="bg-white hero-glow border-b border-ink/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="mb-12 flex justify-center">
-        <span
-          class="inline-flex items-center gap-2 border border-ink/15 bg-card px-3 py-1.5 text-xs leading-snug font-mono font-bold tracking-wider text-brand-fg"
-        >
-          A community initiative from FOSS United · Launching at{" "}
-          <span>
-            <a
-              href={LAUNCH_EVENT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-link"
-            >
-              {LAUNCH_EVENT}
-            </a>
-          </span>
-        </span>
-      </div>
-      <div class="grid md:grid-cols-2 gap-8 items-start">
-        <div class="flex flex-col">
-          <h1
-            class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-ink mb-6 leading-[1.05] tracking-tight text-balance"
-          >
-            Keep FOSS in India alive, one rupee at a time
-          </h1>
-          <div class="flex flex-wrap gap-3">
-            <a href="/subscribe" class="btn btn-primary btn-lg">
-              <Icon name="bell" size={18} />
-              {SUBSCRIBE_CTA}
-            </a>
-          </div>
-        </div>
-
-        <div>
-          <p class="mb-3 text-xs font-mono font-bold tracking-wider text-ink-3">
-            <a
-              href="https://fossunited.org/grants"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hover:text-brand-fg transition-colors duration-150 ease-out rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-fg/50"
-            >
-              FOSS United Foundation's separate grant programme
-            </a>
-          </p>
-          <div class="grid grid-cols-3 gap-2 sm:gap-4">
-            <div class="stat">
-              <div class="stat-value">₹3cr+</div>
-              <div class="stat-label">disbursed</div>
-            </div>
-            <div class="stat">
-              <div class="stat-value">27+</div>
-              <div class="stat-label">projects</div>
-            </div>
-            <div class="stat">
-              <div class="stat-value">83+</div>
-              <div class="stat-label">events</div>
-            </div>
-          </div>
-          <div class="mt-6">
-            <p class="text-base text-ink-2 mb-4 leading-relaxed">
-              Free software isn't free. The Rupee Fund is a community initiative from FOSS United.
-              The fund pools small monthly UPI contributions and routes them to indie FOSS
-              maintainers from India.
-            </p>
-            <p class="text-base text-ink-2 mb-4 leading-relaxed">
-              <strong>Not charity — membership in a commons.</strong>
-            </p>
-          </div>
+  <section class="wrap pt-6 pb-[clamp(3rem,8vh,5rem)] sm:pt-[clamp(2.5rem,8vh,5rem)]">
+    <div
+      class="grid items-center gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-x-[clamp(4rem,7vw,8rem)]"
+    >
+      <div class="flex max-w-[36rem] flex-col items-start gap-5 lg:justify-self-end">
+        <h1 class="display text-ink">Keep FOSS in India alive, one rupee at a time</h1>
+        <p class="lede">
+          Free software isn’t free. The Rupee Fund is an independent community fund. It pools small
+          monthly UPI contributions and routes them to indie FOSS maintainers from India.
+        </p>
+        <div class="sm:mt-3">
+          <a href="/subscribe" class="btn btn-primary btn-lg">
+            <Icon name="bell" size={18} />
+            {SUBSCRIBE_CTA}
+          </a>
         </div>
       </div>
+      <div class="hero-lockup lg:order-first" aria-hidden="true" set:html={heroLockup(lockup)} />
     </div>
   </section>
 
-  <section class="bg-brand-50 border-b border-brand-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <p class="text-base text-ink-2 leading-relaxed">
-        Every rupee in this fund comes from someone like you, and your continued membership decides
-        which deserving projects get funded — a community layer that drives sustainability.
+  <section class="wrap section-y grid items-end bg-ink text-paper lg:grid-cols-2 lg:gap-16">
+    <h2 class="section-title text-white lg:mb-0">Not charity — membership in a commons</h2>
+    <div class="max-w-[36rem]">
+      <p class="mb-6 text-sm text-paper">
+        These figures are from{" "}
+        <a
+          href="https://fossunited.org/grants"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-white underline decoration-white/40 underline-offset-4 hover:decoration-white rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
+          >FOSS United Foundation grants</a
+        >, a separate programme of our fiscal host.
       </p>
+      <dl class="grid grid-cols-3 gap-4 sm:gap-6">
+        <div class="flex flex-col-reverse">
+          <dt class="stat-label text-paper">disbursed</dt>
+          <dd class="stat-value text-white">₹3cr+</dd>
+        </div>
+        <div class="flex flex-col-reverse">
+          <dt class="stat-label text-paper">projects</dt>
+          <dd class="stat-value text-white">27+</dd>
+        </div>
+        <div class="flex flex-col-reverse">
+          <dt class="stat-label text-paper">events</dt>
+          <dd class="stat-value text-white">83+</dd>
+        </div>
+      </dl>
     </div>
   </section>
 
-  <section aria-label="Why contribute" class="py-10 bg-white border-b border-ink/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid gap-6 md:grid-cols-3 md:gap-8">
-        <div>
-          <h2 class="text-lg font-bold text-brand-fg mb-2">Students</h2>
-          <p class="text-sm text-ink-2 leading-relaxed">
-            Give a little back to the tools you learn with. Small contributions count. Be part of
-            the movement at Chai++ rates!
-          </p>
+  <section class="wrap section-y bg-paper">
+    <div class="grid gap-16 lg:grid-cols-2">
+      <div class="flex max-w-[36rem] flex-col">
+        <h2 class="section-title text-ink">How it works</h2>
+        <div class="relative flex-1">
+          <span
+            aria-hidden="true"
+            class="absolute bottom-4 left-4 top-4 w-px -translate-x-1/2 bg-ink/15"></span>
+          <ol class="relative flex h-full flex-col justify-between gap-8">
+            <li class="flex gap-4">
+              <div class="step-badge">
+                <span class="step-number">1</span>
+              </div>
+              <div class="pt-0.5">
+                <h3 class="step-title">Subscribe</h3>
+                <p class="step-body">
+                  Set up a <strong class="text-brand-900">small</strong> monthly contribution via UPI
+                  AutoPay.
+                </p>
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <div class="step-badge">
+                <span class="step-number">2</span>
+              </div>
+              <div class="pt-0.5">
+                <h3 class="step-title">Pool funds</h3>
+                <p class="step-body">
+                  Your contributions <strong class="text-brand-900">pool</strong> through the season.
+                  The fund runs four cycles a year, following the Indian weather seasons.
+                </p>
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <div class="step-badge">
+                <span class="step-number">3</span>
+              </div>
+              <div class="pt-0.5">
+                <h3 class="step-title">Vote & nominate</h3>
+                <p class="step-body">
+                  Contribute regularly and you earn a <strong class="text-brand-900">vote</strong> each
+                  season. You can <strong class="text-brand-900">nominate</strong> projects too.
+                </p>
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <div class="step-badge">
+                <span class="step-number">4</span>
+              </div>
+              <div class="pt-0.5">
+                <h3 class="step-title">Disburse</h3>
+                <p class="step-body">
+                  Each season, the pool is <strong class="text-brand-900">disbursed</strong> to indie
+                  FOSS maintainers and builders across India.
+                </p>
+              </div>
+            </li>
+          </ol>
         </div>
-        <div class="border-t border-ink/10 pt-6 md:border-t-0 md:border-l md:pt-0 md:pl-8">
-          <h2 class="text-lg font-bold text-brand-fg mb-2">FOSS users</h2>
-          <p class="text-sm text-ink-2 leading-relaxed">
-            Thank the people behind the software you use. Join others in helping local projects keep
-            going.
-          </p>
-        </div>
-        <div class="border-t border-ink/10 pt-6 md:border-t-0 md:border-l md:pt-0 md:pl-8">
-          <h2 class="text-lg font-bold text-brand-fg mb-2">FOSS contributors</h2>
-          <p class="text-sm text-ink-2 leading-relaxed">
-            We all build on each other's work. Support fellow maintainers and the projects your work
-            depends on.
-          </p>
+      </div>
+
+      <div class="flex flex-col">
+        <h2 class="section-title text-ink">Funding seasons</h2>
+        <div class="grid grid-cols-2 gap-3">
+          {
+            SEASONS.map((s) => (
+              <div
+                class="relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl bg-white season-tint px-3 py-5 text-center shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ink)_10%,transparent)]"
+                style={`--season: ${s.accent}`}
+              >
+                <div class="grid h-16 w-16 shrink-0 place-items-center">
+                  <img
+                    src={`/seasons/${s.spriteSlug}.svg`}
+                    alt=""
+                    width="44"
+                    height="44"
+                    class="h-11 w-11"
+                  />
+                </div>
+                <h3 class="eyebrow text-ink">{s.name}</h3>
+                <p class="text-sm font-medium uppercase tracking-wider text-ink-3">{s.months}</p>
+                <span class="mt-auto rounded-md bg-[var(--season)] px-2 py-0.5 text-sm font-semibold uppercase text-white">
+                  {s.duration}
+                </span>
+              </div>
+            ))
+          }
         </div>
       </div>
     </div>
   </section>
 
-  <section class="py-12 bg-paper">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid gap-10 md:grid-cols-2">
-        <div class="flex flex-col">
-          <h2 class="text-2xl font-bold text-ink mb-5 tracking-tight">How It Works</h2>
-          <div class="relative flex-1">
-            <span
-              aria-hidden="true"
-              class="absolute bottom-4 left-4 top-4 w-px -translate-x-1/2 bg-ink/15"></span>
-            <ol class="relative flex h-full flex-col justify-between gap-6">
-              <li class="flex gap-4">
-                <div class="step-badge">
-                  <span class="step-number">1</span>
-                </div>
-                <div class="pt-0.5">
-                  <h3 class="step-title">Subscribe</h3>
-                  <p class="step-body">
-                    Set up a <strong class="text-brand-900">small</strong> monthly contribution via UPI
-                    AutoPay. A large community of small contributors makes it sustainable rather than
-                    a fund of one-time donors.
-                  </p>
-                </div>
-              </li>
-              <li class="flex gap-4">
-                <div class="step-badge">
-                  <span class="step-number">2</span>
-                </div>
-                <div class="pt-0.5">
-                  <h3 class="step-title">Pool Funds</h3>
-                  <p class="step-body">
-                    Your contributions <strong class="text-brand-900">pool</strong> through the season.
-                    The fund runs four cycles a year, following the Indian weather seasons.
-                  </p>
-                </div>
-              </li>
-              <li class="flex gap-4">
-                <div class="step-badge">
-                  <span class="step-number">3</span>
-                </div>
-                <div class="pt-0.5">
-                  <h3 class="step-title">Vote & Nominate</h3>
-                  <p class="step-body">
-                    Contribute regularly and you earn a <strong class="text-brand-900">vote</strong> each
-                    season. The people who fund the work choose the work. You can <strong
-                      class="text-brand-900">nominate</strong
-                    > projects too.
-                  </p>
-                </div>
-              </li>
-              <li class="flex gap-4">
-                <div class="step-badge">
-                  <span class="step-number">4</span>
-                </div>
-                <div class="pt-0.5">
-                  <h3 class="step-title">Disburse</h3>
-                  <p class="step-body">
-                    Each season, the pool is <strong class="text-brand-900">disbursed</strong> to indie
-                    FOSS maintainers and builders across India. We document every administrative cost,
-                    so you can follow the whole path from your support to a maintainer.
-                  </p>
-                </div>
-              </li>
-            </ol>
-          </div>
-        </div>
-
-        <div class="flex flex-col">
-          <h2 class="text-2xl font-bold text-ink mb-5 tracking-tight">Funding Seasons</h2>
-          <div class="grid grid-cols-2 gap-3">
-            {
-              SEASONS.map((s) => (
-                <div
-                  class="relative flex flex-col items-center gap-2 overflow-hidden rounded-xl border border-ink/10 bg-white p-4 text-center shadow-soft transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-card"
-                  style={`background-image:${s.grad}`}
-                >
-                  <div class="grid h-16 w-16 shrink-0 place-items-center rounded-lg border border-ink/10 bg-card">
-                    <img
-                      src={`/seasons/${s.spriteSlug}.svg`}
-                      alt=""
-                      width="44"
-                      height="44"
-                      class="h-11 w-11"
-                    />
-                  </div>
-                  <h3 class="text-sm font-extrabold tracking-tight text-ink">{s.name}</h3>
-                  <p class="text-sm font-medium uppercase tracking-wider text-ink-3">{s.months}</p>
-                  <span
-                    class="mt-auto rounded-md px-2 py-0.5 text-sm font-semibold text-white"
-                    style={`background-color:${s.accent}`}
-                  >
-                    {s.duration}
-                  </span>
-                </div>
-              ))
-            }
-          </div>
-        </div>
+  <section class="wrap section-y bg-white">
+    <section aria-labelledby="why-title" class="grid gap-10 lg:grid-cols-3 lg:gap-8">
+      <h2 id="why-title" class="sr-only">Why contribute</h2>
+      <div>
+        <h3 class="text-xl text-ink mb-3">Students</h3>
+        <p class="max-w-[36rem] text-sm text-ink-2 text-pretty">
+          Give a little back to the tools you learn with, at Chai++ rates.
+        </p>
       </div>
-    </div>
-  </section>
+      <div>
+        <h3 class="text-xl text-ink mb-3">FOSS users</h3>
+        <p class="max-w-[36rem] text-sm text-ink-2 text-pretty">
+          Thank the people behind the software you use.
+        </p>
+      </div>
+      <div>
+        <h3 class="text-xl text-ink mb-3">FOSS contributors</h3>
+        <p class="max-w-[36rem] text-sm text-ink-2 text-pretty">
+          We all build on each other’s work. Support fellow maintainers and the projects your work
+          depends on.
+        </p>
+      </div>
+    </section>
 
-  <section class="py-12 bg-white border-t border-ink/10">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-ink mb-5 tracking-tight">Frequently Asked Questions</h2>
-      <div class="space-y-2">
+    <div class="max-w-[36rem] mt-[clamp(4rem,10vh,6rem)]">
+      <h2 class="section-title text-ink">Frequently asked questions</h2>
+      <div>
         <details class="faq group">
           <summary class="faq-summary">
             <span>Why this fund?</span>
@@ -234,7 +184,7 @@ import {
           </summary>
           <p class="faq-answer">
             Free software can be inexpensive and sustainable when a large pool of users pays for it.
-            Contributions start at a very accessible level, so that anyone can take part.
+            Contributions start low, so that anyone can take part.
           </p>
         </details>
 
@@ -244,20 +194,8 @@ import {
             <span aria-hidden="true" class="faq-plus">+</span>
           </summary>
           <p class="faq-answer">
-            Those are large grants funded by foundations and companies (₹3cr+ from FOSS United; $1M
-            a year from Zerodha's FLOSS/fund). The Rupee Fund is the volunteer-run community layer
-            beneath them.
-          </p>
-        </details>
-
-        <details class="faq group">
-          <summary class="faq-summary">
-            <span>Who will be funded?</span>
-            <span aria-hidden="true" class="faq-plus">+</span>
-          </summary>
-          <p class="faq-answer">
-            The community nominates projects, and votes to decide who is funded. Contributors earn
-            voting and nomination rights each season.
+            Those are large grants funded by foundations and companies (FOSS United Foundation;
+            Zerodha’s FLOSS/fund). The Rupee Fund is the volunteer-run community layer beneath them.
           </p>
         </details>
 
@@ -285,11 +223,12 @@ import {
 
         <details class="faq group">
           <summary class="faq-summary">
-            <span>Can I donate anonymously?</span>
+            <span>Can I contribute anonymously?</span>
             <span aria-hidden="true" class="faq-plus">+</span>
           </summary>
           <p class="faq-answer">
-            No. We comply with all statutory requirements, so anonymous donations are not supported.
+            No. We comply with all statutory requirements, so we do not accept anonymous
+            contributions.
           </p>
         </details>
 
@@ -306,7 +245,10 @@ import {
 
         <div class="faq-ghost">
           <span>More questions?</span>
-          <a href={`mailto:${REMOVAL_ADDRESS}?subject=Rupee%20Fund%20question`} class="inline-link">
+          <a
+            href={`mailto:${REMOVAL_ADDRESS}?subject=Question%20about%20The%20Rupee%20Fund`}
+            class="inline-link"
+          >
             Email us
           </a>
         </div>

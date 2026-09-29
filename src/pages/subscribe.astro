@@ -1,6 +1,5 @@
 ---
 import Base from "../layouts/Base.astro";
-import Icon from "../components/Icon.astro";
 import { REMOVAL_ADDRESS, ROLE_LABELS, ROLE_LEGEND, SUBSCRIBE_HEADING } from "../lib/launch.ts";
 import {
   AMOUNT_OPTIONS,
@@ -15,46 +14,48 @@ const TURNSTILE_SITEKEY = getSitekey();
 ---
 
 <Base>
-  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="max-w-2xl mx-auto box-content px-gutter section-y">
     <div class="card">
-      <div class="text-center mb-6">
-        <div class="inline-block p-3 bg-brand-50 rounded-lg mb-3">
-          <Icon name="heart" class="text-brand-fg" size={28} fill="currentColor" />
-        </div>
-        <h1 class="text-2xl font-bold text-ink mb-2 tracking-tight">
+      <div class="mb-6">
+        <h1 class="text-3xl text-ink mb-3">
           {SUBSCRIBE_HEADING}
         </h1>
-        <p class="text-ink-2 text-sm">
-          Nothing to pay today. Your pledge helps open the fund. Leave your email and the amount you
-          have in mind, and you hear first when it opens.
+        <p class="text-ink-2 text-sm text-pretty">
+          Nothing to pay today, and your intended amount is not a commitment. Leave your email and
+          the amount you have in mind, and you hear first when the fund opens.
         </p>
       </div>
 
       <form id="waitlist-form" class="space-y-4" action="/api/waitlist" method="post">
         <div>
-          <label for="waitlist-name" class="field-label">Full Name *</label>
+          <label for="waitlist-name" class="field-label">Full name</label>
           <input
             id="waitlist-name"
             name="name"
             type="text"
+            autocomplete="name"
             placeholder="Your name"
             class="field"
             required
           />
         </div>
         <div>
-          <label for="waitlist-email" class="field-label">Email Address *</label>
+          <label for="waitlist-email" class="field-label">Email address</label>
           <input
             id="waitlist-email"
             name="email"
             type="email"
+            autocomplete="email"
+            spellcheck="false"
             placeholder="your.email@example.com"
             class="field"
             required
           />
         </div>
         <fieldset class="min-w-0">
-          <legend class="field-label">{ROLE_LEGEND}</legend>
+          <legend class="field-label"
+            >{ROLE_LEGEND} <span class="field-optional">(optional)</span></legend
+          >
           <div class="space-y-2">
             {
               ROLE_FIELDS.map((field) => (
@@ -67,53 +68,53 @@ const TURNSTILE_SITEKEY = getSitekey();
           </div>
         </fieldset>
         <fieldset class="min-w-0">
-          <legend class="field-label">Monthly Amount *</legend>
+          <legend class="field-label">Monthly amount</legend>
           <div class="grid grid-cols-1 min-[400px]:grid-cols-3 gap-2">
             {
               AMOUNT_OPTIONS.map((option) => (
-                <label class="choice justify-center">
+                <label class="choice min-[400px]:justify-center">
                   <input type="radio" name="amount" value={option} required />
                   <span>₹{option}</span>
                 </label>
               ))
             }
           </div>
-          <div class="choice mt-2">
+          <div class="choice mt-2 flex-wrap gap-x-3">
             <label class="flex shrink-0 items-center gap-2">
-              <input
-                id="amount-other-choice"
-                type="radio"
-                name="amount"
-                value="other"
-                required
-                aria-label="Another amount"
-              />
-              <span aria-hidden="true" class="text-ink-3">₹</span>
+              <input id="amount-other-choice" type="radio" name="amount" value="other" required />
+              <span>Another amount</span>
             </label>
-            <input
-              id="waitlist-amount-other"
-              name="amount_other"
-              type="text"
-              placeholder="Another amount"
-              aria-label="Another amount in rupees each month"
-              maxlength={MAX_AMOUNT_LENGTH}
-              class="flex-1 min-w-0 bg-transparent text-sm outline-none"
-            />
+            <span class="flex min-w-24 flex-1 items-center gap-1">
+              <span aria-hidden="true" class="text-ink-3">₹</span>
+              <input
+                id="waitlist-amount-other"
+                name="amount_other"
+                type="text"
+                placeholder="e.g. 250"
+                aria-label="Another amount in rupees each month"
+                maxlength={MAX_AMOUNT_LENGTH}
+                class="flex-1 min-w-0 bg-transparent text-sm focus:outline-hidden"
+              />
+            </span>
           </div>
         </fieldset>
         <div>
-          <label for="waitlist-months" class="field-label">Number of Months</label>
+          <label for="waitlist-months" class="field-label"
+            >Number of months <span class="field-optional">(optional)</span></label
+          >
           <input
             id="waitlist-months"
             name="months"
             type="text"
-            placeholder="e.g. 12, or as long as it helps"
+            placeholder="e.g. 12"
             maxlength={MAX_MONTHS_LENGTH}
             class="field"
           />
         </div>
         <div>
-          <label for="waitlist-question" class="field-label">Question for the Team</label>
+          <label for="waitlist-question" class="field-label"
+            >Question for the team <span class="field-optional">(optional)</span></label
+          >
           <input
             id="waitlist-question"
             name="question"
@@ -145,11 +146,11 @@ const TURNSTILE_SITEKEY = getSitekey();
           data-action={TURNSTILE_ACTION}
         >
         </div>
-        <p id="waitlist-error" class="text-xs text-red-600 text-center" role="alert"></p>
+        <p id="waitlist-error" class="text-xs text-error text-center" role="alert"></p>
         <button id="waitlist-submit" type="submit" class="btn btn-primary btn-block">
           Sign up
         </button>
-        <p class="text-xs text-ink-3 text-center">
+        <p class="max-w-md text-xs text-ink-3">
           By joining you agree we may email you about the launch, and monthly updates only if you
           tick the box. No payment is taken now. See our{" "}
           <a href="/privacy" class="inline-link">Privacy</a> page. To be removed at any time, email{
@@ -158,11 +159,6 @@ const TURNSTILE_SITEKEY = getSitekey();
           <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link">{REMOVAL_ADDRESS}</a>.
         </p>
       </form>
-
-      <div id="waitlist-success" class="hidden note p-4 text-sm text-ink-2" aria-live="polite">
-        <p class="font-semibold text-ink mb-1">You're on the list</p>
-        <p>One email when we open, and monthly updates if you asked for them.</p>
-      </div>
     </div>
   </div>
 </Base>

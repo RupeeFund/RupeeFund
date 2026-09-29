@@ -1,6 +1,7 @@
 ---
 import "@fontsource-variable/inter";
 import "../index.css";
+import colors from "../brand/colors.json";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { seoForPath, OG_IMAGE, LOGO_IMAGE, SITE_NAME, SITE_URL, INITIATIVE } from "../lib/seo.ts";
@@ -13,8 +14,8 @@ const orgLd = {
   name: SITE_NAME,
   url: SITE_URL,
   logo: LOGO_IMAGE,
-  description: `${INITIATIVE}, run by volunteers, funding FOSS in India through small monthly contributions.`,
-  disambiguatingDescription: `${INITIATIVE}. Run by community volunteers.`,
+  description: `${INITIATIVE}, funding FOSS in India through small monthly contributions. FOSS United Foundation is its fiscal host.`,
+  disambiguatingDescription: `${INITIATIVE}. FOSS United Foundation is its fiscal host.`,
 };
 
 // Google reads the site name from WebSite data on the home page only.
@@ -31,8 +32,8 @@ const websiteLd = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#057a33" />
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <meta name="theme-color" content={colors["brand-fg"]} />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -45,10 +46,7 @@ const websiteLd = {
     <meta property="og:type" content="website" />
     <meta property="og:url" content={seo.canonical} />
     <meta property="og:image" content={OG_IMAGE} />
-    <meta
-      property="og:image:alt"
-      content="The Rupee Fund — a community initiative from FOSS United"
-    />
+    <meta property="og:image:alt" content="The logo of The Rupee Fund" />
     <meta name="twitter:card" content="summary_large_image" />
     {!seo.indexable && <meta name="robots" content="noindex" />}
     <script is:inline type="application/ld+json" set:html={JSON.stringify(orgLd)} />

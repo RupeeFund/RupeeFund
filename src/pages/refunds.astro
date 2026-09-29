@@ -4,8 +4,8 @@ import { REFUND_ADDRESS, REMOVAL_ADDRESS } from "../lib/launch.ts";
 ---
 
 <Base>
-  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-2xl font-bold text-ink tracking-tight mb-3">Refunds</h1>
+  <div class="max-w-xl mx-auto box-content px-gutter section-y">
+    <h1 class="page-title text-ink mb-4">Refunds</h1>
     <p class="text-sm text-ink-2 mb-6">Effective date: 25 September 2026.</p>
     <p class="text-sm text-ink-2 mb-6">
       The Rupee Fund is a FOSS United community initiative run by community members. We adopt the
@@ -19,28 +19,26 @@ import { REFUND_ADDRESS, REMOVAL_ADDRESS } from "../lib/launch.ts";
       fund and take precedence where the source differs. Ticket-transfer rules do not apply. Later
       changes to the source do not change this policy automatically.
     </p>
-    <h2 class="text-lg font-bold text-ink tracking-tight mb-2">Before launch</h2>
+    <h2 class="text-xl text-ink mt-10 mb-3">Before launch</h2>
     <p class="text-sm text-ink-2 mb-6">
       This site takes no payments at this stage. Joining the launch notification list does not
       charge you or create a payment obligation. We will publish the payment recipient, refund
       contact, claim period, and recurring-payment cancellation process before contributions open.
     </p>
-    <h2 class="text-lg font-bold text-ink tracking-tight mb-2">Donations made to the Foundation</h2>
+    <h2 class="text-xl text-ink mt-10 mb-3">Donations made to the Foundation</h2>
     <p class="text-sm text-ink-2 mb-6">
       If you donated directly to FOSS United Foundation, its policy asks you to email{" "}
       <a href={`mailto:${REFUND_ADDRESS}`} class="inline-link">{REFUND_ADDRESS}</a> within 15 days. That
       process concerns donations to the Foundation. It does not identify the Foundation as the recipient
-      or refund decision-maker for future Rupee Fund contributions.
+      or refund decision-maker for future contributions to The Rupee Fund.
     </p>
 
-    <h2 class="text-lg font-bold text-ink tracking-tight mb-2">Questions</h2>
-    <p class="text-sm text-ink-2 mb-8">
+    <h2 class="text-xl text-ink mt-10 mb-3">Questions</h2>
+    <p class="text-sm text-ink-2">
       For questions about The Rupee Fund, send an email to <a
         href={`mailto:${REMOVAL_ADDRESS}`}
         class="inline-link">{REMOVAL_ADDRESS}</a
       >.
     </p>
-
-    <a href="/" class="btn btn-primary">Back to home</a>
   </div>
 </Base>

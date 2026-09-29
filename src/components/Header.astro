@@ -6,19 +6,26 @@ const path = normalizePath(Astro.url.pathname);
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/team", label: "Team" },
+  { href: "/team", label: "People" },
 ];
 
 const subscribeCta = { href: "/subscribe", label: "I am interested" };
+const showCta = path !== subscribeCta.href;
 ---
 
-<header class="bg-white border-b-2 border-ink sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<header
+  class="sticky top-0 z-50 border-b border-ink/8 bg-paper/85 backdrop-blur-md backdrop-saturate-150"
+>
+  <div class="wrap py-3">
     <div class="flex justify-between items-center">
-      <a href="/" class="flex items-center gap-2 min-h-11" aria-label="The Rupee Fund — home">
+      <a
+        href="/"
+        class="flex items-center gap-2 min-h-11 rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-fg"
+        aria-label="The Rupee Fund — home"
+      >
         <img src="/logo.svg" alt="The Rupee Fund" width="83" height="36" class="h-9 w-auto" />
       </a>
-      <nav class="hidden md:flex gap-6 items-center" aria-label="Primary">
+      <nav class="hidden md:flex gap-5 items-center min-h-12" aria-label="Primary">
         {
           links.map((l) => (
             <a href={l.href} aria-current={path === l.href ? "page" : undefined} class="nav-link">
@@ -26,17 +33,23 @@ const subscribeCta = { href: "/subscribe", label: "I am interested" };
             </a>
           ))
         }
-        <a href={subscribeCta.href} class="btn btn-primary">{subscribeCta.label}</a>
+        {
+          showCta && (
+            <a href={subscribeCta.href} class="btn btn-quiet">
+              {subscribeCta.label}
+            </a>
+          )
+        }
       </nav>
-      <details class="md:hidden">
+      <details class="md:hidden" data-menu>
         <summary
-          class="list-none inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-lg text-ink cursor-pointer transition duration-150 ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-fg/50 [&::-webkit-details-marker]:hidden"
+          class="list-none inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-lg text-ink cursor-pointer transition duration-150 ease-out focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-fg [&::-webkit-details-marker]:hidden"
           aria-label="Menu"
         >
           <Icon name="menu" size={22} />
         </summary>
         <nav
-          class="absolute inset-x-0 top-full mt-0.5 z-50 flex flex-col gap-1 border-b-2 border-ink bg-white px-4 sm:px-6 py-3 shadow-card"
+          class="wrap absolute inset-x-0 top-full z-50 flex flex-col items-start gap-1 border-b border-ink/8 bg-white py-3 shadow-card"
           aria-label="Mobile"
         >
           {
@@ -46,9 +59,20 @@ const subscribeCta = { href: "/subscribe", label: "I am interested" };
               </a>
             ))
           }
-          <a href={subscribeCta.href} class="btn btn-primary btn-block">{subscribeCta.label}</a>
+          {
+            showCta && (
+              <a href={subscribeCta.href} class="btn btn-quiet btn-block btn-on-white">
+                {subscribeCta.label}
+              </a>
+            )
+          }
         </nav>
       </details>
     </div>
   </div>
 </header>
+
+<script>
+  import { initMenus } from "../scripts/menu.ts";
+  initMenus();
+</script>
