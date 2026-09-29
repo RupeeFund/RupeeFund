@@ -18,6 +18,8 @@ pnpm db:reset
 pnpm dev
 ```
 
+To use a dev container or GitHub Codespaces, open the repository in one. `.devcontainer/setup.sh` runs the steps above and installs Chromium. It needs no Cloudflare account. Then run `pnpm dev`.
+
 `pnpm dev` builds the site and serves it with the Worker and the local database on `http://localhost:8787`. It does not reload on an edit. Stop it and run it again. `direnv allow` needs [direnv](https://direnv.net). `pnpm dev` works without it.
 
 ## The gate

@@ -1,0 +1,24 @@
+{
+  "name": "rupeefund",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "remoteEnv": { "PATH": "${containerEnv:HOME}/.local/bin:${containerEnv:PATH}" },
+  "containerEnv": {
+    "WRANGLER_SEND_METRICS": "false",
+    "pnpm_config_store_dir": "/home/node/.pnpm-store"
+  },
+  "forwardPorts": [8787, 8788],
+  "portsAttributes": {
+    "8787": { "label": "pnpm dev", "onAutoForward": "openBrowser" },
+    "8788": { "label": "pnpm test:e2e", "onAutoForward": "silent" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "oxc-project.oxc-vscode",
+        "astro-build.astro-vscode",
+        "editorconfig.editorconfig"
+      ]
+    }
+  }
+}
