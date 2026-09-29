@@ -1,0 +1,15 @@
+@theme {
+  --color-brand: #08b74f;
+  --color-brand-50: #e7f8ee;
+  --color-brand-200: #8eddb0;
+  --color-brand-fg: #057a33;
+  --color-brand-900: #044f20;
+  --color-ink: #141414;
+  --color-ink-2: #4a4a4a;
+  --color-ink-3: #595959;
+  --color-paper: #f0f0f0;
+  --color-card: #fafafa;
+  --color-white: #ffffff;
+  --color-error: #c62828;
+  --color-border: #858585;
+}

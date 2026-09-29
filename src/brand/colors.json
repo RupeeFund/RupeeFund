@@ -1,0 +1,15 @@
+{
+  "brand": "#08b74f",
+  "brand-50": "#e7f8ee",
+  "brand-200": "#8eddb0",
+  "brand-fg": "#057a33",
+  "brand-900": "#044f20",
+  "ink": "#141414",
+  "ink-2": "#4a4a4a",
+  "ink-3": "#595959",
+  "paper": "#f0f0f0",
+  "card": "#fafafa",
+  "white": "#ffffff",
+  "error": "#c62828",
+  "border": "#858585"
+}
