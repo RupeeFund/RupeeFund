@@ -90,15 +90,15 @@ There is no environment suffix. There is one environment.
 
 ## 9. Brand files
 
-`RupeeFund/brand` is the only source of the brand colours and the brand files. `pnpm brand:sync` reads them from the published brand site, `https://brand.rupeefund.org`, and writes:
+`RupeeFund/brand` is the only source of the brand colours and the brand files. `pnpm brand:sync` reads `exports/` on the `main` branch of `RupeeFund/brand` from `raw.githubusercontent.com`, and writes:
 
 - `src/brand/colors.css`, the `--color-*` theme that `src/index.css` imports;
 - `src/brand/colors.json`, which `Base.astro` reads for `theme-color`;
 - `theme_color` and `background_color` in `public/site.webmanifest`;
 - the icons, `logo.svg` and `logo-dark.svg` in `public/`.
 
-The committed files are the only brand input to the build. The build does not fetch from the brand site. Do not edit these files by hand.
+The committed files are the only brand input to the build. The build does not fetch from the brand repository. Do not edit these files by hand.
 
-The `Brand sync` workflow runs `pnpm brand:sync` each day. When the files differ from the brand site, it runs the gate, opens or updates the pull request from `chore/brand-sync`, and fails. The workflow needs the repository setting “Allow GitHub Actions to create and approve pull requests”. To take a brand update, review and merge that pull request. CI does not run on it, so read the gate result in its description. To sync at once, run the workflow from the Actions tab.
+The `Brand sync` workflow runs `pnpm brand:sync` each day. When the files differ from the brand repository, it runs the gate, opens or updates the pull request from `chore/brand-sync`, and fails. The workflow needs the repository setting “Allow GitHub Actions to create and approve pull requests”. To take a brand update, review and merge that pull request. CI does not run on it, so read the gate result in its description. To sync at once, run the workflow from the Actions tab.
 
-To sync from a local brand checkout before it deploys, set `BRAND_DIR` to the checkout and run `pnpm brand:sync`. The script then reads `exports/` in that checkout.
+To sync from a local brand checkout before it reaches `main`, set `BRAND_DIR` to the checkout and run `pnpm brand:sync`. The script then reads `exports/` in that checkout.

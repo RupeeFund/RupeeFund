@@ -30,7 +30,7 @@ jobs:
         id: diff
         run: |
           if [ -z "$(git status --porcelain -- src/brand public)" ]; then
-            echo "The site matches brand.rupeefund.org."
+            echo "The site matches RupeeFund/brand."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             git add -- src/brand public
@@ -83,9 +83,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -C "$BRANCH"
           git apply --index brand.patch
-          git commit -m "chore(brand): sync from brand.rupeefund.org"
+          git commit -m "chore(brand): sync from RupeeFund/brand"
           git push --force "$remote" "$BRANCH"
-          body="Synced from https://brand.rupeefund.org by the brand sync workflow.
+          body="Synced from https://github.com/RupeeFund/brand by the brand sync workflow.
 
           The gate ${GATE}: ${run_url}
 
@@ -95,10 +95,10 @@ jobs:
             gh pr edit "$BRANCH" --body "$body"
           else
             gh pr create --base main --head "$BRANCH" \
-              --title "chore(brand): sync from brand.rupeefund.org" --body "$body"
+              --title "chore(brand): sync from RupeeFund/brand" --body "$body"
           fi
       - name: Fail the run when the site differs from the brand
         run: |
-          echo "::error::The site differs from brand.rupeefund.org. Gate: ${GATE}."
+          echo "::error::The site differs from RupeeFund/brand. Gate: ${GATE}."
           echo "Review and merge the brand pull request."
           exit 1

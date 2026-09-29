@@ -68,7 +68,7 @@ export function withManifestColors(manifest: string, colors: Colors): string {
 
 type Source = (path: string) => Promise<Buffer>;
 
-const BRAND_SITE = "https://brand.rupeefund.org";
+const BRAND_SITE = "https://raw.githubusercontent.com/RupeeFund/brand/main/exports";
 
 function fromSite(base: string): Source {
   return async (path) => {
