@@ -274,7 +274,11 @@
   }
 
   .faq-answer {
-    @apply max-w-[36rem] pb-3 text-ink-2 text-sm text-pretty;
+    @apply pb-3 text-ink-2 text-sm text-pretty;
+  }
+
+  .faq-sources {
+    @apply pb-3 text-ink-3 text-xs;
   }
 
   .faq-ghost {

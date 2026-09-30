@@ -69,6 +69,13 @@ const ROUTE_SEO: readonly RouteSeo[] = [
     indexable: true,
   },
   {
+    path: "/faq",
+    title: "Frequently asked questions — The Rupee Fund",
+    description: `How The Rupee Fund works, who it funds and how costs are handled. ${INITIATIVE}.`,
+    ogDescription: `How The Rupee Fund works and who it funds. ${INITIATIVE}.`,
+    indexable: true,
+  },
+  {
     path: "/waitlist-confirmed",
     title: "You’re on the list — The Rupee Fund",
     description: `You’ll hear from us the day The Rupee Fund opens. ${INITIATIVE}.`,

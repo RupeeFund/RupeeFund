@@ -98,6 +98,27 @@ for (const size of [
   });
 }
 
+test("/faq keeps its questions in one column across the page at 1440px", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/faq");
+  await page.locator("details.faq").first().locator("summary").click();
+  const { edges, answer, content } = await page.evaluate(() => {
+    const wrap = document.querySelector<HTMLElement>("main .wrap")!;
+    const pad = parseFloat(getComputedStyle(wrap).paddingInlineStart) * 2;
+    const spans = [...document.querySelectorAll("details.faq")].map((d) => {
+      const box = d.getBoundingClientRect();
+      return `${Math.round(box.left)}-${Math.round(box.right)}`;
+    });
+    return {
+      edges: [...new Set(spans)],
+      answer: document.querySelector(".faq-answer")!.getBoundingClientRect().width,
+      content: wrap.clientWidth - pad,
+    };
+  });
+  expect(edges).toHaveLength(1);
+  expect(answer).toBeGreaterThan(content - 2);
+});
+
 const LEGAL_PAGES = ["/privacy", "/refunds"] as const;
 const TALL = { width: 1280, height: 1600 };
 const MAX_DEAD_SPACE_RATIO = 0.25;
