@@ -45,7 +45,7 @@ The `Content-Type` header selects the path:
 
 ## 5. The database
 
-`migrations/` holds every migration. The live database keeps its own ledger, so `wrangler d1 migrations apply` runs only the files it has not seen. `docs/deploy.md` section 4 gives the rules for a new migration.
+`migrations/` holds every migration. The live database keeps its own ledger, so `wrangler d1 migrations apply` runs only the files it has not seen. `docs/DEPLOY.md` section 4 gives the rules for a new migration.
 
 The `waitlist` table:
 
@@ -67,7 +67,7 @@ A second signup with the same email address changes nothing. The first row stand
 
 ## 6. The export
 
-`pnpm list:export --remote` writes a CSV of the rows that have no `exported_at` and no `unsubscribed_at`, then stamps `exported_at`. Each row goes out one time. A row that changes after its export does not go out again. Refer to `docs/deploy.md` section 8.
+`pnpm list:export --remote` writes a CSV of the rows that have no `exported_at` and no `unsubscribed_at`, then stamps `exported_at`. Each row goes out one time. A row that changes after its export does not go out again. Refer to `docs/DEPLOY.md` section 8.
 
 ## 7. Names
 
