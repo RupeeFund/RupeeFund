@@ -67,6 +67,8 @@ To add a page, write a `.astro` file in `src/pages/` and add an entry to `src/li
 
 To add an endpoint, write a handler in `src/worker/routes/` and connect it in `src/worker/index.ts`. Keep it under `/api/`. [architecture.md](architecture.md) section 2 tells why.
 
+Each question on `/faq` is a Markdown file in `src/content/faq/`. `src/content.config.ts` gives its fields. Set `home: true` to show the question on the home page too. Give a source for each figure in an answer. The build test fails on a figure without one.
+
 The build renders each link preview card to a PNG under `/og/`. `src/pages/og/site.png.ts` is the card for every page. The cards are [ogimagecn](https://ogimagecn.com) blocks in `src/components/og/`. To add a block, run `pnpm dlx shadcn@4.21.0 add @ogimagecn/<name>`. Then change its colours, type and logo to the brand rules.
 
 ## Design
@@ -76,6 +78,7 @@ The brand guidelines are the source of truth for the look: colours, type, links,
 - Change the look only for a defect, a brand rule or a request from the maintainer.
 - When the site needs a rule that the brand guidelines do not have, or must depart from one, change the guidelines in `RupeeFund/brand` in the same piece of work. Then build it here.
 - Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it.
+- An inner page puts its text in one column across the page, with no width cap. Only the home page, the signup form and a list of cards use more than one column.
 - `src/index.css` builds the brand rules that the brand files do not hold: the type scale and the classes for links, buttons, cards and forms. Reuse a class before you add one. Put a new class in that file.
 - `text-sm` is the body size, 17 px. The theme in `src/index.css` changes the Tailwind scale.
 - A button is `btn` with `btn-primary` or `btn-quiet`, the Primary and Quiet buttons of the brand. Add `btn-on-white` to a quiet button on a white surface. Give it a size with a modifier from `src/index.css`, not with utilities in the markup.

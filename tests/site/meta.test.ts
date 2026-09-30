@@ -16,12 +16,13 @@ describe("sitemap", () => {
 
   it("lists the public pages", () => {
     const xml = read("sitemap-0.xml");
-    expect(xml.match(/<loc>/g)).toHaveLength(7);
+    expect(xml.match(/<loc>/g)).toHaveLength(8);
     for (const path of [
       "/privacy",
       "/refunds",
       "/subscribe",
       "/people",
+      "/faq",
       "/terms",
       "/code-of-conduct",
     ]) {

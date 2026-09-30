@@ -5,7 +5,10 @@ import { normalizePath } from "../lib/seo.ts";
 
 const path = normalizePath(Astro.url.pathname);
 
-const links = [{ href: "/people", label: "People" }];
+const links = [
+  { href: "/faq", label: "FAQ" },
+  { href: "/people", label: "People" },
+];
 
 const onForm = path === "/subscribe";
 const heroShowsCta = path === "/";

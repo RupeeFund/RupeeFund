@@ -1,11 +1,14 @@
 ---
+import { render, type CollectionEntry } from "astro:content";
 import Icon from "./Icon.astro";
 
 interface Props {
-  question: string;
+  entry: CollectionEntry<"faq">;
 }
 
-const { question } = Astro.props;
+const { entry } = Astro.props;
+const { question, sources } = entry.data;
+const { Content } = await render(entry);
 ---
 
 <details class="faq group">
@@ -13,5 +16,20 @@ const { question } = Astro.props;
     <span>{question}</span>
     <Icon name="plus" size={20} class="faq-plus" />
   </summary>
-  <p class="faq-answer"><slot /></p>
+  <div class="faq-answer"><Content /></div>
+  {
+    sources.length > 0 && (
+      <p class="faq-sources">
+        {sources.length === 1 ? "Source:" : "Sources:"}{" "}
+        {sources.map((source, i) => (
+          <>
+            {i > 0 && ", "}
+            <a href={source.url} target="_blank" rel="noopener" class="inline-link">
+              {source.title}
+            </a>
+          </>
+        ))}
+      </p>
+    )
+  }
 </details>

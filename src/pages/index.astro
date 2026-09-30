@@ -1,8 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
-import Faq from "../components/Faq.astro";
+import FaqList from "../components/FaqList.astro";
 import Icon from "../components/Icon.astro";
-import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
+import { SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
 import { TAGLINE } from "../lib/seo.ts";
 ---
 
@@ -155,55 +155,6 @@ import { TAGLINE } from "../lib/seo.ts";
 
   <section class="wrap section-y bg-paper">
     <h2 class="section-title text-ink">Frequently asked questions</h2>
-    <div class="grid lg:grid-cols-2 lg:gap-x-16">
-      <Faq question="Why this fund?">
-        Free software can be inexpensive and sustainable when a large pool of users pays for it.
-        Contributions start at a very accessible level, so that anyone can take part.
-      </Faq>
-
-      <Faq question="How is this different from FOSS United grants or FLOSS/fund?">
-        Those are large grants funded by foundations and companies (₹3cr+ from FOSS United; $1M a
-        year from Zerodha’s FLOSS/fund). The&nbsp;Rupee&nbsp;Fund is the volunteer-run community
-        layer beneath them.
-      </Faq>
-
-      <Faq question="Who will be funded?">
-        The community nominates projects, and votes to decide who is funded. Contributors earn
-        voting and nomination rights each season.
-      </Faq>
-
-      <Faq question="When do contributions start?">
-        As soon as we can.{" "}
-        <a href="/subscribe" class="inline-link">Sign up</a> to help us gauge interest, and we will keep
-        you posted.
-      </Faq>
-
-      <Faq question="Will this fund international projects?">
-        No. It funds Indian contributors, including those who work on international projects.
-      </Faq>
-
-      <Faq question="Can I donate anonymously?">
-        No. We comply with all statutory requirements, so anonymous donations are not supported.
-      </Faq>
-
-      <Faq question="How are costs handled?">
-        The funding pool is the total collected minus administrative costs. All costs are documented
-        publicly.
-      </Faq>
-
-      <div class="faq">
-        <p class="faq-ghost">
-          <span>More questions?</span>
-          <span>
-            <a
-              href={`mailto:${REMOVAL_ADDRESS}?subject=Question%20about%20The%20Rupee%20Fund`}
-              class="inline-link"
-            >
-              Email us
-            </a>
-          </span>
-        </p>
-      </div>
-    </div>
+    <FaqList homeOnly />
   </section>
 </Base>

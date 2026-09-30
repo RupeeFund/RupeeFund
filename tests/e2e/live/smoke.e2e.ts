@@ -4,6 +4,7 @@ const ROUTES = [
   "/",
   "/subscribe",
   "/people",
+  "/faq",
   "/privacy",
   "/terms",
   "/refunds",
