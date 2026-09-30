@@ -9,7 +9,7 @@ The system runs on the Workers Free plan.
 | `main` | none            | none            | never                                       |
 | `live` | `rupeefund.org` | `rupeefund-web` | the maintainer, with the `Promote` workflow |
 
-Cloudflare Workers Builds watches `live`. Its build command is `pnpm run build`, its deploy command is `npx wrangler deploy`, and non-production branch builds are off. Leave them off. Every branch build would keep the production bindings.
+Cloudflare Workers Builds watches `live`. Its build command is `pnpm run build`, its deploy command is `npx wrangler deploy`, and non-production branch builds are off. Leave them off. Every branch build keeps the production bindings.
 
 Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand. It uploads whatever `dist` holds and skips the build guards. `pnpm wrangler rollback` is fine in an incident, because it ships no new code.
 
@@ -53,7 +53,7 @@ pnpm wrangler d1 export rupeefund-waitlist --remote --output /tmp/rupeefund-wait
 
 Keep the `&&`. It stops the apply when the export fails.
 
-**Make each migration additive.** During a promote two Worker versions read the one live database. Add a column with a default or with NULL permitted. A change that removes a column needs two promotes: one that stops the code from reading it, and a later one that drops it.
+**Make each migration additive.** During a promote two Worker versions read the one live database. Add a column with a default or with NULL permitted. A change that removes a column needs two promotes: one that stops all reads of the column, and a later one that drops it.
 
 Never edit a migration that has run. Never reuse a file name. Wrangler matches a migration by file name only. A changed file that has run does nothing. A reused file name runs nothing and reports no error. `tests/migrations/replay.test.ts` refuses the retired names. `wrangler d1 migrations list` proves only that the names agree. To check the schema, query the tables:
 
@@ -66,9 +66,11 @@ pnpm wrangler d1 execute rupeefund-waitlist --remote --json --command \
 
 | Kind               | Home                       | Key                                       |
 | ------------------ | -------------------------- | ----------------------------------------- |
-| Public build value | `src/lib/turnstile.ts`     | the Turnstile sitekey                     |
+| Public build value | `src/lib/turnstile.ts`     | the Turnstile sitekey, `TURNSTILE_ACTION` |
 | Worker secret      | `wrangler secret`          | `TURNSTILE_SECRET`                        |
 | Worker variable    | `vars` in `wrangler.jsonc` | `TURNSTILE_HOSTNAMES`, `TURNSTILE_ACTION` |
+
+`TURNSTILE_ACTION` has two homes. The Turnstile widget uses the constant in `src/lib/turnstile.ts`. The Worker checks the variable in `wrangler.jsonc`. The two must match. `pnpm run build` fails when they differ.
 
 The Workers Builds settings hold no variable. One Turnstile widget serves the site, and its domain list holds `rupeefund.org` only. To rotate the sitekey, change the constant in `src/lib/turnstile.ts` and promote. Set the secret with:
 
@@ -123,11 +125,13 @@ The first line of the file is `email,name,attributes`. The `attributes` column i
 
 The export is incremental. Each row goes out one time. A row that an operator edits by hand after its export does not go out again. The command needs Node 24 or later, and wrangler login for `--remote`.
 
+A run exports at most 500 rows, oldest first. When more rows wait, the last line on stderr says `still pending`. Run the command again until that line stops. Send each run to a new file, because `>` replaces the old file.
+
 ## 9. How to move to a different account
 
 The domain uses Cloudflare Registrar. A move to a different Cloudflare account takes only the registration. You make the zone, the Worker, the database and the Turnstile widget again in the new account.
 
-A Worker custom domain needs an active zone, and the zone becomes active only after the registration moves. So the site is down from the move until the first deploy in the new account. After the move, the domain cannot move again for 30 days.
+A Worker custom domain needs an active zone, and the zone becomes active only after the registration moves. So the site is down from the move until the first deploy in the new account. After the move, the registration is transfer-locked for 30 days ([Cloudflare documentation](https://developers.cloudflare.com/registrar/account-options/inter-account-transfer/)).
 
 Before the move:
 
