@@ -17,20 +17,27 @@ Section 5 lists what the system stores for each person. It stores no payment ins
 
 Only a request to `/api/*` reaches the Worker. Cloudflare serves every other path from the static files.
 
+To add an endpoint, write a handler in `src/worker/routes/`. Connect it in `src/worker/index.ts` above the `/api/*` catch-all. Use a path under `/api/`, because no other path reaches the Worker.
+
+Each command under `scripts` in `package.json` runs in the pnpm shell emulator (`shellEmulator` in `pnpm-workspace.yaml`). The emulator accepts a `NAME=value` prefix, `&&`, `||`, `|`, a redirect and `$(...)`. It does not run `if`, `for` or `case`. `if` and `for` print `command not found`, and the rest of the command runs. `case` exits with status 1 and prints nothing.
+
 ## 3. The one environment
 
-The one environment is `live` at `rupeefund.org`. Section 7 names its resources. There is no second environment and no preview URL. A second address for `rupeefund-web` would keep the production bindings and write to the true mailing list, so the configuration refuses one. You prove a change on your own machine, against a local database.
+The one environment is `live` at `rupeefund.org`. Section 7 names its resources. There is no second environment and no preview URL. A second address for `rupeefund-web` keeps the production bindings and writes to the true mailing list, so the configuration refuses one. You prove a change on your own machine, against a local database.
 
 ## 4. How a person joins the list
 
 `POST /api/waitlist` is the only address the public can write to. The Worker refuses a request in this order:
 
-1. The `Origin` header is not the site.
+1. The `Origin` header is not the site. A request with no `Origin` header passes.
 1. The rate limiter refuses, or fails.
 1. The body is larger than 8192 bytes.
+1. For a JSON request, the body is not a JSON object.
 1. The hidden field has a value. The Worker answers with success and writes nothing.
-1. The name, the email address, or the amount is not valid.
+1. The name, the email address, the amount, the duration, or the question is not valid.
 1. For a JSON request, Turnstile refuses the token, or fails.
+
+The Worker answers a refused JSON request with a 4xx status and `{"error":"<code>"}`. It answers a refused form request with status 303 to `/waitlist-problem?reason=<code>`.
 
 Then the Worker inserts the row. If the email address already has a row, the insert does nothing.
 
@@ -51,6 +58,7 @@ The `waitlist` table:
 
 | Column                                              | Function                                                                                  |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `id`                                                | The row number. It counts up. The export reads rows in this order.                        |
 | `email`                                             | Unique, lower case                                                                        |
 | `name`                                              | The name the person gave                                                                  |
 | `consent_at`                                        | The time of consent. Required. It cannot be added later.                                  |
@@ -63,6 +71,8 @@ The `waitlist` table:
 | `unsubscribed_at`                                   | The time of a removal request                                                             |
 | `created_at`, `updated_at`                          | The time of the signup, and the time of the last change                                   |
 
+Migration 0003 opted in each row that existed then, so `updates_opt_in` is 1 for all rows before 0003.
+
 A second signup with the same email address changes nothing. The first row stands, and the person sees the normal confirmation. The form cannot prove who owns an address, so it never rewrites a row and never reveals that one exists. To change an answer or to return after a removal, a person writes to the team, and an operator edits the row by hand.
 
 ## 6. The export
@@ -71,7 +81,7 @@ A second signup with the same email address changes nothing. The first row stand
 
 ## 7. Names
 
-Every Cloudflare resource of the project follows these rules. A fork deploys to its own account, so the `rupeefund-` prefix keeps its names clear of the names a contributor already has.
+Every Cloudflare resource of this repository follows these rules. A fork deploys to its own account, so the `rupeefund-` prefix keeps its names clear of the names a contributor already has.
 
 | Resource                  | Rule                                                   | Now                              |
 | ------------------------- | ------------------------------------------------------ | -------------------------------- |
@@ -86,15 +96,15 @@ There is no environment suffix. There is one environment.
 
 ## 8. Security headers
 
-`public/_headers` sets the security headers on every page. The content security policy permits inline scripts because Bot Fight Mode on the zone injects one. It permits `static.cloudflareinsights.com` because Web Analytics on the zone injects its beacon. `tests/site/csp.test.ts` fails when a page loads a host the policy does not name.
+`public/_headers` sets the security headers on every page. The content security policy permits inline scripts for two reasons. The build emits inline module scripts. Bot Fight Mode on the zone injects one inline script. The policy also permits `static.cloudflareinsights.com` because Web Analytics on the zone injects its beacon. `tests/site/csp.test.ts` fails when a page loads a host the policy does not name.
 
 ## 9. Brand files
 
 `RupeeFund/brand` is the only source of the brand colours and the brand files. `pnpm brand:sync` reads `exports/` on the `main` branch of `RupeeFund/brand` from `raw.githubusercontent.com`, and writes:
 
-- `src/brand/colors.css`, the `--color-*` theme that `src/index.css` imports;
-- `src/brand/colors.json`, which `Base.astro` reads for `theme-color`;
-- `theme_color` and `background_color` in `public/site.webmanifest`;
+- `src/brand/colors.css`, the `--color-*` theme that `src/index.css` imports.
+- `src/brand/colors.json`, which `Base.astro` reads for `theme-color`.
+- `theme_color` and `background_color` in `public/site.webmanifest`.
 - the icons, `logo.svg` and `logo-dark.svg` in `public/`.
 
 The committed files are the only brand input to the build. The build does not fetch from the brand repository. Do not edit these files by hand.
