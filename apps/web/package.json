@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro build --outDir dist-dev && wrangler dev --assets dist-dev --persist-to ../../.wrangler/state",
+    "dev": "astro build --outDir dist-dev && node ../../scripts/wrangler-dev.mjs --assets dist-dev",
     "build": "node scripts/build.mjs",
-    "preview": "PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA astro build --outDir dist-preview && TURNSTILE_SECRET=1x0000000000000000000000000000000AA wrangler dev --assets dist-preview --persist-to ../../.wrangler/state --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
+    "preview": "PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA astro build --outDir dist-preview && TURNSTILE_SECRET=1x0000000000000000000000000000000AA node ../../scripts/wrangler-dev.mjs --assets dist-preview --port 8789 --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
     "typecheck": "wrangler types && tsc -b tsconfig.build.json && astro check",
     "test": "vitest run",
     "test:e2e": "playwright test --project live --project live-no-js",
@@ -39,5 +39,9 @@
     "vite": "^8.2.1",
     "vitest": "catalog:",
     "wrangler": "catalog:"
+  },
+  "portless": {
+    "name": "rupeefund",
+    "script": "dev"
   }
 }

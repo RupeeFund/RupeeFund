@@ -1,19 +1,22 @@
 {
   "name": "rupeefund",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:24",
-  "postCreateCommand": "bash .devcontainer/setup.sh",
-  "remoteEnv": { "PATH": "${containerEnv:HOME}/.local/bin:${containerEnv:PATH}" },
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
+  "hostRequirements": { "cpus": 4, "memory": "8gb" },
   "containerEnv": {
-    "WRANGLER_SEND_METRICS": "false",
-    "pnpm_config_store_dir": "/home/node/.pnpm-store"
+    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
+    "WRANGLER_SEND_METRICS": "false"
   },
-  "forwardPorts": [8787, 8788, 8799],
+  "onCreateCommand": "sudo corepack enable pnpm",
+  "updateContentCommand": "pnpm install --frozen-lockfile && pnpm --filter @rupeefund/web exec playwright install --with-deps chromium",
+  "postCreateCommand": "pnpm bootstrap",
+  "forwardPorts": [8787, 8788],
   "portsAttributes": {
-    "8787": { "label": "pnpm dev:web", "onAutoForward": "openBrowser" },
-    "8788": { "label": "pnpm test:e2e", "onAutoForward": "silent" },
-    "8799": { "label": "pnpm dev:admin", "onAutoForward": "silent" }
+    "8787": { "label": "site", "onAutoForward": "silent" },
+    "8788": { "label": "admin panel", "onAutoForward": "silent" }
   },
+  "otherPortsAttributes": { "onAutoForward": "ignore" },
   "customizations": {
+    "codespaces": { "openFiles": ["docs/CONTRIBUTING.md"] },
     "vscode": {
       "extensions": [
         "oxc-project.oxc-vscode",

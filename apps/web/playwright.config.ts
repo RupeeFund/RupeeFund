@@ -1,7 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 8788;
-const baseURL = `http://localhost:${PORT}`;
+const baseURL = "http://localhost:8789";
 
 export default defineConfig({
   testMatch: "**/*.e2e.ts",
@@ -26,9 +25,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm preview --port ${PORT}`,
+    command: "pnpm run preview",
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
     timeout: 180_000,
+    gracefulShutdown: { signal: "SIGTERM", timeout: 10_000 },
   },
 });

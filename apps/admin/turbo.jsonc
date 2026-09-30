@@ -12,8 +12,5 @@
       "dependsOn": ["transit", "build"],
       "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/apps/web/wrangler.jsonc"],
     },
-    "dev": {
-      "dependsOn": ["transit", "build"],
-    },
   },
 }

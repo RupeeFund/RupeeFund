@@ -3,6 +3,7 @@
   "name": "rupeefund-admin",
   "main": "./src/index.ts",
   "compatibility_date": "2026-06-20",
+  "dev": { "port": 8788 },
   "routes": [{ "pattern": "admin.rupeefund.org", "custom_domain": true }],
   "workers_dev": false,
   "preview_urls": false,
@@ -13,7 +14,6 @@
       "database_id": "ba3924ec-33bd-41e6-b1b4-92eb5a58ec61",
     },
   ],
-  "dev": { "port": 8799 },
   "access": {
     "dev": {
       "aud": "local-development-aud",

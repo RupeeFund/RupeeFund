@@ -23,11 +23,6 @@
       "dependsOn": ["transit"],
       "cache": false,
     },
-    "dev": {
-      "dependsOn": ["transit"],
-      "cache": false,
-      "persistent": true,
-    },
     "preview": {
       "cache": false,
       "persistent": true,

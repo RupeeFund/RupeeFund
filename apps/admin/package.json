@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tailwindcss -i src/admin.css -o .generated/admin.css --minify && node scripts/assets.mjs",
-    "dev": "wrangler dev --local --persist-to ../../.wrangler/state",
+    "dev": "node scripts/dev.mjs",
     "seed": "mkdir -p ../../.wrangler && node seed-local.mjs > ../../.wrangler/seed.local.sql && wrangler d1 execute rupeefund-waitlist --local --persist-to ../../.wrangler/state --file ../../.wrangler/seed.local.sql",
     "typecheck": "tsc -b",
     "test": "vitest run"
@@ -25,5 +25,9 @@
     "typescript": "catalog:",
     "vitest": "catalog:",
     "wrangler": "catalog:"
+  },
+  "portless": {
+    "name": "admin.rupeefund",
+    "script": "dev"
   }
 }

@@ -21,6 +21,9 @@ catalogs:
     jsdom:
       specifier: ^30.0.1
       version: 30.0.1
+    portless:
+      specifier: ^0.15.6
+      version: 0.15.6
     tailwindcss:
       specifier: ^4.3.3
       version: 4.3.3
@@ -44,6 +47,9 @@ importers:
       oxlint:
         specifier: ^1.78.0
         version: 1.78.0
+      portless:
+        specifier: 'catalog:'
+        version: 0.15.6
       prettier:
         specifier: ^3.9.6
         version: 3.9.6
@@ -2783,6 +2789,12 @@ packages:
   playwright@1.62.1:
     resolution: {integrity: sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==}
     engines: {node: '>=20'}
+    hasBin: true
+
+  portless@0.15.6:
+    resolution: {integrity: sha512-uOAwWLF32rmyEGFASzSO0VOaqb/AQxFCCzyZbPGd82UNNOfIEvc09zy92nroNibE5HNfzV4oVB0ObKbPXgkM9A==}
+    engines: {node: '>=24'}
+    os: [darwin, linux, win32]
     hasBin: true
 
   postcss-value-parser@4.2.0:
@@ -5618,6 +5630,8 @@ snapshots:
       playwright-core: 1.62.1
     optionalDependencies:
       fsevents: 2.3.2
+
+  portless@0.15.6: {}
 
   postcss-value-parser@4.2.0: {}
 

@@ -13,6 +13,6 @@ const wrangler = resolve("node_modules", ".bin", WIN ? "wrangler.cmd" : "wrangle
 const { status } = spawnSync(
   WIN ? `"${wrangler}"` : wrangler,
   ["d1", "migrations", "apply", "rupeefund-waitlist", "--local", "--persist-to", STATE],
-  { stdio: "inherit", env: process.env, shell: WIN },
+  { stdio: ["ignore", "inherit", "inherit"], env: process.env, shell: WIN },
 );
 process.exit(status ?? 1);

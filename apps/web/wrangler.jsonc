@@ -4,6 +4,7 @@
   "main": "./src/worker/index.ts",
   "compatibility_date": "2026-06-20",
   "compatibility_flags": ["nodejs_compat"],
+  "dev": { "port": 8787 },
   "routes": [{ "pattern": "rupeefund.org", "custom_domain": true }],
   "workers_dev": false,
   "preview_urls": false,
