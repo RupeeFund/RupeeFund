@@ -43,3 +43,4 @@ Read the document that owns your change before you start.
 
 - Write a fact in the document that owns it. Link to it from the others.
 - Write in ASD-STE100 Simplified Technical English.
+- Do not write a Cloudflare account ID, a zone ID, or the name of a person with access in a document. Name the resource instead.
