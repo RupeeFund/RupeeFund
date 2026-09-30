@@ -28,6 +28,8 @@
     "brand:sync": "pnpm --filter @rupeefund/web run brand:sync",
     "bootstrap": "node -e \"fs.existsSync('apps/web/.env') || fs.copyFileSync('apps/web/.env.example', 'apps/web/.env')\" && pnpm db:reset && pnpm admin:seed",
     "db:reset": "pnpm --filter @rupeefund/web run db:reset",
+    "db:migrate": "pnpm --filter @rupeefund/web run db:migrate",
+    "live:check": "pnpm --filter @rupeefund/web run live:check",
     "admin:seed": "pnpm --filter @rupeefund/admin run seed",
     "list:export": "pnpm --filter @rupeefund/web run list:export",
     "wrangler": "pnpm --filter @rupeefund/web exec wrangler"

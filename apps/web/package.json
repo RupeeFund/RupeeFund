@@ -12,6 +12,8 @@
     "test:e2e": "playwright test --project live --project live-no-js",
     "brand:sync": "node scripts/brand-sync.mts",
     "db:reset": "node scripts/db-reset.mjs",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "live:check": "node scripts/live-check.mts",
     "list:export": "node scripts/list-export.mts"
   },
   "dependencies": {
