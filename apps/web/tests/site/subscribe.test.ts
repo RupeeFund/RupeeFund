@@ -43,20 +43,44 @@ describe("Subscribe page (/subscribe)", () => {
   it("keeps the other amount in the amount group and the roles out of it", () => {
     const group = doc.querySelector('input[name="amount"]')?.closest("fieldset");
     expect(group?.querySelector('input[name="amount_other"]')).not.toBeNull();
-    expect(group?.querySelector('input[name^="is_"]')).toBeNull();
+    expect(group?.querySelector('input[name^="is_"], input[name^="backs_"]')).toBeNull();
+  });
+
+  it("puts the intended amount box in the amount row, with a number keypad", () => {
+    const typed = doc.getElementById("waitlist-amount-other") as HTMLInputElement;
+    const choices = inputs('input[name="amount"]').map((r) => r.closest("label"));
+    expect(new Set(choices.map((label) => label?.parentElement)).size).toBe(1);
+    expect(typed.closest("label")).toBe(choices.at(-1));
+    expect(typed.inputMode).toBe("numeric");
   });
 
   it("asks the roles as optional, unticked boxes, in the order the issue names", () => {
     const boxes = inputs('input[name^="is_"]');
     expect(boxes.map((b) => [b.name, b.type, b.value, b.required, b.defaultChecked])).toEqual([
-      ["is_foss_user", "checkbox", "1", false, false],
-      ["is_foss_contributor", "checkbox", "1", false, false],
+      ["is_user", "checkbox", "1", false, false],
+      ["is_creator", "checkbox", "1", false, false],
+      ["is_professional", "checkbox", "1", false, false],
       ["is_student", "checkbox", "1", false, false],
     ]);
     expect(boxes.map((b) => b.closest("label")?.textContent?.trim())).toEqual([
-      "FOSS user",
-      "FOSS contributor",
+      "User or consumer",
+      "Developer, implementer, creator or designer",
+      "Professional",
       "Student",
+    ]);
+  });
+
+  it("asks why the person joins as optional, unticked boxes, in the order the issue names", () => {
+    const boxes = inputs('input[name^="backs_"]');
+    expect(boxes.map((b) => [b.name, b.type, b.value, b.required, b.defaultChecked])).toEqual([
+      ["backs_nascent", "checkbox", "1", false, false],
+      ["backs_growing", "checkbox", "1", false, false],
+      ["backs_larger", "checkbox", "1", false, false],
+    ]);
+    expect(boxes.map((b) => b.closest("label")?.textContent?.trim())).toEqual([
+      "To fund nascent projects",
+      "To encourage small to mid-sized projects",
+      "To sustain larger projects",
     ]);
   });
 
@@ -80,11 +104,7 @@ describe("Subscribe page (/subscribe)", () => {
 
   it("caps the free-text answers at the lengths the columns hold", () => {
     const cap = (id: string): number => (doc.getElementById(id) as HTMLInputElement).maxLength;
-    expect([
-      cap("waitlist-amount-other"),
-      cap("waitlist-months"),
-      cap("waitlist-question"),
-    ]).toEqual([20, 20, 100]);
+    expect([cap("waitlist-months"), cap("waitlist-question")]).toEqual([20, 100]);
   });
 
   it("takes no payment: no payment form, no PAN or address, no payment provider script", () => {

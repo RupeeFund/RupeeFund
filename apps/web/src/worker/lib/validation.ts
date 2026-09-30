@@ -1,36 +1,35 @@
+import {
+  AMOUNT_OPTIONS,
+  AMOUNT_OTHER,
+  REASON_FIELDS,
+  type ReasonField,
+  ROLE_FIELDS,
+  type RoleField,
+  WAITLIST_SOURCES,
+  type WaitlistSource,
+} from "@rupeefund/db/schema";
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const WAITLIST_SOURCES = ["subscribe", "landing", "footer"] as const;
-export type WaitlistSource = (typeof WAITLIST_SOURCES)[number];
 const DEFAULT_WAITLIST_SOURCE: WaitlistSource = "subscribe";
-
-export const AMOUNT_OPTIONS = ["15", "128", "512"] as const;
-export const AMOUNT_OTHER = "other";
-
-export const ROLE_FIELDS = ["is_foss_user", "is_foss_contributor", "is_student"] as const;
-
-export type RoleField = (typeof ROLE_FIELDS)[number];
 
 export const MAX_NAME_LENGTH = 100;
 export const MAX_EMAIL_LENGTH = 254;
-export const MAX_AMOUNT_LENGTH = 20;
+export const MAX_AMOUNT_LENGTH = 15;
 export const MAX_MONTHS_LENGTH = 20;
 export const MAX_QUESTION_LENGTH = 100;
 
-export type WaitlistResult =
-  | {
-      ok: true;
-      value: {
-        name: string;
-        email: string;
-        source: WaitlistSource;
-        amount: string;
-        months: string;
-        question: string;
-        updates_opt_in: 0 | 1;
-      } & Record<RoleField, 0 | 1>;
-    }
-  | { ok: false; errors: string[] };
+export type WaitlistInput = {
+  name: string;
+  email: string;
+  source: WaitlistSource;
+  amount: number;
+  months: string;
+  question: string;
+  updates_opt_in: 0 | 1;
+} & Record<RoleField | ReasonField, 0 | 1>;
+
+export type WaitlistResult = { ok: true; value: WaitlistInput } | { ok: false; errors: string[] };
 
 function toSource(value: unknown): WaitlistSource {
   const raw = typeof value === "string" ? value.trim().toLowerCase() : "";
@@ -47,11 +46,25 @@ function text(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function toAmount(body: Record<string, unknown>): string {
+function toAmount(body: Record<string, unknown>): number | null {
   const chosen = text(body.amount);
-  if ((AMOUNT_OPTIONS as readonly string[]).includes(chosen)) return chosen;
-  if (chosen === AMOUNT_OTHER) return text(body.amount_other);
-  return "";
+  const option = AMOUNT_OPTIONS.find((o) => String(o) === chosen);
+  if (option !== undefined) return option;
+  if (chosen !== AMOUNT_OTHER) return null;
+  const digits = text(body.amount_other).replace(/[₹,\s]/g, "");
+  if (digits.length > MAX_AMOUNT_LENGTH || !/^\d+$/.test(digits)) return null;
+  const amount = Number(digits);
+  return amount >= 1 ? amount : null;
+}
+
+function boxes<F extends string>(
+  body: Record<string, unknown>,
+  fields: readonly F[],
+): Record<F, 0 | 1> {
+  return Object.fromEntries(fields.map((field) => [field, checkbox(body[field])])) as Record<
+    F,
+    0 | 1
+  >;
 }
 
 export function validateWaitlist(body: unknown): WaitlistResult {
@@ -66,7 +79,7 @@ export function validateWaitlist(body: unknown): WaitlistResult {
   if (!EMAIL_RE.test(email) || email.length > MAX_EMAIL_LENGTH) errors.push("email");
 
   const amount = toAmount(b);
-  if (amount.length === 0 || amount.length > MAX_AMOUNT_LENGTH) errors.push("amount");
+  if (amount === null) errors.push("amount");
 
   const months = text(b.months);
   if (months.length > MAX_MONTHS_LENGTH) errors.push("months");
@@ -76,7 +89,7 @@ export function validateWaitlist(body: unknown): WaitlistResult {
 
   const updates_opt_in = checkbox(b.updates);
 
-  if (errors.length > 0) return { ok: false, errors };
+  if (errors.length > 0 || amount === null) return { ok: false, errors };
   return {
     ok: true,
     value: {
@@ -87,9 +100,8 @@ export function validateWaitlist(body: unknown): WaitlistResult {
       months,
       question,
       updates_opt_in,
-      is_foss_user: checkbox(b.is_foss_user),
-      is_foss_contributor: checkbox(b.is_foss_contributor),
-      is_student: checkbox(b.is_student),
+      ...boxes(b, ROLE_FIELDS),
+      ...boxes(b, REASON_FIELDS),
     },
   };
 }

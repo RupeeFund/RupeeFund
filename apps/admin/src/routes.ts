@@ -1,3 +1,4 @@
+import { toCsv } from "@rupeefund/db/export";
 import type { Context } from "hono";
 import type { AdminRepo } from "./repo.ts";
 import { PAGE_SIZE } from "./sql.ts";
@@ -9,6 +10,7 @@ export const NO_STORE = "private, no-store";
 export interface SummaryCache {
   match(request: Request): Promise<Response | undefined>;
   put(request: Request, response: Response): Promise<void>;
+  delete(request: Request): Promise<boolean>;
 }
 
 export interface RouteDeps {
@@ -37,7 +39,7 @@ export async function handleSummary(c: AdminContext, deps: RouteDeps): Promise<R
   const hit = await deps.cache.match(key);
   if (hit !== undefined) return hit;
 
-  const summary = await deps.repo.summary();
+  const summary = await deps.repo.summary(Date.now());
   const response = c.json(summary, 200, { "cache-control": `max-age=${SUMMARY_MAX_AGE}` });
   await deps.cache.put(key, response.clone());
   return response;
@@ -64,7 +66,14 @@ export function handleQuestions(c: AdminContext, deps: RouteDeps): Promise<Respo
   return pageFrom(c, (before) => deps.repo.questions(before));
 }
 
+export const PANEL_HEADER = "x-rupeefund-admin";
+
 export async function handleReveal(c: AdminContext, deps: RouteDeps): Promise<Response> {
+  if (c.req.header(PANEL_HEADER) !== "1") {
+    deps.log({ event: "reveal_denied", reason: "cross_site" });
+    return c.json({ error: "forbidden" }, 403, PRIVATE);
+  }
+
   const id = parseId(c.req.param("id"));
   if (id === undefined) return c.json({ error: "bad_id" }, 400, PRIVATE);
 
@@ -83,4 +92,33 @@ export async function handleReveal(c: AdminContext, deps: RouteDeps): Promise<Re
 
   deps.log({ event: "reveal", actor, id });
   return c.json({ id, email }, 200, PRIVATE);
+}
+
+export async function handleExport(c: AdminContext, deps: RouteDeps): Promise<Response> {
+  const origin = c.req.header("origin");
+  if (origin !== new URL(c.req.url).origin || c.req.header(PANEL_HEADER) !== "1") {
+    deps.log({ event: "export_denied", reason: "cross_site" });
+    return c.json({ error: "forbidden" }, 403, PRIVATE);
+  }
+
+  const identity = await c.get("access").getIdentity();
+  const actor = identity?.email;
+  if (actor === undefined || actor.length === 0) {
+    deps.log({ event: "export_denied", reason: "identity_has_no_email" });
+    return c.json({ error: "forbidden" }, 403, PRIVATE);
+  }
+
+  const at = Date.now();
+  const rows = await deps.repo.claim(at);
+  deps.log({ event: "export", actor, at, count: rows.length });
+  await deps.cache.delete(summaryKey(c.req.url));
+  if (rows.length === 0) return c.body(null, 204, PRIVATE);
+
+  return c.body(toCsv(rows), 200, {
+    ...PRIVATE,
+    "content-type": "text/csv; charset=utf-8",
+    "content-disposition": `attachment; filename="rupeefund-export-${at}.csv"`,
+    "x-export-at": String(at),
+    "x-export-count": String(rows.length),
+  });
 }

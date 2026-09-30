@@ -1,3 +1,5 @@
+import { AMOUNT_OTHER, REASON_FIELDS, ROLE_FIELDS } from "@rupeefund/db/schema";
+
 const TURNSTILE_FIELD = "cf-turnstile-response";
 
 interface TurnstileApi {
@@ -69,9 +71,9 @@ export async function submitWaitlist(
         months: String(fd.get("months") ?? ""),
         question: String(fd.get("question") ?? ""),
         updates: String(fd.get("updates") ?? ""),
-        is_foss_user: String(fd.get("is_foss_user") ?? ""),
-        is_foss_contributor: String(fd.get("is_foss_contributor") ?? ""),
-        is_student: String(fd.get("is_student") ?? ""),
+        ...Object.fromEntries(
+          [...ROLE_FIELDS, ...REASON_FIELDS].map((field) => [field, String(fd.get(field) ?? "")]),
+        ),
         turnstileToken,
       }),
     });
@@ -95,7 +97,7 @@ export async function submitWaitlist(
 export function linkOtherAmount(form: HTMLFormElement): void {
   const typed = form.querySelector('input[name="amount_other"]') as HTMLInputElement | null;
   const choice = form.querySelector(
-    'input[name="amount"][value="other"]',
+    `input[name="amount"][value="${AMOUNT_OTHER}"]`,
   ) as HTMLInputElement | null;
   if (typed === null || choice === null) return;
   const requireTyped = (): void => {
@@ -103,7 +105,13 @@ export function linkOtherAmount(form: HTMLFormElement): void {
   };
   form.addEventListener("change", requireTyped);
   typed.addEventListener("input", () => {
-    if (typed.value.trim().length > 0) choice.checked = true;
+    const digits = typed.value.replace(/\D/g, "");
+    if (digits !== typed.value) {
+      const caret = typed.value.slice(0, typed.selectionStart ?? 0).replace(/\D/g, "").length;
+      typed.value = digits;
+      typed.setSelectionRange(caret, caret);
+    }
+    if (digits.length > 0) choice.checked = true;
     requireTyped();
   });
 }

@@ -39,6 +39,8 @@ export function migratedD1(): {
   }
   const db = {
     prepare: (sql: string) => statementFor(raw, sql, []),
+    batch: (statements: { all(): Promise<unknown> }[]) =>
+      Promise.all(statements.map((statement) => statement.all())),
   } as unknown as D1Database;
   return { db, raw };
 }

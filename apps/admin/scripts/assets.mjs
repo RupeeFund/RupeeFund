@@ -40,7 +40,6 @@ const svg = "image/svg+xml";
 
 const names = {
   STYLESHEET: add("admin", "css", "text/css; charset=utf-8", css),
-  LOGO: add("logo", "svg", svg, readFileSync(join(UI, "logo.svg"))),
   FAVICON: add("favicon", "svg", svg, readFileSync(join(UI, "favicon.svg"))),
 };
 

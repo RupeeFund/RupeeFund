@@ -1,4 +1,5 @@
-import type { Env, Repo, WaitlistRow } from "./types.ts";
+import type { WaitlistRow } from "@rupeefund/db/schema";
+import type { Env, Repo } from "./types.ts";
 
 export interface FakeRepo extends Repo {
   waitlist: WaitlistRow[];

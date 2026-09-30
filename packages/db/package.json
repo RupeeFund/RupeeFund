@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./export": "./src/export.ts",
+    "./schema": "./src/schema.ts",
     "./testing": "./src/testing.ts"
   },
   "scripts": {

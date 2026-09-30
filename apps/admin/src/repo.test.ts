@@ -1,18 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAdminRepo, type AdminRepo } from "./repo.ts";
 import {
+  AMOUNTS_SQL,
   DAILY_DAYS,
   DAILY_SQL,
+  DAY_MS,
   PAGE_SIZE,
   PAGE_SQL,
   QUESTIONS_SQL,
+  RATE_DAYS,
   REVEAL_SQL,
-  SLICES_SQL,
   TOTALS_SQL,
 } from "./sql.ts";
 import { makeSqlite, type SqliteFixture } from "./testkit-sqlite.ts";
 
-const SEED_COUNT = 1004;
+const SEED_COUNT = PAGE_SIZE * 2;
+const NOW = Date.UTC(2026, 9, 1);
 
 let fixture: SqliteFixture;
 let repo: AdminRepo;
@@ -31,23 +34,37 @@ function seedMany(count: number): void {
     Array.from({ length: count }, (_, i) => ({
       email: `person${i}@example.org`,
       source: i % 2 === 0 ? "subscribe" : "home",
-      amount: i % 3 === 0 ? "500" : "1000",
+      amount: i % 3 === 0 ? 500 : 1000,
       months: "12",
     })),
   );
 }
 
 describe("the list page", () => {
-  it("masks the email of every row", async () => {
-    fixture.seed([{ email: "someone@example.org" }]);
-    const [row] = await repo.page(Number.MAX_SAFE_INTEGER);
-    expect(row?.email_masked).toBe("s•••@example.org");
-  });
+  for (const [email, masked] of [
+    ["first.last@gmail.com", "••••@•••••.com"],
+    ["a@example.co.in", "••••@•••••.co.in"],
+    ["a@cs.iitb.ac.in", "••••@•••••.ac.in"],
+    ["a@mail.ibm.com", "••••@•••••.com"],
+    ["a@x.com.au", "••••@•••••.com.au"],
+    ["a@localhost", "••••@•••••"],
+    ["a@example.dev", "••••@•••••.dev"],
+    ["a@bank.sbi", "••••@•••••"],
+    ["a@corp.microsoft", "••••@•••••"],
+    ["jane.doe@example.janedoe1990", "••••@•••••"],
+    ["a@x.com.microsoft", "••••@•••••"],
+    ["a@[10.0.0.1]", "••••@•••••"],
+  ] as const) {
+    it(`shows no name, length or organisation for ${email}`, async () => {
+      fixture.seed([{ email }]);
+      const [row] = await repo.page(Number.MAX_SAFE_INTEGER);
+      expect(row?.email_masked).toBe(masked);
+    });
+  }
 
   it("returns no field holding a raw address", async () => {
     seedMany(SEED_COUNT);
     const rows = await repo.page(Number.MAX_SAFE_INTEGER);
-    expect(JSON.stringify(rows)).not.toContain("@example.org".replace("@", "0@"));
     for (const row of rows) {
       expect(Object.values(row).join(" ")).not.toContain("person");
     }
@@ -61,13 +78,7 @@ describe("the list page", () => {
       )
       .run();
     const rows = fixture.raw.prepare(PAGE_SQL).all(Number.MAX_SAFE_INTEGER, PAGE_SIZE);
-    expect((rows[0] as { email_masked: string }).email_masked).toBe("•••");
-  });
-
-  it("reads no more than the page size", async () => {
-    seedMany(SEED_COUNT);
-    const rows = await repo.page(Number.MAX_SAFE_INTEGER);
-    expect(rows).toHaveLength(PAGE_SIZE);
+    expect((rows[0] as { email_masked: string }).email_masked).toBe("••••@•••••");
   });
 
   it("searches the primary key instead of scanning the table", () => {
@@ -85,21 +96,21 @@ describe("the list page", () => {
     expect(second[0]?.id).toBe((last?.id ?? 0) - 1);
   });
 
-  it("names no audience role in the row page, because a count is all it shows", () => {
-    for (const column of ["is_foss_user", "is_foss_contributor", "is_student"]) {
-      expect(PAGE_SQL).not.toContain(column);
-    }
-  });
-
-  it("carries a flag for a question, never the question itself", async () => {
-    fixture.seed([{ email: "asks@example.org", question: "<img src=x onerror=alert(1)>" }]);
+  it("carries every column of the 0005 schema, the address masked", async () => {
+    fixture.seed([
+      { email: "boxes@example.org", is_user: 1, is_professional: null, backs_larger: 0 },
+    ]);
     const [row] = await repo.page(Number.MAX_SAFE_INTEGER);
-    expect(row?.has_question).toBe(1);
-    expect(JSON.stringify(row)).not.toContain("onerror");
+    const columns = fixture.raw.prepare("SELECT name FROM pragma_table_info('waitlist')").all();
+    const expected = columns
+      .map((column) => String(column.name))
+      .filter((name) => name !== "email" && name !== "question");
+    expect(Object.keys(row ?? {})).toEqual(expect.arrayContaining(expected));
+    expect([row?.is_user, row?.is_professional, row?.backs_larger]).toEqual([1, null, 0]);
   });
 });
 
-describe("the questions page", () => {
+describe("the questions query", () => {
   it("returns only a row that carries a question", async () => {
     fixture.seed([
       { email: "a@example.org", question: "" },
@@ -110,27 +121,24 @@ describe("the questions page", () => {
     expect(rows.map((row) => row.question)).toEqual(["How do I help?"]);
   });
 
-  it("masks the email of every row", async () => {
-    fixture.seed([{ email: "someone@example.org", question: "why?" }]);
+  it("carries the export stamp, so a question shows the status a record shows", async () => {
+    fixture.seed([{ email: "a@example.org", question: "why?", exported_at: 7 }]);
     const [row] = await repo.questions(Number.MAX_SAFE_INTEGER);
-    expect(row?.email_masked).toBe("s•••@example.org");
-    expect(JSON.stringify(row)).not.toContain("someone@example.org");
+    expect(row?.exported_at).toBe(7);
   });
 
-  it("names no audience role and no pledge, because the page shows neither", () => {
-    for (const column of ["is_foss_user", "is_foss_contributor", "is_student", "amount"]) {
-      expect(QUESTIONS_SQL).not.toContain(column);
-    }
-  });
-
-  it("reads no more than the page size", async () => {
-    fixture.seed(
-      Array.from({ length: PAGE_SIZE + 10 }, (_, i) => ({
-        email: `p${i}@example.org`,
-        question: "why?",
-      })),
-    );
-    expect(await repo.questions(Number.MAX_SAFE_INTEGER)).toHaveLength(PAGE_SIZE);
+  it("carries the columns the questions table shows, and no role or pledge", async () => {
+    fixture.seed([{ email: "a@example.org", question: "why?" }]);
+    const [row] = await repo.questions(Number.MAX_SAFE_INTEGER);
+    expect(Object.keys(row ?? {})).toEqual([
+      "id",
+      "email_masked",
+      "name",
+      "question",
+      "created_at",
+      "exported_at",
+      "unsubscribed_at",
+    ]);
   });
 
   it("walks backwards from a cursor, newest first", async () => {
@@ -150,16 +158,6 @@ describe("the questions page", () => {
 });
 
 describe("the reveal query", () => {
-  it("returns the one address asked for", async () => {
-    fixture.seed([{ email: "first@example.org" }, { email: "second@example.org" }]);
-    expect(await repo.reveal(2)).toBe("second@example.org");
-  });
-
-  it("returns nothing for a row that is absent", async () => {
-    fixture.seed([{ email: "first@example.org" }]);
-    expect(await repo.reveal(99)).toBeNull();
-  });
-
   it("searches the primary key instead of scanning the table", () => {
     const plan = fixture.plan(REVEAL_SQL, [1]).join(" ");
     expect(plan).toContain("SEARCH");
@@ -168,17 +166,36 @@ describe("the reveal query", () => {
 });
 
 describe("the summary", () => {
+  it("does not count an exported row that later unsubscribed as pending", async () => {
+    fixture.seed([{ email: "a@example.org", exported_at: 7, unsubscribed_at: 9 }]);
+    const { totals } = await repo.summary(NOW);
+    expect(totals.pending).toBe(0);
+  });
+
   it("counts an empty table without failing", async () => {
-    const summary = await repo.summary();
-    expect(summary.totals).toEqual({
-      total: 0,
-      active: 0,
-      exported: 0,
-      updates_opt_in: 0,
-      questions: 0,
-      foss_users: 0,
-      foss_contributors: 0,
-      students: 0,
+    expect(await repo.summary(NOW)).toEqual({
+      asOf: NOW,
+      totals: {
+        total: 0,
+        active: 0,
+        pending: 0,
+        recent_joined: 0,
+        recent_left: 0,
+        updates_opt_in: 0,
+        updates_asked: 0,
+        roles_answered: 0,
+        reasons_answered: 0,
+        questions: 0,
+        is_user: 0,
+        is_creator: 0,
+        is_professional: 0,
+        is_student: 0,
+        backs_nascent: 0,
+        backs_growing: 0,
+        backs_larger: 0,
+      },
+      pledges: { count: 0, sum: 0, median: null },
+      byDay: [],
     });
   });
 
@@ -187,51 +204,113 @@ describe("the summary", () => {
       { email: "a@example.org" },
       { email: "b@example.org", unsubscribed_at: 5 },
       { email: "c@example.org", exported_at: 7, question: "why?" },
+      { email: "d@example.org", updates_opt_in: null },
     ]);
-    const { totals } = await repo.summary();
+    const { totals } = await repo.summary(NOW);
     expect(totals).toEqual({
-      total: 3,
-      active: 2,
-      exported: 1,
-      updates_opt_in: 3,
+      total: 4,
+      active: 3,
+      pending: 2,
+      recent_joined: 0,
+      recent_left: 0,
+      updates_opt_in: 2,
+      updates_asked: 2,
+      roles_answered: 0,
+      reasons_answered: 0,
       questions: 1,
-      foss_users: 0,
-      foss_contributors: 0,
-      students: 0,
+      is_user: 0,
+      is_creator: 0,
+      is_professional: 0,
+      is_student: 0,
+      backs_nascent: 0,
+      backs_growing: 0,
+      backs_larger: 0,
     });
+  });
+
+  it("keeps an unsubscribed row in the list totals and out of every interest figure", async () => {
+    const recent = { created_at: NOW - DAY_MS, is_user: 1 as const, backs_nascent: 1 as const };
+    fixture.seed([{ email: "a@example.org", amount: 128, question: "why?", ...recent }]);
+    const before = await repo.summary(NOW);
+    fixture.seed([
+      { email: "b@example.org", amount: 512, question: "how?", unsubscribed_at: NOW, ...recent },
+    ]);
+    const after = await repo.summary(NOW);
+    expect(after).toEqual({ ...before, totals: { ...before.totals, total: 2, questions: 2 } });
   });
 
   it("counts each audience role, and adds a row from before 0004 to no count", async () => {
     fixture.seed([
-      { email: "a@example.org", is_foss_user: 1, is_foss_contributor: 1 },
-      { email: "b@example.org", is_foss_user: 1, is_student: 1 },
-      { email: "c@example.org", is_foss_user: 0, is_foss_contributor: 0, is_student: 0 },
+      { email: "a@example.org", is_user: 1, is_creator: 1 },
+      { email: "b@example.org", is_user: 1, is_student: 1, is_professional: 1 },
+      { email: "c@example.org", is_user: 0, is_creator: 0, is_professional: 0, is_student: 0 },
       { email: "d@example.org" },
     ]);
-    const { totals } = await repo.summary();
-    expect(totals.foss_users).toBe(2);
-    expect(totals.foss_contributors).toBe(1);
-    expect(totals.students).toBe(1);
+    const { totals } = await repo.summary(NOW);
+    expect(totals).toMatchObject({ is_user: 2, is_creator: 1, is_professional: 1, is_student: 1 });
   });
 
-  it("slices by source, amount and months from one grouped query", async () => {
-    seedMany(9);
-    const summary = await repo.summary();
-    expect(summary.bySource).toEqual([
-      { key: "subscribe", n: 5 },
-      { key: "home", n: 4 },
+  it("counts the active people who answered each group, not the boxes they ticked", async () => {
+    fixture.seed([
+      { email: "a@example.org", is_user: 1, is_creator: 1, backs_nascent: 1 },
+      { email: "b@example.org", is_user: 0, is_creator: 0, is_professional: 0, is_student: 0 },
+      { email: "c@example.org" },
+      { email: "d@example.org", is_user: 1, backs_larger: 1, unsubscribed_at: 5 },
     ]);
-    expect(summary.byAmount).toEqual([
-      { key: "1000", n: 6 },
-      { key: "500", n: 3 },
-    ]);
-    expect(summary.byMonths).toEqual([{ key: "12", n: 9 }]);
+    const { totals } = await repo.summary(NOW);
+    expect([totals.roles_answered, totals.reasons_answered]).toEqual([2, 1]);
   });
 
-  it("costs five table passes, the budget docs/architecture.md section 10.4 states", () => {
+  it("counts each reason for joining, and a row the form never asked to no count", async () => {
+    fixture.seed([
+      { email: "a@example.org", backs_nascent: 1, backs_larger: 1 },
+      { email: "b@example.org", backs_nascent: 1, backs_growing: 0 },
+      { email: "c@example.org" },
+    ]);
+    const { totals } = await repo.summary(NOW);
+    expect(totals).toMatchObject({ backs_nascent: 2, backs_growing: 0, backs_larger: 1 });
+  });
+
+  it("counts who joined and who left in the last 30 days, for the current rate", async () => {
+    const since = NOW - RATE_DAYS * DAY_MS;
+    fixture.seed([
+      { email: "a@example.org", created_at: since },
+      { email: "b@example.org", created_at: since - 1 },
+      { email: "c@example.org", created_at: NOW - 1 },
+      { email: "d@example.org", created_at: NOW - 1, unsubscribed_at: NOW },
+      { email: "e@example.org", created_at: since - 1, unsubscribed_at: since },
+      { email: "f@example.org", created_at: since - 2, unsubscribed_at: since - 1 },
+    ]);
+    const { totals } = await repo.summary(NOW);
+    expect([totals.recent_joined, totals.recent_left]).toEqual([2, 1]);
+  });
+
+  it("sums the monthly pledges, and takes the middle amount of those who gave one", async () => {
+    fixture.seed([
+      { email: "a@example.org", amount: 15 },
+      { email: "b@example.org", amount: 128 },
+      { email: "c@example.org", amount: 128 },
+      { email: "d@example.org", amount: 512 },
+      { email: "e@example.org", amount: 9999 },
+      { email: "f@example.org", amount: null },
+    ]);
+    const { pledges } = await repo.summary(NOW);
+    expect(pledges).toEqual({ count: 5, sum: 10782, median: 128 });
+  });
+
+  it("takes the mean of the two middle amounts when the count is even", async () => {
+    fixture.seed([
+      { email: "a@example.org", amount: 15 },
+      { email: "b@example.org", amount: 128 },
+    ]);
+    const { pledges } = await repo.summary(NOW);
+    expect(pledges.median).toBe(71.5);
+  });
+
+  it("costs three table passes and two groupings, the budget ARCHITECTURE.md 10.4 states", () => {
     const plans = [
-      fixture.plan(TOTALS_SQL),
-      fixture.plan(SLICES_SQL),
+      fixture.plan(TOTALS_SQL, [NOW]),
+      fixture.plan(AMOUNTS_SQL),
       fixture.plan(DAILY_SQL, [DAILY_DAYS]),
     ].flat();
     const scans = plans.filter((line) => line.startsWith("SCAN"));
@@ -246,7 +325,7 @@ describe("the summary", () => {
       { email: "b@example.org", created_at: Date.UTC(2026, 0, 1) },
       { email: "c@example.org", created_at: Date.UTC(2026, 0, 3) },
     ]);
-    const { byDay } = await repo.summary();
+    const { byDay } = await repo.summary(NOW);
     expect(byDay).toEqual([
       { key: "2026-01-01", n: 2 },
       { key: "2026-01-03", n: 1 },

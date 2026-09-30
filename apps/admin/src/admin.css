@@ -20,12 +20,65 @@
     @apply -translate-y-[200%] focus:translate-y-0;
   }
 
-  .nav-link[aria-current="page"] {
-    background-size: var(--grown) 2px;
+  .shell {
+    @apply grid min-h-dvh grid-cols-[3.5rem_minmax(0,1fr)];
   }
 
-  .count {
-    @apply ml-2 rounded-full bg-ink/10 px-2 text-xs num;
+  .sidebar {
+    @apply sticky top-0 z-40 flex h-dvh w-14 flex-col items-center gap-3;
+    @apply border-r border-ink/10 bg-white py-3;
+  }
+
+  .sidebar-mark {
+    @apply size-8 rounded-md;
+  }
+
+  .sidebar-list {
+    @apply grid w-full gap-1 px-1.5;
+  }
+
+  .sidebar-link {
+    @apply flex min-h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium;
+    @apply text-ink-2 hover:bg-paper hover:text-ink;
+  }
+
+  .sidebar-link[aria-current="page"] {
+    @apply bg-brand-50 text-brand-900;
+    @apply forced-colors:border forced-colors:border-[Highlight];
+  }
+
+  .sidebar-label {
+    @apply sr-only;
+  }
+
+  .shell:has(#sidebar-toggle[aria-expanded="true"]) {
+    .sidebar {
+      @apply w-56 items-start px-3 shadow-card md:shadow-none;
+    }
+
+    .sidebar-list {
+      @apply px-0;
+    }
+
+    .sidebar-link {
+      @apply justify-start px-3;
+    }
+
+    .sidebar-label {
+      @apply not-sr-only;
+    }
+
+    @media (width >= 48rem) {
+      grid-template-columns: 14rem minmax(0, 1fr);
+    }
+  }
+
+  .chevron {
+    @apply shrink-0 transition-[rotate] duration-200 ease-out group-open:rotate-180;
+  }
+
+  details:has(> dl:empty) {
+    @apply hidden;
   }
 
   .alert {
@@ -33,36 +86,76 @@
     @apply text-sm text-error shadow-[inset_0_0_0_1.5px_var(--color-error)];
   }
 
-  .kpi-value {
-    @apply text-4xl font-semibold tracking-[-0.033em] num;
+  .numbers {
+    container: numbers / inline-size;
+  }
+
+  .figures {
+    @apply grid grid-cols-2 gap-x-6 gap-y-4;
+  }
+
+  @container numbers (width >= 688px) {
+    .figures {
+      @apply grid-cols-4 gap-y-6;
+    }
+  }
+
+  @container numbers (width >= 1216px) {
+    .figures {
+      @apply grid-cols-7;
+    }
+  }
+
+  .figures dt,
+  .figure-note {
+    @apply text-xs text-ink-2;
+  }
+
+  .figure {
+    @apply text-xl font-semibold tracking-[-0.033em] num;
+  }
+
+  @container numbers (width >= 1504px) {
+    .figure {
+      @apply text-2xl;
+    }
+  }
+
+  .figure-note {
+    @apply num text-pretty;
+  }
+
+  .counts {
+    @apply mt-2 grid text-xs;
+  }
+
+  .counts > div {
+    @apply flex justify-between gap-4 border-b border-ink/10 py-2;
+  }
+
+  .counts dt {
+    @apply text-ink-2;
+  }
+
+  .counts dd {
+    @apply font-semibold num;
   }
 
   .bars {
-    @apply flex h-48 items-end gap-px border-b border-ink/15;
+    @apply flex h-24 items-end gap-px border-b border-border;
   }
 
   .bar {
     @apply min-w-0 flex-1 rounded-t-sm bg-brand-fg;
+    @apply forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none];
   }
 
   .bar[data-empty] {
-    @apply bg-ink/15;
+    @apply bg-border;
   }
 
-  .tally-top {
-    @apply mb-1 flex justify-between gap-4 text-sm;
-  }
-
-  .tally-top b {
+  .data-list dt {
     @apply num;
-  }
-
-  .track {
-    @apply h-2 overflow-hidden rounded-full bg-ink/10;
-  }
-
-  .track i {
-    @apply block h-full rounded-full bg-brand-fg;
   }
 
   .data-list {
@@ -77,73 +170,86 @@
     @apply num;
   }
 
-  .person {
-    @apply flex min-w-0 items-center gap-3;
-  }
-
-  .initials {
-    @apply grid size-9 flex-none place-items-center rounded-full bg-brand-50 text-xs;
-    @apply font-semibold text-brand-900;
-  }
-
-  .person-copy {
-    @apply grid min-w-0;
-  }
-
-  .person-name {
+  .data-table .person-name {
     @apply font-medium [overflow-wrap:anywhere];
   }
 
-  .person-address {
-    @apply text-xs text-ink-2 num;
+  .email-box {
+    @apply flex items-center gap-2;
   }
 
-  .badge {
-    @apply inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs;
-    @apply font-semibold whitespace-nowrap text-brand-900;
+  .email-box .btn {
+    @apply shrink-0;
   }
 
-  .badge .icon {
+  .email {
+    @apply min-w-0 [overflow-wrap:anywhere];
+  }
+
+  .status-mark {
+    @apply inline-flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap;
+    @apply text-brand-900;
+  }
+
+  .status-mark .icon {
     @apply size-3;
   }
 
-  .badge[data-state="exported"] {
-    @apply bg-ink/10 text-ink;
+  .status-mark[data-state="exported"] {
+    @apply text-ink;
   }
 
-  .badge[data-state="removed"] {
-    @apply bg-white text-error shadow-[inset_0_0_0_1px_var(--color-error)];
+  .status-mark[data-state="unsubscribed"] {
+    @apply text-error;
   }
 
   .records {
     container: records / inline-size;
   }
 
-  .records-table {
-    @apply w-full table-fixed border-collapse text-left text-sm;
+  .questions {
+    container: questions / inline-size;
   }
 
-  .records-table th {
-    @apply border-b border-ink/15 px-2 py-3 text-xs font-semibold text-ink-2;
+  .data-table {
+    @apply w-full table-fixed border-collapse text-left text-xs;
   }
 
-  .records-table td {
-    @apply border-b border-ink/10 px-2 py-4 align-middle;
+  .data-table thead th {
+    @apply eyebrow border-b border-ink/15 px-2 py-3 align-bottom text-ink-2;
   }
 
-  .records-table :is(th, td):first-child {
+  .data-table:has(tbody:empty) thead {
+    @apply hidden;
+  }
+
+  .data-table tbody :is(th, td) {
+    @apply border-b border-ink/10 px-2 py-3 align-middle font-normal;
+  }
+
+  .data-table :is(th, td):first-child {
     @apply pl-0;
   }
 
+  .data-table :is(th, td):last-child {
+    @apply pr-0;
+  }
+
   .records-table :is(th, td):last-child {
-    @apply pr-0 text-right;
+    @apply text-right;
   }
 
-  .records-table small {
-    @apply block text-xs text-ink-2;
+  @container records (width > 1160px) {
+    .records-table .joined {
+      @apply whitespace-nowrap;
+    }
+
+    .records-table .amount {
+      @apply pr-6 text-right;
+    }
   }
 
-  @container records (max-width: 760px) {
+  @container records (width <= 1160px) {
     .records-table,
     .records-table tbody {
       @apply block;
@@ -154,44 +260,104 @@
     }
 
     .records-table tr {
-      @apply grid grid-cols-2 gap-4 border-t border-ink/10 py-6;
+      @apply relative grid grid-cols-2 gap-4 border-t border-ink/10 py-5;
     }
 
-    .records-table td {
+    .records-table tbody :is(th, td) {
       @apply block min-w-0 border-0 p-0 text-left;
     }
 
-    .records-table td[data-label]::before {
-      @apply mb-1 block text-xs font-semibold text-ink-2;
-      content: attr(data-label);
+    .records-table tbody th {
+      @apply col-span-2 pr-12;
     }
 
-    .records-table :is(.person-column, .row-action) {
+    .records-table :is(.email-cell, .status-cell) {
       @apply col-span-2;
     }
+
+    .records-table .row-action {
+      @apply absolute top-5 right-0;
+    }
+
+    .records-table td[data-label]::before {
+      @apply eyebrow mb-1 block text-ink-2;
+      content: attr(data-label) / "";
+    }
   }
 
-  .question {
-    @apply grid gap-3 border-t border-ink/10 py-6 first:border-t-0 first:pt-0;
+  @container records (600px <= width <= 1160px) {
+    .records-table tr {
+      @apply grid-cols-4;
+    }
+
+    .records-table :is(tbody th, .email-cell) {
+      @apply col-span-4;
+    }
   }
 
-  .question-head {
-    @apply flex flex-wrap items-center justify-between gap-3;
-  }
+  @container questions (width <= 880px) {
+    .questions-table,
+    .questions-table tbody {
+      @apply block;
+    }
 
-  .question-meta {
-    @apply flex items-center gap-3 text-xs text-ink-2 num;
+    .questions-table thead {
+      @apply sr-only;
+    }
+
+    .questions-table tr {
+      @apply grid gap-4 border-t border-ink/10 py-5;
+    }
+
+    .questions-table tbody :is(th, td) {
+      @apply block min-w-0 border-0 p-0;
+    }
+
+    .questions-table td[data-label]::before {
+      @apply eyebrow mb-1 block text-ink-2;
+      content: attr(data-label) / "";
+    }
   }
 
   .question-body {
-    @apply max-w-[36rem] text-sm text-pretty;
+    @apply text-pretty;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
   }
 
+  .select {
+    @apply relative block;
+  }
+
+  .select select {
+    @apply appearance-none pr-10 cursor-pointer;
+  }
+
+  .select .icon {
+    @apply pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-ink-2;
+  }
+
+  .refresh .icon {
+    @apply size-4;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .refresh[data-busy] .icon {
+      @apply animate-spin;
+    }
+  }
+
   .record-dialog {
     @apply m-auto w-[min(36rem,calc(100vw-2rem))] max-h-[calc(100dvh-3rem)] rounded-2xl bg-white;
-    @apply p-0 text-ink shadow-card backdrop:bg-ink/40;
+    @apply overflow-hidden overscroll-contain p-0 text-ink shadow-card backdrop:bg-ink/40;
+  }
+
+  .record-dialog[open] {
+    @apply grid grid-rows-[auto_minmax(0,1fr)];
+  }
+
+  .record-body {
+    @apply overflow-y-auto overscroll-contain;
   }
 
   .record-fields {
@@ -207,8 +373,19 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .record-dialog[open] {
+    .record-dialog[open],
+    .record-dialog[open]::backdrop {
       @apply screen-enter;
     }
+  }
+}
+
+@layer utilities {
+  .data-table .btn-icon {
+    @apply size-8 min-h-8;
+  }
+
+  .data-table .btn-icon .icon {
+    @apply size-4;
   }
 }

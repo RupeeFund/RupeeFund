@@ -1,29 +1,50 @@
-import { FAVICON, LOGO, STYLESHEET } from "../.generated/assets.ts";
+import { FAVICON, STYLESHEET } from "../.generated/assets.ts";
 import { icon, sprite } from "./icons.ts";
-import { DAILY_DAYS } from "./sql.ts";
+import { PANEL_HEADER, SUMMARY_MAX_AGE } from "./routes.ts";
+import { DAILY_DAYS, DAY_MS } from "./sql.ts";
 
-export interface NavEntry {
+export interface Dashboard {
   href: string;
   label: string;
-  count: boolean;
+  glyph: string;
 }
 
-export const PAGES: readonly NavEntry[] = [
-  { href: "/", label: "Overview", count: false },
-  { href: "/records", label: "Records", count: true },
-  { href: "/questions", label: "Questions", count: false },
-];
+export const DASHBOARDS: readonly Dashboard[] = [{ href: "/", label: "Waitlist", glyph: "people" }];
 
-export const PRELUDE = `
-const DAY_MS = 86400000;
+const PRELUDE = `
+const DAY_MS = ${DAY_MS};
 const WINDOW_DAYS = ${DAILY_DAYS};
 const byId = (id) => document.getElementById(id);
 const all = (selector) => document.querySelectorAll(selector);
 
-async function get(path) {
-  const res = await fetch(path, { headers: { accept: "application/json" } });
-  if (!res.ok) throw new Error(path + " answered " + res.status);
+async function get(path, cache = "default") {
+  const headers = { accept: "application/json", "${PANEL_HEADER}": "1" };
+  const res = await fetch(path, { cache, headers });
+  if (!res.ok) {
+    throw Object.assign(new Error(path + " answered " + res.status), { status: res.status });
+  }
   return res.json();
+}
+
+function trouble(err) {
+  const status = err instanceof Error ? err.status : undefined;
+  if (status === 401 || status === 403) {
+    return "Access refused. Reload the page to sign in again, then try again.";
+  }
+  if (status === 404) return "That record is no longer there. Reload the page.";
+  if (typeof status === "number" && status >= 500) {
+    return "The server could not load the data. Try again in a minute.";
+  }
+  if (typeof status === "number") {
+    return "The request was refused. Reload the page, then try again.";
+  }
+  return "Unable to reach the server. Check your connection, then try again.";
+}
+
+const RULES = new Intl.PluralRules("en-IN");
+
+function plural(n, one, other) {
+  return n + " " + (RULES.select(n) === "one" ? one : other);
 }
 
 function el(tag, text, className) {
@@ -45,26 +66,64 @@ function use(name) {
   return svg;
 }
 
-function share(part, whole) {
-  if (whole === 0) return "Nothing on the list yet";
-  return Math.round((part / whole) * 100) + "% of the list";
+function share(part, whole, of = "the list") {
+  if (whole === 0) return "";
+  return Math.round((part / whole) * 100) + "% of " + of;
 }
 
-function initials(name) {
-  const words = String(name).trim().split(/\\s+/).filter(Boolean);
-  if (words.length === 0) return "?";
-  const first = Array.from(words[0])[0];
-  const last = words.length > 1 ? Array.from(words[words.length - 1])[0] : "";
-  return (first + last).toUpperCase();
+function labelled(tag, text, className, label) {
+  const cell = el(tag, text, className);
+  cell.setAttribute("data-label", label);
+  return cell;
 }
 
-function person(row) {
-  const copy = el("div", undefined, "person-copy");
-  copy.append(el("span", row.name, "person-name"));
-  copy.append(el("span", row.email_masked, "person-address"));
-  const wrap = el("div", undefined, "person");
-  wrap.append(el("span", initials(row.name), "initials"), copy);
-  return wrap;
+function nameCell(row) {
+  const cell = el("th", row.name, "person-name");
+  cell.scope = "row";
+  return cell;
+}
+
+function emailCell(row, live) {
+  const text = el("span", row.email_masked, "email num");
+  const eye = el("button", undefined, "btn btn-quiet btn-on-white btn-icon btn-toggle");
+  eye.type = "button";
+  eye.setAttribute("aria-pressed", "false");
+  eye.setAttribute("aria-label", "Reveal the email of " + row.name);
+  eye.append(use("eye"));
+  eye.addEventListener("click", () => reveal(row, text, eye, live));
+  const box = el("div", undefined, "email-box");
+  box.append(eye, text);
+  const cell = labelled("td", undefined, "email-cell", "Email");
+  cell.append(box);
+  return cell;
+}
+
+async function reveal(row, text, eye, live, shown = () => row) {
+  const status = byId(live + "-status");
+  const error = byId(live + "-error");
+  if (eye.getAttribute("aria-pressed") === "true") {
+    text.textContent = row.email_masked;
+    eye.setAttribute("aria-pressed", "false");
+    status.textContent = "Email hidden.";
+    return;
+  }
+  if (eye.hasAttribute("aria-busy")) return;
+  eye.setAttribute("aria-busy", "true");
+  try {
+    const one = await get("/api/reveal/" + row.id);
+    if (shown() !== row) return;
+    text.textContent = one.email;
+    eye.setAttribute("aria-pressed", "true");
+    error.hidden = true;
+    status.textContent = "Email shown.";
+  } catch (err) {
+    console.error(err);
+    if (shown() !== row) return;
+    error.textContent = "The email did not load. " + trouble(err);
+    error.hidden = false;
+  } finally {
+    if (shown() === row) eye.removeAttribute("aria-busy");
+  }
 }
 
 function day(ms) {
@@ -77,13 +136,24 @@ function longDay(ms) {
   });
 }
 
+function shortDate(ms) {
+  return new Date(ms).toLocaleDateString("en-IN", {
+    day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
+  });
+}
+
 function keyDay(key) {
   return longDay(Date.parse(key + "T00:00:00Z"));
 }
 
 function money(amount) {
-  if (!/^\\d+$/.test(amount)) return "₹" + amount;
-  return "₹" + BigInt(amount).toLocaleString("en-IN");
+  return "₹" + Number(amount).toLocaleString("en-IN");
+}
+
+function answer(value, format) {
+  if (value === null) return "Not recorded";
+  if (value === "") return "Not given";
+  return format === undefined ? String(value) : format(value);
 }
 
 function shortDay(key) {
@@ -92,19 +162,31 @@ function shortDay(key) {
   return Number(parts[2]) + " " + months[Number(parts[1]) - 1];
 }
 
+const STATES = { new: "New", exported: "Exported", unsubscribed: "Unsubscribed" };
+const MARKS = { new: "dot", exported: "check", unsubscribed: "minus" };
+
 function state(row) {
-  if (row.unsubscribed_at !== null) return "removed";
+  if (row.unsubscribed_at !== null) return "unsubscribed";
   if (row.exported_at !== null) return "exported";
   return "new";
 }
 
-function setNavCount(total) {
-  for (const slot of all(".nav .count")) slot.textContent = String(total);
+function statusCell(row) {
+  const mark = state(row);
+  const node = el("span", undefined, "status-mark");
+  node.dataset.state = mark;
+  node.append(use(MARKS[mark]), el("span", STATES[mark]));
+  const cell = labelled("td", undefined, "status-cell", "Status");
+  cell.append(node);
+  return cell;
 }
 
-function fail(err) {
-  byId("error-text").textContent =
-    "Unable to reach the server. Check your connection, then try again.";
+let RUN = async () => {};
+let AGAIN = () => RUN();
+
+function fail(err, again = () => RUN()) {
+  AGAIN = again;
+  byId("error-text").textContent = trouble(err);
   byId("error").hidden = false;
   console.error(err);
 }
@@ -114,26 +196,98 @@ function busy(on) {
   byId("loading").hidden = !on;
 }
 
-let RUN = async () => {};
-
 async function attempt() {
   const retry = byId("retry");
   if (retry.disabled) return;
   retry.disabled = true;
+  if (document.activeElement === retry) byId("main").focus();
   byId("error").hidden = true;
   busy(true);
+  let failure = null;
   try {
-    await RUN();
+    await AGAIN();
   } catch (err) {
-    fail(err);
-  } finally {
-    busy(false);
-    retry.disabled = false;
+    failure = err;
   }
+  busy(false);
+  retry.disabled = false;
+  if (failure !== null) fail(failure, AGAIN);
+}
+
+function startSidebar() {
+  const sidebar = byId("sidebar");
+  const toggle = byId("sidebar-toggle");
+  const wide = matchMedia("(min-width: 48rem)");
+  const open = () => toggle.getAttribute("aria-expanded") === "true";
+  const set = (on) => toggle.setAttribute("aria-expanded", String(on));
+  const covers = () => !wide.matches;
+  toggle.hidden = false;
+  toggle.addEventListener("click", () => set(!open()));
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !open() || document.querySelector("dialog[open]") !== null) {
+      return;
+    }
+    if (!covers() && !sidebar.contains(document.activeElement)) return;
+    set(false);
+    toggle.focus();
+  });
+  sidebar.addEventListener("focusout", (event) => {
+    if (covers() && open() && !sidebar.contains(event.relatedTarget)) set(false);
+  });
+}
+
+let REFRESH = () => RUN();
+
+function live(refresh) {
+  REFRESH = refresh;
+}
+
+function startRefresh() {
+  const button = byId("refresh");
+  if (button === null) return;
+  const auto = byId("auto-refresh");
+  const clock = byId("auto-refresh-left");
+  let left = ${SUMMARY_MAX_AGE};
+  let timer = null;
+  const show = () => {
+    clock.textContent = timer === null ? "" : left + "s";
+  };
+  async function now() {
+    if (button.hasAttribute("data-busy")) return;
+    button.setAttribute("data-busy", "");
+    try {
+      await REFRESH();
+    } catch (err) {
+      fail(err, () => REFRESH());
+    }
+    button.removeAttribute("data-busy");
+    left = ${SUMMARY_MAX_AGE};
+    show();
+  }
+  function tick() {
+    if (document.hidden || button.hasAttribute("data-busy")) return;
+    left -= 1;
+    if (left <= 0) now();
+    else show();
+  }
+  button.addEventListener("click", now);
+  auto.addEventListener("click", () => {
+    if (timer === null) {
+      timer = setInterval(tick, 1000);
+    } else {
+      clearInterval(timer);
+      timer = null;
+    }
+    auto.setAttribute("aria-pressed", String(timer !== null));
+    left = ${SUMMARY_MAX_AGE};
+    show();
+  });
 }
 
 function boot(run) {
   RUN = run;
+  startSidebar();
+  startRefresh();
   byId("retry").addEventListener("click", () => {
     attempt();
   });
@@ -141,16 +295,31 @@ function boot(run) {
 }
 `;
 
-function navLinks(path: string, extra: string): string {
-  return PAGES.map((entry) => {
+function sidebarLinks(path: string): string {
+  return DASHBOARDS.map((entry) => {
     const current = entry.href === path ? ' aria-current="page"' : "";
-    const count = entry.count ? '<span class="count">—</span>' : "";
-    return `<a class="nav-link${extra}" href="${entry.href}"${current}>${entry.label}${count}</a>`;
+    return (
+      `<li><a class="sidebar-link" title="${entry.label}" href="${entry.href}"${current}>` +
+      `${icon(entry.glyph)}` +
+      `<span class="sidebar-label">${entry.label}</span></a></li>`
+    );
   }).join("");
 }
 
 function labelFor(path: string): string {
-  return PAGES.find((entry) => entry.href === path)?.label ?? "Waitlist";
+  return DASHBOARDS.find((entry) => entry.href === path)?.label ?? "Waitlist";
+}
+
+export const REFRESH_CONTROLS = `<button class="btn btn-quiet btn-on-white refresh" id="refresh"
+  type="button">${icon("refresh")}Refresh</button>
+<button class="btn btn-quiet btn-on-white btn-toggle" id="auto-refresh" type="button"
+  aria-pressed="false">Auto refresh<span class="num" id="auto-refresh-left"
+  aria-hidden="true"></span></button>`;
+
+export interface Section {
+  body: string;
+  dialogs?: string;
+  script: string;
 }
 
 export interface ViewSlots {
@@ -172,39 +341,24 @@ export function page(view: ViewSlots): string {
 <link rel="icon" type="image/svg+xml" href="${FAVICON}">
 <link rel="stylesheet" href="${STYLESHEET}">
 </head>
-<body class="min-h-dvh flex flex-col">
+<body class="shell">
 ${sprite()}
-<a class="skip" href="#main">Skip to the dashboard</a>
-<header class="sticky top-0 z-50 border-b border-ink/10 bg-paper/85 backdrop-blur-md">
-<div class="wrap py-3 flex items-center justify-between gap-6">
-<a href="/" class="flex items-center min-h-11 rounded-sm">
-<img src="${LOGO}" alt="The Rupee Fund" width="83" height="36" class="h-9 w-auto"></a>
-<nav class="nav hidden md:flex gap-5 items-center min-h-12" aria-label="Sections">
-${navLinks(view.path, "")}</nav>
-<details class="group md:hidden" data-menu>
-<summary class="list-none inline-flex items-center justify-center size-11 -mr-2 rounded-lg
-  cursor-pointer [&::-webkit-details-marker]:hidden" aria-label="Sections">
-<span class="group-open:hidden">${icon("menu")}</span>
-<span class="hidden group-open:block">${icon("close")}</span></summary>
-<nav class="nav wrap absolute inset-x-0 top-full flex flex-col items-start gap-1 border-b
-  border-ink/10 bg-white py-3 shadow-card" aria-label="Sections">
-${navLinks(view.path, " -mx-1")}</nav>
-</details>
-</div>
-</header>
-<main class="content wrap flex-1 grid content-start gap-8 py-10" id="main" tabindex="-1"
-  aria-busy="true">
+<a class="skip" href="#main">Skip to the content</a>
+<nav class="sidebar" id="sidebar" aria-label="Dashboards">
+<img class="sidebar-mark" src="${FAVICON}" alt="The Rupee Fund" width="32" height="32">
+<button class="btn btn-quiet btn-on-white btn-icon" id="sidebar-toggle" type="button"
+  aria-label="Sidebar" aria-expanded="false" aria-controls="sidebar" hidden>${icon("menu")}</button>
+<ul class="sidebar-list">${sidebarLinks(view.path)}</ul>
+</nav>
+<p id="loading" class="sr-only" role="status">Loading…</p>
+<main class="grid min-w-0 content-start gap-6 sm:gap-8 px-[clamp(1rem,3vw,2.5rem)] py-6"
+  id="main" tabindex="-1" aria-busy="true">
 <div id="error" class="alert" role="alert" hidden>
 <span id="error-text"></span>
 <button class="btn btn-quiet btn-on-white" id="retry" type="button">Try again</button>
 </div>
-<p id="loading" class="text-sm text-ink-2" role="status">Loading the figures…</p>
 ${view.body}
 </main>
-<footer class="wrap py-8 flex flex-wrap justify-between gap-3 text-xs text-ink-2">
-<span>Read from the live database. Every count holds for 60 seconds.</span>
-<span>Signed in through Cloudflare Access.</span>
-</footer>
 ${view.dialogs ?? ""}
 <script>${PRELUDE}${view.script}</script>
 </body>

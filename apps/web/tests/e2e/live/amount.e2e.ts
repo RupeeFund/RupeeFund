@@ -25,9 +25,9 @@ test.describe("choosing a monthly amount", () => {
   test("names the other option on its own, not by concatenating the rupee sign", async ({
     page,
   }) => {
-    await expect(page.getByRole("radio", { name: "Another amount", exact: true })).toHaveCount(1);
+    await expect(page.getByRole("radio", { name: "Other amount", exact: true })).toHaveCount(1);
     await expect(
-      page.getByRole("textbox", { name: "Another amount in rupees each month" }),
+      page.getByRole("textbox", { name: "Other amount in rupees each month" }),
     ).toHaveCount(1);
   });
 

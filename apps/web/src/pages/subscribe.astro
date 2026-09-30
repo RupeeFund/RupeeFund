@@ -1,13 +1,15 @@
 ---
 import Base from "../layouts/Base.astro";
-import { REMOVAL_ADDRESS, ROLE_LABELS, ROLE_LEGEND, SUBSCRIBE_HEADING } from "../lib/launch.ts";
 import {
-  AMOUNT_OPTIONS,
-  MAX_AMOUNT_LENGTH,
-  MAX_MONTHS_LENGTH,
-  MAX_QUESTION_LENGTH,
-  ROLE_FIELDS,
-} from "../worker/lib/validation.ts";
+  REASON_LABELS,
+  REASON_LEGEND,
+  REMOVAL_ADDRESS,
+  ROLE_LABELS,
+  ROLE_LEGEND,
+  SUBSCRIBE_HEADING,
+} from "../lib/launch.ts";
+import { AMOUNT_OPTIONS, AMOUNT_OTHER, REASON_FIELDS, ROLE_FIELDS } from "@rupeefund/db/schema";
+import { MAX_MONTHS_LENGTH, MAX_QUESTION_LENGTH } from "../worker/lib/validation.ts";
 import { TURNSTILE_ACTION, getSitekey } from "../lib/turnstile.ts";
 
 const TURNSTILE_SITEKEY = getSitekey();
@@ -69,8 +71,23 @@ const TURNSTILE_SITEKEY = getSitekey();
           </div>
         </fieldset>
         <fieldset class="min-w-0">
+          <legend class="field-label"
+            >{REASON_LEGEND} <span class="field-optional">(optional)</span></legend
+          >
+          <div class="space-y-2">
+            {
+              REASON_FIELDS.map((field) => (
+                <label class="choice">
+                  <input type="checkbox" name={field} value="1" />
+                  <span>{REASON_LABELS[field]}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+        <fieldset class="min-w-0">
           <legend class="field-label">Monthly amount</legend>
-          <div class="grid grid-cols-1 min-[400px]:grid-cols-3 gap-2">
+          <div class="grid grid-cols-3 min-[400px]:grid-cols-[auto_auto_auto_minmax(0,1fr)] gap-2">
             {
               AMOUNT_OPTIONS.map((option) => (
                 <label class="choice">
@@ -85,36 +102,29 @@ const TURNSTILE_SITEKEY = getSitekey();
                 </label>
               ))
             }
-          </div>
-          <div class="mt-2 grid gap-2 min-[400px]:grid-cols-[auto_minmax(0,1fr)]">
-            <label class="choice">
+            <label class="choice col-span-3 min-[400px]:col-span-1">
               <input
                 id="amount-other-choice"
                 type="radio"
                 name="amount"
-                value="other"
+                value={AMOUNT_OTHER}
                 required
+                aria-label="Other amount"
                 aria-describedby="waitlist-amount-error"
               />
-              <span>Another amount</span>
-            </label>
-            <div class="relative">
-              <span
-                aria-hidden="true"
-                class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-ink-3"
-                >₹</span
-              >
+              <span aria-hidden="true" class="text-ink-3">₹</span>
               <input
                 id="waitlist-amount-other"
                 name="amount_other"
                 type="text"
-                placeholder="e.g. 250"
-                aria-label="Another amount in rupees each month"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Other"
+                aria-label="Other amount in rupees each month"
                 aria-describedby="waitlist-amount-error"
-                maxlength={MAX_AMOUNT_LENGTH}
-                class="field pl-7"
+                class="min-w-0 w-full min-h-10 bg-transparent"
               />
-            </div>
+            </label>
           </div>
           <p id="waitlist-amount-error" class="field-error"></p>
         </fieldset>

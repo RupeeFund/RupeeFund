@@ -1,3 +1,4 @@
+import { REASON_FIELDS, ROLE_FIELDS } from "@rupeefund/db/schema";
 import { describe, expect, it } from "vitest";
 import {
   MAX_AMOUNT_LENGTH,
@@ -5,7 +6,6 @@ import {
   MAX_MONTHS_LENGTH,
   MAX_NAME_LENGTH,
   MAX_QUESTION_LENGTH,
-  ROLE_FIELDS,
   validateWaitlist,
 } from "./validation.ts";
 
@@ -20,13 +20,17 @@ describe("validateWaitlist", () => {
         name: "Asha",
         email: "asha@example.com",
         source: "subscribe",
-        amount: "128",
+        amount: 128,
         months: "",
         question: "",
         updates_opt_in: 0,
-        is_foss_user: 0,
-        is_foss_contributor: 0,
+        is_user: 0,
+        is_creator: 0,
+        is_professional: 0,
         is_student: 0,
+        backs_nascent: 0,
+        backs_growing: 0,
+        backs_larger: 0,
       },
     });
   });
@@ -80,7 +84,7 @@ describe("validateWaitlist reads the contribution answers", () => {
 
   it("reads the typed amount when the subscriber chose other", () => {
     const result = validateWaitlist({ ...base, amount: "other", amount_other: " 250 " });
-    expect(result).toMatchObject({ ok: true, value: { amount: "250" } });
+    expect(result).toMatchObject({ ok: true, value: { amount: 250 } });
   });
 
   it("rejects other with nothing typed beside it", () => {
@@ -90,7 +94,7 @@ describe("validateWaitlist reads the contribution answers", () => {
 
   it("ignores a typed amount when a fixed option is chosen", () => {
     const result = validateWaitlist({ ...base, amount: "512", amount_other: "9999" });
-    expect(result).toMatchObject({ ok: true, value: { amount: "512" } });
+    expect(result).toMatchObject({ ok: true, value: { amount: 512 } });
   });
 
   it("rejects an amount past the column budget", () => {
@@ -144,21 +148,60 @@ describe("validateWaitlist reads the updates checkbox", () => {
 });
 
 describe("validateWaitlist reads the audience checkboxes", () => {
+  const every = (value: string | number) =>
+    Object.fromEntries(ROLE_FIELDS.map((field) => [field, value]));
+
   for (const field of ROLE_FIELDS) {
     it(`stores 1 only for the ${field} box, so a crafted body cannot claim a role`, () => {
-      const crafted = { is_foss_user: "yes", is_foss_contributor: "yes", is_student: "yes" };
-      expect(validateWaitlist({ ...base, ...crafted, [field]: "1" })).toMatchObject({
+      expect(validateWaitlist({ ...base, ...every("yes"), [field]: "1" })).toMatchObject({
         ok: true,
-        value: { is_foss_user: 0, is_foss_contributor: 0, is_student: 0, [field]: 1 },
+        value: { ...every(0), [field]: 1 },
       });
     });
   }
 
   it("accepts a signup that ticks every box, because the roles overlap", () => {
-    const body = { ...base, is_foss_user: "1", is_foss_contributor: "1", is_student: "1" };
-    expect(validateWaitlist(body)).toMatchObject({
+    expect(validateWaitlist({ ...base, ...every("1") })).toMatchObject({
       ok: true,
-      value: { is_foss_user: 1, is_foss_contributor: 1, is_student: 1 },
+      value: every(1),
     });
+  });
+});
+
+describe("validateWaitlist reads the reason checkboxes", () => {
+  const every = (value: string | number) =>
+    Object.fromEntries(REASON_FIELDS.map((field) => [field, value]));
+
+  for (const field of REASON_FIELDS) {
+    it(`stores 1 only for the ${field} box, so a crafted body cannot claim a reason`, () => {
+      expect(validateWaitlist({ ...base, ...every("yes"), [field]: "1" })).toMatchObject({
+        ok: true,
+        value: { ...every(0), [field]: 1 },
+      });
+    });
+  }
+});
+
+describe("validateWaitlist reads the intended amount as whole rupees", () => {
+  for (const [typed, amount] of [
+    ["1,000", 1000],
+    ["₹ 250", 250],
+    ["0042", 42],
+  ] as const) {
+    it(`keeps an intended amount typed as ${typed} as ${amount}`, () => {
+      const result = validateWaitlist({ ...base, amount: "other", amount_other: typed });
+      expect(result).toMatchObject({ ok: true, value: { amount } });
+    });
+  }
+
+  for (const typed of ["1k", "0", "3.14", "-5"]) {
+    it(`refuses an intended amount typed as ${typed}`, () => {
+      const result = validateWaitlist({ ...base, amount: "other", amount_other: typed });
+      expect(result).toEqual({ ok: false, errors: ["amount"] });
+    });
+  }
+
+  it("refuses an intended amount that is not one of the fixed options", () => {
+    expect(validateWaitlist({ ...base, amount: "100" })).toEqual({ ok: false, errors: ["amount"] });
   });
 });

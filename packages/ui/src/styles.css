@@ -292,16 +292,19 @@
   @apply motion-safe:transition-[translate,background-color,box-shadow,padding,gap];
   @apply motion-safe:duration-300;
   @apply motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] forced-colors:border;
+  @apply disabled:cursor-not-allowed disabled:opacity-50;
+  @apply forced-colors:disabled:border-[GrayText] forced-colors:disabled:text-[GrayText];
 }
 
 @utility btn-primary {
   @apply bg-ink text-white shadow-[0_0_0_0_var(--color-brand)];
   @apply hover:shadow-[0_6px_0_0_var(--color-brand)] motion-safe:hover:-translate-y-0.5;
+  @apply disabled:hover:shadow-[0_0_0_0_var(--color-brand)] disabled:hover:translate-y-0;
 }
 
 @utility btn-quiet {
   @apply text-ink shadow-[inset_0_0_0_1.5px_var(--color-ink)];
-  @apply hover:bg-[var(--quiet-hover,var(--color-white))];
+  @apply hover:bg-[var(--quiet-hover,var(--color-white))] disabled:hover:bg-transparent;
 }
 
 @utility btn-on-white {
@@ -315,6 +318,9 @@
 @utility btn-toggle {
   &[aria-pressed="true"] {
     @apply bg-ink text-white hover:bg-ink;
+    @apply forced-colors:bg-[Highlight] forced-colors:hover:bg-[Highlight];
+    @apply forced-colors:text-[HighlightText];
+    @apply forced-colors:[forced-color-adjust:none];
   }
 }
 

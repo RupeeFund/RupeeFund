@@ -1,11 +1,7 @@
-import { overviewPage } from "./view-overview.ts";
-import { questionsPage } from "./view-questions.ts";
-import { recordsPage } from "./view-records.ts";
+import { waitlistPage } from "./view-waitlist.ts";
 
 const VIEWS: Readonly<Record<string, () => string>> = {
-  "/": overviewPage,
-  "/records": recordsPage,
-  "/questions": questionsPage,
+  "/": waitlistPage,
 };
 
 export function render(path: string): string {

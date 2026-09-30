@@ -1,6 +1,12 @@
-import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { MIGRATIONS_DIR, migrationFiles } from "@rupeefund/db/testing";
+import {
+  REASON_FIELDS,
+  type ReasonField,
+  ROLE_FIELDS,
+  type RoleField,
+  type WaitlistRow,
+} from "@rupeefund/db/schema";
+import { migratedD1 } from "@rupeefund/db/testing";
 import type { AdminEnv } from "./types.ts";
 
 type Bindable = null | number | bigint | string | Uint8Array;
@@ -13,59 +19,46 @@ export interface SqliteFixture {
   close(): void;
 }
 
-export interface SeedRow {
-  email: string;
-  name?: string;
-  source?: string;
-  amount?: string;
-  months?: string;
-  question?: string;
-  updates_opt_in?: number;
-  is_foss_user?: number | null;
-  is_foss_contributor?: number | null;
-  is_student?: number | null;
-  exported_at?: number | null;
-  unsubscribed_at?: number | null;
-  created_at?: number;
-}
+export type SeedRow = Pick<WaitlistRow, "email"> &
+  Partial<
+    Pick<
+      WaitlistRow,
+      | "name"
+      | "source"
+      | "amount"
+      | "months"
+      | "question"
+      | "updates_opt_in"
+      | RoleField
+      | ReasonField
+      | "exported_at"
+      | "unsubscribed_at"
+      | "created_at"
+    >
+  >;
 
-const SEED_SQL = `INSERT INTO waitlist
-    (email, name, consent_at, source, amount, months, question, updates_opt_in,
-     is_foss_user, is_foss_contributor, is_student,
-     exported_at, unsubscribed_at, created_at, updated_at)
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+const SEED_COLUMNS = [
+  "email",
+  "name",
+  "consent_at",
+  "source",
+  "amount",
+  "months",
+  "question",
+  "updates_opt_in",
+  ...ROLE_FIELDS,
+  ...REASON_FIELDS,
+  "exported_at",
+  "unsubscribed_at",
+  "created_at",
+  "updated_at",
+] as const;
 
-function statementOf(raw: DatabaseSync, sql: string, bindings: Bindable[]) {
-  return {
-    bind: (...next: Bindable[]) => statementOf(raw, sql, next),
-    all: async () => ({
-      success: true,
-      results: raw.prepare(sql).all(...bindings),
-      meta: {},
-    }),
-    first: async (column?: string) => {
-      const row = raw.prepare(sql).get(...bindings) as Record<string, unknown> | undefined;
-      if (row === undefined) return null;
-      return column === undefined ? row : (row[column] ?? null);
-    },
-    run: async () => {
-      raw.prepare(sql).run(...bindings);
-      return { success: true, meta: {} };
-    },
-  };
-}
+const SEED_SQL = `INSERT INTO waitlist (${SEED_COLUMNS.join(", ")})
+   VALUES (${SEED_COLUMNS.map(() => "?").join(", ")})`;
 
 export function makeSqlite(): SqliteFixture {
-  const raw = new DatabaseSync(":memory:");
-  for (const file of migrationFiles()) {
-    raw.exec(readFileSync(`${MIGRATIONS_DIR}/${file}`, "utf8"));
-  }
-
-  const db = {
-    prepare: (sql: string) => statementOf(raw, sql, []),
-    batch: async (statements: { all(): Promise<unknown> }[]) =>
-      Promise.all(statements.map((s) => s.all())),
-  } as unknown as AdminEnv["DB"];
+  const { db, raw } = migratedD1();
 
   return {
     db,
@@ -79,13 +72,11 @@ export function makeSqlite(): SqliteFixture {
           row.name ?? "A Person",
           at,
           row.source ?? "subscribe",
-          row.amount ?? "500",
-          row.months ?? "12",
-          row.question ?? "",
-          row.updates_opt_in ?? 1,
-          row.is_foss_user ?? null,
-          row.is_foss_contributor ?? null,
-          row.is_student ?? null,
+          row.amount === undefined ? 500 : row.amount,
+          row.months === undefined ? "12" : row.months,
+          row.question === undefined ? "" : row.question,
+          row.updates_opt_in === undefined ? 1 : row.updates_opt_in,
+          ...[...ROLE_FIELDS, ...REASON_FIELDS].map((field) => row[field] ?? null),
           row.exported_at ?? null,
           row.unsubscribed_at ?? null,
           at,

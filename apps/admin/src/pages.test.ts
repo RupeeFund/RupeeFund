@@ -1,14 +1,15 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ASSETS, FAVICON, STYLESHEET } from "../.generated/assets.ts";
-import { PAGES } from "./chrome.ts";
+import { DASHBOARDS } from "./chrome.ts";
 import { render } from "./pages.ts";
 
 const MARKUP_SINKS = ["innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "eval("];
 
 const SOURCE_CSS = readFileSync("src/admin.css", "utf8");
 
-const RENDERED = PAGES.map((entry) => ({ ...entry, html: render(entry.href) }));
+const RENDERED = DASHBOARDS.map((entry) => ({ ...entry, html: render(entry.href) }));
+const VIEW = render("/");
 
 describe.each(RENDERED)("the $label page", ({ href, label, html }) => {
   it("writes every value through textContent, so free text can carry no markup", () => {
@@ -48,14 +49,13 @@ describe.each(RENDERED)("the $label page", ({ href, label, html }) => {
     expect(html).toContain('id="error" class="alert" role="alert"');
   });
 
-  it("marks itself as the current page, and marks no other", () => {
+  it("marks itself as the current dashboard, and marks no other", () => {
     const marked = html.match(/href="([^"]+)" aria-current="page"/g) ?? [];
-    expect(marked).toHaveLength(2);
-    for (const hit of marked) expect(hit).toContain(`href="${href}"`);
+    expect(marked).toEqual([`href="${href}" aria-current="page"`]);
   });
 
-  it("links every nav item to a real address, never to a fragment", () => {
-    for (const other of PAGES) {
+  it("links every sidebar item to a real address, never to a fragment", () => {
+    for (const other of DASHBOARDS) {
       expect(html).toContain(`href="${other.href}"`);
     }
     expect(html).not.toMatch(/<a href="#(?!main)/);
@@ -85,12 +85,23 @@ describe.each(RENDERED)("the $label page", ({ href, label, html }) => {
 });
 
 describe("the chrome", () => {
-  it("offers one destination for each thing the panel can show", () => {
-    expect(PAGES.map((entry) => entry.href)).toEqual(["/", "/records", "/questions"]);
+  it("offers one dashboard today, the waitlist, with its numbers, records and questions", () => {
+    expect(DASHBOARDS.map((entry) => entry.href)).toEqual(["/"]);
+    const order = ["numbers-title", "records-title", "questions-title"].map((id) =>
+      VIEW.indexOf(`id="${id}"`),
+    );
+    expect(order.every((at, i) => at > (order[i - 1] ?? 0))).toBe(true);
+  });
+
+  it("starts with the sidebar collapsed, its toggle hidden until the script runs", () => {
+    const toggle = VIEW.match(/<button[^>]*id="sidebar-toggle"[^>]*>/)?.[0] ?? "";
+    expect(toggle).toContain('aria-expanded="false"');
+    expect(toggle).toContain('aria-controls="sidebar"');
+    expect(toggle).toMatch(/ hidden[ >]/);
   });
 
   it("ships no sprite symbol that no page asks for", () => {
-    const every = PAGES.map((entry) => render(entry.href));
+    const every = DASHBOARDS.map((entry) => render(entry.href));
     const symbols = [...every[0].matchAll(/<symbol id="i-([a-z]+)"/g)].map((hit) => hit[1]);
     const asked = (name: string) =>
       every.some(
@@ -100,16 +111,6 @@ describe("the chrome", () => {
           html.includes(`: "${name}"`),
       );
     expect(symbols.filter((name) => !asked(name))).toEqual([]);
-  });
-
-  it("puts the record dialog only on the page that opens records", () => {
-    expect(render("/")).not.toContain('id="record-dialog"');
-    expect(render("/questions")).not.toContain('id="record-dialog"');
-    expect(render("/records")).toContain('id="record-dialog"');
-  });
-
-  it("carries one count in the nav, because one function writes every count slot", () => {
-    expect(PAGES.filter((entry) => entry.count)).toHaveLength(1);
   });
 
   it("takes every colour from a brand token, never from a literal", () => {
@@ -123,33 +124,38 @@ describe("the chrome", () => {
     expect(rule).not.toContain("text-overflow");
   });
 
-  it("says plainly that a question page holds the words a person wrote", () => {
-    expect(render("/questions")).toMatch(
-      /Each card holds the words one person wrote on the signup\s+form/,
-    );
+  it("styles the current dashboard and the open sidebar from the attributes they set", () => {
+    expect(SOURCE_CSS).toContain('.sidebar-link[aria-current="page"]');
+    expect(SOURCE_CSS).toContain('#sidebar-toggle[aria-expanded="true"]');
+    expect(VIEW).not.toContain('aria-current="location"');
   });
 
-  it("styles the current page with the attribute the nav actually sets", () => {
-    expect(SOURCE_CSS).toContain('.nav-link[aria-current="page"]');
-    expect(render("/")).not.toContain('aria-current="location"');
-  });
-
-  it("stacks the wide table into cards instead of scrolling it sideways", () => {
-    expect(render("/records")).toContain('class="records card');
-    expect(SOURCE_CSS).toContain("container: records / inline-size");
-    expect(SOURCE_CSS).toContain("@container records (max-width: 760px)");
+  it("stacks each wide table into cards instead of scrolling it sideways", () => {
+    for (const name of ["records", "questions"]) {
+      expect(VIEW).toContain(`class="${name} card`);
+      expect(SOURCE_CSS).toContain(`container: ${name} / inline-size`);
+      expect(SOURCE_CSS).toMatch(
+        new RegExp(`@container ${name} \\((max-width: |width <= )\\d+px\\)`),
+      );
+    }
     expect(SOURCE_CSS).toContain("content: attr(data-label)");
   });
 
-  it("names the table itself, not only the section around it", () => {
-    expect(render("/records")).toContain(
-      '<table class="records-table" aria-labelledby="records-title">',
-    );
+  it("spreads the figures over more equal columns as the numbers card widens", () => {
+    expect(VIEW).toContain('class="numbers card');
+    expect(SOURCE_CSS).toContain("container: numbers / inline-size");
+    expect(SOURCE_CSS).toMatch(/@container numbers \(width >= \d+px\) \{\s+\.figures/);
   });
 
-  it("says plainly that the filters reach only the loaded records", () => {
-    expect(render("/records")).toMatch(
-      /Filters run in your browser over\s+the records already loaded/,
-    );
+  it("shows a status as an icon and a word, with no pill around it", () => {
+    const rules = SOURCE_CSS.match(/\.status-mark[^{]*\{[^}]*\}/g) ?? [];
+    expect(rules.length).toBeGreaterThan(0);
+    expect(rules.join("")).not.toMatch(/\bbg-|rounded|shadow|\bpx-|\bpy-/);
+  });
+
+  it("names each table itself, not only the section around it", () => {
+    for (const name of ["records", "questions"]) {
+      expect(VIEW).toMatch(new RegExp(`<table [^>]*aria-labelledby="${name}-title"`));
+    }
   });
 });

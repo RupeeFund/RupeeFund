@@ -22,7 +22,7 @@ describe("the admin Worker config", () => {
     expect(config.assets).toBeUndefined();
   });
 
-  it("owns no migrations directory, because it never writes", () => {
+  it("owns no migrations directory, because packages/db owns the schema", () => {
     const databases = config.d1_databases as Record<string, unknown>[];
     for (const database of databases) {
       expect(database.migrations_dir).toBeUndefined();

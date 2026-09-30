@@ -122,17 +122,8 @@ export async function handleWaitlist(request: Request, deps: WaitlistDeps): Prom
   const at = deps.now();
   try {
     await deps.repo.addToWaitlist({
-      email: result.value.email,
-      name: result.value.name,
+      ...result.value,
       consent_at: at,
-      source: result.value.source,
-      amount: result.value.amount,
-      months: result.value.months,
-      question: result.value.question,
-      updates_opt_in: result.value.updates_opt_in,
-      is_foss_user: result.value.is_foss_user,
-      is_foss_contributor: result.value.is_foss_contributor,
-      is_student: result.value.is_student,
       created_at: at,
       updated_at: at,
     });

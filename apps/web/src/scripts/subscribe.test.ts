@@ -21,9 +21,13 @@ describe("submitWaitlist", () => {
         <input name="months" value="12+" />
         <input name="question" value="Who audits this?" />
         <input type="checkbox" name="updates" value="1" />
-        <input type="checkbox" name="is_foss_user" value="1" />
-        <input type="checkbox" name="is_foss_contributor" value="1" />
+        <input type="checkbox" name="is_user" value="1" />
+        <input type="checkbox" name="is_creator" value="1" />
+        <input type="checkbox" name="is_professional" value="1" />
         <input type="checkbox" name="is_student" value="1" />
+        <input type="checkbox" name="backs_nascent" value="1" />
+        <input type="checkbox" name="backs_growing" value="1" />
+        <input type="checkbox" name="backs_larger" value="1" />
         <input name="cf-turnstile-response" value="tok" />
         <button id="waitlist-submit">Sign up</button>
         <p id="waitlist-error"></p>
@@ -69,9 +73,13 @@ describe("submitWaitlist", () => {
       months: "12+",
       question: "Who audits this?",
       updates: "",
-      is_foss_user: "",
-      is_foss_contributor: "",
+      is_user: "",
+      is_creator: "",
+      is_professional: "",
       is_student: "",
+      backs_nascent: "",
+      backs_growing: "",
+      backs_larger: "",
       turnstileToken: "tok",
     });
   });
@@ -79,14 +87,19 @@ describe("submitWaitlist", () => {
   it("sends the value of each ticked box, and only those", async () => {
     const body = await send((form) => {
       tick(form, 'input[name="updates"]');
-      tick(form, 'input[name="is_foss_user"]');
+      tick(form, 'input[name="is_user"]');
       tick(form, 'input[name="is_student"]');
+      tick(form, 'input[name="backs_growing"]');
     });
     expect(body).toMatchObject({
       updates: "1",
-      is_foss_user: "1",
-      is_foss_contributor: "",
+      is_user: "1",
+      is_creator: "",
+      is_professional: "",
       is_student: "1",
+      backs_nascent: "",
+      backs_growing: "1",
+      backs_larger: "",
     });
   });
 
@@ -112,6 +125,30 @@ describe("submitWaitlist", () => {
     fixed.dispatchEvent(new Event("change", { bubbles: true }));
 
     expect([whileOther, typed.required]).toEqual([true, false]);
+  });
+
+  it("keeps only the digits of a typed intended amount, and chooses the other option", () => {
+    const form = document.getElementById("waitlist-form") as HTMLFormElement;
+    const typed = form.querySelector('input[name="amount_other"]') as HTMLInputElement;
+    linkOtherAmount(form);
+
+    typed.value = "₹ 1,000";
+    typed.dispatchEvent(new Event("input"));
+
+    expect(typed.value).toBe("1000");
+    expect((form.querySelector('input[value="other"]') as HTMLInputElement).checked).toBe(true);
+  });
+
+  it("keeps the caret where the person typed when it drops a non-digit", () => {
+    const form = document.getElementById("waitlist-form") as HTMLFormElement;
+    const typed = form.querySelector('input[name="amount_other"]') as HTMLInputElement;
+    linkOtherAmount(form);
+
+    typed.value = "12x345";
+    typed.setSelectionRange(3, 3);
+    typed.dispatchEvent(new Event("input"));
+
+    expect([typed.value, typed.selectionStart]).toEqual(["12345", 2]);
   });
 
   it("leaves the chosen option alone while the typed amount is only whitespace", () => {

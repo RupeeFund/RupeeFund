@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { BATCH, COUNT_PENDING, SELECT_PENDING, stampExported } from "../scripts/list-export.mts";
+import { BATCH, claimPending, COUNT_PENDING, SELECT_PENDING } from "@rupeefund/db/export";
 import { createRepo } from "../src/worker/lib/db.ts";
 import type { Repo, WaitlistEntry } from "../src/worker/types.ts";
 import { migratedD1, rowsOf } from "@rupeefund/db/testing";
 import type { DatabaseSync } from "node:sqlite";
 
-function stampExportedAsTheExporterRunsIt(raw: DatabaseSync, ids: number[], at: number): number {
-  const res = raw.prepare(stampExported(ids, at)).run();
-  return Number(res.changes);
+function claim(raw: DatabaseSync, at: number): { id: number; email: string }[] {
+  return rowsOf(raw, claimPending(at)) as unknown as { id: number; email: string }[];
 }
 
 function markUnsubscribedAsTheOperatorRunsIt(raw: DatabaseSync, email: string, at: number): number {
@@ -35,13 +34,17 @@ function entry(over: Partial<WaitlistEntry> = {}): WaitlistEntry {
     source: "subscribe",
     created_at: 1000,
     updated_at: 1000,
-    amount: "100",
+    amount: 100,
     months: "12",
     question: "Who audits this?",
     updates_opt_in: 1,
-    is_foss_user: 1,
-    is_foss_contributor: 0,
+    is_user: 1,
+    is_creator: 0,
+    is_professional: 0,
     is_student: 0,
+    backs_nascent: 0,
+    backs_growing: 1,
+    backs_larger: 0,
     ...over,
   };
 }
@@ -59,9 +62,12 @@ describe("the signup SQL the Worker runs, against a migrated database", () => {
   it("stores every field of a signup, and an unticked box as 0 rather than null", async () => {
     const stored = entry({
       updates_opt_in: 0,
-      is_foss_user: 0,
-      is_foss_contributor: 1,
+      is_user: 0,
+      is_creator: 1,
+      is_professional: 1,
       is_student: 1,
+      backs_nascent: 1,
+      backs_larger: 1,
     });
     await repo.addToWaitlist(stored);
     expect(rowsOf(raw, "SELECT * FROM waitlist")).toEqual([
@@ -76,12 +82,13 @@ describe("the signup SQL the Worker runs, against a migrated database", () => {
         name: "Asha Again",
         consent_at: 2000,
         source: "footer",
-        amount: "500",
+        amount: 500,
         months: "24",
         question: "",
         updates_opt_in: 0,
-        is_foss_user: 0,
-        is_foss_contributor: 1,
+        is_user: 0,
+        is_creator: 1,
+        is_professional: 1,
         is_student: 1,
         created_at: 2000,
         updated_at: 2000,
@@ -120,25 +127,14 @@ describe("the export SQL that scripts/list-export.mts itself runs, against a mig
     await repo.addToWaitlist(entry());
     await repo.addToWaitlist(entry({ email: "b@example.com" }));
 
-    const rows = pending(raw);
-    expect(rows.map((r) => r.email)).toEqual(["asha@example.com", "b@example.com"]);
-
-    expect(
-      stampExportedAsTheExporterRunsIt(
-        raw,
-        rows.map((r) => r.id),
-        5000,
-      ),
-    ).toBe(2);
+    expect(pending(raw).map((r) => r.email)).toEqual(["asha@example.com", "b@example.com"]);
+    const first = claim(raw, 5000).map((r) => r.email);
+    expect(first.sort()).toEqual(["asha@example.com", "b@example.com"]);
+    expect(claim(raw, 9999)).toEqual([]);
     expect(pending(raw)).toEqual([]);
-  });
-
-  it("does not re-stamp a row that a previous run already exported", async () => {
-    await repo.addToWaitlist(entry());
-    const [row] = pending(raw);
-    stampExportedAsTheExporterRunsIt(raw, [row!.id], 5000);
-    expect(stampExportedAsTheExporterRunsIt(raw, [row!.id], 9999)).toBe(0);
-    expect(rowsOf(raw, "SELECT exported_at FROM waitlist")).toEqual([{ exported_at: 5000 }]);
+    expect(rowsOf(raw, "SELECT DISTINCT exported_at FROM waitlist")).toEqual([
+      { exported_at: 5000 },
+    ]);
   });
 
   it("withholds an unsubscribed row and reports whether the removal changed anything", async () => {
@@ -150,8 +146,7 @@ describe("the export SQL that scripts/list-export.mts itself runs, against a mig
 
   it("refuses to resurrect someone who unsubscribed, because anyone can post their address", async () => {
     await repo.addToWaitlist(entry());
-    const [row] = pending(raw);
-    stampExportedAsTheExporterRunsIt(raw, [row!.id], 5000);
+    claim(raw, 5000);
     markUnsubscribedAsTheOperatorRunsIt(raw, "asha@example.com", 6000);
 
     await repo.addToWaitlist(entry({ name: "Someone Else", consent_at: 7000, updated_at: 7000 }));
@@ -162,16 +157,11 @@ describe("the export SQL that scripts/list-export.mts itself runs, against a mig
     expect(pending(raw)).toEqual([]);
   });
 
-  it("hands the mailing-list exporter no contribution answer, which it has no reason to hold", () => {
-    for (const column of ["amount", "months", "question"]) {
-      expect(SELECT_PENDING).not.toContain(column);
-    }
-  });
-
-  it("hands the mailing-list exporter no audience role, because no send differs by role", () => {
-    for (const column of ["is_foss_user", "is_foss_contributor", "is_student"]) {
-      expect(SELECT_PENDING).not.toContain(column);
-    }
+  it("hands the exporter only what the mailing list needs, and no answer, role or reason", async () => {
+    await repo.addToWaitlist(entry());
+    const keys = ["consent_at", "created_at", "email", "id", "name", "source", "updates_opt_in"];
+    expect(pending(raw).map((row) => Object.keys(row).sort())).toEqual([keys]);
+    expect(claim(raw, 5000).map((row) => Object.keys(row).sort())).toEqual([keys]);
   });
 
   it("takes one batch at a time, and reports what is still pending after it", async () => {
@@ -179,26 +169,15 @@ describe("the export SQL that scripts/list-export.mts itself runs, against a mig
       await repo.addToWaitlist(entry({ email: `p${String(i).padStart(4, "0")}@example.com` }));
     }
 
-    const first = pending(raw);
-    expect(first).toHaveLength(BATCH);
-    expect(
-      stampExportedAsTheExporterRunsIt(
-        raw,
-        first.map((r) => r.id),
-        9000,
-      ),
-    ).toBe(BATCH);
+    expect(pending(raw)).toHaveLength(BATCH);
+    expect(claim(raw, 9000)).toHaveLength(BATCH);
     expect(rowsOf(raw, COUNT_PENDING)).toEqual([{ n: 20 }]);
-
-    const second = pending(raw);
-    expect(second).toHaveLength(20);
-    expect(
-      stampExportedAsTheExporterRunsIt(
-        raw,
-        second.map((r) => r.id),
-        9001,
-      ),
-    ).toBe(20);
+    expect(claim(raw, 9001)).toHaveLength(20);
     expect(rowsOf(raw, COUNT_PENDING)).toEqual([{ n: 0 }]);
+  });
+
+  it("refuses an export time that is not a positive whole number", () => {
+    expect(() => claimPending(Number.NaN)).toThrow(RangeError);
+    expect(() => claimPending(0)).toThrow(RangeError);
   });
 });

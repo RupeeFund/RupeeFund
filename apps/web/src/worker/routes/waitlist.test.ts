@@ -124,7 +124,7 @@ describe("handleWaitlist over fetch (JavaScript enabled)", () => {
         name: "\u0906".repeat(100),
         email: `${"a".repeat(240)}@example.com`,
         amount: "other",
-        amount_other: "9".repeat(20),
+        amount_other: "9".repeat(15),
         turnstileToken: "x".repeat(2048),
       }),
       deps({ repo }),
@@ -333,18 +333,23 @@ describe("consent and provenance are recorded on every stored signup", () => {
       months: "12+",
       question: "Why?",
       updates: "1",
-      is_foss_user: "1",
+      is_user: "1",
       is_student: "1",
+      backs_growing: "1",
     };
     await handleWaitlist(jsonReq(body), deps({ repo }));
     expect(repo.waitlist[0]).toMatchObject({
-      amount: "250",
+      amount: 250,
       months: "12+",
       question: "Why?",
       updates_opt_in: 1,
-      is_foss_user: 1,
-      is_foss_contributor: 0,
+      is_user: 1,
+      is_creator: 0,
+      is_professional: 0,
       is_student: 1,
+      backs_nascent: 0,
+      backs_growing: 1,
+      backs_larger: 0,
     });
   });
 
@@ -356,16 +361,17 @@ describe("consent and provenance are recorded on every stored signup", () => {
       amount_other: "42",
       months: "6",
       question: "Hi",
-      is_foss_contributor: "1",
+      is_creator: "1",
     };
     await handleWaitlist(formReq(fields), deps({ repo }));
     expect(repo.waitlist[0]).toMatchObject({
-      amount: "42",
+      amount: 42,
       months: "6",
       question: "Hi",
       updates_opt_in: 0,
-      is_foss_user: 0,
-      is_foss_contributor: 1,
+      is_user: 0,
+      is_creator: 1,
+      is_professional: 0,
       is_student: 0,
     });
   });
