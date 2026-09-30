@@ -2,7 +2,7 @@
   "name": "rupeefund",
   "version": "0.0.0",
   "private": true,
-  "description": "The site of The Rupee Fund, an independent community fund for free and open-source software in India.",
+  "description": "The site of The Rupee Fund, a community initiative from FOSS United.",
   "keywords": [
     "cloudflare-workers",
     "d1",
