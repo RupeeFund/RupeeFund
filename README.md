@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="public/logo-dark.svg" />
-  <img src="public/logo.svg" alt="The Rupee Fund" width="230" />
+  <source media="(prefers-color-scheme: dark)" srcset="packages/ui/src/logo-dark.svg" />
+  <img src="packages/ui/src/logo.svg" alt="The Rupee Fund" width="230" />
 </picture>
 
 # The Rupee Fund

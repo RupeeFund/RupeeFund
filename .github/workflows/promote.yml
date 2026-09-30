@@ -47,8 +47,11 @@ jobs:
           fi
       - name: Stop on a migration that live has not applied
         run: |
-          added=$(git diff --name-only --no-renames --diff-filter=A \
-            origin/live "$SHA" -- migrations/)
+          git rev-parse --verify --quiet "$SHA^{commit}" > /dev/null
+          git rev-parse --verify --quiet origin/live > /dev/null
+          names() { git ls-tree --name-only "$@" | sed 's#.*/##' | sort -u; }
+          added=$(comm -13 <(names origin/live -- migrations/ packages/db/migrations/) \
+            <(names "$SHA" -- packages/db/migrations/))
           if [ -n "$added" ] && [ "$MIGRATIONS_APPLIED" != "true" ]; then
             echo "::error::This promote adds migrations. Apply them first (docs/DEPLOY.md 4)."
             echo "Then run again with the box ticked. The new migrations:"

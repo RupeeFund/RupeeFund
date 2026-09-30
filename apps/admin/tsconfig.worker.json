@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.worker.tsbuildinfo",
+    "types": ["@cloudflare/workers-types", "node"]
+  },
+  "include": ["src", "tests", "vitest.config.ts"],
+  "exclude": ["src/**/*.dom.test.ts", "src/testkit-dom.ts"]
+}

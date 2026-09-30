@@ -1,0 +1,29 @@
+{
+  "name": "@rupeefund/admin",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tailwindcss -i src/admin.css -o .generated/admin.css --minify && node scripts/assets.mjs",
+    "dev": "wrangler dev --local --persist-to ../../.wrangler/state",
+    "seed": "mkdir -p ../../.wrangler && node seed-local.mjs > ../../.wrangler/seed.local.sql && wrangler d1 execute rupeefund-waitlist --local --persist-to ../../.wrangler/state --file ../../.wrangler/seed.local.sql",
+    "typecheck": "tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@fontsource-variable/inter": "catalog:",
+    "@rupeefund/db": "workspace:*",
+    "@rupeefund/ui": "workspace:*",
+    "@tailwindcss/cli": "^4.3.3",
+    "@types/node": "catalog:",
+    "jsdom": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "wrangler": "catalog:"
+  }
+}

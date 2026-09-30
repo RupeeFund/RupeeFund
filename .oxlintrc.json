@@ -11,7 +11,7 @@
     "eslint/no-template-curly-in-string": "error",
     "vitest/no-identical-title": "error",
     "vitest/no-conditional-expect": "error",
-    // The fetch mocks in src/scripts/subscribe.test.ts take their type from mockResolvedValue.
+    // The fetch mocks in apps/web/src/scripts/subscribe.test.ts take their type from mockResolvedValue.
     "vitest/require-mock-type-parameters": "off"
   },
   "ignorePatterns": ["dist", ".astro", ".wrangler"]

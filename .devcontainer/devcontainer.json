@@ -7,10 +7,11 @@
     "WRANGLER_SEND_METRICS": "false",
     "pnpm_config_store_dir": "/home/node/.pnpm-store"
   },
-  "forwardPorts": [8787, 8788],
+  "forwardPorts": [8787, 8788, 8799],
   "portsAttributes": {
-    "8787": { "label": "pnpm dev", "onAutoForward": "openBrowser" },
-    "8788": { "label": "pnpm test:e2e", "onAutoForward": "silent" }
+    "8787": { "label": "pnpm dev:web", "onAutoForward": "openBrowser" },
+    "8788": { "label": "pnpm test:e2e", "onAutoForward": "silent" },
+    "8799": { "label": "pnpm dev:admin", "onAutoForward": "silent" }
   },
   "customizations": {
     "vscode": {

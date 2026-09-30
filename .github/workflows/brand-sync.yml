@@ -29,11 +29,11 @@ jobs:
       - name: Stop when the site matches the brand
         id: diff
         run: |
-          if [ -z "$(git status --porcelain -- src/brand public)" ]; then
+          if [ -z "$(git status --porcelain -- packages/ui/src apps/web/public)" ]; then
             echo "The site matches RupeeFund/brand."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
-            git add -- src/brand public
+            git add -- packages/ui/src apps/web/public
             git diff --cached --stat
             git diff --cached --binary > brand.patch
             echo "changed=true" >> "$GITHUB_OUTPUT"

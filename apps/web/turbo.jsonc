@@ -1,0 +1,22 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["PUBLIC_*", "TURNSTILE_*"],
+      "inputs": ["$TURBO_DEFAULT$", ".env"],
+      "outputs": ["dist/**"],
+    },
+    "typecheck": {
+      "outputs": ["worker-configuration.d.ts"],
+    },
+    "test": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/.github/workflows/ci.yml",
+        "$TURBO_ROOT$/package.json",
+      ],
+      "outputs": ["dist-preview/**"],
+    },
+  },
+}

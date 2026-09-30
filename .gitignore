@@ -26,3 +26,5 @@ test-results
 # Agent instructions are checked in. A global ignore usually excludes them.
 !AGENTS.md
 !CLAUDE.md
+.turbo
+.generated

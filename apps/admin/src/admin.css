@@ -1,0 +1,214 @@
+@import "@rupeefund/ui/styles.css";
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer components {
+  .sprite {
+    @apply absolute size-0 overflow-hidden;
+  }
+
+  .icon {
+    @apply block size-5 flex-none fill-none stroke-current stroke-2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .skip {
+    @apply fixed top-4 left-4 z-[60] rounded-lg bg-ink px-4 py-3 text-sm text-white;
+    @apply -translate-y-[200%] focus:translate-y-0;
+  }
+
+  .nav-link[aria-current="page"] {
+    background-size: var(--grown) 2px;
+  }
+
+  .count {
+    @apply ml-2 rounded-full bg-ink/10 px-2 text-xs num;
+  }
+
+  .alert {
+    @apply flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white p-6;
+    @apply text-sm text-error shadow-[inset_0_0_0_1.5px_var(--color-error)];
+  }
+
+  .kpi-value {
+    @apply text-4xl font-semibold tracking-[-0.033em] num;
+  }
+
+  .bars {
+    @apply flex h-48 items-end gap-px border-b border-ink/15;
+  }
+
+  .bar {
+    @apply min-w-0 flex-1 rounded-t-sm bg-brand-fg;
+  }
+
+  .bar[data-empty] {
+    @apply bg-ink/15;
+  }
+
+  .tally-top {
+    @apply mb-1 flex justify-between gap-4 text-sm;
+  }
+
+  .tally-top b {
+    @apply num;
+  }
+
+  .track {
+    @apply h-2 overflow-hidden rounded-full bg-ink/10;
+  }
+
+  .track i {
+    @apply block h-full rounded-full bg-brand-fg;
+  }
+
+  .data-list {
+    @apply mt-3 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2;
+  }
+
+  .data-list > div {
+    @apply flex justify-between gap-4 border-b border-ink/10 py-1;
+  }
+
+  .data-list dd {
+    @apply num;
+  }
+
+  .person {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .initials {
+    @apply grid size-9 flex-none place-items-center rounded-full bg-brand-50 text-xs;
+    @apply font-semibold text-brand-900;
+  }
+
+  .person-copy {
+    @apply grid min-w-0;
+  }
+
+  .person-name {
+    @apply font-medium [overflow-wrap:anywhere];
+  }
+
+  .person-address {
+    @apply text-xs text-ink-2 num;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs;
+    @apply font-semibold whitespace-nowrap text-brand-900;
+  }
+
+  .badge .icon {
+    @apply size-3;
+  }
+
+  .badge[data-state="exported"] {
+    @apply bg-ink/10 text-ink;
+  }
+
+  .badge[data-state="removed"] {
+    @apply bg-white text-error shadow-[inset_0_0_0_1px_var(--color-error)];
+  }
+
+  .records {
+    container: records / inline-size;
+  }
+
+  .records-table {
+    @apply w-full table-fixed border-collapse text-left text-sm;
+  }
+
+  .records-table th {
+    @apply border-b border-ink/15 px-2 py-3 text-xs font-semibold text-ink-2;
+  }
+
+  .records-table td {
+    @apply border-b border-ink/10 px-2 py-4 align-middle;
+  }
+
+  .records-table :is(th, td):first-child {
+    @apply pl-0;
+  }
+
+  .records-table :is(th, td):last-child {
+    @apply pr-0 text-right;
+  }
+
+  .records-table small {
+    @apply block text-xs text-ink-2;
+  }
+
+  @container records (max-width: 760px) {
+    .records-table,
+    .records-table tbody {
+      @apply block;
+    }
+
+    .records-table thead {
+      @apply sr-only;
+    }
+
+    .records-table tr {
+      @apply grid grid-cols-2 gap-4 border-t border-ink/10 py-6;
+    }
+
+    .records-table td {
+      @apply block min-w-0 border-0 p-0 text-left;
+    }
+
+    .records-table td[data-label]::before {
+      @apply mb-1 block text-xs font-semibold text-ink-2;
+      content: attr(data-label);
+    }
+
+    .records-table :is(.person-column, .row-action) {
+      @apply col-span-2;
+    }
+  }
+
+  .question {
+    @apply grid gap-3 border-t border-ink/10 py-6 first:border-t-0 first:pt-0;
+  }
+
+  .question-head {
+    @apply flex flex-wrap items-center justify-between gap-3;
+  }
+
+  .question-meta {
+    @apply flex items-center gap-3 text-xs text-ink-2 num;
+  }
+
+  .question-body {
+    @apply max-w-[36rem] text-sm text-pretty;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .record-dialog {
+    @apply m-auto w-[min(36rem,calc(100vw-2rem))] max-h-[calc(100dvh-3rem)] rounded-2xl bg-white;
+    @apply p-0 text-ink shadow-card backdrop:bg-ink/40;
+  }
+
+  .record-fields {
+    @apply grid grid-cols-1 gap-5 sm:grid-cols-2;
+  }
+
+  .record-fields dt {
+    @apply eyebrow text-ink-2;
+  }
+
+  .record-fields dd {
+    @apply [overflow-wrap:anywhere];
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .record-dialog[open] {
+      @apply screen-enter;
+    }
+  }
+}

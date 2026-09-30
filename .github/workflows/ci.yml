@@ -57,9 +57,9 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm --filter @rupeefund/web exec playwright install --with-deps chromium
       - name: Create the local D1 schema the signup path writes to
-        run: pnpm wrangler d1 migrations apply rupeefund-waitlist --local
+        run: pnpm db:reset
       # workaround: cloudflare/workers-sdk#15317
       - name: Run the browser suite, and retry once if the dev server dies
         run: |
@@ -73,7 +73,7 @@ jobs:
         with:
           name: playwright-report
           path: |
-            playwright-report
-            test-results
+            apps/web/playwright-report
+            apps/web/test-results
             .wrangler/logs
           retention-days: 7
