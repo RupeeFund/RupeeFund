@@ -101,7 +101,7 @@ describe("the policy permits everything the built pages actually load", () => {
     expect(allows("frame-src", "https://challenges.cloudflare.com")).toBe(true);
   });
 
-  it("tolerates the inline script Cloudflare Bot Fight Mode injects into every response", () => {
+  it("tolerates the inline scripts of the build and of Cloudflare Bot Fight Mode", () => {
     expect(policy()["script-src"]).toContain("'unsafe-inline'");
   });
 
