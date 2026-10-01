@@ -24,6 +24,17 @@ test("every choice group stays inside the narrow form with fallback fonts", asyn
   }
 });
 
+const FIVE_DIGITS_PX = 48;
+
+test("the other amount box leaves room to type at every width up to 520px", async ({ page }) => {
+  await page.goto("/subscribe");
+  for (let width = 320; width <= 520; width += 4) {
+    await page.setViewportSize({ width, height: 900 });
+    const box = await page.locator("#waitlist-amount-other").boundingBox();
+    expect(box?.width ?? 0, `${width}px`).toBeGreaterThanOrEqual(FIVE_DIGITS_PX);
+  }
+});
+
 for (const width of [320, 768, 1440]) {
   test(`pages fit a ${width}px viewport`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });

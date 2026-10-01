@@ -87,10 +87,10 @@ const TURNSTILE_SITEKEY = getSitekey();
         </fieldset>
         <fieldset class="min-w-0">
           <legend class="field-label">Monthly amount</legend>
-          <div class="grid grid-cols-3 min-[400px]:grid-cols-[auto_auto_auto_minmax(0,1fr)] gap-2">
+          <div class="flex flex-wrap gap-2">
             {
               AMOUNT_OPTIONS.map((option) => (
-                <label class="choice">
+                <label class="choice flex-1">
                   <input
                     type="radio"
                     name="amount"
@@ -102,7 +102,7 @@ const TURNSTILE_SITEKEY = getSitekey();
                 </label>
               ))
             }
-            <label class="choice col-span-3 min-[400px]:col-span-1">
+            <label class="choice grow-100 basis-32">
               <input
                 id="amount-other-choice"
                 type="radio"
