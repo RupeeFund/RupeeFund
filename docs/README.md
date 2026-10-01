@@ -1,17 +1,17 @@
 # Documentation
 
-This folder holds the documents for the site of The Rupee Fund. Each document has one reader. Each fact has one owner.
+This folder holds the documents for the site and the admin panel of The Rupee Fund. Each document has one reader. Each fact has one owner.
 
 ## Responsibilities
 
-| Document                           | Reader                                      | Holds                                                                                                                  |
-| ---------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| [README.md](../README.md)          | A visitor                                   | What The Rupee Fund is, in the words of the brand                                                                      |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | A person who wants to help                  | Where to talk, how to set up, how to open a pull request, and the gate to run first                                    |
-| [DESIGN.md](DESIGN.md)             | A person or an agent who changes a page     | The instructions and the words that this repository adds to the brand guidelines                                       |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | A person or an agent who changes the system | How the system works: the Worker, the database, the names, the security headers and the brand files                    |
-| [DEPLOY.md](DEPLOY.md)             | A maintainer                                | How a change reaches the live site: the branches, the promote, the migrations, the secrets, the export and the removal |
-| [AGENTS.md](../AGENTS.md)          | An agent                                    | The map of the repository and the rules for an agent                                                                   |
+| Document                           | Reader                                      | Holds                                                                                                                                   |
+| ---------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| [README.md](../README.md)          | A visitor                                   | What The Rupee Fund is, in the words of the brand                                                                                       |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | A person who wants to help                  | Where to talk, how to set up, how to open a pull request, and the gate to run first                                                     |
+| [DESIGN.md](DESIGN.md)             | A person or an agent who changes a page     | The instructions and the words that this repository adds to the brand guidelines                                                        |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | A person or an agent who changes the system | How the system works: the two Workers, the database, the names, the security headers, the brand files and the admin panel               |
+| [DEPLOY.md](DEPLOY.md)             | A maintainer                                | How a change reaches the live site: the branches, the promote, the migrations, the secrets, the export, the removal and the admin login |
+| [AGENTS.md](../AGENTS.md)          | An agent                                    | The map of the repository and the rules for an agent                                                                                    |
 
 Keep each document to its own job:
 
@@ -30,7 +30,8 @@ Read the document that owns your change before you start.
 
 - **Set up the repository, open a pull request or run the gate:** [CONTRIBUTING.md](CONTRIBUTING.md).
 - **A page, a style, a word or a link preview card:** [DESIGN.md](DESIGN.md).
-- **The Worker, the database, the security headers or the brand files:** [ARCHITECTURE.md](ARCHITECTURE.md).
+- **A Worker, the database, the security headers or the brand files:** [ARCHITECTURE.md](ARCHITECTURE.md).
+- **The admin panel:** [ARCHITECTURE.md](ARCHITECTURE.md) section 10. Its login is in [DEPLOY.md](DEPLOY.md) section 10.
 - **A promote, a migration, a secret, an export or a removal:** [DEPLOY.md](DEPLOY.md).
 
 ## Get started

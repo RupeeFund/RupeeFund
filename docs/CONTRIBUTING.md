@@ -18,21 +18,24 @@ All work follows the [Code of Conduct](https://github.com/RupeeFund/.github/blob
 
 You need Node 24 or later and [pnpm](https://pnpm.io/installation). You need no Cloudflare account.
 
+The repository holds two apps: the site in `apps/web` and the admin panel in `apps/admin`. They use one local database.
+
 ### On your machine
 
 ```sh
 pnpm install
-cp .env.example .env
-pnpm db:reset
-pnpm exec playwright install chromium   # for the browser tests
+pnpm bootstrap
+pnpm --filter @rupeefund/web exec playwright install chromium   # for the browser tests
 pnpm dev
 ```
 
-`pnpm dev` serves the site on `http://localhost:8787`.
+`pnpm bootstrap` makes `apps/web/.env`, resets the local database and fills it with made-up rows. `pnpm dev` serves the site on `http://localhost:8787`. To work on the admin panel, run `pnpm dev:admin` in a second terminal. It serves the panel on `http://localhost:8788`.
+
+To run more than one checkout at a time, run `pnpm dev:portless`. It starts the site and the admin panel in one terminal. Each app gets a name in place of a port, and the terminal shows its address. The first run after each boot asks for your password, because the names use port 443.
 
 ### In a dev container
 
-Open the repository in a dev container. In Visual Studio Code, run the command Dev Containers: Reopen in Container. The container runs `.devcontainer/setup.sh`. The script installs the dependencies, makes `.env`, resets the local database and installs Chromium. Then run `pnpm dev`. The container forwards port 8787.
+Open the repository in a dev container. In Visual Studio Code, run the command Dev Containers: Reopen in Container. The container installs the dependencies and Chromium, then runs `pnpm bootstrap`. Then run `pnpm dev`, and `pnpm dev:admin` in a second terminal. The container forwards ports 8787 and 8788. `pnpm dev:portless` does not work in the container.
 
 ### In GitHub Codespaces
 
@@ -62,5 +65,5 @@ pnpm test:e2e    # browser tests
 ## Read next
 
 - Read [DESIGN.md](DESIGN.md) before you change a page, a style or a word.
-- Read [ARCHITECTURE.md](ARCHITECTURE.md) before you change the Worker, the database or the security headers.
+- Read [ARCHITECTURE.md](ARCHITECTURE.md) before you change a Worker, the database, the security headers or the admin panel.
 - Read [DEPLOY.md](DEPLOY.md) before you write a migration. It also tells how a change reaches the site.
