@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<svg viewBox="0 0 2048 2048" version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg">
+  <title>bimi-svg-tiny-12-ps</title>
+  <desc>© 2026 FOSS United Community. CC BY-ND 4.0. Glyph: Inter 4.1 SemiBold U+20B9 by Rasmus Andersson (github.com/rsms/inter), SIL Open Font License 1.1. The ₹ path is the one in lockup.svg, scaled to 70 % of the tile height and centred.</desc>
+  <rect id="block" width="2048" height="2048" fill="#08b74f"/>
+  <path id="rupee" fill="#141414" transform="translate(461.175 -750.536) scale(1.139)" d="M923.98 1235.68 879.19 1397.93H748.22Q728.78 1519.61 642.17 1598.61Q555.56 1677.62 387.4 1697.9L379.8 1699.59L768.5 2177.01V2188H515L84.05 1670.01L82.36 1533.97H296.99Q387.4 1533.97 444.02 1497.64Q500.63 1461.3 520.07 1397.93H64.61L109.4 1235.68H514.15Q493.03 1180.76 439.37 1149.49Q385.71 1118.23 296.99 1118.23H64.61L112.78 928.95H923.98L879.19 1092.88L692.45 1092.04Q735.54 1153.72 749.06 1235.68Z"/>
+</svg>
