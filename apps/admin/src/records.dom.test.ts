@@ -4,6 +4,7 @@ import {
   answerFor,
   HOSTILE_NAME,
   mount,
+  unmount,
   REVEALED,
   ROW,
   type RowFixture,
@@ -97,6 +98,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  unmount();
   vi.useRealTimers();
   vi.unstubAllGlobals();
   Reflect.deleteProperty(globalThis, "__pwned");

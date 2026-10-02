@@ -4,6 +4,7 @@ import {
   HOSTILE_NAME,
   HOSTILE_QUESTION,
   mount,
+  unmount,
   QUESTION,
   REVEALED,
   SUMMARY,
@@ -25,6 +26,7 @@ async function boot(questions: unknown[] = [QUESTION]): Promise<void> {
 }
 
 afterEach(() => {
+  unmount();
   vi.unstubAllGlobals();
   Reflect.deleteProperty(globalThis, "__pwned");
 });

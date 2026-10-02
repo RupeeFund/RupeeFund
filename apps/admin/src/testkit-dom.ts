@@ -112,9 +112,32 @@ export function stubDialogs(): void {
   };
 }
 
+const pending = new Set<ReturnType<typeof setTimeout>>();
+
+function tracked<A extends unknown[]>(
+  start: (...args: A) => ReturnType<typeof setTimeout>,
+): (...args: A) => ReturnType<typeof setTimeout> {
+  return (...args) => {
+    const id = start(...args);
+    pending.add(id);
+    return id;
+  };
+}
+
 export function mount(path: string): void {
   const { body, code } = parts(path);
   window.matchMedia ??= () => ({ matches: false }) as MediaQueryList;
   document.body.innerHTML = body;
-  new Function(code)();
+  new Function("setTimeout", "setInterval", code)(
+    tracked((...args: Parameters<typeof setTimeout>) => globalThis.setTimeout(...args)),
+    tracked((...args: Parameters<typeof setInterval>) => globalThis.setInterval(...args)),
+  );
+}
+
+export function unmount(): void {
+  for (const id of pending) {
+    clearTimeout(id);
+    clearInterval(id);
+  }
+  pending.clear();
 }

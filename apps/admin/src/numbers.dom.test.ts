@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DAILY_DAYS } from "./sql.ts";
-import { answerFor, mount, SUMMARY, viewData } from "./testkit-dom.ts";
+import { answerFor, mount, unmount, SUMMARY, viewData } from "./testkit-dom.ts";
 
 async function boot(summary: unknown = SUMMARY): Promise<void> {
   const data = { ...viewData(), summary };
@@ -26,6 +26,7 @@ function figure(key: string): [string | null | undefined, string | null | undefi
 }
 
 afterEach(() => {
+  unmount();
   vi.unstubAllGlobals();
 });
 

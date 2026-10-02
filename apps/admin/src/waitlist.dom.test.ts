@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { answerFor, mount, viewData } from "./testkit-dom.ts";
+import { answerFor, mount, unmount, viewData } from "./testkit-dom.ts";
 
 const LOAD = ["/api/summary", "/api/waitlist", "/api/questions"];
 
@@ -41,6 +41,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  unmount();
   vi.unstubAllGlobals();
   vi.useRealTimers();
 });
@@ -211,6 +212,19 @@ describe("the sidebar", () => {
     document.querySelector<HTMLElement>("#sidebar a")?.focus();
     document.querySelector<HTMLElement>("#refresh")?.focus();
     expect(toggle()?.getAttribute("aria-expanded")).toBe("false");
+  });
+});
+
+describe("the test mount", () => {
+  it("cancels the panel's pending timers on unmount, so none fires after the DOM is gone", async () => {
+    await boot();
+    unmount();
+    const read = vi.spyOn(document, "getElementById");
+    await new Promise((resolve) => {
+      setTimeout(resolve, 700);
+    });
+    expect(read).not.toHaveBeenCalled();
+    read.mockRestore();
   });
 });
 
