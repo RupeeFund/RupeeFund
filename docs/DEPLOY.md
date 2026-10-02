@@ -17,11 +17,9 @@ Each Worker has its own Cloudflare Workers Builds project, and both watch `live`
 | `rupeefund-web`   | `pnpm turbo run build --filter=@rupeefund/web`   | `pnpm --filter @rupeefund/web exec wrangler deploy`   |
 | `rupeefund-admin` | `pnpm turbo run build --filter=@rupeefund/admin` | `pnpm --filter @rupeefund/admin exec wrangler deploy` |
 
-Before the first promote of the `apps/` layout, change the build and deploy commands of `rupeefund-web` and set the root directory of `rupeefund-admin` to the repository root, as the table shows. With the old settings, both deploys fail.
+Turn off branch builds for all branches except `live` on both projects. Keep them off. `docs/ARCHITECTURE.md` section 3 gives the reason.
 
-Non-production branch builds are off on both. Leave them off. `docs/ARCHITECTURE.md` §3 gives the reason.
-
-Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand. It uploads whatever `apps/web/dist` holds and skips the build guards. `pnpm wrangler rollback` is fine in an incident, because it ships no new code. For the admin Worker, run `pnpm --filter @rupeefund/admin exec wrangler rollback`.
+Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand. It uploads whatever `apps/web/dist` holds and skips the build guards. You can run `pnpm wrangler rollback` in an incident, because it ships no new code. For the admin Worker, run `pnpm --filter @rupeefund/admin exec wrangler rollback`.
 
 ## 2. How to prove a change
 
@@ -35,7 +33,7 @@ pnpm wrangler d1 execute rupeefund-waitlist --local --persist-to ../../.wrangler
 
 ## 3. How to promote
 
-Run the `Promote` workflow from the Actions tab on `main`. It fast-forwards `live` to the tip of `main`. It stops when CI has not passed on that commit. It also stops when the promote adds a migration, unless you tick the box that says you applied it (section 4).
+Run the `Promote` workflow from the Actions tab on `main`. It fast-forwards `live` to the tip of `main`. It stops when CI has not passed on that commit. It also stops when the promote adds a migration and you did not tick the box that says you applied it (section 4).
 
 Without the workflow, make sure CI passed on the commit. Then fast-forward `live`:
 
@@ -60,11 +58,11 @@ The deployment applies no migration. You apply each one by hand, in this order:
 pnpm db:migrate --remote
 ```
 
-The command exports the live database to a new temporary folder first, and prints the file path. On macOS and Linux, only your user can read that folder. It stops when the export fails. Then it applies the new migrations and confirms that none are left. Wrangler asks you to confirm the apply. Delete the backup file when you are done, because it holds the list. Without `--remote`, the command migrates the local database.
+The command exports the live database to a new temporary folder first, and prints the file path. On macOS and Linux, only your user can read that folder. It stops when the export fails. Then it applies the new migrations and confirms that none are left. Wrangler asks you to confirm the apply. Delete the export file when you are done, because it holds the list. Without `--remote`, the command migrates the local database.
 
 **Make each migration additive.** During a promote two Worker versions read the one live database. Add a column with a default or with NULL permitted. A change that removes a column needs two promotes: one that stops all reads of the column, and a later one that drops it.
 
-**`0005_signup_data.sql` is the one exception.** It rebuilds the `waitlist` table and renames the role columns. The Worker that is live before the promote cannot write a signup after the apply. From the apply until the new Worker is live, a signup fails and the form asks the person to try again. The operator accepted this on 2026-09-30. Apply `0005`, then fast-forward `live` immediately. Keep the backup until you have compared the old amounts with the new ones: `0005` sets an amount that is not a plain number to empty.
+**`0005_signup_data.sql` is the one exception.** It rebuilds the `waitlist` table. It went live on 2026-10-01.
 
 Never edit a migration that has run. Never reuse a file name. Wrangler matches a migration by file name only. A changed file that has run does nothing. A reused file name runs nothing and reports no error. `packages/db/tests/replay.test.ts` refuses the retired names. `wrangler d1 migrations list` proves only that the names agree. To check the schema, query the tables:
 
@@ -89,7 +87,7 @@ The Workers Builds settings hold no variable. One Turnstile widget serves the si
 pnpm wrangler secret put TURNSTILE_SECRET
 ```
 
-In this section, `.env` means `apps/web/.env`. A `--remote` command needs the Cloudflare account. Put `CLOUDFLARE_ACCOUNT_ID` in `.env`. Wrangler reads `.env` itself, and a value set on the command line wins over it. Without it, wrangler asks which account to use. Do not put the account in `wrangler.jsonc`.
+In this section, `.env` means `apps/web/.env`. A `--remote` command needs the Cloudflare account. Put `CLOUDFLARE_ACCOUNT_ID` in `.env`. Wrangler reads `.env` itself. A value on the command line replaces the value in `.env`. Without it, wrangler asks which account to use. Do not put the account in `wrangler.jsonc`.
 
 For local work, `.env` holds the always-pass test values. `pnpm bootstrap` makes it. `astro build` and `wrangler dev` read it, and direnv loads it into your shell through `.envrc`. Do not also make a `.dev.vars` file, or wrangler ignores `.env`. The `preview` script carries the same values itself, for Playwright in CI, where no `.env` exists.
 
@@ -117,7 +115,7 @@ Then complete the form one time, and read the row:
 pnpm wrangler d1 execute rupeefund-waitlist --remote --command "SELECT email, consent_at FROM waitlist"
 ```
 
-Then sign in to the admin panel with a browser (§10.3).
+Then sign in to the admin panel with a browser (section 10.3).
 
 ## 7. How to remove a person
 
@@ -140,34 +138,34 @@ pnpm list:export --remote --dry-run > list.csv   # prints the CSV, changes nothi
 pnpm list:export --remote > list.csv             # prints the CSV, then stamps exported_at
 ```
 
-The first line of the file is `email,name,attributes`. The `attributes` column is JSON with `source`, `consent_at`, `signed_up_at`, and `updates_opt_in`. A row that nobody asked about updates exports `updates_opt_in` as `false`. The amount, the months, the question, the roles and the reasons stay in the database.
+The first line of the file is `email,name,attributes`. The `attributes` column is JSON with `source`, `consent_at`, `signed_up_at`, and `updates_opt_in`. If the form did not ask a person about updates, the export writes `updates_opt_in` as `false`. The amount, the months, the question, the roles and the reasons stay in the database.
 
 [ARCHITECTURE.md](ARCHITECTURE.md) section 6 tells which rows go out. The command needs Node 24 or later, and wrangler login for `--remote`.
 
 A run exports one batch. When more rows wait, the last line on stderr says `still pending`. Run the command again until that line stops. Send each run to a new file, because `>` replaces the old file.
 
-To export from the admin dashboard, press **Export**. It saves the file to your device.
+To export from the admin panel, press **Export**. It saves the file to your device.
 
-To send a batch again after a lost file, find its time `at` in the `export` log line or on stderr. Then clear the stamp and export again:
+To send a batch again after a lost file, find its time `at`. The `export` log line and stderr both show it. Then clear the stamp and export again:
 
 ```sh
 pnpm wrangler d1 execute rupeefund-waitlist --remote --command \
   "UPDATE waitlist SET exported_at = NULL WHERE exported_at = <at>"
 ```
 
-Before you clear it, count the rows with that `exported_at`. The number must equal the `count` in the log line. If it does not, two exports share the time. Stop. Ask the team. The next export skips a row whose person unsubscribed in the meantime.
+Before you clear it, count the rows with that `exported_at`. The number must equal the `count` in the log line. If it does not, two exports share the time. Stop. Ask the team. The next export skips a row if its person unsubscribed after the first export.
 
 ## 9. How to move to a different account
 
 The domain uses Cloudflare Registrar. A move to a different Cloudflare account takes only the registration. You make the zone, the Worker, the database and the Turnstile widget again in the new account.
 
-A Worker custom domain needs an active zone, and the zone becomes active only after the registration moves. So the site is down from the move until the first deploy in the new account. After the move, the registration is transfer-locked for 30 days ([Cloudflare documentation](https://developers.cloudflare.com/registrar/account-options/inter-account-transfer/)).
+A Worker custom domain needs an active zone, and the zone becomes active only after the registration moves. So the site is down from the move until the first deploy in the new account. After the move, Cloudflare locks the registration against transfer for 30 days ([Cloudflare documentation](https://developers.cloudflare.com/registrar/account-options/inter-account-transfer/)).
 
 Before the move:
 
 1. Turn off DNSSEC on the old zone. Wait until `dig +short DS rupeefund.org @a0.org.afilias-nst.info` returns nothing.
 
-1. Add `rupeefund.org` to the new account on a plan. Copy the DNS records, the redirect rule, Always Use HTTPS and Bot Fight Mode from the old zone. Do not add an apex record. The custom domain makes it.
+1. Add `rupeefund.org` as a zone in the new account. Copy the DNS records, the redirect rule, Always Use HTTPS and Bot Fight Mode from the old zone. Do not add an apex record. The custom domain makes it.
 
 1. Make the database with `pnpm wrangler d1 create`. Copy the `database_id` into `apps/web/wrangler.jsonc` **and into `apps/admin/wrangler.jsonc`**. Both Workers bind the one database. Apply every migration with `pnpm wrangler d1 migrations apply rupeefund-waitlist --remote`.
 
@@ -187,7 +185,7 @@ The move:
 1. Disconnect both Workers Builds projects in the old account. Connect each in the new account, with the settings in section 1.
 1. In the old account, open **Domain Registration**, then the domain, then **Configuration**, and move it to the new account. Accept the move in the new account.
 1. When the zone is active, promote. The deploy makes the custom domain.
-1. Repeat §10.1 to §10.3 for the admin Worker.
+1. Repeat sections 10.1 to 10.3 for the admin Worker.
 1. Verify with section 6. Look for rows that the old Worker took after the copy, and copy them.
 1. Turn on DNSSEC in the new zone.
 
@@ -211,7 +209,7 @@ Go to **Workers & Pages**. Open `rupeefund-admin`. Open the **Access** tab. Put 
 
 Copy the **Application Audience (AUD) Tag** of the new application into `ACCESS_AUD` and into `access.dev.aud` in `apps/admin/wrangler.jsonc`. When you remove and add the application again, the tag changes. Update both values, or the panel refuses every person.
 
-Then add the policy: action **Allow**, rule type **Include**, selector **Emails**, and one row for each team member. Set a session duration you are willing to leave signed in.
+Then add the policy: action **Allow**, rule type **Include**, selector **Emails**, and one row for each team member. Set the session duration. A long session stays signed in on a device that nobody watches.
 
 A person takes a seat at the first sign-in and keeps it until you remove the person. When no seat is free, Access refuses the next person. Read the seat count in the Zero Trust overview before you invite the team.
 
@@ -223,8 +221,8 @@ pnpm live:check
 
 The two `admin` lines must say `PASS`. A `FAIL` on either line means Access is not in front of the Worker. Stop and fix the policy before you tell the team.
 
-Then sign in with a browser and read the dashboard. A `{"error":"forbidden"}` page after a good sign-in means `ACCESS_AUD` is wrong. Do this after each deploy that changes `apps/admin/wrangler.jsonc`.
+Then sign in with a browser and read the dashboard. A `{"error":"forbidden"}` page after a good sign-in means `ACCESS_AUD` is wrong. Do the browser sign-in after each deploy that changes `apps/admin/wrangler.jsonc`.
 
 ### 10.4 If you ever remove Access
 
-The Worker refuses every request (`docs/ARCHITECTURE.md` §10.1). This is deliberate. A panel that opens to the public when its gate is removed is worse than a panel that stops.
+The Worker refuses every request (`docs/ARCHITECTURE.md` section 10.1). This is intentional. A panel that stops is safer than a panel that opens to the public.

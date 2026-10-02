@@ -16,12 +16,12 @@ This folder holds the documents for the site and the admin panel of The Rupee Fu
 Keep each document to its own job:
 
 - README.md has one link, to this folder.
-- CONTRIBUTING.md is for people. It holds no design rule and no detail of the code that can go out of date.
+- CONTRIBUTING.md is for people. It holds no brand rule and no detail of the code that can go out of date.
 - DESIGN.md holds no rule that the brand guidelines own.
 
 Two owners are outside this repository:
 
-- The [brand guidelines](https://brand.rupeefund.org) own each design rule. Their source is [RupeeFund/brand](https://github.com/RupeeFund/brand).
+- The [brand guidelines](https://brand.rupeefund.org) own each brand rule. Their source is [RupeeFund/brand](https://github.com/RupeeFund/brand).
 - The [RupeeFund/.github](https://github.com/RupeeFund/.github) repository owns the code of conduct, the security policy, the support page, and the templates for an issue and a pull request.
 
 ## Index
@@ -43,5 +43,5 @@ Read the document that owns your change before you start.
 ## Change the documents
 
 - Write a fact in the document that owns it. Link to it from the others.
-- Write in ASD-STE100 Simplified Technical English.
-- Do not write a Cloudflare account ID, a zone ID, or the name of a person with access in a document. Name the resource instead.
+- Write the documents in ASD-STE100 Simplified Technical English. Do not use it for the words on the site.
+- Do not write a Cloudflare account ID or a zone ID in a document. Do not write the name of a person with access. Name the resource instead.
