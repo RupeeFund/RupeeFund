@@ -57,7 +57,7 @@ const watcher = watch(".generated", (_, name) => {
 
 wrangler = spawn(
   process.execPath,
-  ["../../scripts/wrangler-dev.mjs", "--local", ...process.argv.slice(2)],
+  ["../../scripts/wrangler-dev.mjs", "--local", "--live-reload", ...process.argv.slice(2)],
   { stdio: "inherit" },
 );
 
