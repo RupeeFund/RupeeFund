@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CONFIRMED_PATH, PROBLEM_PATH, handleWaitlist, type WaitlistDeps } from "./waitlist.ts";
+import { handleWaitlist, type WaitlistDeps } from "./waitlist.ts";
 import { makeLimiter, makeLogger, makeRepo, makeVerifier } from "../testkit.ts";
 
 function deps(over: Partial<WaitlistDeps> = {}): WaitlistDeps {
@@ -228,52 +228,25 @@ describe("handleWaitlist over fetch (JavaScript enabled)", () => {
   });
 });
 
-describe("handleWaitlist over a plain form post (JavaScript disabled)", () => {
-  it("stores the signup and redirects to a confirmation page", async () => {
+describe("handleWaitlist refuses any body that is not JSON", () => {
+  it("refuses a plain form post with no write and no way round the bot check", async () => {
     const repo = makeRepo();
     const res = await handleWaitlist(formReq(FORM), deps({ repo }));
-    expect(res.status).toBe(303);
-    expect(res.headers.get("location")).toBe(CONFIRMED_PATH);
-    expect(repo.waitlist.map((w) => w.email)).toEqual(["asha@example.com"]);
-  });
-
-  it("does not demand a bot-check token it has no way to obtain", async () => {
-    const verifyToken = makeVerifier({ pass: false });
-    const res = await handleWaitlist(formReq(FORM), deps({ verifyToken }));
-    expect(res.status).toBe(303);
-    expect(res.headers.get("location")).toBe(CONFIRMED_PATH);
-    expect(verifyToken.calls).toEqual([]);
-  });
-
-  it("still enforces the rate limit, redirecting rather than returning JSON", async () => {
-    const repo = makeRepo();
-    const res = await handleWaitlist(
-      formReq(FORM),
-      deps({ repo, limiter: makeLimiter({ allow: false }) }),
-    );
-    expect(res.status).toBe(303);
-    expect(res.headers.get("location")).toBe(`${PROBLEM_PATH}?reason=rate_limited`);
+    expect(res.status).toBe(415);
+    expect(await res.json()).toEqual({ error: "unsupported_type" });
     expect(repo.waitlist).toEqual([]);
   });
 
-  it("sends an invalid address to the problem page, not the confirmation page", async () => {
-    const res = await handleWaitlist(formReq({ ...FORM, email: "nope" }), deps());
-    expect(res.headers.get("location")).toBe(`${PROBLEM_PATH}?reason=invalid_input`);
-  });
-
-  it("rejects a cross-origin form post", async () => {
+  it("refuses a body with no content type", async () => {
     const repo = makeRepo();
-    const res = await handleWaitlist(
-      formReq(FORM, { origin: "https://evil.example" }),
-      deps({ repo }),
-    );
-    expect(res.headers.get("location")).toBe(`${PROBLEM_PATH}?reason=origin`);
+    const req = new Request("https://rupeefund.org/api/waitlist", {
+      method: "POST",
+      body: JSON.stringify(VALID),
+    });
+    req.headers.delete("content-type");
+    const res = await handleWaitlist(req, deps({ repo }));
+    expect(res.status).toBe(415);
     expect(repo.waitlist).toEqual([]);
-  });
-
-  it("accepts a same-origin form post that carries an Origin header", async () => {
-    const res = await handleWaitlist(formReq(FORM, { origin: "https://rupeefund.org" }), deps());
-    expect(res.headers.get("location")).toBe(CONFIRMED_PATH);
   });
 });
 
@@ -283,13 +256,6 @@ describe("the honeypot absorbs bots without telling them", () => {
     const res = await handleWaitlist(jsonReq({ ...VALID, company: "Acme Corp" }), deps({ repo }));
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true });
-    expect(repo.waitlist).toEqual([]);
-  });
-
-  it("looks exactly like success over a form post while writing nothing", async () => {
-    const repo = makeRepo();
-    const res = await handleWaitlist(formReq({ ...FORM, company: "Acme" }), deps({ repo }));
-    expect(res.headers.get("location")).toBe(CONFIRMED_PATH);
     expect(repo.waitlist).toEqual([]);
   });
 
@@ -353,17 +319,17 @@ describe("consent and provenance are recorded on every stored signup", () => {
     });
   });
 
-  it("stores every answer a plain form post carries, and an unticked box as 0", async () => {
+  it("stores every answer a signup carries, and an unticked box as 0", async () => {
     const repo = makeRepo();
     const fields = {
-      ...FORM,
+      ...VALID,
       amount: "other",
       amount_other: "42",
       months: "6",
       question: "Hi",
       is_creator: "1",
     };
-    await handleWaitlist(formReq(fields), deps({ repo }));
+    await handleWaitlist(jsonReq(fields), deps({ repo }));
     expect(repo.waitlist[0]).toMatchObject({
       amount: 42,
       months: "6",

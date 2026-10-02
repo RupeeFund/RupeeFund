@@ -3,12 +3,9 @@ import { validateWaitlist } from "../lib/validation.ts";
 import type { VerifyToken } from "../lib/turnstile.ts";
 import type { Repo } from "../types.ts";
 
-export const CONFIRMED_PATH = "/waitlist-confirmed";
-export const PROBLEM_PATH = "/waitlist-problem";
-
 const MAX_BODY_BYTES = 8192;
 const HONEYPOT_FIELD = "company";
-const FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
+const JSON_CONTENT_TYPE = "application/json";
 
 export interface WaitlistLimiter {
   limit(options: { key: string }): Promise<{ success: boolean }>;
@@ -22,15 +19,8 @@ export interface WaitlistDeps {
   log(event: Record<string, unknown>): void;
 }
 
-type Reply = (status: number, code: string) => Response;
-
-function jsonReply(status: number, code: string): Response {
+function reply(status: number, code: string): Response {
   return status === 200 ? json(200, { ok: true }) : json(status, { error: code });
-}
-
-function redirectReply(status: number, code: string): Response {
-  const target = status === 200 ? CONFIRMED_PATH : `${PROBLEM_PATH}?reason=${code}`;
-  return new Response(null, { status: 303, headers: { location: target } });
 }
 
 function isSameOrigin(request: Request): boolean {
@@ -67,22 +57,17 @@ async function readBodyWithin(request: Request, limit: number): Promise<string> 
   return new Blob(chunks).text();
 }
 
-function parseFields(raw: string, isForm: boolean): Record<string, unknown> {
-  if (!isForm) {
-    const body: unknown = JSON.parse(raw);
-    if (typeof body !== "object" || body === null) throw new Error("not an object");
-    return body as Record<string, unknown>;
-  }
-  const out: Record<string, unknown> = {};
-  for (const [key, value] of new URLSearchParams(raw).entries()) out[key] = value;
-  return out;
+function parseFields(raw: string): Record<string, unknown> {
+  const body: unknown = JSON.parse(raw);
+  if (typeof body !== "object" || body === null) throw new Error("not an object");
+  return body as Record<string, unknown>;
 }
 
 export async function handleWaitlist(request: Request, deps: WaitlistDeps): Promise<Response> {
-  const isForm = (request.headers.get("content-type") ?? "")
+  const isJson = (request.headers.get("content-type") ?? "")
     .toLowerCase()
-    .startsWith(FORM_CONTENT_TYPE);
-  const reply: Reply = isForm ? redirectReply : jsonReply;
+    .startsWith(JSON_CONTENT_TYPE);
+  if (!isJson) return reply(415, "unsupported_type");
 
   if (!isSameOrigin(request)) return reply(403, "origin");
 
@@ -96,7 +81,7 @@ export async function handleWaitlist(request: Request, deps: WaitlistDeps): Prom
 
   let fields: Record<string, unknown>;
   try {
-    fields = parseFields(await readBodyWithin(request, MAX_BODY_BYTES), isForm);
+    fields = parseFields(await readBodyWithin(request, MAX_BODY_BYTES));
   } catch (error) {
     if (error instanceof BodyTooLarge) return reply(413, "too_large");
     return reply(400, "invalid_body");
@@ -108,16 +93,14 @@ export async function handleWaitlist(request: Request, deps: WaitlistDeps): Prom
   const result = validateWaitlist(fields);
   if (!result.ok) return reply(400, "invalid_input");
 
-  if (!isForm) {
-    const token = typeof fields.turnstileToken === "string" ? fields.turnstileToken : "";
-    let verified = false;
-    try {
-      verified = await deps.verifyToken(token, ip.length > 0 ? ip : null);
-    } catch {
-      verified = false;
-    }
-    if (!verified) return reply(403, "bot_check");
+  const token = typeof fields.turnstileToken === "string" ? fields.turnstileToken : "";
+  let verified = false;
+  try {
+    verified = await deps.verifyToken(token, ip.length > 0 ? ip : null);
+  } catch {
+    verified = false;
   }
+  if (!verified) return reply(403, "bot_check");
 
   const at = deps.now();
   try {
