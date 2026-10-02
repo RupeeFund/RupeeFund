@@ -6,7 +6,6 @@ const CARRIERS = [
   "src/lib/turnstile.ts",
   "scripts/turnstile-dummy-keys.mjs",
   "tests/site/build.setup.ts",
-  ".env.example",
 ] as const;
 
 function read(path: string): string {
@@ -31,8 +30,18 @@ describe("every build path that uses the test sitekey opts in explicitly", () =>
     });
   }
 
-  it(".env.example sets PUBLIC_ALLOW_TEST_SITEKEY beside the test sitekey", () => {
-    expect(read(".env.example")).toContain('PUBLIC_ALLOW_TEST_SITEKEY="true"');
+  it("gives pnpm dev the same Turnstile test values as pnpm preview", () => {
+    const values = [
+      "PUBLIC_ALLOW_TEST_SITEKEY=true",
+      `PUBLIC_TURNSTILE_SITEKEY=${TEST_SITEKEY}`,
+      "TURNSTILE_SECRET=1x0000000000000000000000000000000AA",
+      "--var TURNSTILE_HOSTNAMES:example.com",
+      "--var TURNSTILE_ACTION:",
+    ];
+    for (const value of values) {
+      expect(scripts.preview).toContain(value);
+      expect(scripts.dev).toContain(value);
+    }
   });
 
   it("never lets CI reach for the test sitekey, so the deploy guard runs as it does in production", () => {

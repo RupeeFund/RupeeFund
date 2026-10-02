@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node scripts/dev.mts",
+    "dev": "PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA TURNSTILE_SECRET=1x0000000000000000000000000000000AA node scripts/dev.mts --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
     "build": "node scripts/build.mjs",
     "preview": "PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA astro build --outDir dist-preview && TURNSTILE_SECRET=1x0000000000000000000000000000000AA node ../../scripts/wrangler-dev.mjs --assets dist-preview --port 8789 --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
     "typecheck": "wrangler types && tsc -b tsconfig.build.json && astro check",
