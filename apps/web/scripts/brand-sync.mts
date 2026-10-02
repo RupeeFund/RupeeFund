@@ -23,13 +23,31 @@ const FILES: Record<string, string> = {
   "web/logo-dark.svg": `${UI}/logo-dark.svg`,
 };
 
+const COLOR_NAME = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const HEX = /^#[0-9a-f]{6}$/;
+
 export function colorsFromTokens(tokens: Tokens): Colors {
   const colors: Colors = {};
   for (const [name, token] of Object.entries(tokens.color)) {
     const hex = (token as { $value?: { hex?: string } })?.$value?.hex;
-    if (typeof hex === "string") colors[name] = hex.toLowerCase();
+    if (typeof hex !== "string") continue;
+    if (!COLOR_NAME.test(name))
+      throw new Error(`brand tokens have a bad colour name ${JSON.stringify(name)}`);
+    const value = hex.toLowerCase();
+    if (!HEX.test(value)) throw new Error(`brand token ${name} is not a six-digit hex`);
+    colors[name] = value;
   }
   return colors;
+}
+
+const SVG_ELEMENTS = new Set(["svg", "title", "desc", "g", "path", "rect", "circle"]);
+
+export function assertSafeSvg(name: string, body: Buffer): void {
+  const svg = body.toString("utf8");
+  const elements = [...svg.matchAll(/<([a-zA-Z][\w:.-]*)/g)].map((match) => match[1]);
+  const unknown = elements.filter((element) => !SVG_ELEMENTS.has(element));
+  if (unknown.length > 0) throw new Error(`${name} has the element ${unknown[0]}`);
+  if (/\s(on[a-z]+|[\w:]*href)\s*=/i.test(svg)) throw new Error(`${name} has a handler or a link`);
 }
 
 const SITE_COLORS = [
@@ -100,6 +118,7 @@ async function main() {
   const files = await Promise.all(
     Object.entries(FILES).map(async ([from, to]) => [to, await fetchFrom(from)] as const),
   );
+  for (const [to, body] of files) if (to.endsWith(".svg")) assertSafeSvg(to, body);
   writeFileSync(`${UI}/colors.css`, themeCss(colors));
   writeFileSync(`${UI}/colors.json`, `${JSON.stringify(colors, null, 2)}\n`);
   writeFileSync("public/site.webmanifest", manifest);

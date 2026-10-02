@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   SHARED,
+  assertSafeSvg,
   assertSiteColors,
   brandDir,
   colorsFromTokens,
@@ -25,6 +26,18 @@ describe("brand sync", () => {
       "brand-fg": "#057a33",
       paper: "#f0f0f0",
     });
+  });
+
+  it("refuses a colour value that is not a six-digit hex, so a token cannot inject CSS", () => {
+    expect(() =>
+      colorsFromTokens({ color: { brand: { $value: { hex: "#fff; } body { x: y" } } } }),
+    ).toThrow(/brand/);
+  });
+
+  it("refuses a colour name that is not a plain CSS identifier", () => {
+    expect(() =>
+      colorsFromTokens({ color: { "a: b; }": { $value: { hex: "#08b74f" } } } }),
+    ).toThrow(/colour name/);
   });
 
   it("writes the colours as a Tailwind theme block", () => {
@@ -70,6 +83,21 @@ describe("the brand checkout", () => {
 
   it("fetches from the brand site when BRAND_DIR is not set", () => {
     expect(brandDir({}, "/repo/apps/web")).toBeUndefined();
+  });
+});
+
+describe("the brand SVG files", () => {
+  it.each(SHARED)("accepts the %s that the site serves now", (name) => {
+    expect(() => assertSafeSvg(name, readFileSync(`public/${name}`))).not.toThrow();
+  });
+
+  it.each([
+    ["a script element", "<svg><script>alert(1)</script></svg>"],
+    ["an event handler", '<svg><rect onload="alert(1)"/></svg>'],
+    ["a link", '<svg><a href="https://example.com"><rect/></a></svg>'],
+    ["a foreign object", "<svg><foreignObject><p>x</p></foreignObject></svg>"],
+  ])("refuses an SVG with %s, because the site serves it from its own origin", (_, svg) => {
+    expect(() => assertSafeSvg("logo.svg", Buffer.from(svg))).toThrow(/logo.svg/);
   });
 });
 
