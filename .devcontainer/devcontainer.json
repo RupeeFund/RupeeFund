@@ -1,17 +1,17 @@
 {
   "name": "rupeefund",
   "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
-  "hostRequirements": { "cpus": 4, "memory": "8gb" },
   "containerEnv": {
     "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
     "WRANGLER_SEND_METRICS": "false"
   },
   "onCreateCommand": "sudo corepack enable pnpm",
-  "updateContentCommand": "pnpm install --frozen-lockfile && pnpm --filter @rupeefund/web exec playwright install --with-deps chromium",
+  "updateContentCommand": "pnpm install --frozen-lockfile",
   "postCreateCommand": "pnpm db:reset",
+  "postAttachCommand": "cat .devcontainer/welcome.txt",
   "forwardPorts": [8787, 8788],
   "portsAttributes": {
-    "8787": { "label": "site", "onAutoForward": "notify" },
+    "8787": { "label": "site", "onAutoForward": "openBrowserOnce" },
     "8788": { "label": "admin panel", "onAutoForward": "notify" }
   },
   "otherPortsAttributes": { "onAutoForward": "ignore" },

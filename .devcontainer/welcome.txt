@@ -1,0 +1,13 @@
+
+  The Rupee Fund is ready. To see the site, run:
+
+      pnpm dev
+
+  The site opens in a new browser tab. When you save a file, the tab reloads.
+  To open it again, use the Ports tab, port 8787.
+
+  The admin panel: run pnpm dev:admin in a second terminal.
+  The browser tests: run this one time first:
+
+      pnpm --filter @rupeefund/web exec playwright install --with-deps chromium
+

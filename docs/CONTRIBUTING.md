@@ -32,7 +32,7 @@ The terminal shows the address of the site. When you save a file, the browser re
 
 ### In Codespaces or a dev container
 
-Click **Open in GitHub Codespaces** in the [README](../README.md), or open the repository in a dev container. The container does the set-up. Then run `pnpm dev`. `pnpm dev:portless` does not work in a container.
+Click **Open in GitHub Codespaces** in the [README](../README.md), or open the repository in a dev container. Wait until the terminal shows the welcome text. Then run `pnpm dev`. In a codespace, the site opens in a new browser tab. To open it again, use the **Ports** tab, port 8787. `pnpm dev:portless` does not work in a container.
 
 ## Make a change
 
@@ -47,7 +47,7 @@ Do not commit a secret, a password or a personal email list.
 
 ## The gate
 
-The gate is the set of checks that each change must pass. It is the three commands below. Run them before you open a pull request. CI runs the same checks. The browser tests need Chromium one time: `pnpm --filter @rupeefund/web exec playwright install chromium`.
+The gate is the set of checks that each change must pass. It is the three commands below. Run them before you open a pull request. CI runs the same checks. The browser tests need Chromium one time: `pnpm --filter @rupeefund/web exec playwright install --with-deps chromium`.
 
 ```sh
 pnpm format      # format the files
