@@ -1,9 +1,18 @@
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { syncDir } from "../scripts/dev.mts";
 
+let root: string;
 let from: string;
 let to: string;
 
@@ -13,12 +22,14 @@ function put(dir: string, path: string, text: string): void {
 }
 
 beforeEach(() => {
-  const root = mkdtempSync(join(tmpdir(), "rupeefund-sync-"));
+  root = mkdtempSync(join(tmpdir(), "rupeefund-sync-"));
   from = join(root, "from");
   to = join(root, "to");
   mkdirSync(from);
   mkdirSync(to);
 });
+
+afterEach(() => rmSync(root, { recursive: true, force: true }));
 
 describe("syncDir copies a fresh build into the served folder", () => {
   it("adds a new file in a new folder", () => {
@@ -48,5 +59,12 @@ describe("syncDir copies a fresh build into the served folder", () => {
     expect(syncDir(from, to).sort()).toEqual(["gone/page.html", "stale.html"]);
     expect(existsSync(join(to, "gone"))).toBe(false);
     expect(existsSync(join(to, "stale.html"))).toBe(false);
+  });
+
+  it("replaces a folder with a file of the same name", () => {
+    put(to, "page/index.html", "x");
+    put(from, "page", "y");
+    syncDir(from, to);
+    expect(readFileSync(join(to, "page"), "utf8")).toBe("y");
   });
 });
