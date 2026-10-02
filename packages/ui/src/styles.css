@@ -197,6 +197,12 @@
     @apply text-brand-fg whitespace-nowrap focus-visible:rounded-sm forced-colors:underline;
   }
 
+  .inline-link-ink {
+    --color-brand: var(--color-ink);
+    --focus: var(--color-ink);
+    @apply text-ink;
+  }
+
   @media (hover: hover) {
     .inline-link:hover {
       background-size:
@@ -350,19 +356,22 @@
 }
 
 @utility section-title {
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2rem, 1.667rem + 1.481vw, 3rem);
   line-height: 1.05;
   margin-bottom: clamp(2rem, 5vh, 3rem);
 }
 
 @utility page-title {
-  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-size: clamp(2.25rem, 1.833rem + 1.852vw, 3.5rem);
   line-height: 1.05;
 }
 
 @utility display {
-  font-size: clamp(2.25rem, 4.4vw, 3.5rem);
-  line-height: 1.05;
+  font-size: clamp(2.25rem, 1.583rem + 2.963vw, 4.25rem);
+  line-height: 1;
+}
+
+@utility heading {
   font-weight: 600;
   letter-spacing: -0.033em;
   text-wrap: balance;

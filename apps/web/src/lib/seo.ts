@@ -5,7 +5,7 @@ export const SITE_URL = "https://rupeefund.org";
 export const LOGO_IMAGE = `${SITE_URL}/icon-512.png`;
 
 export const INITIATIVE = "A community initiative from FOSS United";
-export const TAGLINE = "Keep FOSS in India alive, one rupee at a time";
+export const TAGLINE = "Not charity — membership in a commons";
 
 export const OG_IMAGE = `${SITE_URL}/og/site.png`;
 export const OG_IMAGE_ALT = `The logo of The Rupee Fund. ${TAGLINE}. ${INITIATIVE}.`;
@@ -25,13 +25,13 @@ const ROUTE_SEO: readonly RouteSeo[] = [
   {
     path: "/",
     title: "The Rupee Fund — A FOSS United Community Initiative",
-    description: `Small monthly contributions that make FOSS in India sustainable. ${INITIATIVE}, run by volunteers.`,
+    description: `Your ₹15 can do a lot. Fund great projects from India. ${INITIATIVE}, run by volunteers.`,
     indexable: true,
   },
   {
     path: "/subscribe",
     title: `${SUBSCRIBE_HEADING} — The Rupee Fund`,
-    description: `Hear first when monthly contributions open for Indian FOSS maintainers. ${INITIATIVE}.`,
+    description: `Hear first when monthly contributions open for great projects from India. ${INITIATIVE}.`,
     ogTitle: "I am interested! — The Rupee Fund",
     indexable: true,
   },

@@ -9,14 +9,16 @@ import { TAGLINE } from "../lib/seo.ts";
 <Base>
   <section class="wrap pt-6 pb-[clamp(3rem,8vh,5rem)] sm:pt-[clamp(2.5rem,8vh,5rem)]">
     <div class="grid items-start gap-5 lg:grid-cols-2 lg:grid-rows-[auto_auto_1fr] lg:gap-x-16">
-      <h1 class="section-title mb-0 text-ink lg:col-start-2 lg:row-start-1">
-        The&nbsp;Rupee&nbsp;Fund
-      </h1>
-      <p class="display text-ink lg:col-start-1 lg:row-span-3 lg:row-start-1">{TAGLINE}</p>
+      <h1 class="display text-ink lg:col-start-2 lg:row-start-1">The&nbsp;Rupee&nbsp;Fund</h1>
+      <p
+        class="section-title heading mb-0 text-ink lg:col-start-1 lg:row-span-3 lg:row-start-1"
+        data-tagline
+      >
+        {TAGLINE}
+      </p>
       <p class="lede max-w-[36rem] text-ink-2 lg:col-start-2 lg:row-start-2">
-        Free software isn’t free. The&nbsp;Rupee&nbsp;Fund is a community initiative from FOSS
-        United. The fund pools small monthly UPI contributions and routes them to indie FOSS
-        maintainers from India.
+        The&nbsp;Rupee&nbsp;Fund pools your monthly contributions over UPI, from ₹15 a month, and
+        you decide which projects get funded.
       </p>
       <div class="sm:mt-3 lg:col-start-2 lg:row-start-3">
         <a href="/subscribe" class="btn btn-primary btn-lg" data-hero-cta>
@@ -28,11 +30,25 @@ import { TAGLINE } from "../lib/seo.ts";
   </section>
 
   <section class="wrap section-y grid items-start bg-brand text-ink lg:grid-cols-2 lg:gap-16">
-    <h2 class="section-title lg:mb-0">Not charity — membership in a commons</h2>
-    <p class="lede max-w-[36rem]">
-      Every rupee in this fund comes from someone like you, and your continued membership decides
-      which deserving projects get funded — a community layer that drives sustainability.
-    </p>
+    <h2 class="section-title lg:mb-0">
+      Lots of us, a little each month, for great projects from India
+    </h2>
+    <div class="max-w-[36rem]">
+      <p class="lede">
+        More than 2&nbsp;crore developers in India use GitHub. If 1&nbsp;in&nbsp;100 of us gives ₹15
+        a month, the pool gets more than ₹30&nbsp;lakh every month.
+      </p>
+      <p class="lede mt-4">Together, we can do great things.</p>
+      <p class="mt-4 text-sm">
+        Source:{" "}
+        <a
+          href="https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/"
+          target="_blank"
+          rel="noopener"
+          class="inline-link inline-link-ink">GitHub Octoverse 2025</a
+        >
+      </p>
+    </div>
   </section>
 
   <section class="wrap section-y bg-paper">
@@ -47,9 +63,8 @@ import { TAGLINE } from "../lib/seo.ts";
             <div class="pt-0.5">
               <h3 class="step-title">Subscribe</h3>
               <p class="step-body">
-                Set up a <strong class="text-ink">small</strong> monthly contribution via UPI AutoPay.
-                A large community of small contributors makes it sustainable rather than a fund of one-time
-                donors.
+                Set up a <strong class="text-ink">monthly</strong> contribution with UPI AutoPay, from
+                ₹15 a month. Your contributions keep the fund steady.
               </p>
             </div>
           </li>
@@ -73,9 +88,8 @@ import { TAGLINE } from "../lib/seo.ts";
               <h3 class="step-title">Vote & nominate</h3>
               <p class="step-body">
                 Contribute regularly and you earn a <strong class="text-ink">vote</strong> each season.
-                The people who fund the work choose the work. You can <strong class="text-ink"
-                  >nominate</strong
-                > projects too.
+                You split your vote across three kinds of projects. You may also{" "}
+                <strong class="text-ink">nominate</strong> one project each season.
               </p>
             </div>
           </li>
@@ -86,9 +100,9 @@ import { TAGLINE } from "../lib/seo.ts";
             <div class="pt-0.5">
               <h3 class="step-title">Disburse</h3>
               <p class="step-body">
-                Each season, the pool is <strong class="text-ink">disbursed</strong> to indie FOSS maintainers
-                and builders across India. We document every administrative cost, so you can follow the
-                whole path from your support to a maintainer.
+                Each season, the pool <strong class="text-ink">goes</strong> to the projects that you
+                chose, over UPI. We publish every administrative cost, so you can follow your money all
+                the way to a project.
               </p>
             </div>
           </li>
@@ -130,25 +144,18 @@ import { TAGLINE } from "../lib/seo.ts";
     <h2 id="why-title" class="sr-only">Why contribute</h2>
     <div class="grid gap-10 lg:grid-cols-3 lg:gap-16">
       <div>
-        <h3 class="text-xl text-ink mb-3">Students</h3>
+        <h3 class="text-xl text-ink mb-3">Nurture new projects</h3>
+        <p class="max-w-[36rem] text-sm text-ink-2 text-pretty">Help a new project grow.</p>
+      </div>
+      <div>
+        <h3 class="text-xl text-ink mb-3">Encourage growing projects</h3>
         <p class="max-w-[36rem] text-sm text-ink-2 text-pretty">
-          Give a little back to the tools you learn with. Small contributions count. Be part of the
-          movement at Chai++ rates!
+          Back projects that already have a small community or user base, so that they can grow.
         </p>
       </div>
       <div>
-        <h3 class="text-xl text-ink mb-3">FOSS users</h3>
-        <p class="max-w-[36rem] text-sm text-ink-2 text-pretty">
-          Thank the people behind the software you use. Join others in helping local projects keep
-          going.
-        </p>
-      </div>
-      <div>
-        <h3 class="text-xl text-ink mb-3">FOSS contributors</h3>
-        <p class="max-w-[36rem] text-sm text-ink-2 text-pretty">
-          We all build on each other’s work. Support fellow maintainers and the projects your work
-          depends on.
-        </p>
+        <h3 class="text-xl text-ink mb-3">Sustain projects that work</h3>
+        <p class="max-w-[36rem] text-sm text-ink-2 text-pretty">Keep well-run projects going.</p>
       </div>
     </div>
   </section>

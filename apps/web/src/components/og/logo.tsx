@@ -34,11 +34,14 @@ export const Logo = ({ logo, logoWidth, logoHeight, clearSpace, tagline, caption
     {tagline ? (
       <div
         style={{
-          display: "flex",
+          flexShrink: 0,
           fontSize: "40px",
           fontWeight: 600,
           letterSpacing: "-0.033em",
+          lineHeight: 1.15,
           marginTop: `${clearSpace}px`,
+          textAlign: "center",
+          textWrap: "balance",
         }}
       >
         {tagline}

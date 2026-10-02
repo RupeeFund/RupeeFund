@@ -109,6 +109,46 @@ for (const size of [
   });
 }
 
+for (const width of [320, 768, 1024, 1440, 1920]) {
+  test(`the home page sets its h1 larger than the tagline at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const size = (selector: string) =>
+      page.locator(selector).evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+    expect(await size("main h1")).toBeGreaterThan(await size("main [data-tagline]"));
+  });
+}
+
+for (const width of [1024, 1180, 1440]) {
+  test(`the home page keeps the unbroken name inside its column at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const h1 = page.locator("main h1");
+    const { text, column } = await h1.evaluate((el) => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      return { text: range.getBoundingClientRect().width, column: el.clientWidth };
+    });
+    expect(text).toBeLessThanOrEqual(column * 0.98);
+  });
+}
+
+test("the home page puts the tagline left, and the h1, the lede and the action right, at 1440px", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const h1 = await page.locator("main h1").boundingBox();
+  const tagline = await page.locator("main [data-tagline]").boundingBox();
+  expect(h1?.y).toBe(tagline?.y);
+  expect((tagline?.x ?? Infinity) + (tagline?.width ?? 0)).toBeLessThan(h1?.x ?? 0);
+  for (const selector of ["main .lede", "main [data-hero-cta]"]) {
+    expect((await page.locator(selector).first().boundingBox())?.x, selector).toBe(h1?.x);
+  }
+});
+
 test("/faq keeps its questions in one column across the page at 1440px", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/faq");

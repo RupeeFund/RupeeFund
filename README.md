@@ -5,9 +5,9 @@
 
 # The Rupee Fund
 
-**Keep FOSS in India alive, one rupee at a time**
+**Not charity — membership in a commons**
 
-The Rupee Fund is a community initiative from FOSS United, run by volunteers. We support small, independent free and open-source software (FOSS) maintainers and builders across India. The FOSS United Foundation is the fiscal host.
+The Rupee Fund is a community initiative from FOSS United, run by volunteers. Together, we back great projects from India. The FOSS United Foundation is the fiscal host.
 
 > The fund does not take payments yet. To hear when it opens, join the list at rupeefund.org/subscribe.
 

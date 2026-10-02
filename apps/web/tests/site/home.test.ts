@@ -7,7 +7,19 @@ describe("Home page (/)", () => {
   it("names the fund in its one h1, before the tagline", () => {
     const main = html.split("<main")[1];
     expect(main.match(/<h1[^>]*>([^<]*)<\/h1>/)?.[1]).toBe("The&nbsp;Rupee&nbsp;Fund");
-    expect(main.indexOf("<h1")).toBeLessThan(main.indexOf("Keep FOSS in India alive"));
+    expect(main.indexOf("<h1")).toBeLessThan(main.indexOf("data-tagline"));
+    expect(/data-tagline[^>]*>\s*([^<]*?)\s*</.exec(main)?.[1]).toBe(
+      "Not charity — membership in a commons",
+    );
+  });
+
+  it("cites a source for the developer figure in the band", () => {
+    const band =
+      /<h2[^>]*>Lots of us, a little each month, for great projects from India<\/h2>([\s\S]*?)<\/section>/.exec(
+        html,
+      )?.[1] ?? "";
+    expect(band).toContain("2&nbsp;crore developers");
+    expect(band).toMatch(/<a [^>]*href="https:\/\/github\.blog\/[^"]*octoverse[^"]*"/);
   });
 
   it("sets the canonical URL", () => {
