@@ -118,7 +118,7 @@ There is no environment suffix. There is one environment.
 
 `apps/web/public/_headers` applies to `rupeefund.org` only. The admin Worker sets its own headers. Refer to §10.5.
 
-`run_worker_first` in `apps/web/wrangler.jsonc` sends `/api/*` to the Worker, so `_headers` does not apply to those answers. `apps/web/src/worker/index.ts` sets the security headers on each `/api/*` answer. Its policy starts at `default-src 'none'`, because an answer is JSON and loads nothing.
+`run_worker_first` in `apps/web/wrangler.jsonc` sends `/api/*` to the Worker, so `_headers` does not apply to those answers. `apps/web/src/worker/index.ts` sets the security headers on each `/api/*` answer. Its policy starts at `default-src 'none'`, because an answer is JSON or a redirect, and loads nothing.
 
 ## 9. Brand files
 
