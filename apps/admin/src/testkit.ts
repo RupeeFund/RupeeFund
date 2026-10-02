@@ -28,7 +28,7 @@ export function makeD1(): SpyD1 {
 }
 
 export function makeEnv(): SpyEnv {
-  return { DB: makeD1() };
+  return { DB: makeD1(), ACCESS_AUD: "test-aud" };
 }
 
 export function makeCtx(identity?: CloudflareAccessIdentity): ExecutionContext {

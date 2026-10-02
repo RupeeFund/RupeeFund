@@ -2,6 +2,7 @@ import type { CloudflareAccessContext, D1Database } from "@cloudflare/workers-ty
 
 export interface AdminEnv {
   DB: D1Database;
+  ACCESS_AUD: string;
 }
 
 export interface AdminVariables {

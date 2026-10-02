@@ -24,9 +24,12 @@ function readAccess(source: unknown): CloudflareAccessContext | undefined {
 export function requireAccess(log: AdminLogger): MiddlewareHandler<AdminBindings> {
   return createMiddleware<AdminBindings>(async (c, next) => {
     const access = readAccess(readExecutionCtx(c));
-    if (access === undefined) {
+    const reason =
+      access === undefined ? "missing" : access.aud !== c.env.ACCESS_AUD ? "aud" : null;
+    if (access === undefined || reason !== null) {
       log({
         event: "access_denied",
+        reason,
         method: c.req.method,
         path: new URL(c.req.url).pathname,
       });

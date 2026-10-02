@@ -38,6 +38,13 @@ describe("the admin Worker config", () => {
     expect(adminDatabases[0]?.database_id).toBe(rootDatabases[0]?.database_id);
   });
 
+  it("expects the audience of its Access application, and simulates the same one in dev", () => {
+    const vars = config.vars as Record<string, unknown>;
+    const access = config.access as { dev: { aud: string } };
+    expect(vars.ACCESS_AUD).toMatch(/^[0-9a-f]{64}$/);
+    expect(access.dev.aud).toBe(vars.ACCESS_AUD);
+  });
+
   it("answers on the admin host alone", () => {
     expect(config.routes).toEqual([{ pattern: "admin.rupeefund.org", custom_domain: true }]);
   });

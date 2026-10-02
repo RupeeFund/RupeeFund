@@ -14,9 +14,12 @@
       "database_id": "ba3924ec-33bd-41e6-b1b4-92eb5a58ec61",
     },
   ],
+  "vars": {
+    "ACCESS_AUD": "1c73329b2f285fdaba1f31fe1af894b9423b0ed344c66c45aba601c17d404be8",
+  },
   "access": {
     "dev": {
-      "aud": "local-development-aud",
+      "aud": "1c73329b2f285fdaba1f31fe1af894b9423b0ed344c66c45aba601c17d404be8",
       "identity": { "email": "operator@example.com" },
     },
   },

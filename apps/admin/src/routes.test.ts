@@ -84,7 +84,7 @@ function call(
   return makeApp().request(
     `http://admin.test${path}`,
     { headers },
-    { DB: fixture.db },
+    { DB: fixture.db, ACCESS_AUD: "test-aud" },
     makeCtx(identity),
   );
 }
@@ -94,7 +94,7 @@ describe("/api/summary", () => {
     const res = await makeApp().request(
       "http://admin.test/api/summary",
       {},
-      { DB: fixture.db },
+      { DB: fixture.db, ACCESS_AUD: "test-aud" },
       makeCtx(),
     );
     expect(res.status).toBe(403);
@@ -269,7 +269,7 @@ describe("POST /api/export", () => {
     return makeApp().request(
       "http://admin.test/api/export",
       { method: "POST", headers },
-      { DB: fixture.db },
+      { DB: fixture.db, ACCESS_AUD: "test-aud" },
       makeCtx(identity),
     );
   }

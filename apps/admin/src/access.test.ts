@@ -21,7 +21,9 @@ describe("the Access guard", () => {
     const res = await makeApp(logger.log).request("/probe", {}, makeEnv(), makeCtx());
     expect(res.status).toBe(403);
     expect(await res.json()).toEqual({ error: "forbidden" });
-    expect(logger.entries).toEqual([{ event: "access_denied", method: "GET", path: "/probe" }]);
+    expect(logger.entries).toEqual([
+      { event: "access_denied", reason: "missing", method: "GET", path: "/probe" },
+    ]);
   });
 
   it("refuses a request with no execution context", async () => {
@@ -41,6 +43,28 @@ describe("the Access guard", () => {
     const res = await makeApp(logger.log).request("/probe", {}, makeEnv(), ctx);
     expect(res.status).toBe(403);
     expect(logger.entries).toHaveLength(1);
+  });
+
+  it("refuses an access context issued for another Access application", async () => {
+    const logger = makeLogger();
+    const ctx = {
+      waitUntil() {},
+      passThroughOnException() {},
+      access: { aud: "other-aud", getIdentity: async () => ({ email: "volunteer@example.org" }) },
+    } as unknown as ExecutionContext;
+    const res = await makeApp(logger.log).request("/probe", {}, makeEnv(), ctx);
+    expect(res.status).toBe(403);
+    expect(logger.entries).toEqual([
+      { event: "access_denied", reason: "aud", method: "GET", path: "/probe" },
+    ]);
+  });
+
+  it("refuses every request when no audience is configured", async () => {
+    const logger = makeLogger();
+    const env = { ...makeEnv(), ACCESS_AUD: "" };
+    const ctx = makeCtx({ email: "volunteer@example.org" });
+    const res = await makeApp(logger.log).request("/probe", {}, env, ctx);
+    expect(res.status).toBe(403);
   });
 
   it("admits a request that Access authenticated", async () => {
