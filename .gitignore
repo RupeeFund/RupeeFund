@@ -2,6 +2,7 @@ node_modules
 dist
 dist-preview
 dist-dev
+dist-dev-stage
 .astro
 .wrangler
 worker-configuration.d.ts

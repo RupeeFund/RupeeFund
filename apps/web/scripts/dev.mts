@@ -1,7 +1,6 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import {
   mkdirSync,
-  mkdtempSync,
   readFileSync,
   readdirSync,
   realpathSync,
@@ -9,7 +8,6 @@ import {
   watch,
   writeFileSync,
 } from "node:fs";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -49,6 +47,7 @@ export function syncDir(from: string, to: string): string[] {
 }
 
 const SERVED = "dist-dev";
+export const STAGE = "dist-dev-stage";
 const WATCHED = ["src", "public", "../../packages/ui/src"];
 const CONFIG = "astro.config.mjs";
 const SETTLE_MS = 100;
@@ -58,7 +57,6 @@ const WIN = process.platform === "win32";
 const astro = resolve("node_modules", ".bin", WIN ? "astro.cmd" : "astro");
 
 async function main(): Promise<void> {
-  const stage = mkdtempSync(join(tmpdir(), "rupeefund-dev-"));
   let child: ChildProcess | undefined;
   let wrangler: ChildProcess | undefined;
   let pending: NodeJS.Timeout | undefined;
@@ -79,7 +77,7 @@ async function main(): Promise<void> {
     clearTimeout(pending);
     child?.kill();
     for (const watcher of watchers) watcher.close();
-    rmSync(stage, { recursive: true, force: true });
+    rmSync(STAGE, { recursive: true, force: true });
     process.exit(code);
   }
 
@@ -88,11 +86,8 @@ async function main(): Promise<void> {
   }
 
   function build(): Promise<string | null> {
-    const args = ["build", "--outDir", stage].map((arg) =>
-      WIN && /\s/.test(arg) ? `"${arg}"` : arg,
-    );
     return new Promise((done) => {
-      child = spawn(WIN ? `"${astro}"` : astro, args, {
+      child = spawn(WIN ? `"${astro}"` : astro, ["build", "--outDir", STAGE], {
         stdio: ["ignore", "pipe", "pipe"],
         env: process.env,
         shell: WIN,
@@ -114,7 +109,7 @@ async function main(): Promise<void> {
     try {
       const failure = await build();
       if (failure !== null) throw new Error(failure);
-      const changed = syncDir(stage, SERVED);
+      const changed = syncDir(STAGE, SERVED);
       const seconds = ((Date.now() - started) / 1000).toFixed(1);
       process.stdout.write(`Site rebuilt in ${seconds} s. Files changed: ${changed.length}.\n`);
     } catch (error) {

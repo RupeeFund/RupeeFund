@@ -8,9 +8,9 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { syncDir } from "../scripts/dev.mts";
+import { STAGE, syncDir } from "../scripts/dev.mts";
 
 let root: string;
 let from: string;
@@ -67,4 +67,8 @@ describe("syncDir copies a fresh build into the served folder", () => {
     syncDir(from, to);
     expect(readFileSync(join(to, "page"), "utf8")).toBe("y");
   });
+});
+
+it("stages the build inside the app, because Astro moves its files there with rename()", () => {
+  expect(relative(process.cwd(), resolve(STAGE)).startsWith("..")).toBe(false);
 });
