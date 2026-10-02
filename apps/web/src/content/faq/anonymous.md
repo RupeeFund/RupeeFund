@@ -1,7 +1,8 @@
 ---
-question: Can I donate anonymously?
-order: 6
-home: true
+question: Can I contribute anonymously?
+order: 12
 ---
 
-No. We comply with all statutory requirements, so anonymous donations are not supported.
+**No.** We need to comply with all statutory requirements, so anonymous contributions are not supported.
+
+However, we collect only what the form asks for. _Nothing more._

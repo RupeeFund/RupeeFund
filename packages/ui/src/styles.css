@@ -283,6 +283,14 @@
     @apply pb-3 text-ink-2 text-sm text-pretty;
   }
 
+  .faq-answer p + p {
+    @apply mt-3;
+  }
+
+  .faq-answer strong {
+    @apply text-ink;
+  }
+
   .faq-sources {
     @apply pb-3 text-ink-3 text-xs;
   }

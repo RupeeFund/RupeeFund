@@ -1,7 +1,6 @@
 ---
-question: Will this fund international projects?
-order: 5
-home: true
+question: Does the fund back people outside India?
+order: 11
 ---
 
-No. It funds Indian contributors, including those who work on international projects.
+**No.** The fund backs only Indian individuals and projects, including people who work on international projects.

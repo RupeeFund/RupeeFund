@@ -1,7 +1,7 @@
 ---
 question: How are costs handled?
-order: 7
+order: 10
 home: true
 ---
 
-The funding pool is the total collected minus administrative costs. All costs are documented publicly.
+The pool is the money we collect, minus administrative costs. We **publish every cost**, so you can see where your money goes.
