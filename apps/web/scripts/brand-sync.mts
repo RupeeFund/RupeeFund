@@ -44,10 +44,11 @@ const SVG_ELEMENTS = new Set(["svg", "title", "desc", "g", "path", "rect", "circ
 
 export function assertSafeSvg(name: string, body: Buffer): void {
   const svg = body.toString("utf8");
-  const elements = [...svg.matchAll(/<([a-zA-Z][\w:.-]*)/g)].map((match) => match[1]);
-  const unknown = elements.filter((element) => !SVG_ELEMENTS.has(element));
-  if (unknown.length > 0) throw new Error(`${name} has the element ${unknown[0]}`);
+  if (/<!(?!--)/.test(svg)) throw new Error(`${name} has a declaration`);
   if (/\s(on[a-z]+|[\w:]*href)\s*=/i.test(svg)) throw new Error(`${name} has a handler or a link`);
+  for (const [, element] of svg.matchAll(/<([^\s/>!?]+)/g)) {
+    if (!SVG_ELEMENTS.has(element)) throw new Error(`${name} has the element ${element}`);
+  }
 }
 
 const SITE_COLORS = [

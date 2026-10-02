@@ -96,6 +96,10 @@ describe("the brand SVG files", () => {
     ["an event handler", '<svg><rect onload="alert(1)"/></svg>'],
     ["a link", '<svg><a href="https://example.com"><rect/></a></svg>'],
     ["a foreign object", "<svg><foreignObject><p>x</p></foreignObject></svg>"],
+    ["a prefixed script", '<svg><_:script xmlns:_="http://www.w3.org/2000/svg">x</_:script></svg>'],
+    ["an entity", '<!DOCTYPE svg [<!ENTITY x "&#60;script&#62;">]><svg>&x;</svg>'],
+    ["a handler after a > in a value", '<svg><rect x="a>b" onload="x"/></svg>'],
+    ["a default attribute", '<!DOCTYPE svg [<!ATTLIST svg onload CDATA "x">]><svg></svg>'],
   ])("refuses an SVG with %s, because the site serves it from its own origin", (_, svg) => {
     expect(() => assertSafeSvg("logo.svg", Buffer.from(svg))).toThrow(/logo.svg/);
   });

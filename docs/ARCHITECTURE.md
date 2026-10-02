@@ -130,7 +130,7 @@ There is no environment suffix. There is one environment.
 - `theme_color` and `background_color` in `apps/web/public/site.webmanifest`.
 - the raster icons in `apps/web/public/`.
 
-The script refuses a colour that is not a six-digit hex and a colour name that is not a plain CSS name. It refuses an SVG with an element outside `svg`, `title`, `desc`, `g`, `path`, `rect` and `circle`, an event handler, or a link, because the site serves each SVG from its own origin.
+The script refuses a colour that is not a six-digit hex and a colour name that is not a plain CSS name. It refuses an SVG with an element outside `svg`, `title`, `desc`, `g`, `path`, `rect` and `circle`, a `<!DOCTYPE` or other declaration, an event handler, or a link, because the site serves each SVG from its own origin.
 
 The committed files are the only brand input to the build. The build does not fetch from the brand repository. Do not edit these files by hand.
 
