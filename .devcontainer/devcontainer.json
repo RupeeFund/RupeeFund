@@ -11,8 +11,8 @@
   "postCreateCommand": "pnpm db:reset",
   "forwardPorts": [8787, 8788],
   "portsAttributes": {
-    "8787": { "label": "site", "onAutoForward": "silent" },
-    "8788": { "label": "admin panel", "onAutoForward": "silent" }
+    "8787": { "label": "site", "onAutoForward": "notify" },
+    "8788": { "label": "admin panel", "onAutoForward": "notify" }
   },
   "otherPortsAttributes": { "onAutoForward": "ignore" },
   "customizations": {
