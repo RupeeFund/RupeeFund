@@ -55,6 +55,17 @@ describe("each command has one owner, and check calls the owners", () => {
   it("stops at the first failing step, so a green line means every step ran", () => {
     expect(root.check).toContain("&&");
   });
+
+  it("applies pending local migrations before each dev server starts", () => {
+    for (const name of ["dev", "dev:admin", "dev:portless"]) {
+      expect(root[name]).toMatch(/^pnpm db:migrate && /);
+    }
+  });
+
+  it("makes db:reset the one command that erases, and it fills made-up rows", () => {
+    expect(root["db:reset"]).toContain("run seed");
+    expect(Object.keys(root)).not.toContain("bootstrap");
+  });
 });
 
 describe("Workers Builds is the only path to the live site", () => {

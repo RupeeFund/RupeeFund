@@ -8,7 +8,7 @@
   },
   "onCreateCommand": "sudo corepack enable pnpm",
   "updateContentCommand": "pnpm install --frozen-lockfile && pnpm --filter @rupeefund/web exec playwright install --with-deps chromium",
-  "postCreateCommand": "pnpm bootstrap",
+  "postCreateCommand": "pnpm db:reset",
   "forwardPorts": [8787, 8788],
   "portsAttributes": {
     "8787": { "label": "site", "onAutoForward": "silent" },

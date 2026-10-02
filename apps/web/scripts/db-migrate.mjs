@@ -15,7 +15,7 @@ const target = remote ? ["--remote"] : ["--local", "--persist-to", "../../.wrang
 function run(args, capture = false, onFail = () => {}) {
   const argv = WIN ? args.map((arg) => (/\s/.test(arg) ? `"${arg}"` : arg)) : args;
   const { status, stdout } = spawnSync(WIN ? `"${wrangler}"` : wrangler, argv, {
-    stdio: ["inherit", capture ? "pipe" : "inherit", "inherit"],
+    stdio: [remote ? "inherit" : "ignore", capture ? "pipe" : "inherit", "inherit"],
     encoding: "utf8",
     env: process.env,
     shell: WIN,

@@ -20,6 +20,8 @@ allowBuilds:
   sharp: true
   workerd: true
 shellEmulator: true
+engineStrict: true
+verifyDepsBeforeRun: error
 overrides:
   undici@7: ">=7.29.1 <8"
   fflate@0.7: ">=0.7.5 <0.8"
