@@ -10,10 +10,9 @@ const ROUTES = [
   "/refunds",
   "/code-of-conduct",
   "/waitlist-confirmed",
-  "/waitlist-problem",
 ] as const;
 
-const REMOVED = ["/manage", "/vote", "/thank-you", "/vote.html"] as const;
+const REMOVED = ["/manage", "/vote", "/thank-you", "/vote.html", "/waitlist-problem"] as const;
 
 test.describe("public pages smoke", () => {
   for (const path of REMOVED) {

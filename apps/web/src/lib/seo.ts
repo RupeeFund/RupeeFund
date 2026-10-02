@@ -82,12 +82,6 @@ const ROUTE_SEO: readonly RouteSeo[] = [
     indexable: false,
   },
   {
-    path: "/waitlist-problem",
-    title: "That didn’t go through — The Rupee Fund",
-    description: `We couldn’t add you to the list. ${INITIATIVE}.`,
-    indexable: false,
-  },
-  {
     path: "/404",
     title: "Page not found — The Rupee Fund",
     description: `That page doesn’t exist. ${INITIATIVE}.`,

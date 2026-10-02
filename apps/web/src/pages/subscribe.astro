@@ -25,7 +25,20 @@ const TURNSTILE_SITEKEY = getSitekey();
       </p>
     </div>
     <div class="card">
-      <form id="waitlist-form" class="space-y-4" action="/api/waitlist" method="post">
+      <noscript>
+        <style is:inline>
+          #waitlist-form {
+            display: none;
+          }
+        </style>
+        <p id="waitlist-no-js" class="text-sm text-ink-2 text-pretty">
+          The sign-up form needs JavaScript for its bot check. Turn on JavaScript and reload this
+          page, or email <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link"
+            >{REMOVAL_ADDRESS}</a
+          > and we’ll add you by hand.
+        </p>
+      </noscript>
+      <form id="waitlist-form" class="space-y-4" method="post">
         <div>
           <label for="waitlist-name" class="field-label">Full name</label>
           <input

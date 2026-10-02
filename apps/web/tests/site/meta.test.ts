@@ -9,7 +9,7 @@ describe("sitemap", () => {
 
   it("excludes every route the sitemap filter names", () => {
     const xml = read("sitemap-0.xml");
-    for (const slug of ["404", "waitlist-confirmed", "waitlist-problem"]) {
+    for (const slug of ["404", "waitlist-confirmed"]) {
       expect(xml).not.toContain(`rupeefund.org/${slug}`);
     }
   });
