@@ -65,6 +65,9 @@ describe("the Access guard", () => {
     const ctx = makeCtx({ email: "volunteer@example.org" });
     const res = await makeApp(logger.log).request("/probe", {}, env, ctx);
     expect(res.status).toBe(403);
+    expect(logger.entries).toEqual([
+      { event: "access_denied", reason: "aud", method: "GET", path: "/probe" },
+    ]);
   });
 
   it("admits a request that Access authenticated", async () => {

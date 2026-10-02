@@ -223,7 +223,7 @@ pnpm live:check
 
 The two `admin` lines must say `PASS`. A `FAIL` on either line means Access is not in front of the Worker. Stop and fix the policy before you tell the team.
 
-Then sign in with a browser and read the dashboard.
+Then sign in with a browser and read the dashboard. A `{"error":"forbidden"}` page after a good sign-in means `ACCESS_AUD` is wrong. Do this after each deploy that changes `apps/admin/wrangler.jsonc`.
 
 ### 10.4 If you ever remove Access
 

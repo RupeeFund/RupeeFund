@@ -37,7 +37,7 @@ Change the look only for a defect, for a brand rule or for a request from a main
 
 ## Pages
 
-To add a page, write a `.astro` file in `src/pages/` and add an entry to `src/lib/seo.ts`. The build fails without the entry. To rename a page, add a `302` line from the old path to `apps/web/public/_redirects`. The page must work with no JavaScript. Put page behaviour in `src/scripts/<page>.ts` with a test beside it.
+To add a page, write a `.astro` file in `src/pages/` and add an entry to `src/lib/seo.ts`. The build fails without the entry. To rename a page, add a `302` line from the old path to `apps/web/public/_redirects`. The page must work with no JavaScript. The one exception is the signup form on `/subscribe`, because its bot check needs JavaScript. `docs/ARCHITECTURE.md` §4 tells why. Put page behaviour in `src/scripts/<page>.ts` with a test beside it.
 
 ## Words
 

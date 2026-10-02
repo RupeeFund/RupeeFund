@@ -222,7 +222,7 @@ The panel follows the brand guidelines on light surfaces. `apps/admin/src/admin.
 
 ### 10.7 JavaScript
 
-The panel needs JavaScript. The site does not, and the rule for the site stays. Each page holds no data, so a page cannot leak a row. The script reads each row from an API address that sends `Cache-Control: private, no-store`. A server-rendered page with rows would put personal data in the HTML, which a browser can keep in its history and its cache.
+The panel needs JavaScript. The site does not, except the signup form on `/subscribe` (§4). Each page holds no data, so a page cannot leak a row. The script reads each row from an API address that sends `Cache-Control: private, no-store`. A server-rendered page with rows would put personal data in the HTML, which a browser can keep in its history and its cache.
 
 The page frame and the sidebar links work without JavaScript. The sidebar toggle, the figures and the rows do not. The script shows the toggle, so a page without JavaScript shows no control that does nothing.
 
