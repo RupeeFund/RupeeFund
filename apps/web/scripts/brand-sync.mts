@@ -1,5 +1,5 @@
 import { readFileSync, realpathSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join, posix } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export type Colors = Record<string, string>;
@@ -107,7 +107,7 @@ function fromCheckout(dir: string): Source {
 
 export function brandDir(env: NodeJS.ProcessEnv, cwd: string): string | undefined {
   if (!env.BRAND_DIR) return undefined;
-  return resolve(env.INIT_CWD ?? cwd, env.BRAND_DIR);
+  return posix.resolve(env.INIT_CWD ?? cwd, env.BRAND_DIR);
 }
 
 async function main() {
