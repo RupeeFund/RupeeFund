@@ -344,7 +344,7 @@ export function page(view: ViewSlots): string {
 <body class="shell">
 ${sprite()}
 <a class="skip" href="#main">Skip to the content</a>
-<nav class="sidebar" id="sidebar" aria-label="Dashboards">
+<nav class="sidebar" id="sidebar" aria-label="Admin">
 <img class="sidebar-mark" src="${FAVICON}" alt="The Rupee Fund" width="32" height="32">
 <button class="btn btn-quiet btn-on-white btn-icon" id="sidebar-toggle" type="button"
   aria-label="Sidebar" aria-expanded="false" aria-controls="sidebar" hidden>${icon("menu")}</button>
