@@ -43,26 +43,20 @@ The one environment is `live`, at `rupeefund.org` and `admin.rupeefund.org`. Sec
 
 `POST /api/waitlist` is the only address the public can write to. The Worker refuses a request in this order:
 
+1. The `Content-Type` header is not `application/json`.
 1. The `Origin` header is not the site. A request with no `Origin` header passes.
 1. The rate limiter refuses, or fails.
 1. The body is larger than 8192 bytes.
-1. For a JSON request, the body is not a JSON object.
+1. The body is not a JSON object.
 1. The hidden field has a value. The Worker answers with success and writes nothing.
 1. The name, the email address, the amount, the duration, or the question is not valid.
-1. For a JSON request, Turnstile refuses the token, or fails.
+1. Turnstile refuses the token, or fails.
 
-The Worker answers a refused JSON request with a 4xx status and `{"error":"<code>"}`. It answers a refused form request with status 303 to `/waitlist-problem?reason=<code>`.
+The Worker answers a refused request with a 4xx status and `{"error":"<code>"}`. It answers success with status 200 and `{"ok":true}`, and the browser script then opens `/waitlist-confirmed`.
 
 Then the Worker inserts the row. If the email address already has a row, the insert does nothing.
 
-The `Content-Type` header selects the path:
-
-| Header                              | Client                   | Answer after success                |
-| ----------------------------------- | ------------------------ | ----------------------------------- |
-| `application/json`                  | The browser script       | Status 200 and `{"ok":true}`        |
-| `application/x-www-form-urlencoded` | A browser with no script | Status 303 to `/waitlist-confirmed` |
-
-**Known limitation.** Turnstile needs JavaScript, so the form path has no Turnstile check. The `Origin` check, the hidden field, and the rate limiter still apply. The worst outcome is unwanted rows in a list that a person exports by hand.
+Each row needs a Turnstile token, and Turnstile needs JavaScript. A browser with no script sees a notice in place of the form. The notice names the email address that adds a person by hand.
 
 ## 5. The database
 
@@ -118,7 +112,7 @@ There is no environment suffix. There is one environment.
 
 `apps/web/public/_headers` applies to `rupeefund.org` only. The admin Worker sets its own headers. Refer to §10.5.
 
-`run_worker_first` in `apps/web/wrangler.jsonc` sends `/api/*` to the Worker, so `_headers` does not apply to those answers. `apps/web/src/worker/index.ts` sets the security headers on each `/api/*` answer. Its policy starts at `default-src 'none'`, because an answer is JSON or a redirect, and loads nothing. It also sets `Cache-Control: no-store`, so no cache keeps an answer.
+`run_worker_first` in `apps/web/wrangler.jsonc` sends `/api/*` to the Worker, so `_headers` does not apply to those answers. `apps/web/src/worker/index.ts` sets the security headers on each `/api/*` answer. Its policy starts at `default-src 'none'`, because an answer is JSON and loads nothing. It also sets `Cache-Control: no-store`, so no cache keeps an answer.
 
 ## 9. Brand files
 
@@ -148,9 +142,9 @@ The panel shows the team the waitlist. It writes one thing: the export stamp, `e
 
 One Cloudflare Access policy covers the whole `rupeefund-admin` Worker. Access checks every request before the Worker runs, and it covers each address the Worker answers on.
 
-`requireAccess` in `apps/admin/src/access.ts` reads the identity from `ctx.access`. `ctx.access` is undefined when Access did not authenticate the request. **Refuse on undefined.** The Worker holds no token code, no key set, and no secret. The platform does that work.
+`requireAccess` in `apps/admin/src/access.ts` reads the identity from `ctx.access`. `ctx.access` is undefined when Access did not authenticate the request. **Refuse on undefined.** The guard also refuses a `ctx.access` whose `aud` is not `ACCESS_AUD`, so a pass from another Access application does not open the panel. The Worker holds no token code, no key set, and no secret. The platform does that work.
 
-On your machine, the `access` block in `apps/admin/wrangler.jsonc` makes wrangler supply a mock `ctx.access`, so the local panel signs you in as `operator@example.com`. Only `wrangler dev` reads that block. A deployment ignores it.
+On your machine, the `access` block in `apps/admin/wrangler.jsonc` makes wrangler supply a mock `ctx.access`, so the local panel signs you in as `operator@example.com`. Its `aud` is the same as `ACCESS_AUD`, so the local panel passes the same check. Only `wrangler dev` reads that block. A deployment ignores it.
 
 The admin Worker binds no static files on purpose. Cloudflare serves a Worker that has static files behind an internal router, and that router does not pass `ctx.access` to the Worker. The Worker builds every page itself, so the router never exists.
 

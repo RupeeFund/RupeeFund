@@ -193,7 +193,7 @@ The move:
 
 ## 10. The admin panel
 
-The panel needs no secret and no variable. Cloudflare Access does the whole check, so the only setup is in the Zero Trust dashboard.
+The panel needs no secret. Cloudflare Access does the login. The Worker needs one variable, `ACCESS_AUD` in `apps/admin/wrangler.jsonc`: the audience tag of its Access application. The Worker refuses every request whose Access pass carries another tag.
 
 ### 10.1 Set up the login method
 
@@ -208,6 +208,8 @@ If your mail gateway filters mail, allow `noreply@notify.cloudflare.com`.
 ### 10.2 Protect the Worker
 
 Go to **Workers & Pages**. Open `rupeefund-admin`. Open the **Access** tab. Put the Worker behind Access. This covers every address the Worker answers on.
+
+Copy the **Application Audience (AUD) Tag** of the new application into `ACCESS_AUD` and into `access.dev.aud` in `apps/admin/wrangler.jsonc`. When you remove and add the application again, the tag changes. Update both values, or the panel refuses every person.
 
 Then add the policy: action **Allow**, rule type **Include**, selector **Emails**, and one row for each team member. Set a session duration you are willing to leave signed in.
 
