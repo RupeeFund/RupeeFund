@@ -9,7 +9,6 @@ worker-configuration.d.ts
 .DS_Store
 .env
 .env.*
-!.env.example
 .dev.vars
 .dev.vars.*
 .scratchpad/

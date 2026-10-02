@@ -62,8 +62,6 @@ The command exports the live database to a new temporary folder first, and print
 
 **Make each migration additive.** During a promote two Worker versions read the one live database. Add a column with a default or with NULL permitted. A change that removes a column needs two promotes: one that stops all reads of the column, and a later one that drops it.
 
-**`0005_signup_data.sql` is the one exception.** It rebuilds the `waitlist` table. It went live on 2026-10-01.
-
 Never edit a migration that has run. Never reuse a file name. Wrangler matches a migration by file name only. A changed file that has run does nothing. A reused file name runs nothing and reports no error. `packages/db/tests/replay.test.ts` refuses the retired names. `wrangler d1 migrations list` proves only that the names agree. To check the schema, query the tables:
 
 ```sh
@@ -73,12 +71,6 @@ pnpm wrangler d1 execute rupeefund-waitlist --remote --json --command \
 
 ## 5. Secrets and variables
 
-| Kind               | Home                                | Key                                       |
-| ------------------ | ----------------------------------- | ----------------------------------------- |
-| Public build value | `apps/web/src/lib/turnstile.ts`     | the Turnstile sitekey, `TURNSTILE_ACTION` |
-| Worker secret      | `wrangler secret`                   | `TURNSTILE_SECRET`                        |
-| Worker variable    | `vars` in `apps/web/wrangler.jsonc` | `TURNSTILE_HOSTNAMES`, `TURNSTILE_ACTION` |
-
 `TURNSTILE_ACTION` has two homes. The Turnstile widget uses the constant in `apps/web/src/lib/turnstile.ts`. The Worker checks the variable in `apps/web/wrangler.jsonc`. The two must match. `pnpm run build` fails when they differ.
 
 The Workers Builds settings hold no variable. One Turnstile widget serves the site, and its domain list holds `rupeefund.org` only. To rotate the sitekey, change the constant in `apps/web/src/lib/turnstile.ts` and promote. Set the secret with:
@@ -87,11 +79,9 @@ The Workers Builds settings hold no variable. One Turnstile widget serves the si
 pnpm wrangler secret put TURNSTILE_SECRET
 ```
 
-In this section, `.env` means `apps/web/.env`. A `--remote` command needs the Cloudflare account. Put `CLOUDFLARE_ACCOUNT_ID` in `.env`. Wrangler reads `.env` itself. A value on the command line replaces the value in `.env`. Without it, wrangler asks which account to use. Do not put the account in `wrangler.jsonc`.
+A `--remote` command needs the Cloudflare account. Put `CLOUDFLARE_ACCOUNT_ID` in `apps/web/.env`. Wrangler reads that file itself. Without it, wrangler asks which account to use. Do not put the account in `wrangler.jsonc`.
 
-For local work, `.env` holds the always-pass test values. `pnpm bootstrap` makes it. `astro build` and `wrangler dev` read it, and direnv loads it into your shell through `.envrc`. Do not also make a `.dev.vars` file, or wrangler ignores `.env`. The `preview` script carries the same values itself, for Playwright in CI, where no `.env` exists.
-
-`.env.example` and `preview` set `PUBLIC_ALLOW_TEST_SITEKEY=true` beside the test sitekey. Never set that opt-in in the Workers Builds settings. A deployed build with the test sitekey refuses every signup, and `pnpm run build` exits 1 before and after `astro build` when it finds one. For this reason, `pnpm run build` fails while `.env` exists. Rename `.env` before you run the deploy build on your machine. `apps/web/tests/deploy/sitekey-literal.test.ts` refuses a script or an `.env.example` that names the test sitekey without the opt-in.
+`pnpm dev` and `pnpm preview` carry the always-pass Turnstile test values and `PUBLIC_ALLOW_TEST_SITEKEY=true` themselves. Do not put a Turnstile value in `.env`. Never set that opt-in in the Workers Builds settings. A deployed build with the test sitekey refuses every signup, so `pnpm run build` exits 1 when it finds one.
 
 ## 6. How to verify a deployment
 
@@ -101,13 +91,7 @@ Purge the zone cache first. Then:
 pnpm live:check
 ```
 
-It checks the site and the admin Worker, prints one `PASS` or `FAIL` line for each check, and exits 1 on a failure:
-
-- `/api/health` answers `{"ok":true}`.
-- `/subscribe` carries a real sitekey, not a test one.
-- The home page carries the security headers.
-- The logo and the favicon load.
-- The admin panel refuses a request with no sign-in, for the page and for the counts.
+It checks the site and the admin Worker, prints one `PASS` or `FAIL` line for each check, and exits 1 on a failure. `apps/web/scripts/live-check.mts` lists the checks.
 
 Then complete the form one time, and read the row:
 
@@ -138,9 +122,9 @@ pnpm list:export --remote --dry-run > list.csv   # prints the CSV, changes nothi
 pnpm list:export --remote > list.csv             # prints the CSV, then stamps exported_at
 ```
 
-The first line of the file is `email,name,attributes`. The `attributes` column is JSON with `source`, `consent_at`, `signed_up_at`, and `updates_opt_in`. If the form did not ask a person about updates, the export writes `updates_opt_in` as `false`. The amount, the months, the question, the roles and the reasons stay in the database.
+`packages/db/src/export.ts` gives the columns of the file. The amount, the months, the question, the roles and the reasons stay in the database.
 
-[ARCHITECTURE.md](ARCHITECTURE.md) section 6 tells which rows go out. The command needs Node 24 or later, and wrangler login for `--remote`.
+[ARCHITECTURE.md](ARCHITECTURE.md) section 6 tells which rows go out. A `--remote` run needs wrangler login.
 
 A run exports one batch. When more rows wait, the last line on stderr says `still pending`. Run the command again until that line stops. Send each run to a new file, because `>` replaces the old file.
 

@@ -18,28 +18,21 @@ All work follows the [Code of Conduct](https://github.com/RupeeFund/.github/blob
 
 You need Node 24 or later and [pnpm](https://pnpm.io/installation). You need no Cloudflare account.
 
-The repository holds two apps: the site in `apps/web` and the admin panel in `apps/admin`. They use one local database.
-
-### On your machine
-
 ```sh
 pnpm install
-pnpm bootstrap
-pnpm --filter @rupeefund/web exec playwright install chromium   # for the browser tests
-pnpm dev
+pnpm db:reset   # make the local database and fill it with made-up rows
+pnpm dev        # serve the site
 ```
 
-`pnpm bootstrap` makes `apps/web/.env`, resets the local database and fills it with made-up rows. `pnpm dev` serves the site on `http://localhost:8787`. To work on the admin panel, run `pnpm dev:admin` in a second terminal. It serves the panel on `http://localhost:8788`.
+The terminal shows the address of the site. When you save a file, the browser reloads. If the build fails, the terminal shows the error and the site stays as it was. To work on the admin panel, run `pnpm dev:admin` in a second terminal.
 
-To run more than one checkout at a time, run `pnpm dev:portless`. It starts the site and the admin panel in one terminal. Each app gets a name in place of a port, and the terminal shows its address. The first run after each boot asks for your password, because the names use port 443.
+- When pnpm tells you to run `pnpm install`, run it.
+- `pnpm db:reset` erases your local data. Run it again for a clean start.
+- To run more than one checkout at a time, run `pnpm dev:portless`. It starts both apps and gives each a name in place of a port. The first run after each boot asks for your password, because the names use port 443.
 
-### In a dev container
+### In Codespaces or a dev container
 
-Open the repository in a dev container. In Visual Studio Code, run the command Dev Containers: Reopen in Container. The container installs the dependencies and Chromium, then runs `pnpm bootstrap`. Then run `pnpm dev`, and `pnpm dev:admin` in a second terminal. The container forwards ports 8787 and 8788. `pnpm dev:portless` does not work in the container.
-
-### In GitHub Codespaces
-
-Create a codespace from the repository page. A codespace uses the same dev container. Then run `pnpm dev`.
+Click **Open in GitHub Codespaces** in the [README](../README.md), or open the repository in a dev container. The container does the set-up. Then run `pnpm dev`. `pnpm dev:portless` does not work in a container.
 
 ## Make a change
 
@@ -54,7 +47,7 @@ Do not commit a secret, a password or a personal email list.
 
 ## The gate
 
-The gate is the set of checks that each change must pass. It is the three commands below. Run them before you open a pull request. CI runs them again.
+The gate is the set of checks that each change must pass. It is the three commands below. Run them before you open a pull request. CI runs the same checks. The browser tests need Chromium one time: `pnpm --filter @rupeefund/web exec playwright install chromium`.
 
 ```sh
 pnpm format      # format the files
@@ -64,6 +57,4 @@ pnpm test:e2e    # browser tests
 
 ## Read next
 
-- Read [DESIGN.md](DESIGN.md) before you change a page, a style or a word.
-- Read [ARCHITECTURE.md](ARCHITECTURE.md) before you change a Worker, the database, the security headers or the admin panel.
-- Read [DEPLOY.md](DEPLOY.md) before you write a migration. It also tells how a change reaches the site.
+The [documentation index](README.md) names the document that owns your change.

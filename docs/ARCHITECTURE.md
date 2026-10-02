@@ -4,36 +4,29 @@
 
 The system shows public pages and collects a mailing list. It takes no payment and holds no vote.
 
-Section 5 lists what the system stores for each person. It stores no payment instrument.
+`packages/db/src/schema.ts` gives what the system stores for each person. It stores no payment instrument.
 
 ## 2. The parts
 
-| Part          | Technology                   | Function                                      |
-| ------------- | ---------------------------- | --------------------------------------------- |
-| Site          | Astro                        | Makes static HTML at build time               |
-| Public Worker | Hono on Cloudflare Workers   | Answers `/api/health` and `/api/waitlist`     |
-| Admin Worker  | Hono on Cloudflare Workers   | Shows the team the list. Refer to section 10. |
-| Database      | Cloudflare D1                | Keeps the `waitlist` table                    |
-| Scripts       | TypeScript in `src/scripts/` | Adds behaviour to the static pages            |
+| Part | Technology | Function |
+| ------------- | ---------------------------- |
+| Site | Astro | Makes static HTML at build time |
+| Public Worker | Hono on Cloudflare Workers | Answers `/api/health` and `/api/waitlist` |
+| Admin Worker | Hono on Cloudflare Workers | Shows the team the list. Refer to section 10. |
+| Database | Cloudflare D1 | Keeps the `waitlist` table |
+| Scripts | TypeScript in `src/scripts/` | Adds behaviour to the static pages |
 
 On `rupeefund.org`, only a request to `/api/*` reaches the public Worker. Cloudflare serves every other path from the static files.
 
-On `admin.rupeefund.org`, the admin Worker answers every path. Both Workers read one database. Only the public Worker writes to it.
+On `admin.rupeefund.org`, the admin Worker answers every path. Both Workers use one database. Only the public Worker adds rows. The admin Worker writes only the export stamp, `exported_at`.
 
-The repository is a pnpm workspace. Turborepo runs each task in each package.
-
-| Package            | Path          | Holds                                                   |
-| ------------------ | ------------- | ------------------------------------------------------- |
-| `@rupeefund/web`   | `apps/web`    | The site and the public Worker                          |
-| `@rupeefund/admin` | `apps/admin`  | The admin Worker                                        |
-| `@rupeefund/db`    | `packages/db` | The migrations, the table types and the export code     |
-| `@rupeefund/ui`    | `packages/ui` | The brand files and `styles.css`, which both apps build |
+AGENTS.md maps the packages.
 
 A path in this document starts at the repository root. `src/` means `apps/web/src/`.
 
 To add an endpoint, write a handler in `src/worker/routes/`. Connect it in `src/worker/index.ts` above the `/api/*` catch-all. Use a path under `/api/`, because no other path reaches the Worker.
 
-Each command under `scripts` in `package.json` runs in the pnpm shell emulator (`shellEmulator` in `pnpm-workspace.yaml`). It accepts a `NAME=value` prefix, `&&`, `||`, `|`, a redirect and `$(...)`. It does not run `if`, `for` or `case`. `if` and `for` print `command not found`, then the rest of the command runs. `case` exits 1 and prints nothing.
+Each command under `scripts` in `package.json` runs in the pnpm shell emulator, so it runs the same on Windows. It accepts a `NAME=value` prefix, `&&`, `||`, `|`, a redirect and `$(...)`. Do not use `if`, `for` or `case`: they fail without a clear error.
 
 ## 3. The one environment
 
@@ -43,20 +36,7 @@ A second address for `rupeefund-web` keeps the live bindings and writes to the l
 
 ## 4. How a person joins the list
 
-`POST /api/waitlist` is the only address the public can write to. The Worker refuses a request in this order:
-
-1. The `Content-Type` header is not `application/json`.
-1. The `Origin` header is not the site. A request with no `Origin` header passes.
-1. The rate limiter refuses, or fails.
-1. The body is larger than 8192 bytes.
-1. The body is not a JSON object.
-1. The hidden field has a value. The Worker answers with success and writes nothing.
-1. The name, the email address, the amount, the months, or the question is not valid.
-1. Turnstile refuses the token, or fails.
-
-The Worker answers a refused request with a 4xx status and `{"error":"<code>"}`. It answers success with status 200 and `{"ok":true}`, and the browser script then opens `/waitlist-confirmed`.
-
-Then the Worker inserts the row. If the email address already has a row, the insert does nothing.
+`POST /api/waitlist` is the only address the public can write to. `apps/web/src/worker/routes/waitlist.ts` gives the order of the checks. Two of them are intentional: a request with no `Origin` header passes, and a filled hidden field gets a success answer and writes nothing. If the email address already has a row, the insert does nothing.
 
 Each row needs a Turnstile token, and Turnstile needs JavaScript. A browser with no script sees a notice in place of the form. The notice gives an email address. When a person writes to it, the team adds the person by hand.
 
@@ -66,26 +46,7 @@ Each row needs a Turnstile token, and Turnstile needs JavaScript. A browser with
 
 `packages/db/src/schema.ts` holds the type of each table row and the values the form accepts. The site, the admin panel and the export import them from there. A migration that adds or changes a column must change that file too. `packages/db/tests/schema.test.ts` holds the two together. Its typecheck fails when the type changes alone, and its run fails when a migration changes alone.
 
-The `waitlist` table:
-
-| Column                                                   | Function                                                                                                                                                        |
-| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                                                     | The row number. It counts up. The export reads rows in this order.                                                                                              |
-| `email`                                                  | Unique, lower case                                                                                                                                              |
-| `name`                                                   | The name the person gave                                                                                                                                        |
-| `consent_at`                                             | The time of consent. Required. Nobody can add it later.                                                                                                         |
-| `source`                                                 | The form the person used                                                                                                                                        |
-| `amount`                                                 | The intended rupees each month, a whole number of 1 or more. Empty for rows before 0002, and for an old answer that 0005 did not read as a number.              |
-| `months`                                                 | The intended number of months, as the person typed it. Empty for rows before 0002.                                                                              |
-| `question`                                               | A free-text question for the team                                                                                                                               |
-| `updates_opt_in`                                         | 1 when the person ticked the monthly updates box, else 0. Empty for rows from before the box went live on 2026-09-12. The form did not ask those people.        |
-| `is_user`, `is_creator`, `is_professional`, `is_student` | The roles from the form: 1 for each box the person ticked, else 0. Empty where the form did not ask: every role before 0004, and `is_professional` before 0005. |
-| `backs_nascent`, `backs_growing`, `backs_larger`         | The projects the person wants to fund: new, growing, well-established. 1 for each box the person ticked, else 0. Empty where the form did not ask.              |
-| `exported_at`                                            | The time of the export. Empty means the exporter has not sent the row.                                                                                          |
-| `unsubscribed_at`                                        | The time of a removal request                                                                                                                                   |
-| `created_at`, `updated_at`                               | The time of the signup, and the time of the last change                                                                                                         |
-
-Each 0/1 column and `amount` carry a `CHECK`. The table refuses any other value, from the form or from a hand edit.
+`packages/db/migrations/` and `schema.ts` give each column. An empty answer column means the form did not ask that question when the person signed up. The migration that added the column tells when.
 
 A second signup with the same email address changes nothing. The first row stands, and the person sees the normal confirmation. The form cannot prove who owns an address, so it never rewrites a row and never reveals that one exists. To change an answer or to return after a removal, a person writes to the team, and an operator edits the row by hand.
 
@@ -97,16 +58,14 @@ The **Export** button on the dashboard and `pnpm list:export --remote` do the sa
 
 Every Cloudflare resource of this repository follows these rules. A fork deploys to its own account, so the `rupeefund-` prefix keeps its names clear of the names a contributor already has.
 
-| Resource                  | Rule                                                   | Now                                    |
-| ------------------------- | ------------------------------------------------------ | -------------------------------------- |
-| Worker                    | `rupeefund-<surface>`                                  | `rupeefund-web`, `rupeefund-admin`     |
-| D1 database               | `rupeefund-<data>`, named for the data, not the Worker | `rupeefund-waitlist`                   |
-| Custom domain             | `<surface>.rupeefund.org`, with `web` at the apex      | `rupeefund.org`, `admin.rupeefund.org` |
-| Turnstile widget          | the hostname it serves                                 | `rupeefund.org`                        |
-| Rate limit `namespace_id` | a number that no other limiter used                    | `7301`                                 |
-| Binding                   | the role inside its Worker, in `UPPER_SNAKE`           | `DB`, `SIGNUP_LIMITER`, `ASSETS`       |
-
-There is no environment suffix. There is one environment.
+| Resource                  | Rule                                                   |
+| ------------------------- | ------------------------------------------------------ |
+| Worker                    | `rupeefund-<surface>`                                  |
+| D1 database               | `rupeefund-<data>`, named for the data, not the Worker |
+| Custom domain             | `<surface>.rupeefund.org`, with `web` at the apex      |
+| Turnstile widget          | the hostname it serves                                 |
+| Rate limit `namespace_id` | a number that no other limiter used                    |
+| Binding                   | the role inside its Worker, in `UPPER_SNAKE`           |
 
 ## 8. Security headers
 
@@ -114,28 +73,15 @@ There is no environment suffix. There is one environment.
 
 `apps/web/public/_headers` applies to `rupeefund.org` only. The admin Worker sets its own headers. Refer to section 10.5.
 
-`run_worker_first` in `apps/web/wrangler.jsonc` sends `/api/*` to the Worker, so `_headers` does not apply to those answers. `apps/web/src/worker/index.ts` sets the security headers on each `/api/*` answer. Its policy starts at `default-src 'none'`, because an answer is JSON and loads nothing. It also sets `Cache-Control: no-store`, so no cache keeps an answer.
+`run_worker_first` in `apps/web/wrangler.jsonc` sends `/api/*` to the Worker, so `_headers` does not apply to those answers. `apps/web/src/worker/index.ts` sets the headers of those answers itself.
 
 ## 9. Brand files
 
-`RupeeFund/brand` is the only source of the brand colours and the brand files. `pnpm brand:sync` reads `exports/` on the `main` branch of `RupeeFund/brand` from `raw.githubusercontent.com`, and writes:
-
-- `packages/ui/src/colors.css`, the `--color-*` theme that `packages/ui/src/styles.css` imports.
-- `packages/ui/src/colors.json`, which `Base.astro` reads for `theme-color`.
-- `logo.svg`, `logo-dark.svg` and `favicon.svg` in `packages/ui/src/`, and a copy of each in `apps/web/public/`, so their public addresses stay.
-- `theme_color` and `background_color` in `apps/web/public/site.webmanifest`.
-- the raster icons in `apps/web/public/`.
-
-The script refuses a colour that is not a six-digit hex and a colour name that is not a plain CSS name. The site serves each SVG from its own origin, so the script refuses an SVG that holds one of these:
-
-- an element other than `svg`, `title`, `desc`, `g`, `path`, `rect` and `circle`
-- a `<!DOCTYPE` or other declaration
-- an event handler
-- a link
+`RupeeFund/brand` is the only source of the brand colours and the brand files. `pnpm brand:sync` reads `exports/` on the `main` branch of `RupeeFund/brand` and writes the files that `apps/web/scripts/brand-sync.mts` lists. The site serves each SVG from its own origin, so the script refuses an SVG with active content.
 
 The committed files are the only brand input to the build. The build does not fetch from the brand repository. Do not edit these files by hand.
 
-The `Brand sync` workflow runs `pnpm brand:sync` each day. When the files differ from the brand repository, it runs the gate, opens or updates the pull request from `chore/brand-sync`, and fails. The workflow needs the repository setting “Allow GitHub Actions to create and approve pull requests”. To take a brand update, review and merge that pull request. CI does not run on it, so read the gate result in its description. To sync at once, run the workflow from the Actions tab.
+The `Brand sync` workflow runs `pnpm brand:sync` each day. When the files differ from the brand repository, it runs `pnpm format:check`, `pnpm check` and `pnpm run build`, opens or updates the pull request from `chore/brand-sync`, and fails. The workflow needs the repository setting “Allow GitHub Actions to create and approve pull requests”. To take a brand update, review and merge that pull request. CI does not run on it, so read the check result in its description. To sync at once, run the workflow from the Actions tab.
 
 To sync from a local brand checkout before it reaches `main`, set `BRAND_DIR` to the checkout and run `pnpm brand:sync`. The script then reads `exports/` in that checkout.
 
@@ -159,21 +105,9 @@ The admin Worker binds no static files on purpose. Cloudflare serves a Worker th
 
 `apps/admin/src/index.ts` maps each address to its handler in `apps/admin/src/routes.ts`.
 
-| Address           | Answer                                                                             |
-| ----------------- | ---------------------------------------------------------------------------------- |
-| `/`               | The waitlist dashboard: numbers, records and questions. It holds no data.          |
-| `/api/summary`    | The counts. No personal data. The cache keeps them for `SUMMARY_MAX_AGE`, 60 s.    |
-| `/api/waitlist`   | One page of `PAGE_SIZE`, 50 rows, newest first. `?before=<id>` gets the next page. |
-| `/api/questions`  | One page of questions, newest first.                                               |
-| `/api/reveal/:id` | One email address. The Worker logs who asked, and for which row.                   |
-| `/api/export`     | `POST`. The export as a CSV file. Refer to section 10.8.                           |
-| `/assets/*`       | The stylesheet, the Inter font files and the favicon.                              |
-
 Every address except `/api/export` is a `GET` and changes nothing.
 
-The dashboard reads `/api/summary`, one page of `/api/waitlist` and one page of `/api/questions`. Refresh and auto refresh read `/api/summary` again, and nothing else. A page load costs one Worker request for the page and one for each file and API read. The Free plan permits 100,000 requests each day. The cache covers `/api/summary` alone, so every page load reads one page of rows and one page of questions.
-
-A sidebar links to each dashboard. A **Sign out** link at the bottom of the sidebar goes to `/cdn-cgi/access/logout`. Cloudflare Access serves that address and ends the session. The sidebar starts narrow, with icons only. Its toggle widens it to show the names. On a narrow screen the wide sidebar covers the page. Escape, or a move of focus out of it, makes it narrow again.
+The dashboard reads `/api/summary`, one page of `/api/waitlist` and one page of `/api/questions`. Refresh and auto refresh read `/api/summary` again, and nothing else. The cache covers `/api/summary` alone, so every page load reads one page of rows and one page of questions.
 
 ### 10.3 How the panel hides an address
 
@@ -204,21 +138,11 @@ The log keeps 3 days on the Workers Free plan. Treat it as an operations record,
 
 D1 counts the rows a query scans, and the daily free allowance is for the whole account. The public signup shares it. An exhausted allowance makes the signup fail, so the panel must stay cheap.
 
-We measured these values on a table of 1004 rows:
-
-| Query                         | Rows read   |
-| ----------------------------- | ----------- |
-| Every count, in one pass      | 1004, or N  |
-| One `GROUP BY`                | 2008, or 2N |
-| One page of 50 rows           | 50          |
-| One reveal                    | 1           |
-| A filter that matches nothing | 1004, or N  |
-
-One load of the dashboard reads about 5N rows.
+For a table of N rows, one pass reads N rows, one `GROUP BY` reads 2N, a page reads its own rows, and a reveal reads 1. One load of the dashboard reads about 5N rows.
 
 **Put no filter on a list endpoint except the `id` cursor, unless an index covers it.** `WHERE id < ?` searches the primary key, so a page reads only its own rows, at any depth. A filter on a column with no index scans the table. A `LIKE` that matches few rows also scans it. Put each slice in the cached `GROUP BY` queries of `/api/summary`.
 
-`/api/questions` is the one exception, because an index covers it. Migration `0005` adds the partial index `idx_waitlist_question` on `id`, over the rows where `question` is not empty. The query plan reads `SEARCH waitlist USING INDEX idx_waitlist_question (id<?)`. Without the index, the query walks the primary key and discards each row with no question.
+`/api/questions` is the one exception, because an index covers it. Migration `0005` adds the partial index `idx_waitlist_question` on `id`, over the rows where `question` is not empty.
 
 `apps/admin/src/repo.test.ts` reads `EXPLAIN QUERY PLAN` for each query. It fails in these conditions:
 
@@ -237,8 +161,6 @@ The panel makes no cross-origin request, so `connect-src 'self'` is the whole ne
 ### 10.6 The styles
 
 The panel follows the brand guidelines on light surfaces. `apps/admin/src/admin.css` imports `@rupeefund/ui/styles.css`, the file that styles the site. [DESIGN.md](DESIGN.md) tells what the admin styles add, and gives the rules for the look.
-
-`pnpm run build` in `apps/admin` compiles that file with Tailwind. `apps/admin/scripts/assets.mjs` then writes `apps/admin/.generated/assets.ts`, which holds the stylesheet, the Inter files and the favicon under names that change with their content. The Worker serves them from `/assets/`. Git ignores that folder. Turborepo runs the build before `typecheck` and `test`. `pnpm dev:admin` does the same work itself, then again after each edit.
 
 ### 10.7 JavaScript
 
