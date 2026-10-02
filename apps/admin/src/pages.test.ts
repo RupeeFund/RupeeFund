@@ -93,6 +93,13 @@ describe("the chrome", () => {
     expect(order.every((at, i) => at > (order[i - 1] ?? 0))).toBe(true);
   });
 
+  it("ends the sidebar with a sign-out link to Cloudflare Access", () => {
+    const sidebar = VIEW.match(/<nav class="sidebar"[\s\S]*?<\/nav>/)?.[0] ?? "";
+    const links = sidebar.match(/<a [^>]*href="[^"]+"/g) ?? [];
+    expect(links.at(-1)).toContain('href="/cdn-cgi/access/logout"');
+    expect(sidebar).toContain(">Sign out</span>");
+  });
+
   it("starts with the sidebar collapsed, its toggle hidden until the script runs", () => {
     const toggle = VIEW.match(/<button[^>]*id="sidebar-toggle"[^>]*>/)?.[0] ?? "";
     expect(toggle).toContain('aria-expanded="false"');

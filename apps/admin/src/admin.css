@@ -47,6 +47,14 @@
     @apply forced-colors:border forced-colors:border-[Highlight];
   }
 
+  .sidebar-end {
+    @apply mt-auto;
+  }
+
+  .sidebar-danger {
+    @apply text-error hover:text-error;
+  }
+
   .sidebar-label {
     @apply sr-only;
   }

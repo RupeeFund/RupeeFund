@@ -14,6 +14,7 @@ const PATHS: Readonly<Record<string, string>> = {
   check: "M5 12.5l5 5 9-9",
   question: "M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.9-.9 1.6M12 17h.01",
   refresh: "M21 12a9 9 0 1 1-2.64-6.36L21 8M21 3v5h-5",
+  logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",
 };
 
 const ICON_NAMES = Object.keys(PATHS);

@@ -349,6 +349,8 @@ ${sprite()}
 <button class="btn btn-quiet btn-on-white btn-icon" id="sidebar-toggle" type="button"
   aria-label="Sidebar" aria-expanded="false" aria-controls="sidebar" hidden>${icon("menu")}</button>
 <ul class="sidebar-list">${sidebarLinks(view.path)}</ul>
+<ul class="sidebar-list sidebar-end"><li><a class="sidebar-link sidebar-danger" title="Sign out"
+  href="/cdn-cgi/access/logout">${icon("logout")}<span class="sidebar-label">Sign out</span></a></li></ul>
 </nav>
 <p id="loading" class="sr-only" role="status">Loading…</p>
 <main class="grid min-w-0 content-start gap-6 sm:gap-8 px-[clamp(1rem,3vw,2.5rem)] py-6"

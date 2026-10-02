@@ -166,7 +166,7 @@ Every address except `/api/export` is a `GET` and changes nothing.
 
 The dashboard reads `/api/summary`, one page of `/api/waitlist` and one page of `/api/questions`. Refresh and auto refresh read `/api/summary` again, and nothing else. A page load costs one Worker request for the page and one for each file and API read, against the daily 100,000. The cache covers `/api/summary` alone, so every page load reads one page of rows and one page of questions.
 
-A sidebar lists the dashboards. Each item is a link to an address that the Worker serves. The sidebar starts narrow, with icons only. Its toggle widens it to show the names. On a narrow screen the wide sidebar covers the page, and Escape or a move of focus out of it makes it narrow again.
+A sidebar lists the dashboards. Each item is a link to an address that the Worker serves. A **Sign out** link at the bottom of the sidebar goes to `/cdn-cgi/access/logout`. Cloudflare Access serves that address and ends the session. The sidebar starts narrow, with icons only. Its toggle widens it to show the names. On a narrow screen the wide sidebar covers the page, and Escape or a move of focus out of it makes it narrow again.
 
 ### 10.3 How the panel hides an address
 
