@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+<title>The Rupee Fund</title>
+<desc>© 2026 FOSS United Community. CC BY-ND 4.0. Glyph: Inter 4.1 SemiBold U+20B9 by Rasmus Andersson (github.com/rsms/inter), SIL Open Font License 1.1. Tuned for 16 px: 1 px = 128 units; the bar edges snap to whole pixels.</desc>
+<rect id="block" width="2048" height="2048" fill="#08b74f"/>
+<path id="rupee" fill="#141414" d="M1664 640 1597.29 896H1402.21Q1373.26 1033.99 1244.26 1123.59Q1115.25 1213.19 864.79 1236.19L853.46 1238.11L1432.42 1779.54V1792H1054.84L412.95 1204.57L410.43 1050.28H730.12Q864.79 1050.28 949.11 1009.08Q1033.44 967.87 1062.39 896H384L450.71 640H1053.58Q1022.11 580.14 942.19 546.07Q862.27 512 730.12 512H384L455.74 256H1664L1597.29 512H1319.14Q1383.33 550.68 1403.47 640Z"/>
+</svg>

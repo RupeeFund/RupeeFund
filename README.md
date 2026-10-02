@@ -1,7 +1,14 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="packages/ui/src/logo-dark.svg" />
+  <img src="packages/ui/src/logo.svg" alt="The Rupee Fund" width="230" />
+</picture>
+
 # The Rupee Fund
 
-The Rupee Fund is an independent community fund for free and open-source software in India. [FOSS United Foundation](https://fossunited.org) is its fiscal host.
+**Keep FOSS in India alive, one rupee at a time**
 
-The site is static HTML from Astro. A Cloudflare Worker, written with Hono, answers the signup form and writes to a D1 database. The site takes no payment. It collects a mailing list.
+The Rupee Fund is a community initiative from FOSS United, run by volunteers. We support small, independent free and open-source software (FOSS) maintainers and builders across India. The FOSS United Foundation is the fiscal host.
 
-To work on the site, read [the contributing guide](docs/CONTRIBUTING.md). It sends you to the other docs and to the [brand guidelines](https://brand.rupeefund.org).
+> The fund does not take payments yet. To hear when it opens, join the list at rupeefund.org/subscribe.
+
+This repository holds the source of the website, rupeefund.org. To work on it, read the [documentation](docs/).

@@ -1,0 +1,201 @@
+---
+import Base from "../layouts/Base.astro";
+import {
+  REASON_LABELS,
+  REASON_LEGEND,
+  REMOVAL_ADDRESS,
+  ROLE_LABELS,
+  ROLE_LEGEND,
+  SUBSCRIBE_HEADING,
+} from "../lib/launch.ts";
+import { AMOUNT_OPTIONS, AMOUNT_OTHER, REASON_FIELDS, ROLE_FIELDS } from "@rupeefund/db/schema";
+import { MAX_MONTHS_LENGTH, MAX_QUESTION_LENGTH } from "../worker/lib/validation.ts";
+import { TURNSTILE_ACTION, getSitekey } from "../lib/turnstile.ts";
+
+const TURNSTILE_SITEKEY = getSitekey();
+---
+
+<Base>
+  <div class="wrap section-y grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-16">
+    <div class="lg:sticky lg:top-28">
+      <h1 class="page-title text-ink mb-4">{SUBSCRIBE_HEADING}</h1>
+      <p class="max-w-xl text-sm text-ink-2 text-pretty">
+        Nothing to pay today. Your pledge helps open the fund. Leave your email and the amount you
+        have in mind, and you hear first when it opens.
+      </p>
+    </div>
+    <div class="card">
+      <form id="waitlist-form" class="space-y-4" action="/api/waitlist" method="post">
+        <div>
+          <label for="waitlist-name" class="field-label">Full name</label>
+          <input
+            id="waitlist-name"
+            name="name"
+            type="text"
+            autocomplete="name"
+            placeholder="Your name"
+            class="field"
+            required
+            aria-describedby="waitlist-name-error"
+          />
+          <p id="waitlist-name-error" class="field-error"></p>
+        </div>
+        <div>
+          <label for="waitlist-email" class="field-label">Email address</label>
+          <input
+            id="waitlist-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            spellcheck="false"
+            placeholder="your.email@example.com"
+            class="field"
+            required
+            aria-describedby="waitlist-email-error"
+          />
+          <p id="waitlist-email-error" class="field-error"></p>
+        </div>
+        <fieldset class="min-w-0">
+          <legend class="field-label"
+            >{ROLE_LEGEND} <span class="field-optional">(optional)</span></legend
+          >
+          <div class="space-y-2">
+            {
+              ROLE_FIELDS.map((field) => (
+                <label class="choice">
+                  <input type="checkbox" name={field} value="1" />
+                  <span>{ROLE_LABELS[field]}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+        <fieldset class="min-w-0">
+          <legend class="field-label"
+            >{REASON_LEGEND} <span class="field-optional">(optional)</span></legend
+          >
+          <div class="space-y-2">
+            {
+              REASON_FIELDS.map((field) => (
+                <label class="choice">
+                  <input type="checkbox" name={field} value="1" />
+                  <span>{REASON_LABELS[field]}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+        <fieldset class="min-w-0">
+          <legend class="field-label">Monthly amount</legend>
+          <div class="flex flex-wrap gap-2">
+            {
+              AMOUNT_OPTIONS.map((option) => (
+                <label class="choice flex-1">
+                  <input
+                    type="radio"
+                    name="amount"
+                    value={option}
+                    required
+                    aria-describedby="waitlist-amount-error"
+                  />
+                  <span>₹{option}</span>
+                </label>
+              ))
+            }
+            <label class="choice grow-100 basis-32">
+              <input
+                id="amount-other-choice"
+                type="radio"
+                name="amount"
+                value={AMOUNT_OTHER}
+                required
+                aria-label="Other amount"
+                aria-describedby="waitlist-amount-error"
+              />
+              <span aria-hidden="true" class="text-ink-3">₹</span>
+              <input
+                id="waitlist-amount-other"
+                name="amount_other"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Other"
+                aria-label="Other amount in rupees each month"
+                aria-describedby="waitlist-amount-error"
+                class="min-w-0 w-full min-h-10 bg-transparent"
+              />
+            </label>
+          </div>
+          <p id="waitlist-amount-error" class="field-error"></p>
+        </fieldset>
+        <div>
+          <label for="waitlist-months" class="field-label"
+            >Number of months <span class="field-optional">(optional)</span></label
+          >
+          <input
+            id="waitlist-months"
+            name="months"
+            type="text"
+            placeholder="e.g. 12, or as long as it helps"
+            maxlength={MAX_MONTHS_LENGTH}
+            class="field"
+          />
+        </div>
+        <div>
+          <label for="waitlist-question" class="field-label"
+            >Question for the team <span class="field-optional">(optional)</span></label
+          >
+          <input
+            id="waitlist-question"
+            name="question"
+            type="text"
+            placeholder="Ask us anything"
+            maxlength={MAX_QUESTION_LENGTH}
+            class="field"
+          />
+        </div>
+        <label class="choice">
+          <input id="waitlist-updates" type="checkbox" name="updates" value="1" />
+          <span>Send me updates. A low-volume monthly email.</span>
+        </label>
+        <div class="hidden" aria-hidden="true">
+          <label for="waitlist-company">Company</label>
+          <input
+            id="waitlist-company"
+            name="company"
+            type="text"
+            tabindex="-1"
+            autocomplete="off"
+          />
+        </div>
+        <input type="hidden" name="source" value="subscribe" />
+        <div
+          id="waitlist-turnstile"
+          class="cf-turnstile flex justify-center"
+          data-sitekey={TURNSTILE_SITEKEY}
+          data-action={TURNSTILE_ACTION}
+        >
+        </div>
+        <p id="waitlist-error" class="text-xs text-error" role="alert"></p>
+        <button id="waitlist-submit" type="submit" class="btn btn-primary btn-block">
+          Sign up
+        </button>
+        <p class="text-xs text-ink-3 text-pretty">
+          By joining you agree we may email you about the launch, and monthly updates only if you
+          tick the box. No payment is taken now. See our{" "}
+          <a href="/privacy" class="inline-link">Privacy</a> page. To be removed at any time, email{
+            " "
+          }
+          <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link">{REMOVAL_ADDRESS}</a>.
+        </p>
+      </form>
+    </div>
+  </div>
+</Base>
+
+<script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
+
+<script>
+  import { initSubscribePage } from "../scripts/subscribe.ts";
+  initSubscribePage();
+</script>

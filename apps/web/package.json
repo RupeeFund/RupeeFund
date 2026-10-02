@@ -1,0 +1,49 @@
+{
+  "name": "@rupeefund/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro build --outDir dist-dev && node ../../scripts/wrangler-dev.mjs --assets dist-dev",
+    "build": "node scripts/build.mjs",
+    "preview": "PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA astro build --outDir dist-preview && TURNSTILE_SECRET=1x0000000000000000000000000000000AA node ../../scripts/wrangler-dev.mjs --assets dist-preview --port 8789 --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
+    "typecheck": "wrangler types && tsc -b tsconfig.build.json && astro check",
+    "test": "vitest run",
+    "test:e2e": "playwright test --project live --project live-no-js",
+    "brand:sync": "node scripts/brand-sync.mts",
+    "db:reset": "node scripts/db-reset.mjs",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "live:check": "node scripts/live-check.mts",
+    "list:export": "node scripts/list-export.mts"
+  },
+  "dependencies": {
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/sitemap": "^3.7.3",
+    "@cloudflare/workers-types": "catalog:",
+    "@fontsource-variable/inter": "catalog:",
+    "@fontsource/inter": "^5.3.0",
+    "@playwright/test": "^1.62.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "@rupeefund/db": "workspace:*",
+    "@rupeefund/ui": "workspace:*",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "catalog:",
+    "@types/react": "^19.3.0",
+    "astro": "^7.3.5",
+    "jsdom": "catalog:",
+    "react": "^19.3.0",
+    "satori": "^0.33.5",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "^8.2.1",
+    "vitest": "catalog:",
+    "wrangler": "catalog:"
+  },
+  "portless": {
+    "name": "rupeefund",
+    "script": "dev"
+  }
+}

@@ -18,7 +18,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
@@ -38,7 +38,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
@@ -53,13 +53,13 @@ jobs:
     env:
       WRANGLER_LOG_PATH: ${{ github.workspace }}/.wrangler/logs
     steps:
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm --filter @rupeefund/web exec playwright install --with-deps chromium
       - name: Create the local D1 schema the signup path writes to
-        run: pnpm wrangler d1 migrations apply rupeefund-waitlist --local
+        run: pnpm db:reset
       # workaround: cloudflare/workers-sdk#15317
       - name: Run the browser suite, and retry once if the dev server dies
         run: |
@@ -73,7 +73,7 @@ jobs:
         with:
           name: playwright-report
           path: |
-            playwright-report
-            test-results
+            apps/web/playwright-report
+            apps/web/test-results
             .wrangler/logs
           retention-days: 7

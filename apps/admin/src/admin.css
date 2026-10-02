@@ -1,0 +1,391 @@
+@import "@rupeefund/ui/styles.css";
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer components {
+  .sprite {
+    @apply absolute size-0 overflow-hidden;
+  }
+
+  .icon {
+    @apply block size-5 flex-none fill-none stroke-current stroke-2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .skip {
+    @apply fixed top-4 left-4 z-[60] rounded-lg bg-ink px-4 py-3 text-sm text-white;
+    @apply -translate-y-[200%] focus:translate-y-0;
+  }
+
+  .shell {
+    @apply grid min-h-dvh grid-cols-[3.5rem_minmax(0,1fr)];
+  }
+
+  .sidebar {
+    @apply sticky top-0 z-40 flex h-dvh w-14 flex-col items-center gap-3;
+    @apply border-r border-ink/10 bg-white py-3;
+  }
+
+  .sidebar-mark {
+    @apply size-8 rounded-md;
+  }
+
+  .sidebar-list {
+    @apply grid w-full gap-1 px-1.5;
+  }
+
+  .sidebar-link {
+    @apply flex min-h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium;
+    @apply text-ink-2 hover:bg-paper hover:text-ink;
+  }
+
+  .sidebar-link[aria-current="page"] {
+    @apply bg-brand-50 text-brand-900;
+    @apply forced-colors:border forced-colors:border-[Highlight];
+  }
+
+  .sidebar-label {
+    @apply sr-only;
+  }
+
+  .shell:has(#sidebar-toggle[aria-expanded="true"]) {
+    .sidebar {
+      @apply w-56 items-start px-3 shadow-card md:shadow-none;
+    }
+
+    .sidebar-list {
+      @apply px-0;
+    }
+
+    .sidebar-link {
+      @apply justify-start px-3;
+    }
+
+    .sidebar-label {
+      @apply not-sr-only;
+    }
+
+    @media (width >= 48rem) {
+      grid-template-columns: 14rem minmax(0, 1fr);
+    }
+  }
+
+  .chevron {
+    @apply shrink-0 transition-[rotate] duration-200 ease-out group-open:rotate-180;
+  }
+
+  details:has(> dl:empty) {
+    @apply hidden;
+  }
+
+  .alert {
+    @apply flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white p-6;
+    @apply text-sm text-error shadow-[inset_0_0_0_1.5px_var(--color-error)];
+  }
+
+  .numbers {
+    container: numbers / inline-size;
+  }
+
+  .figures {
+    @apply grid grid-cols-2 gap-x-6 gap-y-4;
+  }
+
+  @container numbers (width >= 688px) {
+    .figures {
+      @apply grid-cols-4 gap-y-6;
+    }
+  }
+
+  @container numbers (width >= 1216px) {
+    .figures {
+      @apply grid-cols-7;
+    }
+  }
+
+  .figures dt,
+  .figure-note {
+    @apply text-xs text-ink-2;
+  }
+
+  .figure {
+    @apply text-xl font-semibold tracking-[-0.033em] num;
+  }
+
+  @container numbers (width >= 1504px) {
+    .figure {
+      @apply text-2xl;
+    }
+  }
+
+  .figure-note {
+    @apply num text-pretty;
+  }
+
+  .counts {
+    @apply mt-2 grid text-xs;
+  }
+
+  .counts > div {
+    @apply flex justify-between gap-4 border-b border-ink/10 py-2;
+  }
+
+  .counts dt {
+    @apply text-ink-2;
+  }
+
+  .counts dd {
+    @apply font-semibold num;
+  }
+
+  .bars {
+    @apply flex h-24 items-end gap-px border-b border-border;
+  }
+
+  .bar {
+    @apply min-w-0 flex-1 rounded-t-sm bg-brand-fg;
+    @apply forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none];
+  }
+
+  .bar[data-empty] {
+    @apply bg-border;
+  }
+
+  .data-list dt {
+    @apply num;
+  }
+
+  .data-list {
+    @apply mt-3 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2;
+  }
+
+  .data-list > div {
+    @apply flex justify-between gap-4 border-b border-ink/10 py-1;
+  }
+
+  .data-list dd {
+    @apply num;
+  }
+
+  .data-table .person-name {
+    @apply font-medium [overflow-wrap:anywhere];
+  }
+
+  .email-box {
+    @apply flex items-center gap-2;
+  }
+
+  .email-box .btn {
+    @apply shrink-0;
+  }
+
+  .email {
+    @apply min-w-0 [overflow-wrap:anywhere];
+  }
+
+  .status-mark {
+    @apply inline-flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap;
+    @apply text-brand-900;
+  }
+
+  .status-mark .icon {
+    @apply size-3;
+  }
+
+  .status-mark[data-state="exported"] {
+    @apply text-ink;
+  }
+
+  .status-mark[data-state="unsubscribed"] {
+    @apply text-error;
+  }
+
+  .records {
+    container: records / inline-size;
+  }
+
+  .questions {
+    container: questions / inline-size;
+  }
+
+  .data-table {
+    @apply w-full table-fixed border-collapse text-left text-xs;
+  }
+
+  .data-table thead th {
+    @apply eyebrow border-b border-ink/15 px-2 py-3 align-bottom text-ink-2;
+  }
+
+  .data-table:has(tbody:empty) thead {
+    @apply hidden;
+  }
+
+  .data-table tbody :is(th, td) {
+    @apply border-b border-ink/10 px-2 py-3 align-middle font-normal;
+  }
+
+  .data-table :is(th, td):first-child {
+    @apply pl-0;
+  }
+
+  .data-table :is(th, td):last-child {
+    @apply pr-0;
+  }
+
+  .records-table :is(th, td):last-child {
+    @apply text-right;
+  }
+
+  @container records (width > 1160px) {
+    .records-table .joined {
+      @apply whitespace-nowrap;
+    }
+
+    .records-table .amount {
+      @apply pr-6 text-right;
+    }
+  }
+
+  @container records (width <= 1160px) {
+    .records-table,
+    .records-table tbody {
+      @apply block;
+    }
+
+    .records-table thead {
+      @apply sr-only;
+    }
+
+    .records-table tr {
+      @apply relative grid grid-cols-2 gap-4 border-t border-ink/10 py-5;
+    }
+
+    .records-table tbody :is(th, td) {
+      @apply block min-w-0 border-0 p-0 text-left;
+    }
+
+    .records-table tbody th {
+      @apply col-span-2 pr-12;
+    }
+
+    .records-table :is(.email-cell, .status-cell) {
+      @apply col-span-2;
+    }
+
+    .records-table .row-action {
+      @apply absolute top-5 right-0;
+    }
+
+    .records-table td[data-label]::before {
+      @apply eyebrow mb-1 block text-ink-2;
+      content: attr(data-label) / "";
+    }
+  }
+
+  @container records (600px <= width <= 1160px) {
+    .records-table tr {
+      @apply grid-cols-4;
+    }
+
+    .records-table :is(tbody th, .email-cell) {
+      @apply col-span-4;
+    }
+  }
+
+  @container questions (width <= 880px) {
+    .questions-table,
+    .questions-table tbody {
+      @apply block;
+    }
+
+    .questions-table thead {
+      @apply sr-only;
+    }
+
+    .questions-table tr {
+      @apply grid gap-4 border-t border-ink/10 py-5;
+    }
+
+    .questions-table tbody :is(th, td) {
+      @apply block min-w-0 border-0 p-0;
+    }
+
+    .questions-table td[data-label]::before {
+      @apply eyebrow mb-1 block text-ink-2;
+      content: attr(data-label) / "";
+    }
+  }
+
+  .question-body {
+    @apply text-pretty;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .select {
+    @apply relative block;
+  }
+
+  .select select {
+    @apply appearance-none pr-10 cursor-pointer;
+  }
+
+  .select .icon {
+    @apply pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-ink-2;
+  }
+
+  .refresh .icon {
+    @apply size-4;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .refresh[data-busy] .icon {
+      @apply animate-spin;
+    }
+  }
+
+  .record-dialog {
+    @apply m-auto w-[min(36rem,calc(100vw-2rem))] max-h-[calc(100dvh-3rem)] rounded-2xl bg-white;
+    @apply overflow-hidden overscroll-contain p-0 text-ink shadow-card backdrop:bg-ink/40;
+  }
+
+  .record-dialog[open] {
+    @apply grid grid-rows-[auto_minmax(0,1fr)];
+  }
+
+  .record-body {
+    @apply overflow-y-auto overscroll-contain;
+  }
+
+  .record-fields {
+    @apply grid grid-cols-1 gap-5 sm:grid-cols-2;
+  }
+
+  .record-fields dt {
+    @apply eyebrow text-ink-2;
+  }
+
+  .record-fields dd {
+    @apply [overflow-wrap:anywhere];
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .record-dialog[open],
+    .record-dialog[open]::backdrop {
+      @apply screen-enter;
+    }
+  }
+}
+
+@layer utilities {
+  .data-table .btn-icon {
+    @apply size-8 min-h-8;
+  }
+
+  .data-table .btn-icon .icon {
+    @apply size-4;
+  }
+}

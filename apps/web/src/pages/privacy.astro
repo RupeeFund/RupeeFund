@@ -1,0 +1,84 @@
+---
+import Policy from "../layouts/Policy.astro";
+import { REMOVAL_ADDRESS } from "../lib/launch.ts";
+---
+
+<Policy title="Privacy">
+  <p>
+    The&nbsp;Rupee&nbsp;Fund is a FOSS United community initiative run by community members. The
+    community team manages the launch notification list. We adopt the privacy standards in the <a
+      href="https://fossunited.org/privacy-policy"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-link">FOSS United privacy policy</a
+    >, dated 7 February 2024, with the local rules below. These local rules define our data use and
+    take precedence where the source differs. We do not adopt the source’s wider uses for marketing,
+    profiling, event tickets, or ownership transfers. Foundation roles named in the source do not
+    become roles in The&nbsp;Rupee&nbsp;Fund through adoption. Later changes to the source do not
+    change this policy automatically.
+  </p>
+
+  <h2>What we collect</h2>
+  <ul class="list-disc pl-5 space-y-1">
+    <li>Your name.</li>
+    <li>Your email address.</li>
+    <li>The time of your consent, signup, and latest update.</li>
+    <li>The page that you used to join.</li>
+    <li>The amount each month that you say you can give.</li>
+    <li>The number of months that you say you can give, if you answer.</li>
+    <li>The question that you ask the team, if you ask one.</li>
+    <li>Whether you tick the box for monthly updates.</li>
+    <li>
+      The roles that you tick, if you tick any: user or consumer; developer, implementer, creator or
+      designer; professional; student.
+    </li>
+    <li>
+      The projects that you want to fund, if you tick any: nascent, small to mid-sized, or larger.
+    </li>
+  </ul>
+  <p>
+    We keep this data to send you one email when the fund opens, to send you monthly updates if you
+    tick the box, and to plan the fund. Your answers about money bind you to nothing. We take no
+    payment. We hold no payment details. Access to your answers is limited to the people who
+    administer the list and the services that process it.
+  </p>
+
+  <h2>Storage and retention</h2>
+  <p>
+    Cloudflare hosts this site and stores the list. The team can export the list to prepare the
+    launch email. We retain entries for launch planning and notification. We have not set a fixed
+    deletion date. Removal from the mailing list retains your entry as described below.
+  </p>
+
+  <h2>Your IP address</h2>
+  <p>
+    We read your IP address when you send the form. We use it to prevent abuse. When your browser
+    runs JavaScript, we also send it to Cloudflare with the bot check below. We do not store it in
+    your list entry. Cloudflare also processes connection data to provide hosting and abuse
+    protection.
+  </p>
+
+  <h2>Bot protection</h2>
+  <p>
+    When your browser runs JavaScript, the form uses Cloudflare Turnstile to tell a person apart
+    from a bot. Cloudflare states what Turnstile collects in the <a
+      href="https://www.cloudflare.com/turnstile-privacy-policy/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-link">Turnstile Privacy Addendum</a
+    >.
+  </p>
+
+  <h2>Profile photos</h2>
+  <p>
+    The Team page loads profile photos from GitHub. GitHub receives your IP address when your
+    browser requests these photos.
+  </p>
+
+  <h2>How to leave the list</h2>
+  <p>
+    Send an email to <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link">{REMOVAL_ADDRESS}</a
+    >. We take you off the list. We keep your entry, and we mark it as removed, so that a later
+    signup cannot add you again. Ask at any time.
+  </p>
+</Policy>

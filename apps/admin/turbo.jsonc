@@ -1,0 +1,16 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "outputs": [".generated/**"],
+    },
+    "typecheck": {
+      "dependsOn": ["transit", "build"],
+    },
+    "test": {
+      "dependsOn": ["transit", "build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/apps/web/wrangler.jsonc"],
+    },
+  },
+}

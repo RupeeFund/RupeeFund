@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "stream",
+  "agentGuidance": false,
+  "cacheDir": ".turbo/cache",
+  "globalDependencies": ["tsconfig.base.json"],
+  "globalPassThroughEnv": ["CI", "CLOUDFLARE_*", "WRANGLER_*", "WORKERS_CI*"],
+  "tasks": {
+    "transit": { "dependsOn": ["^transit"] },
+    "build": {
+      "dependsOn": ["transit"],
+      "outputs": ["dist/**"],
+    },
+    "typecheck": {
+      "dependsOn": ["transit"],
+      "outputs": [],
+    },
+    "test": {
+      "dependsOn": ["transit"],
+      "outputs": [],
+    },
+    "test:e2e": {
+      "dependsOn": ["transit"],
+      "cache": false,
+    },
+    "preview": {
+      "cache": false,
+      "persistent": true,
+    },
+  },
+}
