@@ -138,7 +138,7 @@ describe("the records section", () => {
         "₹500",
         "Not given",
         "User, Student",
-        "Nascent, Larger",
+        "New, Well-established",
         "Yes",
         "14 Nov 2023",
         "New",

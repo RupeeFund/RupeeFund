@@ -15,9 +15,9 @@ export const ROLE_LABELS: Readonly<Record<RoleField, string>> = {
 export const REASON_LEGEND = "I am looking to join this fund";
 
 export const REASON_LABELS: Readonly<Record<ReasonField, string>> = {
-  backs_nascent: "To fund nascent projects",
-  backs_growing: "To encourage small to mid-sized projects",
-  backs_larger: "To sustain larger projects",
+  backs_nascent: "To nurture new projects",
+  backs_growing: "To encourage growing projects",
+  backs_larger: "To sustain well-established projects",
 };
 
 export const REMOVAL_ADDRESS = "rupeefund@fossunited.org";

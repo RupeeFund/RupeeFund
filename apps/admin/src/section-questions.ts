@@ -69,7 +69,7 @@ byId("questions-more").addEventListener("click", () => {
 const BODY = `<section class="questions card grid gap-6 sm:gap-8" aria-labelledby="questions-title">
 <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
 <div class="grid gap-1"><h2 class="text-lg" id="questions-title">Questions</h2>
-<p class="text-xs text-ink-2">Each email you reveal is logged.</p></div>
+<p class="text-xs text-ink-2">The panel logs each email that you reveal.</p></div>
 <p class="text-sm text-ink-2 num" id="questions-total">—</p>
 <p class="basis-full text-sm text-error" id="questions-reveal-error" role="alert" hidden></p>
 <span class="sr-only" id="questions-reveal-status" role="status"></span>

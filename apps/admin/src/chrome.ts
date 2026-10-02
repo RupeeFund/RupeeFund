@@ -36,9 +36,9 @@ function trouble(err) {
     return "The server could not load the data. Try again in a minute.";
   }
   if (typeof status === "number") {
-    return "The request was refused. Reload the page, then try again.";
+    return "The server refused the request. Reload the page, then try again.";
   }
-  return "Unable to reach the server. Check your connection, then try again.";
+  return "The panel cannot reach the server. Check your connection, then try again.";
 }
 
 const RULES = new Intl.PluralRules("en-IN");

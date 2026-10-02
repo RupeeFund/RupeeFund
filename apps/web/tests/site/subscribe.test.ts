@@ -78,9 +78,9 @@ describe("Subscribe page (/subscribe)", () => {
       ["backs_larger", "checkbox", "1", false, false],
     ]);
     expect(boxes.map((b) => b.closest("label")?.textContent?.trim())).toEqual([
-      "To fund nascent projects",
-      "To encourage small to mid-sized projects",
-      "To sustain larger projects",
+      "To nurture new projects",
+      "To encourage growing projects",
+      "To sustain well-established projects",
     ]);
   });
 

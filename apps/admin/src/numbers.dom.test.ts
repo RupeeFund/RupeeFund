@@ -93,7 +93,7 @@ describe("the numbers section", () => {
     ]);
   });
 
-  it("sums the pledges a month and names the median pledge", async () => {
+  it("sums the monthly amounts and names the median amount", async () => {
     await boot();
     expect([figure("monthly"), figure("median")]).toEqual([
       ["₹1,140", "From 3 people"],
@@ -104,7 +104,7 @@ describe("the numbers section", () => {
   it("says so when nobody gave an amount, rather than a median of nothing", async () => {
     await boot({ ...SUMMARY, pledges: { count: 0, sum: 0, median: null } });
     expect([figure("monthly"), figure("median")]).toEqual([
-      ["₹0", "No pledges yet"],
+      ["₹0", "No amounts yet"],
       ["None", undefined],
     ]);
   });

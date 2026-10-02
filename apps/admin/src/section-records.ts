@@ -5,7 +5,7 @@ import { PANEL_HEADER } from "./routes.ts";
 const FIELDS = [
   { id: "source", label: "Source" },
   { id: "state", label: "Status" },
-  { id: "amount", label: "Monthly pledge", num: true },
+  { id: "amount", label: "Monthly amount", num: true },
   { id: "months", label: "Number of months" },
   { id: "joined", label: "Joined", num: true },
   { id: "consent", label: "Consented", num: true },
@@ -15,9 +15,9 @@ const FIELDS = [
   { id: "is_creator", label: "Developer, implementer, creator or designer" },
   { id: "is_professional", label: "Professional" },
   { id: "is_student", label: "Student" },
-  { id: "backs_nascent", label: "Fund nascent projects" },
-  { id: "backs_growing", label: "Encourage small to mid-sized projects" },
-  { id: "backs_larger", label: "Sustain larger projects" },
+  { id: "backs_nascent", label: "Nurture new projects" },
+  { id: "backs_growing", label: "Encourage growing projects" },
+  { id: "backs_larger", label: "Sustain well-established projects" },
   { id: "exported", label: "Exported", num: true },
   { id: "unsubscribed", label: "Unsubscribed", num: true },
   { id: "updated", label: "Last changed", num: true },
@@ -35,7 +35,7 @@ const ROLES = {
   is_professional: "Professional",
   is_student: "Student",
 };
-const REASONS = { backs_nascent: "Nascent", backs_growing: "Small to mid", backs_larger: "Larger" };
+const REASONS = { backs_nascent: "New", backs_growing: "Growing", backs_larger: "Well-established" };
 
 let loaded = [];
 let cursor = null;
@@ -332,7 +332,7 @@ const DIALOG = `<dialog class="record-dialog" id="record-dialog" aria-labelledby
 </dd></div>
 ${recordFields()}
 </dl>
-<p class="border-t border-ink/10 pt-4 text-xs text-ink-2">Each reveal is logged.</p>
+<p class="border-t border-ink/10 pt-4 text-xs text-ink-2">The panel logs each email that you reveal.</p>
 </div>
 </dialog>`;
 
@@ -352,7 +352,7 @@ const EXPORT = `<dialog class="record-dialog" id="export-dialog" aria-labelledby
 const BODY = `<section class="records card grid gap-6 sm:gap-8" aria-labelledby="records-title">
 <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
 <div class="grid gap-1"><h2 class="text-lg" id="records-title">Records</h2>
-<p class="text-xs text-ink-2">Each email you reveal is logged.</p></div>
+<p class="text-xs text-ink-2">The panel logs each email that you reveal.</p></div>
 <div class="flex flex-wrap items-center gap-4 text-sm text-ink-2">
 <span class="num" id="shown">—</span>
 <span class="sr-only" id="match-status" role="status"></span>

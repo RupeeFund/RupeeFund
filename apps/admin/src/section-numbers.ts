@@ -8,8 +8,8 @@ const FIGURES = [
   { key: "active", label: "Signed up", note: true },
   { key: "rate", label: "Signups a day", note: true },
   { key: "goal", label: `${GOAL.toLocaleString("en-IN")} by`, note: true },
-  { key: "monthly", label: "Pledged a month", note: true },
-  { key: "median", label: "Median pledge", note: false },
+  { key: "monthly", label: "Monthly amounts, total", note: true },
+  { key: "median", label: "Median monthly amount", note: false },
   { key: "updates_opt_in", label: "Want updates", note: true },
   { key: "pending", label: "Waiting for export", note: false },
 ] as const;
@@ -22,9 +22,9 @@ const ROLES = [
 ] as const;
 
 const REASONS = [
-  { key: "backs_nascent", label: "Fund nascent projects" },
-  { key: "backs_growing", label: "Encourage small to mid-sized projects" },
-  { key: "backs_larger", label: "Sustain larger projects" },
+  { key: "backs_nascent", label: "Nurture new projects" },
+  { key: "backs_growing", label: "Encourage growing projects" },
+  { key: "backs_larger", label: "Sustain well-established projects" },
 ] as const;
 
 const SCRIPT = `
@@ -129,7 +129,7 @@ function drawNumbers(summary) {
     "monthly",
     money(pledges.sum),
     pledges.count === 0
-      ? "No pledges yet"
+      ? "No amounts yet"
       : "From " + plural(pledges.count, "person", "people"),
   );
   figure("median", pledges.median === null ? "None" : money(pledges.median));

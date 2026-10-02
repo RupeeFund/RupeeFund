@@ -24,7 +24,7 @@ export interface RouteSeo {
 const ROUTE_SEO: readonly RouteSeo[] = [
   {
     path: "/",
-    title: "The Rupee Fund — A FOSS United Community Initiative",
+    title: "The Rupee Fund — a FOSS United community initiative",
     description: `Your ₹15 can do a lot. Fund great projects from India. ${INITIATIVE}, run by volunteers.`,
     indexable: true,
   },
@@ -38,7 +38,7 @@ const ROUTE_SEO: readonly RouteSeo[] = [
   {
     path: "/terms",
     title: "Terms — The Rupee Fund",
-    description: `Terms for The Rupee Fund and its launch notification list. ${INITIATIVE}.`,
+    description: `Terms for The Rupee Fund and its mailing list. ${INITIATIVE}.`,
     indexable: true,
   },
   {
