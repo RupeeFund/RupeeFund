@@ -8,13 +8,13 @@ The system shows public pages and collects a mailing list. It takes no payment a
 
 ## 2. The parts
 
-| Part | Technology | Function |
-| ------------- | ---------------------------- |
-| Site | Astro | Makes static HTML at build time |
-| Public Worker | Hono on Cloudflare Workers | Answers `/api/health` and `/api/waitlist` |
-| Admin Worker | Hono on Cloudflare Workers | Shows the team the list. Refer to section 10. |
-| Database | Cloudflare D1 | Keeps the `waitlist` table |
-| Scripts | TypeScript in `src/scripts/` | Adds behaviour to the static pages |
+| Part          | Technology                   | Function                                      |
+| ------------- | ---------------------------- | --------------------------------------------- |
+| Site          | Astro                        | Makes static HTML at build time               |
+| Public Worker | Hono on Cloudflare Workers   | Answers `/api/health` and `/api/waitlist`     |
+| Admin Worker  | Hono on Cloudflare Workers   | Shows the team the list. Refer to section 10. |
+| Database      | Cloudflare D1                | Keeps the `waitlist` table                    |
+| Scripts       | TypeScript in `src/scripts/` | Adds behaviour to the static pages            |
 
 On `rupeefund.org`, only a request to `/api/*` reaches the public Worker. Cloudflare serves every other path from the static files.
 
