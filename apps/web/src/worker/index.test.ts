@@ -38,6 +38,11 @@ describe("worker router (Hono)", () => {
     expect(res.headers.get("content-security-policy")).toContain("default-src 'none'");
   });
 
+  it("forbids caching of /api responses", async () => {
+    const res = await app.request("/api/waitlist", { method: "POST" }, makeEnv(), ctx);
+    expect(res.headers.get("cache-control")).toBe("no-store");
+  });
+
   it("returns 404 JSON for an unknown /api route", async () => {
     const res = await app.request("/api/nope", {}, makeEnv(), ctx);
     expect(res.status).toBe(404);
