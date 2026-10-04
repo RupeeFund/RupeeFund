@@ -15,7 +15,7 @@ describe("header", () => {
 
   it("grows the link line only for a pointer that can hover", () => {
     expect(styles()).toMatch(
-      /@media \(hover: ?hover\) ?\{\s*:is\(\.nav-link, ?\.foot-link, ?\.list-link, ?\.inline-link\):hover/,
+      /@media \(hover: ?hover\) ?\{\s*:is\(\.nav-link, ?\.foot-link, ?\.inline-link\):hover/,
     );
   });
 

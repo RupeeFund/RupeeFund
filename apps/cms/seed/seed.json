@@ -31,6 +31,25 @@
           "required": true
         },
         {
+          "slug": "kind",
+          "label": "Kind",
+          "type": "select",
+          "required": true,
+          "defaultValue": "Update",
+          "validation": { "options": ["Update", "Season report", "Essay", "Guide"] }
+        },
+        {
+          "slug": "season",
+          "label": "Season",
+          "type": "select",
+          "validation": { "options": ["Winter", "Summer", "Monsoon", "Post-monsoon"] }
+        },
+        {
+          "slug": "season_year",
+          "label": "Season year",
+          "type": "integer"
+        },
+        {
           "slug": "featured_image",
           "label": "Cover image",
           "type": "image"

@@ -67,6 +67,90 @@ describe("the Portable Text renderer", () => {
   });
 });
 
+describe("the editor blocks", () => {
+  const span = (text: string, marks: string[] = []) => ({ _type: "span" as const, text, marks });
+  const block = (style: string, text: string) =>
+    ({ _type: "block", style, markDefs: [], children: [span(text)] }) as PortableText[number];
+
+  it("shows a top heading as a section heading, because the post title is the h1", () => {
+    expect(toHtml([block("h1", "Top")])).toBe("<h2>Top</h2>");
+  });
+
+  it("renders the small headings", () => {
+    expect(toHtml([block("h5", "Five"), block("h6", "Six")])).toBe("<h5>Five</h5><h6>Six</h6>");
+  });
+
+  it("renders subscript and superscript", () => {
+    const html = toHtml([
+      {
+        _type: "block",
+        style: "normal",
+        markDefs: [],
+        children: [span("H"), span("2", ["subscript"]), span("O"), span("1", ["superscript"])],
+      },
+    ]);
+    expect(html).toBe("<p>H<sub>2</sub>O<sup>1</sup></p>");
+  });
+
+  it("renders a table with its header row, spans, marks and cell links", () => {
+    const html = toHtml([
+      {
+        _type: "table",
+        hasHeaderRow: true,
+        markDefs: [],
+        rows: [
+          {
+            _type: "tableRow",
+            cells: [{ _type: "tableCell", isHeader: true, colspan: 2, content: [span("Item")] }],
+          },
+          {
+            _type: "tableRow",
+            cells: [
+              {
+                _type: "tableCell",
+                markDefs: [{ _key: "l", _type: "link", href: "/faq" }],
+                content: [span("FAQ", ["l", "strong"])],
+              },
+              { _type: "tableCell", content: [span("Help")] },
+            ],
+          },
+        ],
+      },
+    ]);
+    expect(html).toBe(
+      '<div class="table-wrap"><table><thead><tr><th scope="col" colspan="2">Item</th></tr>' +
+        '</thead><tbody><tr><td><a href="/faq" class="inline-link"><strong>FAQ</strong></a></td>' +
+        "<td>Help</td></tr>" +
+        "</tbody></table></div>",
+    );
+  });
+
+  it("renders a code block as escaped text with its language", () => {
+    expect(toHtml([{ _type: "code", language: "html", code: "<b>x</b>" }])).toBe(
+      '<pre data-language="html"><code>&lt;b&gt;x&lt;/b&gt;</code></pre>',
+    );
+  });
+
+  it("keeps the indent of code as plain spaces", () => {
+    expect(toHtml([{ _type: "code", code: "if x:\n    y = 1" }])).toBe(
+      "<pre><code>if x:\n    y = 1</code></pre>",
+    );
+  });
+
+  it("renders a divider", () => {
+    expect(toHtml([{ _type: "break", style: "lineBreak" }])).toBe("<hr>");
+  });
+
+  it("renders an image with its caption as a figure", () => {
+    expect(
+      toHtml([{ _type: "image", src: "/media/01ABC.png", alt: "A box", caption: "Photo: <A>" }]),
+    ).toBe(
+      '<figure><img src="/media/01ABC.png" alt="A box" loading="lazy" decoding="async">' +
+        "<figcaption>Photo: &lt;A&gt;</figcaption></figure>",
+    );
+  });
+});
+
 describe("the inline renderer", () => {
   it("renders one paragraph without its paragraph tag, for a styled parent", () => {
     expect(toInlineHtml(linked("/privacy"))).toBe(

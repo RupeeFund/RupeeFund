@@ -13,17 +13,19 @@ describe("copying the media into the build", () => {
     const out = mkdtempSync(join(tmpdir(), "media-"));
     const copied = await copyMedia(await fixture(), out);
     expect(copied.toSorted()).toEqual([
-      "01M40TESTINLINE00000000000.png",
-      "01M40TESTLEAD0000000000000.png",
-      "01M40TESTPANORAMA00000000.webp",
-      "01M40TESTPORTRAIT000000000.jpg",
-      "01M40TESTSMALL00000000000.png",
+      "01M42CODE00000000000000000.jpg",
+      "01M42COINS0000000000000000.jpg",
+      "01M42GROUP0000000000000000.jpg",
+      "01M42HTML00000000000000000.jpg",
+      "01M42PAIR00000000000000000.jpg",
+      "01M42STAGE0000000000000000.jpg",
+      "01M42TEAM00000000000000000.jpg",
     ]);
     expect(
-      readFileSync(join(out, "media", "01M40TESTLEAD0000000000000.png"))
-        .subarray(1, 4)
-        .toString(),
-    ).toBe("PNG");
+      readFileSync(join(out, "media", "01M42COINS0000000000000000.jpg"))
+        .subarray(0, 3)
+        .toString("hex"),
+    ).toBe("ffd8ff");
   });
 
   it("fails the build when a file is missing", async () => {
@@ -51,6 +53,6 @@ describe("copying the media into the build", () => {
       answer,
       async (ms) => void waits.push(ms),
     );
-    expect([copied.length, waits]).toEqual([5, [60_000]]);
+    expect([copied.length, waits]).toEqual([7, [60_000]]);
   });
 });

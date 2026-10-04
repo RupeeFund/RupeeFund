@@ -2,250 +2,441 @@
   "version": 1,
   "posts": [
     {
-      "slug": "test-post",
-      "title": "[TEST] Every block",
-      "excerpt": "A sample post that shows each block of the blog.",
+      "slug": "how-to-write-a-post-for-this-blog",
+      "title": "How to write a post for this blog",
+      "excerpt": "A guide for volunteer writers: choose a kind of post, keep the voice, link your sources and format each element. This post uses every element it describes.",
       "image": {
-        "src": "/media/01M40TESTLEAD0000000000000.png",
-        "alt": "A green sample image",
+        "src": "/media/01M42HTML00000000000000000.jpg",
+        "alt": "Close-up of HTML code on a screen",
         "width": 1200,
-        "height": 630
+        "height": 705,
+        "caption": "Photo: Dominik Malinowski, Unsplash"
       },
       "body": [
         {
           "_type": "block",
-          "style": "normal",
+          "_key": "k2",
+          "style": "h1",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "This post is a sample. It shows each block that the blog can render. Text can be ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "bold",
-              "marks": ["strong"]
-            },
-            {
-              "_type": "span",
-              "text": ", ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "italic",
-              "marks": ["em"]
-            },
-            {
-              "_type": "span",
-              "text": ", ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "underlined",
-              "marks": ["underline"]
-            },
-            {
-              "_type": "span",
-              "text": ", ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "struck out",
-              "marks": ["strike-through"]
-            },
-            {
-              "_type": "span",
-              "text": " or ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "pnpm dev",
-              "marks": ["code"]
-            },
-            {
-              "_type": "span",
-              "text": ". It can also be ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "bold and italic",
-              "marks": ["strong", "em"]
-            },
-            {
-              "_type": "span",
-              "text": ", or ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "bold code",
-              "marks": ["strong", "code"]
-            },
-            {
-              "_type": "span",
-              "text": ".",
+              "_key": "s1",
+              "text": "Before you start",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k7",
           "style": "normal",
           "markDefs": [
             {
-              "_key": "l1",
-              "_type": "link",
-              "href": "https://fossunited.org"
-            },
-            {
-              "_key": "l2",
-              "_type": "link",
-              "href": "/faq"
-            },
-            {
-              "_key": "l3",
-              "_type": "link",
-              "href": "mailto:hello@example.com"
-            },
-            {
               "_key": "l4",
               "_type": "link",
-              "href": "#top"
+              "href": "#main"
             }
           ],
           "children": [
             {
               "_type": "span",
-              "text": "A link can go to ",
+              "_key": "s3",
+              "text": "This guide is for volunteers who write for The Rupee Fund blog. It uses every element a post can use, so you can see each one in place and copy it. Read it once, then keep the ",
               "marks": []
             },
             {
               "_type": "span",
-              "text": "another site",
-              "marks": ["l1"]
-            },
-            {
-              "_type": "span",
-              "text": ", to ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "a page of this site",
-              "marks": ["l2"]
-            },
-            {
-              "_type": "span",
-              "text": ", to ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "an email address",
-              "marks": ["l3"]
-            },
-            {
-              "_type": "span",
-              "text": " or to ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "the top of this page",
+              "_key": "s5",
+              "text": "checklist",
               "marks": ["l4"]
             },
             {
               "_type": "span",
-              "text": ".",
+              "_key": "s6",
+              "text": " near you.",
               "marks": []
             }
           ]
         },
         {
+          "_type": "image",
+          "_key": "i8",
+          "src": "/media/01M42CODE00000000000000000.jpg",
+          "alt": "Code on computer screens, lit in blue and red light",
+          "width": 1200,
+          "height": 780,
+          "caption": "Every post starts as plain text. Photo: Jakub Żerdzicki, Unsplash"
+        },
+        {
           "_type": "block",
+          "_key": "k10",
           "style": "h2",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A second-level heading",
+              "_key": "s9",
+              "text": "Start with the reader",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k12",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "Each heading level has its own size and space above it.",
+              "_key": "s11",
+              "text": "Write for one person: a developer in India who has a few minutes and no wish to be sold anything. Say what happens, give numbers and dates, and promise no more than we can do.",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k14",
           "style": "h3",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A third-level heading",
+              "_key": "s13",
+              "text": "Pick a kind of post",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k20",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "Text under a third-level heading.",
+              "_key": "s15",
+              "text": "Every post has a kind: an Update, a Season report, an ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s16",
+              "text": "Essay",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "_key": "s17",
+              "text": " or a ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s18",
+              "text": "Guide",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "_key": "s19",
+              "text": ". An essay argues for an idea. A guide teaches a task in steps. Choose the kind in the editor, and say in the first paragraph what the post is for.",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k22",
           "style": "h4",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A fourth-level heading",
+              "_key": "s21",
+              "text": "Write the title and the lede",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k24",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "Text under a fourth-level heading.",
+              "_key": "s23",
+              "text": "The title says what the post is about, in sentence case. The excerpt is one or two sentences and works as the lede. Both must make sense on their own.",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k26",
+          "style": "h5",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s25",
+              "text": "Keep the voice",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k28",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s27",
+              "text": "We write “we” and “you”. We use everyday words in full, natural sentences. We explain a technical term once. We say what the fund does for the people who give to it.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k30",
+          "style": "h6",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s29",
+              "text": "Mind the small print",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k32",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s31",
+              "text": "Sentence case for headings. Money as ₹ with Indian digit grouping, such as ₹1,00,000. Dates in full, such as 29 September 2026. Curly quotes, an en dash for ranges and a single ellipsis character … never three dots.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k34",
           "style": "h2",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
+              "_key": "s33",
+              "text": "Format the words",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k44",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s35",
+              "text": "Short paragraphs read well on a phone. Use ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s36",
+              "text": "bold",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "_key": "s37",
+              "text": " only for the key words. Use ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s38",
+              "text": "italics",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "_key": "s39",
+              "text": " for a soft stress. Use ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s40",
+              "text": "underline",
+              "marks": ["underline"]
+            },
+            {
+              "_type": "span",
+              "_key": "s41",
+              "text": " almost never, because readers take it for a link. Use ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s42",
+              "text": "strike-through",
+              "marks": ["strike-through"]
+            },
+            {
+              "_type": "span",
+              "_key": "s43",
+              "text": " only to show a correction that readers should see.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k52",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s45",
+              "text": "Some marks are for special text. Write a file name or a command as ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s46",
+              "text": "CONTRIBUTING.md",
+              "marks": ["code"]
+            },
+            {
+              "_type": "span",
+              "_key": "s47",
+              "text": ". Write a unit or a footnote with a raised mark, as in 10",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s48",
+              "text": "3",
+              "marks": ["superscript"]
+            },
+            {
+              "_type": "span",
+              "_key": "s49",
+              "text": ", or a lowered one, as in H",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s50",
+              "text": "2",
+              "marks": ["subscript"]
+            },
+            {
+              "_type": "span",
+              "_key": "s51",
+              "text": "O.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k54",
+          "style": "h3",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s53",
+              "text": "Quote with care",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k56",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s55",
+              "text": "Do not invent a quote. If you quote a source, link to the page it came from. A quote of two paragraphs is two quote blocks in a row:",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k58",
+          "style": "blockquote",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s57",
+              "text": "A good guide tells a reader what to do first, and then what to do next.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k60",
+          "style": "blockquote",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s59",
+              "text": "It leaves out everything the reader does not need yet.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k62",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s61",
+              "text": "Add lists, links and tables",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k64",
+          "style": "h3",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s63",
               "text": "Lists",
               "marks": []
             }
@@ -253,12 +444,28 @@
         },
         {
           "_type": "block",
+          "_key": "k66",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A bullet item",
+              "_key": "s65",
+              "text": "Use a bulleted list when order does not matter:",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k68",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s67",
+              "text": "Facts you checked",
               "marks": []
             }
           ],
@@ -267,47 +474,14 @@
         },
         {
           "_type": "block",
-          "style": "normal",
-          "markDefs": [
-            {
-              "_key": "k",
-              "_type": "link",
-              "href": "/people"
-            }
-          ],
-          "children": [
-            {
-              "_type": "span",
-              "text": "A bullet item with ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "bold",
-              "marks": ["strong"]
-            },
-            {
-              "_type": "span",
-              "text": " text and ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "a link",
-              "marks": ["k"]
-            }
-          ],
-          "listItem": "bullet",
-          "level": 1
-        },
-        {
-          "_type": "block",
+          "_key": "k70",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A nested bullet item",
+              "_key": "s69",
+              "text": "A figure, with its source linked",
               "marks": []
             }
           ],
@@ -316,12 +490,14 @@
         },
         {
           "_type": "block",
+          "_key": "k72",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A bullet item three levels deep",
+              "_key": "s71",
+              "text": "The date you read the page",
               "marks": []
             }
           ],
@@ -330,12 +506,14 @@
         },
         {
           "_type": "block",
+          "_key": "k74",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "Another nested bullet item",
+              "_key": "s73",
+              "text": "A claim about the outside world, with its source linked",
               "marks": []
             }
           ],
@@ -344,12 +522,14 @@
         },
         {
           "_type": "block",
+          "_key": "k76",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A bullet item after the nested items. This one is long enough to wrap onto a second line on a phone, so the text under the marker stays in line.",
+              "_key": "s75",
+              "text": "Facts about the fund",
               "marks": []
             }
           ],
@@ -358,24 +538,60 @@
         },
         {
           "_type": "block",
+          "_key": "k78",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "Text between two lists.",
+              "_key": "s77",
+              "text": "Only what the home page says",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 2
+        },
+        {
+          "_type": "block",
+          "_key": "k80",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s79",
+              "text": "Your own view, written as your view",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k82",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s81",
+              "text": "Use a numbered list when order matters:",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k84",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A numbered item",
+              "_key": "s83",
+              "text": "Draft the post",
               "marks": []
             }
           ],
@@ -384,26 +600,14 @@
         },
         {
           "_type": "block",
+          "_key": "k86",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A second numbered item",
-              "marks": []
-            }
-          ],
-          "listItem": "number",
-          "level": 1
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "A nested numbered item",
+              "_key": "s85",
+              "text": "Write the outline",
               "marks": []
             }
           ],
@@ -412,12 +616,46 @@
         },
         {
           "_type": "block",
+          "_key": "k88",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A second nested numbered item",
+              "_key": "s87",
+              "text": "List the headings",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 3
+        },
+        {
+          "_type": "block",
+          "_key": "k90",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s89",
+              "text": "Note the source for each fact",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 3
+        },
+        {
+          "_type": "block",
+          "_key": "k92",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s91",
+              "text": "Write the first version",
               "marks": []
             }
           ],
@@ -426,12 +664,14 @@
         },
         {
           "_type": "block",
+          "_key": "k94",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A third numbered item",
+              "_key": "s93",
+              "text": "Check the post",
               "marks": []
             }
           ],
@@ -440,409 +680,67 @@
         },
         {
           "_type": "block",
-          "style": "h2",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "Quotes",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "blockquote",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "A quote stands apart from the text around it. It can hold ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "marks",
-              "marks": ["em"]
-            },
-            {
-              "_type": "span",
-              "text": " too.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "blockquote",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "A quote can have a second paragraph.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
+          "_key": "k96",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "Text after the quote.",
+              "_key": "s95",
+              "text": "Read it aloud",
               "marks": []
             }
-          ]
+          ],
+          "listItem": "number",
+          "level": 2
         },
         {
           "_type": "block",
-          "style": "h2",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "Images",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "image",
-          "src": "/media/01M40TESTINLINE00000000000.png",
-          "alt": "A yellow sample image, 800 by 400",
-          "width": 800,
-          "height": 400
-        },
-        {
-          "_type": "block",
+          "_key": "k98",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A portrait image keeps its shape and does not fill the height of the screen.",
+              "_key": "s97",
+              "text": "Send it to the editors",
               "marks": []
             }
-          ]
-        },
-        {
-          "_type": "image",
-          "src": "/media/01M40TESTPORTRAIT000000000.jpg",
-          "alt": "A blue sample image in portrait",
-          "width": 900,
-          "height": 1200
+          ],
+          "listItem": "number",
+          "level": 1
         },
         {
           "_type": "block",
-          "style": "normal",
+          "_key": "k100",
+          "style": "h3",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A small image stays at its own size.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "image",
-          "src": "/media/01M40TESTSMALL00000000000.png",
-          "alt": "A grey sample image, 240 by 160",
-          "width": 240,
-          "height": 160
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "A wide image fits the column.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "image",
-          "src": "/media/01M40TESTPANORAMA00000000.webp",
-          "alt": "An orange sample panorama",
-          "width": 2400,
-          "height": 600
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "An image with no size given.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "image",
-          "src": "/media/01M40TESTINLINE00000000000.png",
-          "alt": "The yellow sample image with no size"
-        },
-        {
-          "_type": "block",
-          "style": "h2",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "Long text",
+              "_key": "s99",
+              "text": "Links",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "A long address in plain text must wrap on a phone: https://github.com/RupeeFund/RupeeFund/blob/main/docs/ARCHITECTURE.md",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "A long word must wrap too: Pneumonoultramicroscopicsilicovolcanoconiosis.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "The last paragraph comes at the end.",
-              "marks": []
-            }
-          ]
-        }
-      ],
-      "publishedAt": "2026-10-02T17:40:48.365Z"
-    },
-    {
-      "slug": "test-long-read",
-      "title": "[TEST] Why we think a rupee a day from many people can pay for the open source that India runs on",
-      "excerpt": "A long post with a long title and no lead image. It shows how a real article reads: sections, a list, a quote and links, but no images at all.",
-      "body": [
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "We started The Rupee Fund with one question: what would it take for people in India to back the open source projects they use every day? This post is a test, but it reads like a real post, so the page can show how a long article feels.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "h2",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "Why small amounts",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "Most people who use open source never pay for it. That is not because they do not care. Paying is hard, the amounts feel too small to matter, and nobody asks. A fund that pools many small amounts changes each of those things.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "A rupee a day is not much on its own. From ten thousand people, it pays a maintainer for a year. The ",
-              "marks": []
-            },
-            {
-              "_type": "span",
-              "text": "number of people",
-              "marks": ["em"]
-            },
-            {
-              "_type": "span",
-              "text": " matters more than the size of each amount.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "h2",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "How we pick projects",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
+          "_key": "k111",
           "style": "normal",
           "markDefs": [
             {
-              "_key": "f",
+              "_key": "l102",
               "_type": "link",
               "href": "/faq"
-            }
-          ],
-          "children": [
-            {
-              "_type": "span",
-              "text": "We look for projects that many people in India depend on, and that have few other ways to get money. We read the code, talk to the maintainers and ask the community. The ",
-              "marks": []
             },
             {
-              "_type": "span",
-              "text": "FAQ",
-              "marks": ["f"]
-            },
-            {
-              "_type": "span",
-              "text": " has more on this.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [
-            {
-              "_key": "o",
+              "_key": "l105",
               "_type": "link",
-              "href": "https://opensource.org"
-            }
-          ],
-          "children": [
-            {
-              "_type": "span",
-              "text": "The project is open source, under a licence that the ",
-              "marks": []
+              "href": "https://opensource.guide/how-to-contribute/"
             },
             {
-              "_type": "span",
-              "text": "Open Source Initiative",
-              "marks": ["o"]
-            },
-            {
-              "_type": "span",
-              "text": " approves.",
-              "marks": []
-            }
-          ],
-          "listItem": "bullet",
-          "level": 1
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "People in India build it, or many people in India use it.",
-              "marks": []
-            }
-          ],
-          "listItem": "bullet",
-          "level": 1
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "The money changes what the maintainers can do.",
-              "marks": []
-            }
-          ],
-          "listItem": "bullet",
-          "level": 1
-        },
-        {
-          "_type": "block",
-          "style": "h2",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "What happens next",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "We are collecting a list of people who want to take part. We take no money yet. When we are ready, we will write to each person on the list with the details.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "blockquote",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "Open source is how India builds software. It is time we paid for it.",
-              "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [
-            {
-              "_key": "m",
+              "_key": "l108",
               "_type": "link",
               "href": "mailto:rupeefund@fossunited.org"
             }
@@ -850,213 +748,2050 @@
           "children": [
             {
               "_type": "span",
-              "text": "Thank you for reading this far. Send us your questions at ",
+              "_key": "s101",
+              "text": "Link every source. Link an ",
               "marks": []
             },
             {
               "_type": "span",
-              "text": "our email address",
-              "marks": ["m"]
+              "_key": "s103",
+              "text": "internal page",
+              "marks": ["l102"]
             },
             {
               "_type": "span",
+              "_key": "s104",
+              "text": " with a path, and an ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s106",
+              "text": "external source",
+              "marks": ["l105"]
+            },
+            {
+              "_type": "span",
+              "_key": "s107",
+              "text": " with a full https address. Write a link text that makes sense without the words around it, never “click here”. To let readers write to us, use an email link: ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s109",
+              "text": "rupeefund@fossunited.org",
+              "marks": ["l108"]
+            },
+            {
+              "_type": "span",
+              "_key": "s110",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k113",
+          "style": "h3",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s112",
+              "text": "Tables",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k115",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s114",
+              "text": "Use a table to compare things on the same terms. Give it a header row, and keep each cell short.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "table",
+          "_key": "t148",
+          "hasHeaderRow": true,
+          "markDefs": [],
+          "rows": [
+            {
+              "_type": "tableRow",
+              "_key": "r122",
+              "cells": [
+                {
+                  "_type": "tableCell",
+                  "_key": "c117",
+                  "isHeader": true,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s116",
+                      "text": "Element",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "tableCell",
+                  "_key": "c119",
+                  "isHeader": true,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s118",
+                      "text": "Use it for",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "tableCell",
+                  "_key": "c121",
+                  "isHeader": true,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s120",
+                      "text": "Rule",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "tableRow",
+              "_key": "r129",
+              "cells": [
+                {
+                  "_type": "tableCell",
+                  "_key": "c124",
+                  "isHeader": false,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s123",
+                      "text": "Quote block",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "tableCell",
+                  "_key": "c126",
+                  "isHeader": false,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s125",
+                      "text": "A source’s words",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "tableCell",
+                  "_key": "c128",
+                  "isHeader": false,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s127",
+                      "text": "Link the source",
+                      "marks": ["strong"]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "tableRow",
+              "_key": "r139",
+              "cells": [
+                {
+                  "_type": "tableCell",
+                  "_key": "c131",
+                  "isHeader": false,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s130",
+                      "text": "Table",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "tableCell",
+                  "_key": "c133",
+                  "isHeader": false,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s132",
+                      "text": "A comparison",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "tableCell",
+                  "_key": "c138",
+                  "isHeader": false,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s134",
+                      "text": "Keep each cell short; see the ",
+                      "marks": []
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s136",
+                      "text": "FAQ",
+                      "marks": ["l135"]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s137",
+                      "text": " for terms",
+                      "marks": []
+                    }
+                  ],
+                  "markDefs": [
+                    {
+                      "_key": "l135",
+                      "_type": "link",
+                      "href": "/faq"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "tableRow",
+              "_key": "r147",
+              "cells": [
+                {
+                  "_type": "tableCell",
+                  "_key": "c141",
+                  "isHeader": false,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s140",
+                      "text": "Code block",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "tableCell",
+                  "_key": "c143",
+                  "isHeader": false,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s142",
+                      "text": "A file or command",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "tableCell",
+                  "_key": "c146",
+                  "isHeader": false,
+                  "content": [
+                    {
+                      "_type": "span",
+                      "_key": "s144",
+                      "text": "Name the language, for example ",
+                      "marks": []
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s145",
+                      "text": "md",
+                      "marks": ["code"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "image",
+          "_key": "i149",
+          "src": "/media/01M42PAIR00000000000000000.jpg",
+          "alt": "Two colleagues talking at a laptop in an office",
+          "width": 1200,
+          "height": 675,
+          "caption": "Ask a colleague to read your draft. Photo: Vitaly Gariev, Unsplash"
+        },
+        {
+          "_type": "block",
+          "_key": "k151",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s150",
+              "text": "Show code and use images",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k153",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s152",
+              "text": "A code block shows text that readers may copy. Name its language so the block reads right. Here is a link written in Markdown, as you might paste it into a chat with the editors:",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "code",
+          "_key": "cd154",
+          "language": "md",
+          "code": "Read the [contribution guide](https://opensource.guide/how-to-contribute/) first.\nThen open a small pull request."
+        },
+        {
+          "_type": "break",
+          "_key": "b155",
+          "style": "lineBreak"
+        },
+        {
+          "_type": "block",
+          "_key": "k157",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s156",
+              "text": "Use an image when it helps the reader see something. Give each one alt text that says what the image shows. Add a caption when you need to credit the photographer: write it as “Photo: Name, Unsplash”.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "image",
+          "_key": "i158",
+          "src": "/media/01M42STAGE0000000000000000.jpg",
+          "alt": "A speaker on stage before an audience",
+          "width": 1200,
+          "height": 782
+        },
+        {
+          "_type": "block",
+          "_key": "k160",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s159",
+              "text": "Check before you send",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k162",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s161",
+              "text": "Run through these steps for every draft.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k164",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s163",
+              "text": "Read each fact. Can a reader click through to the source?",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k166",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s165",
+              "text": "Count the sections. A post has three to five.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k168",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s167",
+              "text": "Check the money, dates and quotes against the voice rules above.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k170",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s169",
+              "text": "Remove each word that adds no meaning.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k178",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l172",
+              "_type": "link",
+              "href": "mailto:rupeefund@fossunited.org"
+            },
+            {
+              "_key": "l175",
+              "_type": "link",
+              "href": "/faq"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s171",
+              "text": "When you are done, write to ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s173",
+              "text": "rupeefund@fossunited.org",
+              "marks": ["l172"]
+            },
+            {
+              "_type": "span",
+              "_key": "s174",
+              "text": " with your draft, or ask a question on our ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s176",
+              "text": "questions page",
+              "marks": ["l175"]
+            },
+            {
+              "_type": "span",
+              "_key": "s177",
+              "text": ". The editors will tell you what changed, and why.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "publishedAt": "2026-10-01T09:00:00.000Z",
+      "kind": "Guide",
+      "authors": []
+    },
+    {
+      "slug": "how-to-be-a-good-open-source-contributor",
+      "title": "How to be a good open source contributor",
+      "excerpt": "Read the guide, start small, write clear issues and pull requests, and take review well. A plain guide to your first contribution, with or without code.",
+      "image": {
+        "src": "/media/01M42GROUP0000000000000000.jpg",
+        "alt": "Four people working on laptops around a wooden table",
+        "width": 1200,
+        "height": 800,
+        "caption": "Photo: Annie Spratt, Unsplash"
+      },
+      "body": [
+        {
+          "_type": "block",
+          "_key": "k2",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s1",
+              "text": "You do not need permission to help an open source project, but you do need manners and a little preparation. This guide covers what to do before, during and after your first contribution.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k4",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s3",
+              "text": "Read the guide before you write",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k12",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l6",
+              "_type": "link",
+              "href": "https://opensource.guide/how-to-contribute/"
+            },
+            {
+              "_key": "l9",
+              "_type": "link",
+              "href": "https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/setting-guidelines-for-repository-contributors"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s5",
+              "text": "Start with the project’s CONTRIBUTING file. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s7",
+              "text": "The Open Source Guide notes",
+              "marks": ["l6"]
+            },
+            {
+              "_type": "span",
+              "_key": "s8",
+              "text": " that “its presence signals that this is a welcoming project to contribute to.” Contributing guidelines, ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s10",
+              "text": "GitHub explains",
+              "marks": ["l9"]
+            },
+            {
+              "_type": "span",
+              "_key": "s11",
+              "text": ", tell you how to create good issues and pull requests, and they save the “time and hassle” of work that is rejected and sent again.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k14",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s13",
+              "text": "Read the README too, and skim the open and closed issues. Check how the project runs its tests and how it formats code. Ten minutes here saves a week of rework.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k16",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s15",
+              "text": "Start small",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k21",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l18",
+              "_type": "link",
+              "href": "https://opensource.guide/how-to-contribute/"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s17",
+              "text": "A first contribution does not have to be a new feature. The same guide says that ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s19",
+              "text": "28% of casual contributions",
+              "marks": ["l18"]
+            },
+            {
+              "_type": "span",
+              "_key": "s19b",
+              "text": " to open source are documentation",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s20",
+              "text": ", such as typo fixes, reformatting or a translation.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k23",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s22",
+              "text": "Good first steps:",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k25",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s24",
+              "text": "Fix a typo or a broken link in the docs.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k27",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s26",
+              "text": "Reproduce a bug someone reported, and add what you found.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k29",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s28",
+              "text": "Pick an issue the maintainers have marked as friendly to newcomers.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k31",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s30",
+              "text": "Do not feel that a small change is a lesser one. A clear small change is a good way to learn how the project works.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k33",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s32",
+              "text": "Small changes are easy to review. A reviewer who finds your first patch easy will be glad to see your second.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k35",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s34",
+              "text": "Write good issues and pull requests",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k39",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l36",
+              "_type": "link",
+              "href": "https://opensource.guide/how-to-contribute/"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s37a",
+              "text": "Search ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s37",
+              "text": "before you open an issue",
+              "marks": ["l36"]
+            },
+            {
+              "_type": "span",
+              "_key": "s37b",
+              "text": ".",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s38",
+              "text": " Skim the README, the open and closed issues and the mailing list. A short search for a few key terms goes a long way. If you cannot find your idea elsewhere, you are ready to write.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k41",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s40",
+              "text": "A good issue says what you did, what you expected and what happened. Add your version numbers and the exact error. Keep it to one problem.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k46",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l43",
+              "_type": "link",
+              "href": "https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s42",
+              "text": "For a pull request, ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s44",
+              "text": "GitHub’s steps",
+              "marks": ["l43"]
+            },
+            {
+              "_type": "span",
+              "_key": "s45",
+              "text": " are simple:",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k48",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s47",
+              "text": "Fork the repository, then clone your fork to your computer.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k50",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s49",
+              "text": "Create a branch for your change.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k52",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s51",
+              "text": "Make your changes, commit them and push the branch.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k54",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s53",
+              "text": "Open a pull request with a clear title and a description of what you changed.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k56",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s55",
+              "text": "Link the issue your change answers. Keep the change focused on one thing. Test it before you ask anyone to read it.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k61",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l58",
+              "_type": "link",
+              "href": "https://opensource.guide/how-to-contribute/"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s57",
+              "text": "If the change is large, ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s59",
+              "text": "open the pull request early",
+              "marks": ["l58"]
+            },
+            {
+              "_type": "span",
+              "_key": "s60",
+              "text": ", so others can watch and give feedback as you go.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k63",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s62",
+              "text": "Take review well, and follow the code of conduct",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k65",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s64",
+              "text": "Review is a conversation about the code, not about you. Reply to each comment. If you disagree, say why, politely. If you agree, make the change and say so.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k67",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s66",
+              "text": "Be patient. Maintainers may be volunteers with other jobs. A nudge after a week is fine. Ten nudges in a day is not.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k75",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l69",
+              "_type": "link",
+              "href": "https://opensource.guide/how-to-contribute/"
+            },
+            {
+              "_key": "l72",
+              "_type": "link",
+              "href": "https://www.contributor-covenant.org/version/2/1/code_of_conduct/"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s68",
+              "text": "Most projects publish a code of conduct. It ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s70",
+              "text": "sets ground rules",
+              "marks": ["l69"]
+            },
+            {
+              "_type": "span",
+              "_key": "s70b",
+              "text": " for behaviour",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s71",
+              "text": " and helps keep the space friendly. One example is the ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s73",
+              "text": "Contributor Covenant",
+              "marks": ["l72"]
+            },
+            {
+              "_type": "span",
+              "_key": "s74",
+              "text": ", which pledges a harassment-free experience for everyone and lists empathy and kindness among its standards. Read your project’s version before you post your first comment.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k77",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s76",
+              "text": "Give without code",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k82",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l79",
+              "_type": "link",
+              "href": "https://opensource.guide/how-to-contribute/"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s78",
+              "text": "Code is not the only way in. The Open Source Guide says it is ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s80a",
+              "text": "often the other parts of a project that are ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s80",
+              "text": "most neglected",
+              "marks": ["l79"]
+            },
+            {
+              "_type": "span",
+              "_key": "s81",
+              "text": ". You can write or fix documentation, translate it, triage issues, answer questions from newcomers, design a logo or organise a meet-up.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k87",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l84",
+              "_type": "link",
+              "href": "/subscribe"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s83",
+              "text": "If you know a project well and have no time to code, say thank you in public, and tell others about it. When The Rupee Fund opens, you can also give to the projects you rely on. The fund is not open yet. We collect a list of interested people and take no money now. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s85",
+              "text": "Join the list",
+              "marks": ["l84"]
+            },
+            {
+              "_type": "span",
+              "_key": "s86",
               "text": ".",
               "marks": []
             }
           ]
         }
       ],
-      "publishedAt": "2026-09-20T09:00:00.000Z"
+      "publishedAt": "2026-09-25T09:00:00.000Z",
+      "kind": "Guide",
+      "authors": []
     },
     {
-      "slug": "test-season-notes",
-      "title": "[TEST] Notes from the first season",
-      "excerpt": "Lists, a two-line quote and wide and small images, with a portrait lead image.",
+      "slug": "how-open-source-gets-funded-today",
+      "title": "How open source gets funded today, and where a community pool fits",
+      "excerpt": "Grants, sponsorships, foundations and company backing each pay for open source in a different way. Here is what each does well, and what a pool of many small gifts can add.",
       "image": {
-        "src": "/media/01M40TESTPORTRAIT000000000.jpg",
-        "alt": "A blue sample image in portrait",
-        "width": 900,
-        "height": 1200
+        "src": "/media/01M42TEAM00000000000000000.jpg",
+        "alt": "A team gathered around a laptop in an office",
+        "width": 1200,
+        "height": 675,
+        "caption": "Photo: Vitaly Gariev, Unsplash"
       },
       "body": [
         {
           "_type": "block",
+          "_key": "k5",
           "style": "normal",
-          "markDefs": [],
+          "markDefs": [
+            {
+              "_key": "l2",
+              "_type": "link",
+              "href": "https://opensource.org/osd"
+            }
+          ],
           "children": [
             {
               "_type": "span",
-              "text": "The first season ran for three months. Here is what we learned, in the order we learned it.",
+              "_key": "s1",
+              "text": "Open source means more than visible code. The ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s3",
+              "text": "Open Source Definition",
+              "marks": ["l2"]
+            },
+            {
+              "_type": "span",
+              "_key": "s4",
+              "text": " sets ten criteria for the licence, starting with free redistribution and access to the source. Keeping that code healthy takes time, and time needs money. Here is how that money reaches projects today, and where a community pool can help.",
               "marks": []
             }
           ]
         },
         {
-          "_type": "image",
-          "src": "/media/01M40TESTPANORAMA00000000.webp",
-          "alt": "An orange sample panorama",
-          "width": 2400,
-          "height": 600
-        },
-        {
           "_type": "block",
+          "_key": "k7",
           "style": "h2",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "The steps",
+              "_key": "s6",
+              "text": "Grants",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k12",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l9",
+              "_type": "link",
+              "href": "https://fossunited.org/grants"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s8",
+              "text": "A grant is a one-time award for a stated purpose. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s10",
+              "text": "FOSS United’s grants",
+              "marks": ["l9"]
+            },
+            {
+              "_type": "span",
+              "_key": "s11",
+              "text": " come in three kinds: project grants, event grants and fellowships for individuals. Anyone who creates or maintains a FOSS project or event in India can apply. Recent project grants run from ₹15,000 to ₹8,00,000, and the fellowships support developers, students and community organisers who give their time to FOSS work.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k16",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l13",
+              "_type": "link",
+              "href": "https://floss.fund"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s14",
+              "text": "FLOSS/fund",
+              "marks": ["l13"]
+            },
+            {
+              "_type": "span",
+              "_key": "s15",
+              "text": " works at a global scale. It started in 2024 at Zerodha and gives out $1 million a year. Its first distribution, in May 2025, gave $325k to 9 projects.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k21",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l18",
+              "_type": "link",
+              "href": "https://www.sovereign.tech"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s17",
+              "text": "Governments fund too. The ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s19",
+              "text": "Sovereign Tech Agency",
+              "marks": ["l18"]
+            },
+            {
+              "_type": "span",
+              "_key": "s20",
+              "text": " is a German government initiative that invests in open digital infrastructure. Its programmes include a fund, a fellowship for key experts and support for maintainers who take part in standards bodies.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k23",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "We made a list of projects.",
+              "_key": "s22",
+              "text": "Grants suit work with a clear goal and a clear end. They also depend on a few reviewers choosing among projects that apply.",
               "marks": []
             }
-          ],
-          "listItem": "number",
-          "level": 1
+          ]
         },
         {
           "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "Some came from the community forum.",
-              "marks": []
-            }
-          ],
-          "listItem": "bullet",
-          "level": 2
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "Some came from people who wrote to us.",
-              "marks": []
-            }
-          ],
-          "listItem": "bullet",
-          "level": 2
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "We talked to the maintainers of each one.",
-              "marks": []
-            }
-          ],
-          "listItem": "number",
-          "level": 1
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "markDefs": [],
-          "children": [
-            {
-              "_type": "span",
-              "text": "We picked four projects for the season.",
-              "marks": []
-            }
-          ],
-          "listItem": "number",
-          "level": 1
-        },
-        {
-          "_type": "block",
+          "_key": "k25",
           "style": "h2",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "What people said",
+              "_key": "s24",
+              "text": "Sponsorships",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
-          "style": "blockquote",
-          "markDefs": [],
+          "_key": "k30",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l27",
+              "_type": "link",
+              "href": "https://docs.github.com/en/sponsors/getting-started-with-github-sponsors/about-github-sponsors"
+            }
+          ],
           "children": [
             {
               "_type": "span",
-              "text": "I did not know I could help with so little.",
+              "_key": "s26",
+              "text": "With ",
               "marks": []
-            }
-          ]
-        },
-        {
-          "_type": "block",
-          "style": "blockquote",
-          "markDefs": [],
-          "children": [
+            },
             {
               "_type": "span",
-              "text": "A person on the list",
+              "_key": "s28",
+              "text": "GitHub Sponsors",
+              "marks": ["l27"]
+            },
+            {
+              "_type": "span",
+              "_key": "s29",
+              "text": ", you can sponsor a developer or organisation directly. The sponsored account sets the amounts and the benefits, and you can pay once or monthly. A personal sponsorship carries no fee, so the whole amount goes to the recipient. An organisation pays up to 6% in fees.",
               "marks": []
             }
           ]
         },
         {
           "_type": "block",
+          "_key": "k32",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A small image of the team:",
+              "_key": "s31",
+              "text": "Sponsorships suit a maintainer or project with a following. Money flows to people that others already know, and the maintainer must set up a profile to receive it. A quiet library with a thousand users and no public face may never get a sponsor.",
               "marks": []
             }
           ]
         },
         {
-          "_type": "image",
-          "src": "/media/01M40TESTSMALL00000000000.png",
-          "alt": "A grey sample image, 240 by 160",
-          "width": 240,
-          "height": 160
+          "_type": "block",
+          "_key": "k34",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s33",
+              "text": "Foundations and company backing",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k38",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l35",
+              "_type": "link",
+              "href": "https://fossunited.org"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s36",
+              "text": "FOSS United",
+              "marks": ["l35"]
+            },
+            {
+              "_type": "span",
+              "_key": "s36b",
+              "text": " is a non-profit foundation",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s37",
+              "text": " that works to promote and strengthen free and open source software in India. It runs with support from partners including Frappe, Zerodha, Gooey and the Samagata Foundation.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k40",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s39",
+              "text": "This model gives a project a stable home and a trusted name. It also means the priorities of a few large backers can shape what gets funded. That is not a fault. It is a trade-off a community should see clearly.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k42",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s41",
+              "text": "Where a community pool fits",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k44",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s43",
+              "text": "Notice what the sources share. Each one asks a small group to decide, or asks a donor to know the project already. That is not wrong, and these sources do a great deal of good. It does leave a gap for the quiet project nobody has heard of.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k46",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s45",
+              "text": "Each source above answers a different question. A grant asks whether to fund a plan. A sponsorship asks whom you want to back. A foundation asks how to keep a home going.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k48",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s47",
+              "text": "A community pool asks something else: what would many people choose, if each gave a little and each had a say?",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k50",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s49",
+              "text": "The Rupee Fund will pool monthly contributions over UPI AutoPay, from ₹15 a month, through each season. People who contribute regularly earn a vote and split it across three kinds of projects: new, growing and well-established. We publish every administrative cost.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k53",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s51",
+              "text": "A pool will not replace grants, sponsorships or foundations.",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "_key": "s52",
+              "text": " It adds one more way, and it is the one that belongs to the people who give.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k55",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s54",
+              "text": "It also lets a project be seen. Each person may nominate one project or person each season. A library with no public face can get a nomination from the one person who relies on it.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k61",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l58",
+              "_type": "link",
+              "href": "/subscribe"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s56",
+              "text": "The fund is not open yet.",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "_key": "s57",
+              "text": " We collect a list of interested people and take no money now. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s59",
+              "text": "Join the list",
+              "marks": ["l58"]
+            },
+            {
+              "_type": "span",
+              "_key": "s60",
+              "text": " and tell us which project you would nominate.",
+              "marks": []
+            }
+          ]
         }
       ],
-      "publishedAt": "2026-08-01T12:30:00.000Z"
+      "publishedAt": "2026-09-11T09:00:00.000Z",
+      "updatedAt": "2026-09-18T09:00:00.000Z",
+      "kind": "Essay",
+      "season": {
+        "name": "Post-monsoon",
+        "year": 2026
+      },
+      "authors": []
     },
     {
-      "slug": "test-short",
-      "title": "[TEST] Short",
-      "excerpt": "One line.",
+      "slug": "small-steady-funding-for-indian-open-source",
+      "title": "Why Indian open source needs small, steady gifts",
+      "excerpt": "More than 2 crore developers in India use GitHub, yet the work that keeps open source alive still depends on a few people. Many small, steady gifts can change that.",
+      "image": {
+        "src": "/media/01M42COINS0000000000000000.jpg",
+        "alt": "Coins spilling from a glass jar onto a table, in Gurugram",
+        "width": 1200,
+        "height": 800,
+        "caption": "Photo: Napendra Singh, Unsplash"
+      },
       "body": [
         {
           "_type": "block",
+          "_key": "k2",
           "style": "normal",
           "markDefs": [],
           "children": [
             {
               "_type": "span",
-              "text": "A post can be one paragraph long.",
+              "_key": "s1",
+              "text": "Open source runs on evenings and weekends that nobody pays for. In India, the number of people who could share that load is very large. The way we share it is still thin.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k4",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s3",
+              "text": "A large community and a small purse",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k9",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l6",
+              "_type": "link",
+              "href": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s5",
+              "text": "GitHub’s Octoverse 2025 report counts ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s7",
+              "text": "21.9 million developers",
+              "marks": ["l6"]
+            },
+            {
+              "_type": "span",
+              "_key": "s7b",
+              "text": " in India",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s8",
+              "text": ", up from 4.5 million in 2020. That is more than 2 crore people. India is now second only to the United States. The same report says more than 5 million developers joined from India in 2025 alone.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k11",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s10",
+              "text": "Think of the libraries you installed this week. Someone wrote each one. Someone reads its bug reports, reviews its patches and decides what goes into the next release. Often that someone does it next to a day job.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k13",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s12",
+              "text": "A big community does not mean big support. It means many people could each do a small part, if there were a simple way to do it.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k15",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s14",
+              "text": "What grants do well, and where they stop",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k20",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l17",
+              "_type": "link",
+              "href": "https://fossunited.org/grants"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s16",
+              "text": "Grants matter. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s18a",
+              "text": "FOSS United has disbursed ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s18",
+              "text": "over ₹3 crore",
+              "marks": ["l17"]
+            },
+            {
+              "_type": "span",
+              "_key": "s19",
+              "text": " towards Indian FOSS projects and maintainers. Its recent project grants run from ₹15,000 to ₹8,00,000. That money lets a maintainer take time off, finish a feature or pay for an event.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k25",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l22",
+              "_type": "link",
+              "href": "https://floss.fund"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s21",
+              "text": "Money from outside the country matters too. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s23",
+              "text": "FLOSS/fund",
+              "marks": ["l22"]
+            },
+            {
+              "_type": "span",
+              "_key": "s24",
+              "text": " started in 2024 at Zerodha and gives out $1 million a year to open source projects worldwide. Between them, these funds move real money to real maintainers. They are one-time, chosen by a few reviewers, and they cannot reach every project.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k27",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s26",
+              "text": "A grant answers a particular question: should we fund this plan, now? A small group of reviewers decides, and the project gets one payment. That fits a plan with a start and an end.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k29",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s28",
+              "text": "Much of the work that keeps a project alive is not a plan. It is replying to the same question a tenth time, reviewing a patch from a stranger, and fixing a bug that only shows up on one phone. That work comes back every week. It needs money that comes back every month.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k31",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s30",
+              "text": "Why small, steady and many",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k33",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s32",
+              "text": "Take a simple sum. If 1,000 people each gave ₹15 a month, the pool would be ₹15,000 a month. Over a three-month season, that is ₹45,000. No single person gave much. The group gave something a maintainer can plan around.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k35",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s34",
+              "text": "Three things make this different from one large gift.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k38",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s36",
+              "text": "Small",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "_key": "s37",
+              "text": " means almost anyone can join. ₹15 a month is within reach of a student or a junior developer.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k41",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s39",
+              "text": "Steady",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "_key": "s40",
+              "text": " means a maintainer can count on it. A project can plan a quarter when it knows money will arrive.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k44",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s42",
+              "text": "Many",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "_key": "s43",
+              "text": " means no one person decides alone. The group decides.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "_key": "k46",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s45",
+              "text": "We also think a gift feels different when you can see where it goes. You give, you vote and you read what happened. That is how a community builds trust in its own money.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k48",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s47",
+              "text": "What The Rupee Fund will do",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k50",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s49",
+              "text": "The Rupee Fund is a community initiative from FOSS United, run by volunteers. It will pool monthly contributions over UPI AutoPay, from ₹15 a month. The fund runs four seasons a year, following the Indian weather seasons.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k53",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s51",
+              "text": "People who contribute regularly earn a vote each season. You split your vote across three kinds of projects: new, growing and well-established. Each person may also nominate one project or person each season. The pool then goes to the chosen projects over UPI. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s52",
+              "text": "We publish every administrative cost.",
+              "marks": ["strong"]
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k56",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s54",
+              "text": "The fund is not open yet.",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "_key": "s55",
+              "text": " We collect a list of interested people and take no money now.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k58",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s57",
+              "text": "What you can do today",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k62",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l59",
+              "_type": "link",
+              "href": "/subscribe"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s60",
+              "text": "Join the list",
+              "marks": ["l59"]
+            },
+            {
+              "_type": "span",
+              "_key": "s60b",
+              "text": " on our home page",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "_key": "s61",
+              "text": ". We will email you as soon as contributions open. We have not set a date yet.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "k64",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "_key": "s63",
+              "text": "Then tell us, and tell your friends, about a project you rely on. Once the fund opens, you can nominate it. Until then, a thank-you note to a maintainer costs nothing and means a lot.",
               "marks": []
             }
           ]
         }
       ],
-      "publishedAt": "2026-07-15T06:00:00.000Z"
+      "publishedAt": "2026-08-12T09:00:00.000Z",
+      "kind": "Essay",
+      "authors": []
     }
   ],
   "faq": [

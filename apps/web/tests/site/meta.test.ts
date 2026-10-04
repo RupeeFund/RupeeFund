@@ -26,10 +26,10 @@ describe("sitemap", () => {
       "/terms",
       "/code-of-conduct",
       "/blog",
-      "/blog/test-post",
-      "/blog/test-long-read",
-      "/blog/test-season-notes",
-      "/blog/test-short",
+      "/blog/how-to-write-a-post-for-this-blog",
+      "/blog/how-to-be-a-good-open-source-contributor",
+      "/blog/how-open-source-gets-funded-today",
+      "/blog/small-steady-funding-for-indian-open-source",
     ]) {
       expect(xml, `sitemap is missing ${path}`).toContain(`https://rupeefund.org${path}`);
     }

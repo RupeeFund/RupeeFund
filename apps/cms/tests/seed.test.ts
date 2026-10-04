@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { buildDocument, type Collections } from "../src/published.ts";
 
 interface Field {
   slug: string;
@@ -30,10 +31,13 @@ describe("the seed", () => {
     );
   });
 
-  it("gives a post a title, an excerpt, a cover image and a body", () => {
+  it("gives a post a title, an excerpt, its context, a cover image and a body", () => {
     expect(fieldsOf("posts")).toEqual([
       "title:string",
       "excerpt:text",
+      "kind:select",
+      "season:select",
+      "season_year:integer",
       "featured_image:image",
       "content:portableText",
     ]);
@@ -73,5 +77,30 @@ describe("the seed", () => {
         }
       }
     }
+  });
+
+  const seedDocument = () =>
+    buildDocument(
+      Object.fromEntries(
+        ["posts", "faq", "home", "people_page", "people", "policies"].map((name) => [
+          name,
+          (seed.content[name] ?? []).map(({ slug, data }) => ({ slug, data })),
+        ]),
+      ) as Collections,
+    );
+
+  it("builds a site document that the schema accepts", () => {
+    expect(() => seedDocument()).not.toThrow();
+  });
+
+  it("gives the site the same pages as the fixture, apart from the blog", () => {
+    const fixture = JSON.parse(
+      readFileSync("../web/tests/fixtures/content/published.json", "utf8"),
+    ) as Record<string, unknown>;
+    const pages = (document: Record<string, unknown>) => {
+      const { posts: _posts, policies, ...rest } = JSON.parse(JSON.stringify(document));
+      return { ...rest, policies: Object.fromEntries(policies.map((p: Entry) => [p.slug, p])) };
+    };
+    expect(pages(seedDocument())).toEqual(pages(fixture));
   });
 });

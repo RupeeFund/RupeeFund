@@ -31,6 +31,59 @@ describe("the published document", () => {
     });
   });
 
+  it("keeps the caption of an image inside the text", () => {
+    const input = collections();
+    const content = (input.posts[0]!.data as { content: Record<string, unknown>[] }).content;
+    content[1]!.caption = "Photo: A. Person, Unsplash";
+    const body = buildDocument(input).posts[0]?.body ?? [];
+    expect(body.find((block) => block._type === "image")).toMatchObject({
+      caption: "Photo: A. Person, Unsplash",
+    });
+  });
+
+  it.each([
+    ["iframe", "embed"],
+    ["htmlBlock", "raw HTML"],
+    ["gallery", "gallery"],
+    ["reference", "reference"],
+  ])("refuses a %s block and names it", (type, name) => {
+    const input = collections();
+    const content = (input.posts[0]!.data as { content: Record<string, unknown>[] }).content;
+    content.push({ _type: type, _key: "z" });
+    expect(() => buildDocument(input)).toThrow(`posts/${input.posts[0]!.slug}: remove the ${name}`);
+  });
+
+  it("gives a post its kind, season, authors and updated date", () => {
+    const input = collections();
+    Object.assign(input.posts[0]!.data, {
+      kind: "Essay",
+      season: "Monsoon",
+      season_year: 2026,
+      updatedAt: "2026-10-03T10:00:00.000Z",
+      bylines: [{ byline: { displayName: "Asha Rao" } }, { byline: { displayName: "Ravi Iyer" } }],
+    });
+    expect(buildDocument(input).posts[0]).toMatchObject({
+      kind: "Essay",
+      season: { name: "Monsoon", year: 2026 },
+      authors: ["Asha Rao", "Ravi Iyer"],
+      updatedAt: "2026-10-03T10:00:00.000Z",
+    });
+  });
+
+  it("takes the season year from the publish date when the editor leaves it out", () => {
+    const input = collections();
+    Object.assign(input.posts[0]!.data, { season: "Winter" });
+    expect(buildDocument(input).posts[0]?.season).toEqual({ name: "Winter", year: 2026 });
+  });
+
+  it("keeps the caption of a cover image", () => {
+    const input = collections();
+    const image = (input.posts[0]!.data as { featured_image: { meta: Record<string, unknown> } })
+      .featured_image;
+    image.meta.caption = "Photo: A. Person, Unsplash";
+    expect(buildDocument(input).posts[0]?.image?.caption).toBe("Photo: A. Person, Unsplash");
+  });
+
   it("orders the FAQ and the team by their order field", () => {
     const input = collections();
     const first = input.people[0]!;

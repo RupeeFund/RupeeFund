@@ -151,7 +151,6 @@
 
   .nav-link,
   .foot-link,
-  .list-link,
   .inline-link {
     --grown: calc(100% - var(--inset, 0px) - var(--tail, 0px));
     background-image: linear-gradient(var(--color-brand), var(--color-brand));
@@ -162,7 +161,7 @@
   }
 
   @media (hover: hover) {
-    :is(.nav-link, .foot-link, .list-link, .inline-link):hover {
+    :is(.nav-link, .foot-link, .inline-link):hover {
       background-size: var(--grown) 2px;
     }
   }
@@ -181,8 +180,15 @@
     @apply forced-colors:hover:underline;
   }
 
-  .list-link {
-    @apply text-ink rounded-sm box-decoration-clone forced-colors:hover:underline;
+  .row-link {
+    @apply text-ink rounded-sm motion-safe:transition-colors motion-safe:duration-150;
+    @apply forced-colors:hover:underline;
+  }
+
+  @media (hover: hover) {
+    .row-link:hover {
+      color: var(--color-brand-fg);
+    }
   }
 
   .foot-icon {
@@ -272,7 +278,7 @@
     @apply mt-6;
   }
 
-  .prose :is(h2, h3, h4) {
+  .prose :is(h2, h3, h4, h5, h6) {
     @apply text-ink;
   }
 
@@ -284,15 +290,19 @@
     @apply text-lg;
   }
 
-  .prose h4 {
+  .prose :is(h4, h5) {
     @apply text-sm font-semibold;
+  }
+
+  .prose h6 {
+    @apply eyebrow text-ink-3;
   }
 
   .prose > h2 {
     @apply mt-10;
   }
 
-  .prose > :is(h2, h3, h4) + * {
+  .prose > :is(h2, h3, h4, h5, h6) + * {
     @apply mt-3;
   }
 
@@ -338,6 +348,42 @@
 
   .prose img {
     @apply mx-auto h-auto max-h-[80svh] w-auto max-w-full rounded-xl;
+  }
+
+  .prose figcaption {
+    @apply mt-2.5 text-center text-sm text-ink-3;
+  }
+
+  .prose pre {
+    @apply overflow-x-auto rounded-xl bg-white p-4 font-mono text-[0.8125rem] leading-relaxed text-ink;
+  }
+
+  .prose pre code {
+    @apply bg-transparent p-0 text-[1em];
+  }
+
+  .prose hr {
+    @apply border-ink/15;
+  }
+
+  .table-wrap {
+    @apply overflow-x-auto;
+  }
+
+  .prose table {
+    @apply w-full border-collapse text-left tabular-nums;
+  }
+
+  .prose :is(th, td) {
+    @apply border-b border-ink/15 py-2.5 pr-4 align-top;
+  }
+
+  .prose th {
+    @apply font-semibold text-ink;
+  }
+
+  .post-lead {
+    @apply h-auto w-full rounded-2xl;
   }
 
   .post-thumb {

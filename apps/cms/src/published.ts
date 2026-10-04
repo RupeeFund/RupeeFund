@@ -32,6 +32,8 @@ function storageKey(asset: Raw, where: string): string {
 }
 
 function toImage(value: Raw, asset: Raw, where: string): Image {
+  const meta = isRecord(asset.meta) ? asset.meta : {};
+  const caption = value.caption ?? meta.caption;
   const width = value.width ?? asset.width;
   const height = value.height ?? asset.height;
   return {
@@ -39,16 +41,50 @@ function toImage(value: Raw, asset: Raw, where: string): Image {
     alt: typeof value.alt === "string" ? value.alt : typeof asset.alt === "string" ? asset.alt : "",
     ...(typeof width === "number" ? { width } : {}),
     ...(typeof height === "number" ? { height } : {}),
+    ...(typeof caption === "string" && caption ? { caption } : {}),
   };
 }
+
+const REFUSED: Record<string, string> = {
+  iframe: "embed",
+  htmlBlock: "raw HTML",
+  gallery: "gallery",
+  reference: "reference",
+};
 
 function portableText(value: unknown, where: string): unknown {
   if (!Array.isArray(value)) return value;
   return value.map((block: unknown) => {
+    const refused = isRecord(block) && typeof block._type === "string" && REFUSED[block._type];
+    if (refused) {
+      throw new ContentError(`${where}: remove the ${refused}. The site does not show it.`);
+    }
     if (!isRecord(block) || block._type !== "image") return block;
     const asset = isRecord(block.asset) ? block.asset : {};
     return { _type: "image", ...toImage(block, asset, where) };
   });
+}
+
+const isoDate = (value: unknown) => (value instanceof Date ? value.toISOString() : value);
+
+function authors(bylines: unknown): string[] {
+  if (!Array.isArray(bylines)) return [];
+  return bylines.flatMap((credit: unknown) => {
+    const byline = isRecord(credit) && isRecord(credit.byline) ? credit.byline : {};
+    return typeof byline.displayName === "string" && byline.displayName ? [byline.displayName] : [];
+  });
+}
+
+function season(data: Raw): { name: unknown; year: unknown } | undefined {
+  if (typeof data.season !== "string" || !data.season) return undefined;
+  const published = isoDate(data.publishedAt);
+  const year =
+    typeof data.season_year === "number"
+      ? data.season_year
+      : typeof published === "string"
+        ? Number(published.slice(0, 4))
+        : undefined;
+  return { name: data.season, year };
 }
 
 const byOrder = (a: Entry, b: Entry) => Number(a.data.order) - Number(b.data.order);
@@ -64,17 +100,23 @@ export function buildDocument(collections: Collections): Content {
   const peoplePage = only(collections.people_page, "people page");
   const document = {
     version: 1,
-    posts: collections.posts.map(({ slug, data }) => ({
-      slug,
-      title: data.title,
-      excerpt: data.excerpt,
-      ...(isRecord(data.featured_image)
-        ? { image: toImage(data.featured_image, data.featured_image, `posts/${slug}`) }
-        : {}),
-      body: portableText(data.content, `posts/${slug}`),
-      publishedAt:
-        data.publishedAt instanceof Date ? data.publishedAt.toISOString() : data.publishedAt,
-    })),
+    posts: collections.posts.map(({ slug, data }) => {
+      const postSeason = season(data);
+      return {
+        slug,
+        title: data.title,
+        excerpt: data.excerpt,
+        ...(isRecord(data.featured_image)
+          ? { image: toImage(data.featured_image, data.featured_image, `posts/${slug}`) }
+          : {}),
+        body: portableText(data.content, `posts/${slug}`),
+        publishedAt: isoDate(data.publishedAt),
+        ...(data.updatedAt ? { updatedAt: isoDate(data.updatedAt) } : {}),
+        ...(typeof data.kind === "string" && data.kind ? { kind: data.kind } : {}),
+        ...(postSeason ? { season: postSeason } : {}),
+        authors: authors(data.bylines),
+      };
+    }),
     faq: collections.faq.toSorted(byOrder).map(({ slug, data }) => ({
       slug,
       question: data.title,

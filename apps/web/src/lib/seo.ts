@@ -124,6 +124,13 @@ export function seoForPath(
   };
 }
 
-export const NON_INDEXABLE_PATHS: readonly string[] = ROUTE_SEO.filter(
-  (route) => !route.indexable,
-).map((route) => route.path);
+const NON_INDEXABLE_PATHS: readonly string[] = ROUTE_SEO.filter((route) => !route.indexable).map(
+  (route) => route.path,
+);
+
+export function isListed(path: string): boolean {
+  const normalized = normalizePath(path);
+  return !NON_INDEXABLE_PATHS.some(
+    (hidden) => normalized === hidden || normalized.startsWith(`${hidden}/`),
+  );
+}

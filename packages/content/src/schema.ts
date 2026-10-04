@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 export function isSafeHref(href: string): boolean {
+  if ([...href].some((char) => char.charCodeAt(0) < 0x20 || char.charCodeAt(0) === 0x7f)) {
+    return false;
+  }
   if (href.startsWith("/")) return !/^\/[\\/]/.test(href);
   return href.startsWith("https://") || href.startsWith("mailto:") || href.startsWith("#");
 }
@@ -19,11 +22,23 @@ const mediaSrc = z
 const slug = z.string().regex(/^[a-z0-9][a-z0-9-]*$/);
 const photoUrl = z
   .string()
-  .refine((url) => url.startsWith("https://") && PHOTO_HOSTS.has(new URL(url).hostname), {
-    message: "Host the photo on GitHub, the one photo host the site policy allows",
-  });
+  .refine(
+    (url) =>
+      url.startsWith("https://") && URL.canParse(url) && PHOTO_HOSTS.has(new URL(url).hostname),
+    {
+      message: "Host the photo on GitHub, the one photo host the site policy allows",
+    },
+  );
 
-const DECORATORS = new Set(["strong", "em", "code", "underline", "strike-through"]);
+const DECORATORS = new Set([
+  "strong",
+  "em",
+  "code",
+  "underline",
+  "strike-through",
+  "subscript",
+  "superscript",
+]);
 
 const span = z.object({
   _type: z.literal("span"),
@@ -31,52 +46,119 @@ const span = z.object({
   marks: z.array(z.string()).default([]),
 });
 
+const linkDefs = z
+  .array(z.object({ _key: z.string(), _type: z.literal("link"), href }))
+  .default([]);
+
+const knownMarks = (spans: { marks: string[] }[], defs: { _key: string }[]) => {
+  const links = new Set(defs.map((def) => def._key));
+  return spans.every((child) =>
+    child.marks.every((mark) => DECORATORS.has(mark) || links.has(mark)),
+  );
+};
+
+const UNKNOWN_MARK = { message: "A mark is neither a decorator nor a link" };
+
 const textBlock = z
   .object({
     _type: z.literal("block"),
-    style: z.enum(["normal", "h2", "h3", "h4", "blockquote"]).default("normal"),
+    style: z.enum(["normal", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"]).default("normal"),
     listItem: z.enum(["bullet", "number"]).optional(),
     level: z.number().int().positive().optional(),
-    markDefs: z.array(z.object({ _key: z.string(), _type: z.literal("link"), href })).default([]),
+    markDefs: linkDefs,
     children: z.array(span),
   })
-  .refine(
-    (block) => {
-      const links = new Set(block.markDefs.map((def) => def._key));
-      return block.children.every((child) =>
-        child.marks.every((mark) => DECORATORS.has(mark) || links.has(mark)),
-      );
-    },
-    { message: "A mark is neither a decorator nor a link" },
-  );
+  .refine((block) => knownMarks(block.children, block.markDefs), UNKNOWN_MARK);
 
 export const image = z.object({
   src: mediaSrc,
   alt: z.string(),
   width: z.number().int().positive().optional(),
   height: z.number().int().positive().optional(),
+  caption: z.string().optional(),
 });
 
 const imageBlock = image.extend({ _type: z.literal("image") });
 
-export const portableText = z.array(z.union([textBlock, imageBlock]));
+const codeBlock = z.object({
+  _type: z.literal("code"),
+  code: z.string(),
+  language: z.string().optional(),
+});
 
-const text = z.string().min(1);
+const divider = z.object({ _type: z.literal("break"), style: z.string().optional() });
+
+const tableCell = z.object({
+  _type: z.literal("tableCell"),
+  isHeader: z.boolean().optional(),
+  colspan: z.number().int().positive().optional(),
+  rowspan: z.number().int().positive().optional(),
+  markDefs: linkDefs,
+  content: z.array(span),
+});
+
+const table = z
+  .object({
+    _type: z.literal("table"),
+    hasHeaderRow: z.boolean().optional(),
+    markDefs: linkDefs,
+    rows: z.array(z.object({ _type: z.literal("tableRow"), cells: z.array(tableCell) })),
+  })
+  .refine(
+    (value) =>
+      value.rows.every((row) =>
+        row.cells.every((cell) => knownMarks(cell.content, [...value.markDefs, ...cell.markDefs])),
+      ),
+    UNKNOWN_MARK,
+  );
+
+const refused = z
+  .object({ _type: z.enum(["iframe", "htmlBlock"]) })
+  .refine(() => false, "The site does not show embeds or raw HTML. Remove the block.");
+
+const paragraph = textBlock.refine((block) => block.style === "normal" && !block.listItem, {
+  message: "Use a plain paragraph here: no heading, list or quote",
+});
+
+const paragraphs = z.array(paragraph).min(1);
+
+const oneParagraph = z.array(paragraph).length(1, "Use one paragraph here");
+
+const uniqueSlugs = <T extends { slug: string }>(entries: T[]) =>
+  new Set(entries.map((entry) => entry.slug)).size === entries.length;
+
+const UNIQUE_SLUGS = { message: "Give each entry its own slug" };
+
+export const portableText = z.array(
+  z.union([textBlock, imageBlock, codeBlock, divider, table, refused]),
+);
+
+const text = z.string().trim().min(1);
+
+export const POST_KINDS = ["Update", "Season report", "Essay", "Guide"] as const;
+
+export const SEASON_NAMES = ["Winter", "Summer", "Monsoon", "Post-monsoon"] as const;
 
 export const POLICY_SLUGS = ["privacy", "terms", "refunds", "code-of-conduct"] as const;
 
 export const contentDocument = z.object({
   version: z.literal(1),
-  posts: z.array(
-    z.object({
-      slug,
-      title: text,
-      excerpt: text,
-      image: image.optional(),
-      body: portableText,
-      publishedAt: z.iso.datetime(),
-    }),
-  ),
+  posts: z
+    .array(
+      z.object({
+        slug,
+        title: text,
+        excerpt: text,
+        image: image.optional(),
+        body: portableText,
+        publishedAt: z.iso.datetime(),
+        updatedAt: z.iso.datetime().optional(),
+        kind: z.enum(POST_KINDS).default("Update"),
+        season: z.object({ name: z.enum(SEASON_NAMES), year: z.number().int() }).optional(),
+        authors: z.array(text).default([]),
+      }),
+    )
+    .refine(uniqueSlugs, UNIQUE_SLUGS),
   faq: z
     .array(
       z.object({
@@ -88,15 +170,16 @@ export const contentDocument = z.object({
         sources: z.array(z.object({ title: text, url: href })),
       }),
     )
-    .min(1),
+    .min(1)
+    .refine(uniqueSlugs, UNIQUE_SLUGS),
   home: z.object({
     heroLede: text,
     pitchTitle: text,
-    pitchBody: portableText.min(1),
+    pitchBody: paragraphs,
     pitchSourceTitle: text,
     pitchSourceUrl: href,
     stepsTitle: text,
-    steps: z.array(z.object({ title: text, body: portableText.min(1) })).min(1),
+    steps: z.array(z.object({ title: text, body: oneParagraph })).min(1),
     seasonsTitle: text,
     why: z.array(z.object({ title: text, body: text })).min(1),
     faqTitle: text,
@@ -107,19 +190,21 @@ export const contentDocument = z.object({
     joinTitle: text,
     joinBody: text,
     foundationTitle: text,
-    foundationBody: portableText.min(1),
+    foundationBody: oneParagraph,
   }),
-  people: z.array(
-    z.object({
-      slug,
-      name: text,
-      bio: text.optional(),
-      profileUrl: href.optional(),
-      username: text.optional(),
-      photoUrl: photoUrl.optional(),
-      order: z.number().int(),
-    }),
-  ),
+  people: z
+    .array(
+      z.object({
+        slug,
+        name: text,
+        bio: text.optional(),
+        profileUrl: href.optional(),
+        username: text.optional(),
+        photoUrl: photoUrl.optional(),
+        order: z.number().int(),
+      }),
+    )
+    .refine(uniqueSlugs, UNIQUE_SLUGS),
   policies: z
     .array(
       z.object({
@@ -129,9 +214,11 @@ export const contentDocument = z.object({
         body: portableText.min(1),
       }),
     )
-    .refine((policies) => POLICY_SLUGS.every((name) => policies.some((p) => p.slug === name)), {
-      message: `Publish every policy: ${POLICY_SLUGS.join(", ")}`,
-    }),
+    .refine(
+      (policies) =>
+        POLICY_SLUGS.every((name) => policies.filter((p) => p.slug === name).length === 1),
+      { message: `Publish each policy once: ${POLICY_SLUGS.join(", ")}` },
+    ),
 });
 
 export type ContentDocument = z.input<typeof contentDocument>;

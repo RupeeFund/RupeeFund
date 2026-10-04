@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizePath, seoForPath } from "./seo.ts";
+import { isListed, normalizePath, seoForPath } from "./seo.ts";
 
 describe("normalizePath", () => {
   it("strips the .html build-format extension", () => {
@@ -61,5 +61,18 @@ describe("seoForPath with a route", () => {
       title: "Hello — The Rupee Fund",
       canonical: "https://rupeefund.org/blog/hello",
     });
+  });
+});
+
+describe("isListed", () => {
+  it("keeps a page under a hidden path out of the listings", () => {
+    expect(isListed("/404")).toBe(false);
+    expect(isListed("/404/child")).toBe(false);
+    expect(isListed("/4040")).toBe(true);
+  });
+
+  it("lists a public page and a trailing-slash form of it", () => {
+    expect(isListed("/people")).toBe(true);
+    expect(isListed("/people/")).toBe(true);
   });
 });

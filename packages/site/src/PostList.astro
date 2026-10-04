@@ -1,6 +1,8 @@
 ---
 import type { Content } from "@rupeefund/content/schema";
 import { longDate } from "./dates.ts";
+import PostLabel from "./PostLabel.astro";
+import { readingMinutes } from "./reading.ts";
 
 interface Props {
   posts: Content["posts"];
@@ -10,7 +12,13 @@ const { posts } = Astro.props;
 ---
 
 <div class="reading">
-  <h1 class="page-title text-ink mb-10">Blog</h1>
+  <h1 class="page-title text-ink">Blog</h1>
+  <div class="mt-4 mb-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+    <p class="lede max-w-[34rem] text-ink-2 text-pretty">
+      Season reports, updates and essays from the volunteers who run the fund.
+    </p>
+    <a href="/blog/rss.xml" class="inline-link text-sm">RSS feed</a>
+  </div>
   {
     posts.length === 0 ? (
       <p class="text-ink-2">No posts yet.</p>
@@ -19,11 +27,18 @@ const { posts } = Astro.props;
         {posts.map((post) => (
           <li class="relative flex items-start gap-4 border-t border-ink/15 py-6 last:border-b sm:gap-8">
             <article class="min-w-0 flex-1">
-              <p class="text-sm text-ink-3 mb-1">
-                <time datetime={post.publishedAt}>{longDate(post.publishedAt)}</time>
+              <p class="mb-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm">
+                <PostLabel post={post} compact />
+                <span class="text-ink-3 tabular-nums">
+                  <time datetime={post.publishedAt}>{longDate(post.publishedAt)}</time>
+                  <span aria-hidden="true" class="mx-1">
+                    ·
+                  </span>
+                  {readingMinutes(post.body)} min read
+                </span>
               </p>
               <h2 class="text-xl text-ink mb-2">
-                <a href={`/blog/${post.slug}`} class="list-link after:absolute after:inset-0">
+                <a href={`/blog/${post.slug}`} class="row-link after:absolute after:inset-0">
                   {post.title}
                 </a>
               </h2>

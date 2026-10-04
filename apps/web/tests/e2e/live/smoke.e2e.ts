@@ -10,7 +10,7 @@ const ROUTES = [
   "/refunds",
   "/code-of-conduct",
   "/blog",
-  "/blog/test-post",
+  "/blog/how-to-write-a-post-for-this-blog",
   "/waitlist-confirmed",
 ] as const;
 
