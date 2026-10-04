@@ -9,7 +9,10 @@ export interface TeamMember {
 export const COMMUNITY_TEAM: readonly TeamMember[] = [
   {
     name: "Shree Kumar",
-    bio: "Shree (Kumar) is an active volunteer at FOSS United and an elected member of its Governance Board.",
+    bio: "Shree (Kumar) is an active volunteer at FOSS United and was formerly an elected " +
+         "member of its Governance Board. Shree helps run IndiaFOSS, arguably India's " +
+         "largest volunteer run conference dedicated to Free and Open Source Software, " +
+         "Hardware, and the wider digital commons.",
     profileUrl: "https://fossunited.org/u/shreekumar3d",
     username: "shreekumar3d",
     photoUrl: "https://github.com/shreekumar3d.png?size=128",
