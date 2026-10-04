@@ -2,7 +2,7 @@
 
 ## 1. What the system does
 
-The system shows public pages and collects a mailing list. It takes no payment and holds no vote.
+The system shows public pages and collects a mailing list. It takes no payment and holds no vote. A content manager holds the words of the pages. Refer to section 11.
 
 `packages/db/src/schema.ts` gives what the system stores for each person. It stores no payment instrument.
 
@@ -14,6 +14,7 @@ The system shows public pages and collects a mailing list. It takes no payment a
 | Public Worker | Hono on Cloudflare Workers   | Answers `/api/health` and `/api/waitlist`     |
 | Admin Worker  | Hono on Cloudflare Workers   | Shows the team the list. Refer to section 10. |
 | Database      | Cloudflare D1                | Keeps the `waitlist` table                    |
+| CMS Worker    | EmDash on Cloudflare Workers | Holds the content. Refer to section 11.       |
 | Scripts       | TypeScript in `src/scripts/` | Adds behaviour to the static pages            |
 
 On `rupeefund.org`, only a request to `/api/*` reaches the public Worker. Cloudflare serves every other path from the static files.
@@ -30,7 +31,7 @@ Each command under `scripts` in `package.json` runs in the pnpm shell emulator, 
 
 ## 3. The one environment
 
-The one environment is `live`, at `rupeefund.org` and `admin.rupeefund.org`. Section 7 names its resources. Two Workers are not two environments. There is no preview URL.
+The one environment is `live`, at `rupeefund.org`, `admin.rupeefund.org` and `cms.rupeefund.org`. Section 7 names its resources. Three Workers are not three environments. There is no preview URL.
 
 A second address for `rupeefund-web` keeps the live bindings and writes to the live list. So the configuration refuses a `workers.dev` address and a preview URL. The configuration does not stop a second custom domain. That rule is a decision, not a check. Prove a change on your own machine, against a local database.
 
@@ -62,6 +63,7 @@ Every Cloudflare resource of this repository follows these rules. A fork deploys
 | ------------------------- | ------------------------------------------------------ |
 | Worker                    | `rupeefund-<surface>`                                  |
 | D1 database               | `rupeefund-<data>`, named for the data, not the Worker |
+| R2 bucket                 | `rupeefund-<data>`                                     |
 | Custom domain             | `<surface>.rupeefund.org`, with `web` at the apex      |
 | Turnstile widget          | the hostname it serves                                 |
 | Rate limit `namespace_id` | a number that no other limiter used                    |
@@ -89,7 +91,7 @@ To sync from a local brand checkout before it reaches `main`, set `BRAND_DIR` to
 
 The panel shows the team the waitlist. It writes one thing: the export stamp, `exported_at`. Refer to section 10.8.
 
-**Keep the two Workers apart.** Do not add an admin route to `rupeefund-web`. A Cloudflare Access policy covers a whole Worker. If a policy covers `rupeefund-web`, it asks every visitor to sign in before the signup form shows. Also, an admin deployment cannot break the form.
+**Keep the two Workers apart.** Do not add an admin route to `rupeefund-web`. A Cloudflare Access policy covers a whole Worker. If a policy covers `rupeefund-web`, it asks every visitor to sign in before the signup form shows. Also, an admin deployment cannot break the form. The same rule keeps EmDash out of `rupeefund-web`.
 
 ### 10.1 Who gets in
 
@@ -181,3 +183,65 @@ The Worker logs `export` with the reader, the stamp time `at` and the count, bef
 The dashboard reads the count again, past the browser cache. It shows the count in a confirmation dialog. The file carries full addresses. If the file fails to save after the stamp, the page says so and names the batch time `at`.
 
 If you lose a download after the stamp, read `at` from the log. Then follow `docs/DEPLOY.md` section 8.
+
+## 11. The content manager
+
+EmDash runs in `rupeefund-cms` at `cms.rupeefund.org`. It holds the blog, the FAQ, the home page, the people page and the policies. The site stays static. A page that is an app, such as `/subscribe`, stays in code.
+
+### 11.1 How the content reaches the site
+
+The build of `rupeefund-web` reads `https://cms.rupeefund.org/published.json`. `apps/web/src/build/content.ts` holds the address. `packages/content/src/schema.ts` gives the shape of the document. The build reads the document one time and uses it for the pages and the images. The build exits 1 when the address does not answer in 30 seconds, answers with an error, or sends a document that breaks the schema. The last good deployment then stays live. Turborepo never caches the site build, because the document is not a file in the repository.
+
+The build copies each image of the document into `dist/media/`. So the content security policy names no new host.
+
+`CMS_CONTENT_FILE` and `CMS_CONTENT_URL` replace the address on your machine and in CI. The deploy guard refuses both in Workers Builds.
+
+### 11.2 The public addresses
+
+Only two addresses of `rupeefund-cms` are public:
+
+- `/published.json` sends the published entries and nothing else.
+- `/media/<key>` sends a file only when published content uses it.
+
+`PUBLIC_LIMITER` limits both. When the build gets a `429`, it waits for the time in `Retry-After`, up to one minute, and tries again. It tries five times. Each answer that the Worker code makes carries `x-robots-tag: noindex`. The static files in `apps/cms/public/` do not.
+
+The media addresses send only PNG, JPEG, GIF, WebP and AVIF files, with a sandbox policy. The schema refuses every other image type, so an SVG with a script cannot reach either site.
+
+### 11.3 Who gets in
+
+EmDash signs people in with passkeys. A person joins only through an invite from an admin. The content manager sends no email, so the admin sends the invite link by hand. Self-signup stays off. A new person gets the Author role (30) by default. An editor has role 40, and an admin has role 50.
+
+Until the first admin exists, any person can run the setup. A temporary Access application closes the setup until then (`docs/DEPLOY.md` section 11.2).
+
+The files that EmDash stores are private. `apps/cms/src/middleware.ts` answers 404 to `/_emdash/api/media/file/*` and `/_image` without a signed-in person. The public site gets its files from `/media/<key>`.
+
+### 11.4 What a publish does
+
+`apps/cms/src/plugin.ts` adds two rules:
+
+- Only an admin edits, publishes, schedules or unpublishes a policy. So the scheduler publishes only the text of an admin.
+- Nobody deletes a policy, because each build needs all four. To change a policy, edit it.
+- A publish, an unpublish, a delete or a restore posts to `DEPLOY_HOOK_URL`, the Deploy Hook of `rupeefund-web`. The site then builds again. Requests that arrive before a build starts make one build.
+
+### 11.5 The draft preview
+
+The **Preview** button opens `/preview/<collection>/<id>?_preview=<token>`. The page renders the draft with the components of `packages/site`, the same components that the site uses. Without a valid token for that entry, the page answers 404. An editor in the EmDash edit mode is the exception: EmDash shows that person each draft. The images of a preview come from `/preview/media/<key>`, which needs a signed-in person.
+
+### 11.6 The content model
+
+Each collection has typed fields. The layout stays in code, so an editor changes the words and not the structure. To change a field, change these together:
+
+- `apps/cms/seed/seed.json`, the model
+- `apps/cms/src/published.ts`, the map to the document
+- `packages/content/src/schema.ts`, the document
+- the component in `packages/site/src/`
+
+The `* * * * *` cron runs the scheduled publish. It reads D1 each minute. These reads use the shared allowance of section 10.4.
+
+### 11.7 The blog
+
+A post has a kind, an optional season and its authors. The authors are the EmDash bylines. `packages/content/src/html.ts` gives the blocks that a post can show. The build refuses an embed, raw HTML, a gallery and a reference. `apps/cms/src/published.ts` names the block in the error.
+
+### 11.8 EmDash updates
+
+EmDash changes its own database on the first request after a deploy of a new version. There is no step to approve it. So Renovate does not merge an EmDash update by itself (`renovate.json`). `docs/DEPLOY.md` section 11.6 gives the steps for an update.

@@ -59,7 +59,7 @@ Write the words on the site in the Voice of the brand guidelines. Do not use ASD
 
 A FAQ answer can hold several paragraphs, bold and italics. `.faq-answer` in `packages/ui/src/styles.css` spaces the paragraphs and sets bold text in ink. The site loads the italic Inter for `em`.
 
-The content manager holds the words of the blog, the FAQ, the home page, the people page and the policies. Change them at `cms.rupeefund.org`, not in the code. `docs/ARCHITECTURE.md` section 11 tells how. Tick **Show on the home page** to show a question on the home page too. Give a source for each figure in an answer. The build test fails on a figure without one.
+The content manager holds the words of the blog, the FAQ, the home page, the people page and the policies. Change them at `cms.rupeefund.org`, not in the code. `docs/ARCHITECTURE.md` section 11 tells how. Tick **Show on the home page** to show a question on the home page too. Give a source for each figure in an answer. The test of the sample content fails on a figure without one. The live build does not check it, so check each figure before you publish.
 
 ## Link preview cards
 

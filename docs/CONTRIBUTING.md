@@ -26,6 +26,8 @@ pnpm dev        # serve the site
 
 The terminal shows the address of the site. When you save a file, the browser reloads. If the build fails, the terminal shows the error and the site stays as it was. To work on the admin panel, run `pnpm dev:admin` in a second terminal.
 
+The site reads its words from a sample file, so you need no content manager. To work on the content manager, run `pnpm dev:cms`. Open `http://localhost:8790/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`. In a codespace, open port 8790 from the **Ports** tab and add the same path. This page adds the sample content and signs you in as an admin. When you invite a person, the invite link shows in the output of `pnpm dev:cms`. To serve the site from your local content, run `pnpm dev:site-cms` in place of `pnpm dev`. The site builds again a few seconds after you publish.
+
 - When pnpm tells you to run `pnpm install`, run it.
 - `pnpm db:reset` erases your local data. Run it again for a clean start.
 - To run more than one checkout at a time, run `pnpm dev:portless`. It starts both apps and gives each a name in place of a port. The first run after each boot asks for your password, because the names use port 443.

@@ -9,17 +9,19 @@ The system runs on the Workers Free plan.
 | `main` | none                  | none              | never                                       |
 | `live` | `rupeefund.org`       | `rupeefund-web`   | the maintainer, with the `Promote` workflow |
 | `live` | `admin.rupeefund.org` | `rupeefund-admin` | the maintainer, with the `Promote` workflow |
+| `live` | `cms.rupeefund.org`   | `rupeefund-cms`   | the maintainer, with the `Promote` workflow |
 
-Each Worker has its own Cloudflare Workers Builds project, and both watch `live`. One promote ships both Workers. Both projects use the repository root as the root directory, because pnpm installs the whole workspace from the root lockfile.
+Each Worker has its own Cloudflare Workers Builds project, and each watches `live`. One promote ships all Workers. Each project uses the repository root as the root directory, because pnpm installs the whole workspace from the root lockfile.
 
 | Worker            | Build command                                    | Deploy command                                        |
 | ----------------- | ------------------------------------------------ | ----------------------------------------------------- |
 | `rupeefund-web`   | `pnpm turbo run build --filter=@rupeefund/web`   | `pnpm --filter @rupeefund/web exec wrangler deploy`   |
 | `rupeefund-admin` | `pnpm turbo run build --filter=@rupeefund/admin` | `pnpm --filter @rupeefund/admin exec wrangler deploy` |
+| `rupeefund-cms`   | `pnpm turbo run build --filter=@rupeefund/cms`   | `pnpm --filter @rupeefund/cms exec wrangler deploy`   |
 
-Turn off branch builds for all branches except `live` on both projects. Keep them off. `docs/ARCHITECTURE.md` section 3 gives the reason.
+Turn off branch builds for all branches except `live` on each project. Keep them off. `docs/ARCHITECTURE.md` section 3 gives the reason.
 
-Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand. It uploads whatever `apps/web/dist` holds and skips the build guards. You can run `pnpm wrangler rollback` in an incident, because it ships no new code. For the admin Worker, run `pnpm --filter @rupeefund/admin exec wrangler rollback`.
+Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand. It uploads whatever `apps/web/dist` holds and skips the build guards. You can run `pnpm wrangler rollback` in an incident, because it ships no new code. For the admin Worker, run `pnpm --filter @rupeefund/admin exec wrangler rollback`. For the content manager, read section 11.7.
 
 ## 2. How to prove a change
 
@@ -44,7 +46,7 @@ git push origin <sha>:live
 
 Do not force the push. `live` is always a prefix of `main`, so a promote takes a commit and everything before it. Promote often.
 
-To go back, run `pnpm wrangler rollback` and `pnpm --filter @rupeefund/admin exec wrangler rollback`. Then purge the zone cache. Do not delete the Worker. A deleted Worker loses its custom domain and every earlier deployment.
+To go back, run `pnpm wrangler rollback` and `pnpm --filter @rupeefund/admin exec wrangler rollback`. Then purge the zone cache. The next publish in the content manager builds the site again from `live`. For the content manager, read section 11.7. Do not delete the Worker. A deleted Worker loses its custom domain and every earlier deployment.
 
 ## 4. How to apply a migration
 
@@ -93,7 +95,7 @@ Purge the zone cache first. Then:
 pnpm live:check
 ```
 
-It checks the site and the admin Worker, prints one `PASS` or `FAIL` line for each check, and exits 1 on a failure. `apps/web/scripts/live-check.mts` lists the checks.
+It checks the site, the admin Worker and the CMS Worker, prints one `PASS` or `FAIL` line for each check, and exits 1 on a failure. `apps/web/scripts/live-check.mts` lists the checks.
 
 Then complete the form one time, and read the row:
 
@@ -143,7 +145,7 @@ Before you clear it, count the rows with that `exported_at`. The number must equ
 
 ## 9. How to move to a different account
 
-The domain uses Cloudflare Registrar. A move to a different Cloudflare account takes only the registration. You make the zone, the Worker, the database and the Turnstile widget again in the new account.
+The domain uses Cloudflare Registrar. A move to a different Cloudflare account takes only the registration. You make the zone, the Workers, the databases, the media bucket and the Turnstile widget again in the new account.
 
 A Worker custom domain needs an active zone, and the zone becomes active only after the registration moves. So the site is down from the move until the first deploy in the new account. After the move, Cloudflare locks the registration against transfer for 30 days ([Cloudflare documentation](https://developers.cloudflare.com/registrar/account-options/inter-account-transfer/)).
 
@@ -166,12 +168,14 @@ Before the move:
 
    Delete `/tmp/waitlist-rows.sql` after the move. It holds the list.
 
+1. Make the resources of the content manager (section 11.1). Copy the content database the same way, with `--table` removed. Copy each object of `rupeefund-media` to the new bucket, for example with [rclone](https://developers.cloudflare.com/r2/examples/rclone/). Set `DEPLOY_HOOK_URL` after the move (section 11.3).
+
 The move:
 
-1. Disconnect both Workers Builds projects in the old account. Connect each in the new account, with the settings in section 1.
+1. Disconnect the three Workers Builds projects in the old account. Connect each in the new account, with the settings in section 1.
 1. In the old account, open **Domain Registration**, then the domain, then **Configuration**, and move it to the new account. Accept the move in the new account.
 1. When the zone is active, promote. The deploy makes the custom domain.
-1. Repeat sections 10.1 to 10.3 for the admin Worker.
+1. Repeat sections 10.1 to 10.3 for the admin Worker, and section 11.3 for the rebuild.
 1. Verify with section 6. Look for rows that the old Worker took after the copy, and copy them.
 1. Turn on DNSSEC in the new zone.
 
@@ -179,15 +183,16 @@ The move:
 
 The panel needs no secret. Cloudflare Access does the login. The Worker needs one variable, `ACCESS_AUD` in `apps/admin/wrangler.jsonc`: the audience tag of its Access application. The Worker refuses every request whose Access pass carries another tag.
 
-### 10.1 Set up the login method
+### 10.1 Set up GitHub sign-in
 
-Go to **Zero Trust** > **Integrations** > **Identity providers**.
+The panel admits the members of one GitHub team. A person needs a GitHub account, not a Cloudflare account.
 
-Cloudflare adds its own identity provider to a new organisation, and that provider admits **members of your Cloudflare account only**. A volunteer with no account membership cannot sign in with it.
+In the GitHub organization that holds the team, go to **Settings** > **Developer settings** > **OAuth Apps** > **New OAuth App**. Use these values. `<team-name>` is the name of your Zero Trust organization.
 
-For a list of email addresses, add **One-time PIN** as well. A new organisation does not get it by default. Access then emails a code to any address you name in the policy.
+- Homepage URL: `https://<team-name>.cloudflareaccess.com`
+- Authorization callback URL: `https://<team-name>.cloudflareaccess.com/cdn-cgi/access/callback`
 
-If your mail gateway filters mail, allow `noreply@notify.cloudflare.com`.
+Make a client secret. Then go to **Zero Trust** > **Integrations** > **Identity providers**, add **GitHub**, and paste the client ID and the secret. Select **Test**. If the organization restricts third-party access, an organization owner must approve the OAuth App, or Access cannot read the teams.
 
 ### 10.2 Protect the Worker
 
@@ -195,7 +200,11 @@ Go to **Workers & Pages**. Open `rupeefund-admin`. Open the **Access** tab. Put 
 
 Copy the **Application Audience (AUD) Tag** of the new application into `ACCESS_AUD` and into `access.dev.aud` in `apps/admin/wrangler.jsonc`. When you remove and add the application again, the tag changes. Update both values, or the panel refuses every person.
 
-Then add the policy: action **Allow**, rule type **Include**, selector **Emails**, and one row for each team member. Set the session duration. A long session stays signed in on a device that nobody watches.
+In the application, set **GitHub** as the only login method. Turn off **Accept all available identity providers**, the Cloudflare identity provider and **One-time PIN**.
+
+Then add the policy: action **Allow**, rule type **Include**, selector **GitHub organization**, with the organization and the team. If the selector offers no team, make an organization that holds only the panel users, and select it. Set the session duration. A long session stays signed in on a device that nobody watches.
+
+To add or remove a person, change the team on GitHub. A removed person keeps access until the session ends, so also revoke the session in **Zero Trust** > **Team & Resources** > **Users**. A person who joins the team after a failed sign-in stays refused. That person must revoke the OAuth App in their GitHub settings and sign in again.
 
 A person takes a seat at the first sign-in and keeps it until you remove the person. When no seat is free, Access refuses the next person. Read the seat count in the Zero Trust overview before you invite the team.
 
@@ -212,3 +221,85 @@ Then sign in with a browser and read the dashboard. A `{"error":"forbidden"}` pa
 ### 10.4 If you ever remove Access
 
 The Worker refuses every request (`docs/ARCHITECTURE.md` section 10.1). This is intentional. A panel that stops is safer than a panel that opens to the public.
+
+## 11. The content manager
+
+`docs/ARCHITECTURE.md` section 11 tells how the parts work together.
+
+The first promote with the content manager also builds `rupeefund-web`. That build fails, because the content manager has no content yet. The old site stays live. Section 11.4 builds the site again.
+
+### 11.1 Make the resources
+
+```sh
+pnpm --filter @rupeefund/cms exec wrangler d1 create rupeefund-content
+pnpm --filter @rupeefund/cms exec wrangler r2 bucket create rupeefund-media
+pnpm --filter @rupeefund/cms exec wrangler kv namespace create rupeefund-cms-session
+```
+
+Put the database ID in `d1_databases` and the namespace ID in `kv_namespaces` of `apps/cms/wrangler.jsonc`. Merge that change before the promote in section 11.4. Without the IDs, the deploy makes new, empty resources.
+
+### 11.2 Close the setup to strangers
+
+The content manager signs people in with passkeys. Until it has an admin, any person who opens it can run the setup and become the admin. Put a temporary Access application in front of it for the setup:
+
+1. Go to **Zero Trust** > **Access** > **Applications**.
+1. Add a self-hosted application on `cms.rupeefund.org` with the path `/_emdash/*`.
+1. Add the policy as in section 10.2.
+
+Remove this application in section 11.4, after you make the admin.
+
+### 11.3 Connect the rebuild
+
+Open `rupeefund-web` in **Workers & Pages**. Go to **Settings** > **Builds** > **Deploy Hooks**. Add a hook for the branch `live`. Set its URL as a secret:
+
+```sh
+pnpm --filter @rupeefund/cms exec wrangler secret put DEPLOY_HOOK_URL
+```
+
+The URL starts a build. Keep it secret.
+
+### 11.4 Set up the content
+
+1. Make the Workers Builds project of `rupeefund-cms` (section 1) and promote.
+1. Open `https://cms.rupeefund.org/_emdash/admin`. Access asks you to sign in. Then the setup wizard opens.
+1. Tick the sample content. The sample content is the present text of the site.
+1. Make your admin account and its passkey.
+1. Delete the Access application of section 11.2.
+
+Then run `pnpm live:check`. The five `cms` lines must say `PASS`. Then unpublish one FAQ entry and publish it again in the editor. The Deploy Hook then builds the site from the CMS. Read the build log of `rupeefund-web` to prove it.
+
+If the content manager loses all its people, put the Access application of section 11.2 back before you open it again.
+
+### 11.5 Invite a person
+
+The content manager sends no email. To add a person:
+
+1. Go to **Users** in the content manager and invite the email address of the person. The person gets the Author role (30). Select a different role if necessary.
+1. Copy the invite link and send it to the person yourself.
+1. The person opens the link and makes a passkey.
+
+The person signs in with that passkey from then on. Self-signup stays off.
+
+To remove a person, disable the account in **Users**. Until the session of that person ends, the person can still open the stored images (`docs/TODO.md`).
+
+### 11.6 Update EmDash
+
+EmDash changes its database on the first request after the deploy. Renovate opens one pull request for all EmDash packages and does not merge it.
+
+1. Read the release notes of each version in the pull request.
+1. Merge the pull request. Write down the time.
+1. Promote (section 3).
+1. Run `pnpm live:check`. Sign in to the content manager and open an entry.
+
+If the content manager fails, go back (section 11.7) to the time you wrote down.
+
+### 11.7 Go back
+
+- **Wrong words on the site.** Restore the earlier revision of the entry in the editor, and publish it. The site builds again. A rollback of `rupeefund-web` stays only until the next publish.
+- **A broken content manager.** Run `pnpm --filter @rupeefund/cms exec wrangler rollback`. If the bad version changed the database, also restore the database to the time before the deploy:
+
+  ```sh
+  pnpm --filter @rupeefund/cms exec wrangler d1 time-travel restore rupeefund-content --timestamp=<time>
+  ```
+
+  Time Travel keeps 7 days on the Workers Free plan ([Cloudflare documentation](https://developers.cloudflare.com/d1/reference/time-travel/)). The restore removes each edit after that time.
