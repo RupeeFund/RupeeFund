@@ -1,0 +1,65 @@
+---
+import FaqList from "@rupeefund/site/FaqList.astro";
+import HomeContent from "@rupeefund/site/HomeContent.astro";
+import PeopleContent from "@rupeefund/site/PeopleContent.astro";
+import PolicyBody from "@rupeefund/site/PolicyBody.astro";
+import PostArticle from "@rupeefund/site/PostArticle.astro";
+import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA, TAGLINE } from "@rupeefund/site/constants.ts";
+import { getEmDashEntry } from "emdash";
+import Preview from "../../../layouts/Preview.astro";
+import { load } from "../../../content-store.ts";
+import { previewDocument } from "../../../preview.ts";
+import { ContentError, type Collections } from "../../../published.ts";
+
+const COLLECTIONS = new Set(["posts", "faq", "home", "people_page", "people", "policies"]);
+
+const { collection = "", id = "" } = Astro.params;
+if (!COLLECTIONS.has(collection)) return new Response(null, { status: 404 });
+const name = collection as keyof Collections;
+
+const { entry, isPreview } = await getEmDashEntry(name, id);
+if (!entry || !isPreview) return new Response(null, { status: 404 });
+
+Astro.response.headers.set("cache-control", "no-store");
+const draft = { slug: entry.id, data: { ...entry.data } as Record<string, unknown> };
+let doc: ReturnType<typeof previewDocument> | undefined;
+let problem: string | undefined;
+try {
+  doc = previewDocument(await load(), name, draft);
+} catch (error) {
+  if (!(error instanceof ContentError)) throw error;
+  problem = error.message;
+}
+const post = doc?.posts.find((p) => p.slug === entry.id);
+const policy = doc?.policies.find((p) => p.slug === entry.id);
+const joinMail = `mailto:${REMOVAL_ADDRESS}`;
+---
+
+<Preview>
+  {
+    !doc ? (
+      <div class="wrap section-y">
+        <h1 class="page-title text-ink mb-4">The site cannot show this draft</h1>
+        <pre class="whitespace-pre-wrap text-sm">{problem}</pre>
+      </div>
+    ) : name === "home" ? (
+      <HomeContent
+        home={doc.home}
+        faq={doc.faq}
+        seasons={SEASONS}
+        tagline={TAGLINE}
+        ctaLabel={SUBSCRIBE_CTA}
+        contactAddress={REMOVAL_ADDRESS}
+      />
+    ) : (
+      <div class="wrap section-y">
+        {name === "posts" && post && <PostArticle post={post} />}
+        {name === "faq" && <FaqList faq={doc.faq} contactAddress={REMOVAL_ADDRESS} />}
+        {(name === "people" || name === "people_page") && (
+          <PeopleContent page={doc.peoplePage} people={doc.people} joinMail={joinMail} />
+        )}
+        {name === "policies" && policy && <PolicyBody policy={policy} />}
+      </div>
+    )
+  }
+</Preview>

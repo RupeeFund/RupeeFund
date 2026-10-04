@@ -1,0 +1,41 @@
+{
+  "name": "@rupeefund/cms",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./plugin": "./src/plugin.ts"
+  },
+  "scripts": {
+    "build": "astro build",
+    "dev": "astro dev --port 8790",
+    "typecheck": "wrangler types && astro check",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.3.3",
+    "@astrojs/react": "^7.0.0",
+    "@emdash-cms/cloudflare": "1.1.0",
+    "@fontsource-variable/inter": "catalog:",
+    "@rupeefund/content": "workspace:*",
+    "@rupeefund/site": "workspace:*",
+    "@rupeefund/ui": "workspace:*",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.5",
+    "emdash": "1.1.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwindcss": "catalog:"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@cloudflare/workers-types": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "wrangler": "catalog:"
+  },
+  "emdash": {
+    "seed": "seed/seed.json"
+  }
+}

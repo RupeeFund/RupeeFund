@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "rupeefund-cms",
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-06-20",
+  "compatibility_flags": ["nodejs_compat"],
+  "routes": [{ "pattern": "cms.rupeefund.org", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "rupeefund-content",
+    },
+  ],
+  "kv_namespaces": [{ "binding": "SESSION" }],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "rupeefund-media" }],
+  "ratelimits": [
+    {
+      "name": "PUBLIC_LIMITER",
+      "namespace_id": "7303",
+      "simple": { "limit": 30, "period": 60 },
+    },
+  ],
+  "secrets": {
+    "required": ["DEPLOY_HOOK_URL"],
+  },
+  "observability": { "enabled": true },
+  "triggers": {
+    "crons": ["* * * * *"],
+  },
+}

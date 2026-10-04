@@ -23,6 +23,12 @@
       "automerge": true
     },
     {
+      "description": "EmDash migrates the content database on the first request after a deploy. Ship each bump on purpose, after the export in docs/DEPLOY.md.",
+      "groupName": "EmDash",
+      "matchPackageNames": ["emdash", "@emdash-cms/**"],
+      "automerge": false
+    },
+    {
       "description": "astro check needs the TypeScript programmatic API, which tsc 7 dropped. See https://github.com/withastro/roadmap/discussions/1321",
       "matchPackageNames": ["typescript"],
       "allowedVersions": "<7.0.0"

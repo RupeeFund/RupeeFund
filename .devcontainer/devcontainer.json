@@ -9,10 +9,11 @@
   "updateContentCommand": "pnpm install --frozen-lockfile",
   "postCreateCommand": "pnpm db:reset",
   "postAttachCommand": "cat .devcontainer/welcome.txt",
-  "forwardPorts": [8787, 8788],
+  "forwardPorts": [8787, 8788, 8790],
   "portsAttributes": {
     "8787": { "label": "site", "onAutoForward": "openBrowserOnce" },
-    "8788": { "label": "admin panel", "onAutoForward": "notify" }
+    "8788": { "label": "admin panel", "onAutoForward": "notify" },
+    "8790": { "label": "content manager", "onAutoForward": "notify" }
   },
   "otherPortsAttributes": { "onAutoForward": "ignore" },
   "customizations": {
