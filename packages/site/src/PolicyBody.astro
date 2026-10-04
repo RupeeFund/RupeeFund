@@ -1,0 +1,16 @@
+---
+import type { Content } from "@rupeefund/content/schema";
+import Prose from "./Prose.astro";
+
+interface Props {
+  policy: Content["policies"][number];
+}
+
+const { title, effectiveDate, body } = Astro.props.policy;
+---
+
+<div class="reading">
+  <h1 class="page-title text-ink mb-4">{title}</h1>
+  <p class="text-sm text-ink-2 mb-6">Effective date: {effectiveDate}.</p>
+  <div class="prose"><Prose blocks={body} /></div>
+</div>

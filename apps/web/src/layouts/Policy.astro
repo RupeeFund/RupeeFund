@@ -1,19 +1,19 @@
 ---
+import type { POLICY_SLUGS } from "@rupeefund/content/schema";
+import PolicyBody from "@rupeefund/site/PolicyBody.astro";
 import Base from "./Base.astro";
+import { loadContent } from "../build/content.ts";
 
 interface Props {
-  title: string;
+  slug: (typeof POLICY_SLUGS)[number];
 }
 
-const { title } = Astro.props;
+const { content } = await loadContent();
+const policy = content.policies.find((entry) => entry.slug === Astro.props.slug)!;
 ---
 
 <Base>
   <div class="wrap section-y">
-    <div class="policy">
-      <h1 class="page-title text-ink mb-4">{title}</h1>
-      <p>Effective date: 25 September 2026.</p>
-      <slot />
-    </div>
+    <PolicyBody policy={policy} />
   </div>
 </Base>

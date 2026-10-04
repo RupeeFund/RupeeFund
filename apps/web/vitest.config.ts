@@ -13,7 +13,7 @@ export default defineConfig({
       {
         test: {
           name: "web:lib",
-          include: ["src/lib/**/*.test.ts"],
+          include: ["src/lib/**/*.test.ts", "src/build/**/*.test.ts"],
         },
       },
       {

@@ -42,8 +42,10 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: Run the same build command Cloudflare Workers Builds runs
+      - name: Run the Workers Builds build command on the sample content
         run: pnpm run build
+        env:
+          CMS_CONTENT_FILE: tests/fixtures/content/published.json
 
   e2e:
     runs-on: ubuntu-latest

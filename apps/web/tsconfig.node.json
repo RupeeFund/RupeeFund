@@ -4,5 +4,5 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "types": ["node"]
   },
-  "include": ["vitest.config.ts", "playwright.config.ts", "tests", "scripts"]
+  "include": ["vitest.config.ts", "playwright.config.ts", "tests", "scripts", "src/build"]
 }

@@ -1,0 +1,13 @@
+---
+import Base from "../layouts/Base.astro";
+import PostList from "@rupeefund/site/PostList.astro";
+import { loadContent, newestFirst } from "../build/content.ts";
+
+const { content } = await loadContent();
+---
+
+<Base>
+  <div class="wrap section-y">
+    <PostList posts={newestFirst(content.posts)} />
+  </div>
+</Base>

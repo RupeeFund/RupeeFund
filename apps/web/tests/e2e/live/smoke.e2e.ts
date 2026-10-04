@@ -9,6 +9,8 @@ const ROUTES = [
   "/terms",
   "/refunds",
   "/code-of-conduct",
+  "/blog",
+  "/blog/test-post",
   "/waitlist-confirmed",
 ] as const;
 

@@ -1,0 +1,35 @@
+---
+import type { Content } from "@rupeefund/content/schema";
+import { longDate } from "./dates.ts";
+import Prose from "./Prose.astro";
+
+interface Props {
+  post: Content["posts"][number];
+}
+
+const { post } = Astro.props;
+---
+
+<article class="reading">
+  <p class="text-sm mb-2">
+    <a href="/blog" class="inline-link">Blog</a>
+  </p>
+  <h1 class="page-title text-ink mb-4">{post.title}</h1>
+  <p class="text-sm text-ink-3 mb-6">
+    <time datetime={post.publishedAt}>{longDate(post.publishedAt)}</time>
+  </p>
+  {
+    post.image && (
+      <img
+        src={post.image.src}
+        alt={post.image.alt}
+        width={post.image.width}
+        height={post.image.height}
+        class="my-6 h-auto w-full rounded-2xl"
+      />
+    )
+  }
+  <div class="prose">
+    <Prose blocks={post.body} />
+  </div>
+</article>

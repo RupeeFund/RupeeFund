@@ -46,9 +46,32 @@ export function syncDir(from: string, to: string): string[] {
   return changed;
 }
 
+export function contentWatcher(
+  url: string,
+  fetcher: typeof fetch,
+  onChange: () => void,
+): () => Promise<void> {
+  let last: string | undefined;
+  return async () => {
+    const body = await fetcher(url)
+      .then((res) => (res.ok ? res.text() : undefined))
+      .catch(() => undefined);
+    if (body === undefined) return;
+    if (last !== undefined && body !== last) onChange();
+    last = body;
+  };
+}
+
 const SERVED = "dist-dev";
 export const STAGE = "dist-dev-stage";
-const WATCHED = ["src", "public", "../../packages/ui/src"];
+const WATCHED = [
+  "src",
+  "public",
+  "../../packages/ui/src",
+  "../../packages/site/src",
+  "../../packages/content/src",
+];
+const CONTENT_POLL_MS = 5000;
 const CONFIG = "astro.config.mjs";
 const SETTLE_MS = 100;
 
@@ -71,10 +94,17 @@ async function main(): Promise<void> {
   const watchers = [
     ...WATCHED.map((path) => watch(path, { recursive: true }, schedule)),
     watch(".", (_, name) => name === CONFIG && schedule()),
+    ...(process.env.CMS_CONTENT_FILE ? [watch(process.env.CMS_CONTENT_FILE, schedule)] : []),
   ];
+
+  const contentUrl = process.env.CMS_CONTENT_URL;
+  const poll = contentUrl
+    ? setInterval(contentWatcher(contentUrl, fetch, schedule), CONTENT_POLL_MS)
+    : undefined;
 
   function stop(code: number): never {
     clearTimeout(pending);
+    clearInterval(poll);
     child?.kill();
     for (const watcher of watchers) watcher.close();
     rmSync(STAGE, { recursive: true, force: true });

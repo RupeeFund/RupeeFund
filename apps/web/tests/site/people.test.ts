@@ -1,19 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { headerOf, read } from "./dist.ts";
-import { COMMUNITY_TEAM } from "../../src/data/team.ts";
+import { FIXTURE } from "./fixture.ts";
 
 describe("People page (/people)", () => {
   const html = read("people.html");
 
   it("renders every team entry", () => {
-    expect(html.match(/<article\b/g)).toHaveLength(COMMUNITY_TEAM.length);
+    expect(html.match(/<article\b/g)).toHaveLength(FIXTURE.people.length);
   });
 
   it("requests each GitHub avatar at twice its display width, not at full size", () => {
     const avatars = [
       ...html.matchAll(/<img src="(https:\/\/github\.com\/[^"]+)"[^>]*width="(\d+)"/g),
     ];
-    expect(avatars).toHaveLength(COMMUNITY_TEAM.filter((member) => member.photoUrl).length);
+    expect(avatars).toHaveLength(FIXTURE.people.filter((member) => member.photoUrl).length);
     for (const [, src, width] of avatars) {
       expect(new URL(src!).searchParams.get("size"), `${src} sets the wrong size`).toBe(
         String(Number(width) * 2),

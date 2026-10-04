@@ -10,6 +10,7 @@ export default function setup(): void {
         ...process.env,
         PUBLIC_TURNSTILE_SITEKEY: TEST_SITEKEY,
         PUBLIC_ALLOW_TEST_SITEKEY: "true",
+        CMS_CONTENT_FILE: "tests/fixtures/content/published.json",
       },
     });
   } catch (error) {

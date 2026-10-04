@@ -2,11 +2,21 @@
 // The evaluate callbacks read layout in the browser. The DOM lib stays scoped
 // to the files that need it rather than widening tsconfig.node.json.
 import { expect, test } from "@playwright/test";
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 
-const routes = readdirSync("src/pages")
-  .filter((file) => file.endsWith(".astro"))
-  .map((file) => (file === "index.astro" ? "/" : `/${file.slice(0, -6)}`));
+const fixture = JSON.parse(readFileSync("tests/fixtures/content/published.json", "utf8")) as {
+  posts: { slug: string }[];
+};
+
+const posts = fixture.posts.map(({ slug }) => `/blog/${slug}`);
+const routes = [
+  ...readdirSync("src/pages")
+    .filter((file) => file.endsWith(".astro"))
+    .map((file) => (file === "index.astro" ? "/" : `/${file.slice(0, -6)}`)),
+  ...posts,
+];
+const READING = ["/privacy", "/refunds", "/terms", "/code-of-conduct", "/blog", ...posts];
+const FRAMED = routes.filter((route) => !READING.includes(route));
 
 test("every choice group stays inside the narrow form with fallback fonts", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
@@ -66,7 +76,7 @@ for (const width of [320, 1440]) {
 for (const width of [1024, 1440]) {
   test(`every text block at ${width}px spans the page or sits in a grid`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of routes) {
+    for (const route of FRAMED) {
       await page.goto(route);
       const lonely = await page.locator("main :is(p, ul, ol, h1, h2)").evaluateAll((blocks) => {
         const tracks = (el: Element) =>
@@ -90,6 +100,34 @@ for (const width of [1024, 1440]) {
           .map((block) => block.textContent?.trim().slice(0, 40));
       });
       expect(lonely, route).toEqual([]);
+    }
+  });
+}
+
+const MEASURE_PX = 768;
+
+for (const width of [360, 1440]) {
+  test(`every legal and blog page sets its text in one centred column at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of READING) {
+      await page.goto(route);
+      const { column, frame, title } = await page.evaluate(() => {
+        const wrap = document.querySelector<HTMLElement>("main .wrap")!;
+        const pad = parseFloat(getComputedStyle(wrap).paddingInlineStart);
+        const box = wrap.getBoundingClientRect();
+        const reading = document.querySelector("main .reading")!.getBoundingClientRect();
+        return {
+          column: { left: reading.left, width: reading.width },
+          frame: { left: box.left + pad, width: box.width - pad * 2 },
+          title: document.querySelector("main h1")!.getBoundingClientRect().left,
+        };
+      });
+      const measure = Math.min(MEASURE_PX, frame.width);
+      expect(column.width, route).toBeCloseTo(measure, 0);
+      expect(column.left, route).toBeCloseTo(frame.left + (frame.width - measure) / 2, 0);
+      expect(title, route).toBeCloseTo(column.left, 0);
     }
   });
 }

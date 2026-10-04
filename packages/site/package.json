@@ -1,0 +1,20 @@
+{
+  "name": "@rupeefund/site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@rupeefund/content": "workspace:*"
+  },
+  "devDependencies": {
+    "astro": "^7.3.5",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

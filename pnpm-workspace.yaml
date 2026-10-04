@@ -12,7 +12,7 @@ catalog:
   tailwindcss: ^4.3.3
   typescript: ^6.0.3
   vitest: ^4.1.11
-  wrangler: ^4.142.0
+  wrangler: ^4.146.0
 
 allowBuilds:
   "@parcel/watcher": false

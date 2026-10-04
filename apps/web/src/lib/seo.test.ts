@@ -48,3 +48,18 @@ describe("seoForPath", () => {
     expect(seoForPath("/privacy").canonical).toBe("https://rupeefund.org/privacy");
   });
 });
+
+describe("seoForPath with a route", () => {
+  it("uses the given route for a page that the table does not list", () => {
+    const route = {
+      path: "/blog/hello",
+      title: "Hello — The Rupee Fund",
+      description: "First post.",
+      indexable: true,
+    };
+    expect(seoForPath("/blog/hello.html", route)).toMatchObject({
+      title: "Hello — The Rupee Fund",
+      canonical: "https://rupeefund.org/blog/hello",
+    });
+  });
+});

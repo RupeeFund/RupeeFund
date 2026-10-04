@@ -1,0 +1,2903 @@
+{
+  "version": 1,
+  "posts": [
+    {
+      "slug": "test-post",
+      "title": "[TEST] Every block",
+      "excerpt": "A sample post that shows each block of the blog.",
+      "image": {
+        "src": "/media/01M40TESTLEAD0000000000000.png",
+        "alt": "A green sample image",
+        "width": 1200,
+        "height": 630
+      },
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "This post is a sample. It shows each block that the blog can render. Text can be ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "bold",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ", ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "italic",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "text": ", ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "underlined",
+              "marks": ["underline"]
+            },
+            {
+              "_type": "span",
+              "text": ", ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "struck out",
+              "marks": ["strike-through"]
+            },
+            {
+              "_type": "span",
+              "text": " or ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "pnpm dev",
+              "marks": ["code"]
+            },
+            {
+              "_type": "span",
+              "text": ". It can also be ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "bold and italic",
+              "marks": ["strong", "em"]
+            },
+            {
+              "_type": "span",
+              "text": ", or ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "bold code",
+              "marks": ["strong", "code"]
+            },
+            {
+              "_type": "span",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "l1",
+              "_type": "link",
+              "href": "https://fossunited.org"
+            },
+            {
+              "_key": "l2",
+              "_type": "link",
+              "href": "/faq"
+            },
+            {
+              "_key": "l3",
+              "_type": "link",
+              "href": "mailto:hello@example.com"
+            },
+            {
+              "_key": "l4",
+              "_type": "link",
+              "href": "#top"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A link can go to ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "another site",
+              "marks": ["l1"]
+            },
+            {
+              "_type": "span",
+              "text": ", to ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "a page of this site",
+              "marks": ["l2"]
+            },
+            {
+              "_type": "span",
+              "text": ", to ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "an email address",
+              "marks": ["l3"]
+            },
+            {
+              "_type": "span",
+              "text": " or to ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "the top of this page",
+              "marks": ["l4"]
+            },
+            {
+              "_type": "span",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A second-level heading",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Each heading level has its own size and space above it.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h3",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A third-level heading",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Text under a third-level heading.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h4",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A fourth-level heading",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Text under a fourth-level heading.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Lists",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A bullet item",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k",
+              "_type": "link",
+              "href": "/people"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A bullet item with ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "bold",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": " text and ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "a link",
+              "marks": ["k"]
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A nested bullet item",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 2
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A bullet item three levels deep",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 3
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Another nested bullet item",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 2
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A bullet item after the nested items. This one is long enough to wrap onto a second line on a phone, so the text under the marker stays in line.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Text between two lists.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A numbered item",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A second numbered item",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A nested numbered item",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 2
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A second nested numbered item",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 2
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A third numbered item",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Quotes",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "blockquote",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A quote stands apart from the text around it. It can hold ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "marks",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "text": " too.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "blockquote",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A quote can have a second paragraph.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Text after the quote.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Images",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "image",
+          "src": "/media/01M40TESTINLINE00000000000.png",
+          "alt": "A yellow sample image, 800 by 400",
+          "width": 800,
+          "height": 400
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A portrait image keeps its shape and does not fill the height of the screen.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "image",
+          "src": "/media/01M40TESTPORTRAIT000000000.jpg",
+          "alt": "A blue sample image in portrait",
+          "width": 900,
+          "height": 1200
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A small image stays at its own size.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "image",
+          "src": "/media/01M40TESTSMALL00000000000.png",
+          "alt": "A grey sample image, 240 by 160",
+          "width": 240,
+          "height": 160
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A wide image fits the column.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "image",
+          "src": "/media/01M40TESTPANORAMA00000000.webp",
+          "alt": "An orange sample panorama",
+          "width": 2400,
+          "height": 600
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "An image with no size given.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "image",
+          "src": "/media/01M40TESTINLINE00000000000.png",
+          "alt": "The yellow sample image with no size"
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Long text",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A long address in plain text must wrap on a phone: https://github.com/RupeeFund/RupeeFund/blob/main/docs/ARCHITECTURE.md",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A long word must wrap too: Pneumonoultramicroscopicsilicovolcanoconiosis.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The last paragraph comes at the end.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "publishedAt": "2026-10-02T17:40:48.365Z"
+    },
+    {
+      "slug": "test-long-read",
+      "title": "[TEST] Why we think a rupee a day from many people can pay for the open source that India runs on",
+      "excerpt": "A long post with a long title and no lead image. It shows how a real article reads: sections, a list, a quote and links, but no images at all.",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We started The Rupee Fund with one question: what would it take for people in India to back the open source projects they use every day? This post is a test, but it reads like a real post, so the page can show how a long article feels.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Why small amounts",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Most people who use open source never pay for it. That is not because they do not care. Paying is hard, the amounts feel too small to matter, and nobody asks. A fund that pools many small amounts changes each of those things.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A rupee a day is not much on its own. From ten thousand people, it pays a maintainer for a year. The ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "number of people",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "text": " matters more than the size of each amount.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "How we pick projects",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "f",
+              "_type": "link",
+              "href": "/faq"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We look for projects that many people in India depend on, and that have few other ways to get money. We read the code, talk to the maintainers and ask the community. The ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "FAQ",
+              "marks": ["f"]
+            },
+            {
+              "_type": "span",
+              "text": " has more on this.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "o",
+              "_type": "link",
+              "href": "https://opensource.org"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The project is open source, under a licence that the ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Open Source Initiative",
+              "marks": ["o"]
+            },
+            {
+              "_type": "span",
+              "text": " approves.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "People in India build it, or many people in India use it.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The money changes what the maintainers can do.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "What happens next",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We are collecting a list of people who want to take part. We take no money yet. When we are ready, we will write to each person on the list with the details.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "blockquote",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Open source is how India builds software. It is time we paid for it.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "m",
+              "_type": "link",
+              "href": "mailto:rupeefund@fossunited.org"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Thank you for reading this far. Send us your questions at ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "our email address",
+              "marks": ["m"]
+            },
+            {
+              "_type": "span",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "publishedAt": "2026-09-20T09:00:00.000Z"
+    },
+    {
+      "slug": "test-season-notes",
+      "title": "[TEST] Notes from the first season",
+      "excerpt": "Lists, a two-line quote and wide and small images, with a portrait lead image.",
+      "image": {
+        "src": "/media/01M40TESTPORTRAIT000000000.jpg",
+        "alt": "A blue sample image in portrait",
+        "width": 900,
+        "height": 1200
+      },
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The first season ran for three months. Here is what we learned, in the order we learned it.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "image",
+          "src": "/media/01M40TESTPANORAMA00000000.webp",
+          "alt": "An orange sample panorama",
+          "width": 2400,
+          "height": 600
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The steps",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We made a list of projects.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Some came from the community forum.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 2
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Some came from people who wrote to us.",
+              "marks": []
+            }
+          ],
+          "listItem": "bullet",
+          "level": 2
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We talked to the maintainers of each one.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We picked four projects for the season.",
+              "marks": []
+            }
+          ],
+          "listItem": "number",
+          "level": 1
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "What people said",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "blockquote",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "I did not know I could help with so little.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "blockquote",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A person on the list",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A small image of the team:",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "image",
+          "src": "/media/01M40TESTSMALL00000000000.png",
+          "alt": "A grey sample image, 240 by 160",
+          "width": 240,
+          "height": 160
+        }
+      ],
+      "publishedAt": "2026-08-01T12:30:00.000Z"
+    },
+    {
+      "slug": "test-short",
+      "title": "[TEST] Short",
+      "excerpt": "One line.",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "A post can be one paragraph long.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "publishedAt": "2026-07-15T06:00:00.000Z"
+    }
+  ],
+  "faq": [
+    {
+      "slug": "why-this-fund",
+      "question": "Why this fund?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "People in India build great projects, but ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "few of them find funding",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "text": " or other logistical support. When lots of us give a little each month, together we can back many of them. Contributions start small, so anyone can join in.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 1,
+      "home": true,
+      "sources": []
+    },
+    {
+      "slug": "what-is-funded",
+      "question": "What kind of projects will be funded?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Indian individuals and projects that work in the open, as ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "free and open source",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ": anyone can use, study, change and share their work, for any purpose.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "It can be software, hardware, or digital and physical designs: from high-tech chips to the cloud, from devices to tech art. Community efforts built on the same principles count too.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Each project must use a well-known free and open source licence. The fund can pay a person, a group or an organisation. They must also be able to ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "receive money over UPI",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "You",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "text": " and other contributors nominate and choose the projects.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 2,
+      "home": true,
+      "sources": []
+    },
+    {
+      "slug": "voting",
+      "question": "How does voting work?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Each season, contributors nominate projects or people and vote on them. You may make ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "one nomination a season",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ", your own or someone else’s, or simply vote.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "You split your vote across the three kinds of projects: ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "new",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "text": ", ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "growing",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "text": " and ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "well-established",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "text": ". We will publish the full voting rules before the first vote.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 3,
+      "home": true,
+      "sources": []
+    },
+    {
+      "slug": "project-kinds",
+      "question": "What are the three kinds of projects?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "New projects",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": " need help to get started. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Growing projects",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": " already have a small community or user base, and need help to grow. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Well-established projects",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": " work well, and need support to keep going. When you vote, ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "you",
+              "marks": ["em"]
+            },
+            {
+              "_type": "span",
+              "text": " decide how much of your vote goes to each kind.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 4,
+      "home": false,
+      "sources": []
+    },
+    {
+      "slug": "how-it-helps",
+      "question": "How will the fund help projects?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "With money, first of all, but not only money. Contributors and the people they back can share ideas, advice and other support, and ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "grow together",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ". Backing from many contributors also shows that people value a project, and that can bring it attention, more funding, collaborators or a path to a business.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 5,
+      "home": true,
+      "sources": []
+    },
+    {
+      "slug": "who-runs",
+      "question": "Who runs the fund?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k25",
+              "_type": "link",
+              "href": "/people"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Volunteers",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": " from the FOSS United community, with experience in many fields, run it. You can meet them on the ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "People",
+              "marks": ["k25"]
+            },
+            {
+              "_type": "span",
+              "text": " page. When contributions open, the money will go into a FOSS United Foundation account. The Foundation also runs its own grants programme, which has given more than ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "₹3.3 crore to 135 grantees",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ": projects, events and fellowships.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 6,
+      "home": true,
+      "sources": [
+        {
+          "title": "FOSS United grants",
+          "url": "https://fossunited.org/grants"
+        },
+        {
+          "title": "FOSS United grantees",
+          "url": "https://fossunited.org/grants/grantees"
+        }
+      ]
+    },
+    {
+      "slug": "other-funds",
+      "question": "How is this different from FOSS United grants or FLOSS/fund?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Those are large grant programmes, and each one is separate. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "FOSS United grants",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": " have given more than ₹3.3 crore to 135 grantees in India. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "FLOSS/fund",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ", from Zerodha, gives up to US$1 million a year to free and open source projects around the world. The Rupee Fund works differently: volunteers run it, and ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "many of us each give a little",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 7,
+      "home": true,
+      "sources": [
+        {
+          "title": "FOSS United grants",
+          "url": "https://fossunited.org/grants"
+        },
+        {
+          "title": "FOSS United grantees",
+          "url": "https://fossunited.org/grants/grantees"
+        },
+        {
+          "title": "FLOSS/fund",
+          "url": "https://floss.fund"
+        }
+      ]
+    },
+    {
+      "slug": "start-date",
+      "question": "When do contributions start?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k1a",
+              "_type": "link",
+              "href": "/subscribe"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We have ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "not set a date yet",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ". There is nothing to pay now, and signing up costs nothing. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Sign up",
+              "marks": ["k1a"]
+            },
+            {
+              "_type": "span",
+              "text": ", and we will email you as soon as contributions open.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 8,
+      "home": true,
+      "sources": []
+    },
+    {
+      "slug": "seasons",
+      "question": "What is a season?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The fund follows the ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "four Indian weather seasons",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ": winter (December to February), summer (March to May), monsoon (June to September) and post-monsoon (October and November). Contributors decide where each season’s pool goes.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 9,
+      "home": false,
+      "sources": []
+    },
+    {
+      "slug": "costs",
+      "question": "How are costs handled?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The pool is the money we collect, minus administrative costs. We ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "publish every cost",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ", so you can see where your money goes.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 10,
+      "home": true,
+      "sources": []
+    },
+    {
+      "slug": "international",
+      "question": "Does the fund back people outside India?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "No.",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": " The fund backs only Indian individuals and projects, including people who work on international projects.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 11,
+      "home": false,
+      "sources": []
+    },
+    {
+      "slug": "anonymous",
+      "question": "Can I contribute anonymously?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "No.",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": " We need to comply with all statutory requirements, so anonymous contributions are not supported.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "However, we collect only what the form asks for. ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Nothing more.",
+              "marks": ["em"]
+            }
+          ]
+        }
+      ],
+      "order": 12,
+      "home": false,
+      "sources": []
+    },
+    {
+      "slug": "your-data",
+      "question": "What do you do with my signup details?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We will send you ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "one email when the fund opens",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ", and monthly updates if you tick that box. We also use your answers to plan the fund.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Your answers about money are ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "not a commitment",
+              "marks": ["strong"]
+            },
+            {
+              "_type": "span",
+              "text": ". We do not need any payment details today: you are only showing your support for the mission of this fund.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k2o",
+              "_type": "link",
+              "href": "/privacy"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Read our ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "privacy policy",
+              "marks": ["k2o"]
+            },
+            {
+              "_type": "span",
+              "text": " for more.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 13,
+      "home": false,
+      "sources": []
+    },
+    {
+      "slug": "leave-the-list",
+      "question": "How do I leave the mailing list?",
+      "answer": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "ki",
+              "_type": "link",
+              "href": "mailto:rupeefund@fossunited.org?subject=Leave%20the%20list"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Email us",
+              "marks": ["ki"]
+            },
+            {
+              "_type": "span",
+              "text": ". We will update your preference, and will not send you any more email.",
+              "marks": []
+            }
+          ]
+        }
+      ],
+      "order": 14,
+      "home": false,
+      "sources": []
+    }
+  ],
+  "home": {
+    "heroLede": "The Rupee Fund pools your monthly contributions over UPI, from ₹15 a month, and you decide which projects get funded.",
+    "pitchTitle": "Lots of us, a little each month, for great projects from India",
+    "pitchBody": [
+      {
+        "_type": "block",
+        "style": "normal",
+        "markDefs": [],
+        "children": [
+          {
+            "_type": "span",
+            "text": "More than 2 crore developers in India use GitHub. If 1 in 100 of us gives ₹15 a month, the pool gets more than ₹30 lakh every month.",
+            "marks": []
+          }
+        ]
+      },
+      {
+        "_type": "block",
+        "style": "normal",
+        "markDefs": [],
+        "children": [
+          {
+            "_type": "span",
+            "text": "Together, we can do great things.",
+            "marks": []
+          }
+        ]
+      }
+    ],
+    "pitchSourceTitle": "GitHub Octoverse 2025",
+    "pitchSourceUrl": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/",
+    "stepsTitle": "How it works",
+    "steps": [
+      {
+        "title": "Subscribe",
+        "body": [
+          {
+            "_type": "block",
+            "style": "normal",
+            "markDefs": [],
+            "children": [
+              {
+                "_type": "span",
+                "text": "Set up a ",
+                "marks": []
+              },
+              {
+                "_type": "span",
+                "text": "monthly",
+                "marks": ["strong"]
+              },
+              {
+                "_type": "span",
+                "text": " contribution with UPI AutoPay, from ₹15 a month. Small, regular contributions from many of us keep the fund steady.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Pool funds",
+        "body": [
+          {
+            "_type": "block",
+            "style": "normal",
+            "markDefs": [],
+            "children": [
+              {
+                "_type": "span",
+                "text": "Your contributions ",
+                "marks": []
+              },
+              {
+                "_type": "span",
+                "text": "pool",
+                "marks": ["strong"]
+              },
+              {
+                "_type": "span",
+                "text": " through the season. The fund runs four cycles a year, following the Indian weather seasons.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Vote and nominate",
+        "body": [
+          {
+            "_type": "block",
+            "style": "normal",
+            "markDefs": [],
+            "children": [
+              {
+                "_type": "span",
+                "text": "Contribute regularly and you earn a ",
+                "marks": []
+              },
+              {
+                "_type": "span",
+                "text": "vote",
+                "marks": ["strong"]
+              },
+              {
+                "_type": "span",
+                "text": " each season. You decide how to split it across three kinds of projects. You may also ",
+                "marks": []
+              },
+              {
+                "_type": "span",
+                "text": "nominate",
+                "marks": ["strong"]
+              },
+              {
+                "_type": "span",
+                "text": " one project or person each season.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Disburse",
+        "body": [
+          {
+            "_type": "block",
+            "style": "normal",
+            "markDefs": [],
+            "children": [
+              {
+                "_type": "span",
+                "text": "Each season, the pool ",
+                "marks": []
+              },
+              {
+                "_type": "span",
+                "text": "goes",
+                "marks": ["strong"]
+              },
+              {
+                "_type": "span",
+                "text": " to the projects that you chose, over UPI. We publish every administrative cost, so you can follow your money all the way to a project.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "seasonsTitle": "Funding seasons",
+    "why": [
+      {
+        "title": "Nurture new projects",
+        "body": "Give a new project the start it needs."
+      },
+      {
+        "title": "Encourage growing projects",
+        "body": "Help projects that already have a small community or user base grow further."
+      },
+      {
+        "title": "Sustain well-established projects",
+        "body": "Help the projects that many of us rely on keep going."
+      }
+    ],
+    "faqTitle": "Frequently asked questions"
+  },
+  "peoplePage": {
+    "teamTitle": "Community team",
+    "teamIntro": "Meet the volunteers from the FOSS United community who run The Rupee Fund and maintain this website.",
+    "joinTitle": "You, or someone you know?",
+    "joinBody": "Bring ideas, skills, and a little time to the community team, or introduce someone who will.",
+    "foundationTitle": "FOSS United Foundation",
+    "foundationBody": [
+      {
+        "_type": "block",
+        "style": "normal",
+        "markDefs": [
+          {
+            "_key": "ko",
+            "_type": "link",
+            "href": "https://fossunited.org/team"
+          }
+        ],
+        "children": [
+          {
+            "_type": "span",
+            "text": "The FOSS United Foundation is the fiscal host of The Rupee Fund and supports the wider FOSS United community. Meet the ",
+            "marks": []
+          },
+          {
+            "_type": "span",
+            "text": "FOSS United team",
+            "marks": ["ko"]
+          },
+          {
+            "_type": "span",
+            "text": ".",
+            "marks": []
+          }
+        ]
+      }
+    ]
+  },
+  "people": [
+    {
+      "slug": "shreekumar3d",
+      "name": "Shree Kumar",
+      "bio": "Shree (Kumar) is an active volunteer at FOSS United and was formerly an elected member of its Governance Board. Shree helps run IndiaFOSS, arguably India's largest volunteer run conference dedicated to Free and Open Source Software, Hardware, and the wider digital commons.",
+      "profileUrl": "https://fossunited.org/u/shreekumar3d",
+      "username": "shreekumar3d",
+      "photoUrl": "https://github.com/shreekumar3d.png?size=128",
+      "order": 1
+    },
+    {
+      "slug": "mrugesh",
+      "name": "Mrugesh Mohapatra",
+      "bio": "Mrugesh is an active member of the FOSS United community and organises meetups for the Agentic AI Foundation’s Bengaluru Chapter.",
+      "profileUrl": "https://fossunited.org/u/mrugesh",
+      "username": "mrugesh",
+      "photoUrl": "https://github.com/raisedadead.png?size=128",
+      "order": 2
+    },
+    {
+      "slug": "khitab",
+      "name": "Khitab",
+      "bio": "Khitab is a FOSS United volunteer who builds and maintains The Rupee Fund’s website. He’s a data engineer drawn to how open source underpins India’s Digital Public Infrastructure (DPI) and Digital Public Goods (DPG).",
+      "profileUrl": "https://www.linkedin.com/in/khitab/",
+      "username": "khitab",
+      "photoUrl": "https://github.com/khitab.png?size=128",
+      "order": 3
+    }
+  ],
+  "policies": [
+    {
+      "slug": "code-of-conduct",
+      "title": "Code of conduct",
+      "effectiveDate": "25 September 2026",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k65",
+              "_type": "link",
+              "href": "https://fossunited.org/code-of-conduct"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The Rupee Fund is a FOSS United community initiative, run by volunteers. We adopt the conduct and anti-harassment standards of the ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "FOSS United Code of Conduct",
+              "marks": ["k65"]
+            },
+            {
+              "_type": "span",
+              "text": ", as reviewed on 7 September 2026, with the local rules below. Later changes to that source do not change this policy automatically. Where the source differs from the local rules, the local rules apply to the spaces of The Rupee Fund.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Scope and conduct",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "These standards apply to contributors, applicants, volunteers, and organisers in the spaces of The Rupee Fund and fund-related communications. Treat people with respect. Harassment, threats, discrimination, and disclosure of another person’s private information are not permitted.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Responsibility",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k6g",
+              "_type": "link",
+              "href": "/people"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "community team",
+              "marks": ["k6g"]
+            },
+            {
+              "_type": "span",
+              "text": " is responsible for conduct in the spaces of The Rupee Fund. The Foundation contacts and event enforcement roles in the source policy are not assigned responsibilities in The Rupee Fund by this adoption. Foundation spaces remain subject to their own reporting procedures.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Report a concern",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k6n",
+              "_type": "link",
+              "href": "mailto:rupeefund@fossunited.org"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "To report a concern in a space of The Rupee Fund, email ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "rupeefund@fossunited.org",
+              "marks": ["k6n"]
+            },
+            {
+              "_type": "span",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Attribution",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k6u",
+              "_type": "link",
+              "href": "https://creativecommons.org/licenses/by-sa/4.0/"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The adopted standards come from FOSS United. Its source credits the Major League Hacking policies under the Creative Commons Attribution-ShareAlike 4.0 licence. This local adaptation uses the same ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "licence",
+              "marks": ["k6u"]
+            },
+            {
+              "_type": "span",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "refunds",
+      "title": "Refunds",
+      "effectiveDate": "25 September 2026",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k5i",
+              "_type": "link",
+              "href": "https://fossunited.org/refund-transfer-policy"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The Rupee Fund is a FOSS United community initiative, run by volunteers. We adopt the donation-refund principles in the FOSS United ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "refund and transfer policy",
+              "marks": ["k5i"]
+            },
+            {
+              "_type": "span",
+              "text": ", as reviewed on 7 September 2026: submit claims promptly, provide transaction details, and expect each donation made in error to be reviewed on its own. The local rules below apply to this fund and take precedence where the source differs. Ticket-transfer rules do not apply. Later changes to the source do not change this policy automatically.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Before launch",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "This site takes no payments at this stage. Joining the mailing list does not charge you or create a payment obligation. Contributions will go into a FOSS United Foundation account. We will publish the refund contact, claim period, and recurring-payment cancellation process before contributions open.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Donations to the Foundation’s own programmes",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k5t",
+              "_type": "link",
+              "href": "mailto:audit@fossunited.org"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "If you donated directly to FOSS United Foundation, its policy asks you to email ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "audit@fossunited.org",
+              "marks": ["k5t"]
+            },
+            {
+              "_type": "span",
+              "text": " within 15 days. That process concerns direct donations to the Foundation. Refunds of contributions to The Rupee Fund follow the rules that we publish before contributions open.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Questions",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k60",
+              "_type": "link",
+              "href": "mailto:rupeefund@fossunited.org"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "For questions about The Rupee Fund, send an email to ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "rupeefund@fossunited.org",
+              "marks": ["k60"]
+            },
+            {
+              "_type": "span",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "terms",
+      "title": "Terms",
+      "effectiveDate": "25 September 2026",
+      "body": [
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Who runs the fund",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k4e",
+              "_type": "link",
+              "href": "/people"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The Rupee Fund is a FOSS United community initiative, run by volunteers. The ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "community team",
+              "marks": ["k4e"]
+            },
+            {
+              "_type": "span",
+              "text": " runs this website. The Foundation holds the contributions. Contributors choose the projects that the fund backs.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Policies we adopt",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k4l",
+              "_type": "link",
+              "href": "https://fossunited.org/terms-of-service"
+            },
+            {
+              "_key": "k4o",
+              "_type": "link",
+              "href": "/privacy"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We adopt the standards for lawful use and respect for intellectual property in the ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "FOSS United terms of service",
+              "marks": ["k4l"]
+            },
+            {
+              "_type": "span",
+              "text": ", as reviewed on 7 September 2026. The terms on this page apply to rupeefund.org. References in the source to Foundation services, ownership, contacts, or agreements do not assign those roles to the Foundation for this fund. We do not adopt the source provision that makes submissions Foundation property. Our ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Privacy",
+              "marks": ["k4o"]
+            },
+            {
+              "_type": "span",
+              "text": " page states how we use form submissions. Where the source differs from our local terms, our local terms apply. Later changes to the source do not change these terms automatically.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Before launch",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "This site collects requests for a launch email and answers that help us plan the fund. Signing up creates no payment obligation, membership, voting right, or promise of a grant. We take no payments through this site at this stage. Proposed contribution amounts and funding plans can change before launch.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Use of this site",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Use this site lawfully. Do not submit unlawful content, misuse another person’s email address, or interfere with the site. Respect the rights and licences of content owners. A link to another organisation does not make that organisation an operator of this fund.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Before contributions open",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Contributions will go into a FOSS United Foundation account. We will publish the payment terms, cancellation process, and refund responsibilities before we accept contributions. These terms do not promise a tax benefit.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Changes",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k57",
+              "_type": "link",
+              "href": "/privacy"
+            },
+            {
+              "_key": "k5a",
+              "_type": "link",
+              "href": "/refunds"
+            },
+            {
+              "_key": "k5d",
+              "_type": "link",
+              "href": "/code-of-conduct"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We will publish changes here with a new effective date. The local ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Privacy",
+              "marks": ["k57"]
+            },
+            {
+              "_type": "span",
+              "text": ", ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Refunds",
+              "marks": ["k5a"]
+            },
+            {
+              "_type": "span",
+              "text": ", and ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Code of conduct",
+              "marks": ["k5d"]
+            },
+            {
+              "_type": "span",
+              "text": " pages add rules for those subjects.",
+              "marks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "privacy",
+      "title": "Privacy",
+      "effectiveDate": "25 September 2026",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k2t",
+              "_type": "link",
+              "href": "https://fossunited.org/privacy-policy"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The Rupee Fund is a FOSS United community initiative, run by volunteers. The community team manages the mailing list. We adopt the privacy standards in the ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "FOSS United privacy policy",
+              "marks": ["k2t"]
+            },
+            {
+              "_type": "span",
+              "text": ", dated 7 February 2024, with the local rules below. These local rules define our data use and take precedence where the source differs. We do not adopt the source’s wider uses for marketing, profiling, event tickets, or ownership transfers. Foundation roles named in the source do not become roles in The Rupee Fund through adoption. Later changes to the source do not change this policy automatically.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "What we collect",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Your name.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Your email address.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The time of your consent, signup, and latest update.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The page that you used to join.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The amount each month that you say you can give.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The number of months that you say you can give, if you answer.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The question that you ask the team, if you ask one.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Whether you tick the box for monthly updates.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The roles that you tick, if you tick any: user or consumer; developer, implementer, creator or designer; professional; student.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "listItem": "bullet",
+          "level": 1,
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The projects that you want to fund, if you tick any: new, growing or well-established.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We keep this data to send you one email when the fund opens, to send you monthly updates if you tick the box, and to plan the fund. Your answers about money bind you to nothing. We take no payment. We hold no payment details. Access to your answers is limited to the people who administer the list and the services that process it.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Storage and retention",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Cloudflare hosts this site and stores the list. The team can export the list to prepare the launch email. We retain entries for launch planning and notification. We have not set a fixed deletion date. If you leave the mailing list, we keep your entry, as described below.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Your IP address",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "We read your IP address when you send the form. We use it to prevent abuse. When your browser runs JavaScript, we also send it to Cloudflare with the bot check below. We do not store it in your list entry. Cloudflare also processes connection data to provide hosting and abuse protection.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Bot protection",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k3w",
+              "_type": "link",
+              "href": "https://www.cloudflare.com/turnstile-privacy-policy/"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "When your browser runs JavaScript, the form uses Cloudflare Turnstile to tell a person apart from a bot. Cloudflare states what Turnstile collects in the ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "Turnstile Privacy Addendum",
+              "marks": ["k3w"]
+            },
+            {
+              "_type": "span",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Profile photos",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "The People page loads profile photos from GitHub. GitHub receives your IP address when your browser requests these photos.",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "h2",
+          "markDefs": [],
+          "children": [
+            {
+              "_type": "span",
+              "text": "How to leave the list",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [
+            {
+              "_key": "k47",
+              "_type": "link",
+              "href": "mailto:rupeefund@fossunited.org"
+            }
+          ],
+          "children": [
+            {
+              "_type": "span",
+              "text": "Send an email to ",
+              "marks": []
+            },
+            {
+              "_type": "span",
+              "text": "rupeefund@fossunited.org",
+              "marks": ["k47"]
+            },
+            {
+              "_type": "span",
+              "text": ". We take you off the list. We keep your entry, and we mark it as removed, so that a later signup cannot add you again. Ask at any time.",
+              "marks": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

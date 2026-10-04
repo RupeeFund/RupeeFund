@@ -1,0 +1,47 @@
+---
+import type { Content } from "@rupeefund/content/schema";
+import { longDate } from "./dates.ts";
+
+interface Props {
+  posts: Content["posts"];
+}
+
+const { posts } = Astro.props;
+---
+
+<div class="reading">
+  <h1 class="page-title text-ink mb-10">Blog</h1>
+  {
+    posts.length === 0 ? (
+      <p class="text-ink-2">No posts yet.</p>
+    ) : (
+      <ol>
+        {posts.map((post) => (
+          <li class="relative flex items-start gap-4 border-t border-ink/15 py-6 last:border-b sm:gap-8">
+            <article class="min-w-0 flex-1">
+              <p class="text-sm text-ink-3 mb-1">
+                <time datetime={post.publishedAt}>{longDate(post.publishedAt)}</time>
+              </p>
+              <h2 class="text-xl text-ink mb-2">
+                <a href={`/blog/${post.slug}`} class="list-link after:absolute after:inset-0">
+                  {post.title}
+                </a>
+              </h2>
+              <p class="text-sm text-ink-2 text-pretty">{post.excerpt}</p>
+            </article>
+            {post.image && (
+              <img
+                src={post.image.src}
+                alt=""
+                width={post.image.width}
+                height={post.image.height}
+                loading="lazy"
+                class="post-thumb object-cover"
+              />
+            )}
+          </li>
+        ))}
+      </ol>
+    )
+  }
+</div>

@@ -1,11 +1,15 @@
+import { TAGLINE } from "@rupeefund/site/constants.ts";
 import { SUBSCRIBE_HEADING } from "./launch.ts";
+
+export { TAGLINE };
 
 export const SITE_NAME = "The Rupee Fund";
 export const SITE_URL = "https://rupeefund.org";
 export const LOGO_IMAGE = `${SITE_URL}/icon-512.png`;
 
 export const INITIATIVE = "A community initiative from FOSS United";
-export const TAGLINE = "Not charity — membership in a commons";
+
+export const RSS_URL = `${SITE_URL}/blog/rss.xml`;
 
 export const OG_IMAGE = `${SITE_URL}/og/site.png`;
 export const OG_IMAGE_ALT = `The logo of The Rupee Fund. ${TAGLINE}. ${INITIATIVE}.`;
@@ -76,6 +80,12 @@ const ROUTE_SEO: readonly RouteSeo[] = [
     indexable: true,
   },
   {
+    path: "/blog",
+    title: "Blog — The Rupee Fund",
+    description: `News and updates from The Rupee Fund. ${INITIATIVE}.`,
+    indexable: true,
+  },
+  {
     path: "/waitlist-confirmed",
     title: "You’re on the list — The Rupee Fund",
     description: `You’ll hear from us the day The Rupee Fund opens. ${INITIATIVE}.`,
@@ -95,9 +105,12 @@ export function normalizePath(path: string): string {
   return normalized === "" ? "/" : normalized;
 }
 
-export function seoForPath(path: string): Required<RouteSeo> & { readonly canonical: string } {
+export function seoForPath(
+  path: string,
+  given?: RouteSeo,
+): Required<RouteSeo> & { readonly canonical: string } {
   const normalized = normalizePath(path);
-  const route = ROUTE_SEO.find((entry) => entry.path === normalized);
+  const route = given ?? ROUTE_SEO.find((entry) => entry.path === normalized);
   if (route === undefined) {
     // Falling back to the home entry gave the page the home canonical, which
     // tells a crawler the two are one page. Fail the build instead.

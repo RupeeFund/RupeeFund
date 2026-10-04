@@ -1,2 +1,3 @@
 @import "@rupeefund/ui/styles.css";
+@source "../../../packages/site/src";
 @source not "../public";

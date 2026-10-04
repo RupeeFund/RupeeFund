@@ -1,14 +1,10 @@
 ---
 import Base from "../layouts/Base.astro";
-import { COMMUNITY_TEAM } from "../data/team.ts";
+import PeopleContent from "@rupeefund/site/PeopleContent.astro";
+import { loadContent } from "../build/content.ts";
 import { REMOVAL_ADDRESS } from "../lib/launch.ts";
 
-const initials = (name: string) =>
-  name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2);
+const { content } = await loadContent();
 
 const joinMail = `mailto:${REMOVAL_ADDRESS}?subject=${encodeURIComponent(
   "Joining the community team of The Rupee Fund",
@@ -18,94 +14,6 @@ const joinMail = `mailto:${REMOVAL_ADDRESS}?subject=${encodeURIComponent(
 <Base>
   <div class="wrap section-y">
     <h1 class="page-title text-ink mb-10">People</h1>
-
-    <section aria-labelledby="community-team" class="mb-14">
-      <h2 id="community-team" class="text-2xl text-ink mb-3">Community team</h2>
-      <p class="text-sm text-ink-2 text-pretty mb-6">
-        Meet the volunteers from the FOSS United community who run The&nbsp;Rupee&nbsp;Fund and
-        maintain this website.
-      </p>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {
-          COMMUNITY_TEAM.map((member) => (
-            <article class="card flex flex-col items-start gap-4 sm:flex-row">
-              {member.photoUrl ? (
-                <img
-                  src={member.photoUrl}
-                  alt=""
-                  width="64"
-                  height="64"
-                  loading="lazy"
-                  decoding="async"
-                  class="h-16 w-16 shrink-0 rounded-full bg-brand-50 object-cover
-                    outline -outline-offset-1 outline-black/10"
-                />
-              ) : (
-                <div
-                  class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-50 text-lg font-semibold text-brand-fg"
-                  aria-hidden="true"
-                >
-                  {initials(member.name)}
-                </div>
-              )}
-              <div class="min-w-0">
-                <h3 class="text-lg text-ink mb-1">{member.name}</h3>
-                {member.profileUrl ? (
-                  <a
-                    href={member.profileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-link text-sm"
-                    aria-label={`${member.username ? `@${member.username}` : "FOSS United profile"} — ${member.name}`}
-                  >
-                    {member.username ? `@${member.username}` : "FOSS United profile"}
-                  </a>
-                ) : (
-                  "Profile link to follow."
-                )}
-                <p class="mt-3 text-sm text-ink-2 text-pretty">{member.bio ?? "Bio to follow."}</p>
-              </div>
-            </article>
-          ))
-        }
-        <aside
-          aria-labelledby="join-the-team"
-          class="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-ink/15 p-6 sm:flex-row sm:p-8"
-        >
-          <div
-            class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-ink/8 text-2xl text-ink-3"
-            aria-hidden="true"
-          >
-            ?
-          </div>
-          <div class="min-w-0">
-            <h3 id="join-the-team" class="text-lg text-ink-3 mb-1">You, or someone you know?</h3>
-            <span class="text-sm text-ink-3">@yourname</span>
-            <p class="mt-3 text-sm text-ink-3 text-pretty">
-              Bring ideas, skills, and a little time to the community team, or introduce someone who
-              will.
-            </p>
-            <p class="mt-3 text-sm">
-              <a href={joinMail} class="inline-link"> Get in touch </a>
-            </p>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <section aria-labelledby="foss-united-staff">
-      <div>
-        <h2 id="foss-united-staff" class="text-2xl text-ink mb-3">FOSS United Foundation</h2>
-        <p class="text-sm text-ink-2 text-pretty">
-          The FOSS United Foundation is the fiscal host of The&nbsp;Rupee&nbsp;Fund and supports the
-          wider FOSS United community. Meet the <a
-            href="https://fossunited.org/team"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-link">FOSS United team</a
-          >.
-        </p>
-      </div>
-    </section>
+    <PeopleContent page={content.peoplePage} people={content.people} joinMail={joinMail} />
   </div>
 </Base>

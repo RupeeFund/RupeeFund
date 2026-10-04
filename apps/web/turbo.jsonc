@@ -3,7 +3,8 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["PUBLIC_*", "TURNSTILE_*"],
+      "cache": false,
+      "env": ["PUBLIC_*", "TURNSTILE_*", "CMS_CONTENT_*"],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
       "outputs": ["dist/**"],
     },

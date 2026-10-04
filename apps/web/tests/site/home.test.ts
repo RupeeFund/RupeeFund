@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { read } from "./dist.ts";
+import { read, styles } from "./dist.ts";
 
 describe("Home page (/)", () => {
   const html = read("index.html");
@@ -18,8 +18,12 @@ describe("Home page (/)", () => {
       /<h2[^>]*>Lots of us, a little each month, for great projects from India<\/h2>([\s\S]*?)<\/section>/.exec(
         html,
       )?.[1] ?? "";
-    expect(band).toContain("2&nbsp;crore developers");
+    expect(band).toMatch(/2(&nbsp;|\u00a0)crore developers/);
     expect(band).toMatch(/<a [^>]*href="https:\/\/github\.blog\/[^"]*octoverse[^"]*"/);
+  });
+
+  it("keeps the stressed words of each step in the ink colour", () => {
+    expect(styles()).toMatch(/\.step-body strong ?\{[^}]*color:/);
   });
 
   it("sets the canonical URL", () => {

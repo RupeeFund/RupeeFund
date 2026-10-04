@@ -74,6 +74,17 @@ if (String(vars.TURNSTILE_ACTION ?? "").length === 0) {
   );
 }
 
+if (process.env.WORKERS_CI) {
+  for (const name of ["CMS_CONTENT_FILE", "CMS_CONTENT_URL"]) {
+    if (process.env[name]) {
+      problems.push(
+        `${name} is set in Workers Builds. A deploy build reads the live cms only,` +
+          " so a test file or another cms cannot reach the site.",
+      );
+    }
+  }
+}
+
 if (problems.length > 0) {
   console.error(`refusing to build:\n${problems.map((p) => `  - ${p}`).join("\n")}`);
   process.exit(1);

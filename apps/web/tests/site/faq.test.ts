@@ -1,18 +1,8 @@
-import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { read } from "./dist.ts";
+import { FIXTURE } from "./fixture.ts";
 
-const SOURCE = "src/content/faq";
-
-const entries = readdirSync(SOURCE)
-  .filter((file) => file.endsWith(".md"))
-  .map((file) => readFileSync(`${SOURCE}/${file}`, "utf8"))
-  .map((text) => ({
-    question: /^question: "?(.+?)"?$/m.exec(text)?.[1] ?? "",
-    order: Number(/^order: (\d+)$/m.exec(text)?.[1]),
-    home: /^home: true$/m.test(text),
-  }))
-  .toSorted((a, b) => a.order - b.order);
+const entries = FIXTURE.faq.toSorted((a, b) => a.order - b.order);
 
 const questions = (html: string): string[] =>
   [...html.matchAll(/<summary[^>]*>\s*<span>([^<]*)<\/span>/g)].map(([, q]) => q);

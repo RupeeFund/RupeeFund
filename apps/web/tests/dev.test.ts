@@ -10,7 +10,7 @@ import {
 import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { STAGE, syncDir } from "../scripts/dev.mts";
+import { STAGE, contentWatcher, syncDir } from "../scripts/dev.mts";
 
 let root: string;
 let from: string;
@@ -71,4 +71,31 @@ describe("syncDir copies a fresh build into the served folder", () => {
 
 it("stages the build inside the app, because Astro moves its files there with rename()", () => {
   expect(relative(process.cwd(), resolve(STAGE)).startsWith("..")).toBe(false);
+});
+
+describe("the content watcher", () => {
+  it("rebuilds when the cms content changes, and not before", async () => {
+    const bodies = ["a", "a", "b", "b"];
+    let rebuilds = 0;
+    const tick = contentWatcher(
+      "http://localhost:8790/published.json",
+      async () => new Response(bodies.shift()),
+      () => rebuilds++,
+    );
+    for (let i = 0; i < 4; i++) await tick();
+    expect(rebuilds).toBe(1);
+  });
+
+  it("keeps the last content when the cms does not answer", async () => {
+    const answers = [() => new Response("a"), () => Promise.reject(new Error("down"))];
+    let rebuilds = 0;
+    const tick = contentWatcher(
+      "http://x/published.json",
+      async () => answers.shift()!(),
+      () => rebuilds++,
+    );
+    await tick();
+    await tick();
+    expect(rebuilds).toBe(0);
+  });
 });

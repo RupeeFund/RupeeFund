@@ -24,6 +24,8 @@
   --text-5xl--line-height: 1.05;
 
   --shadow-card: 0 4px 32px 0 rgba(0, 0, 0, 0.06);
+
+  --container-measure: 48rem;
 }
 
 @layer base {
@@ -149,6 +151,7 @@
 
   .nav-link,
   .foot-link,
+  .list-link,
   .inline-link {
     --grown: calc(100% - var(--inset, 0px) - var(--tail, 0px));
     background-image: linear-gradient(var(--color-brand), var(--color-brand));
@@ -159,7 +162,7 @@
   }
 
   @media (hover: hover) {
-    :is(.nav-link, .foot-link, .inline-link):hover {
+    :is(.nav-link, .foot-link, .list-link, .inline-link):hover {
       background-size: var(--grown) 2px;
     }
   }
@@ -176,6 +179,10 @@
     --line-y: calc(50% + 0.7em);
     @apply inline-flex items-center min-h-11 px-2 text-white rounded-sm;
     @apply forced-colors:hover:underline;
+  }
+
+  .list-link {
+    @apply text-ink rounded-sm box-decoration-clone forced-colors:hover:underline;
   }
 
   .foot-icon {
@@ -236,6 +243,10 @@
     @apply max-w-[36rem] text-sm text-ink-2 text-pretty mb-1;
   }
 
+  .step-body strong {
+    @apply text-ink;
+  }
+
   .btn-label {
     @apply grid grid-cols-[1fr] motion-safe:transition-[grid-template-columns,opacity];
     @apply motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)];
@@ -249,16 +260,88 @@
     @apply grid-cols-[0fr] opacity-0;
   }
 
-  .policy h2 {
-    @apply text-xl text-ink mt-10 mb-3;
+  .reading {
+    @apply mx-auto max-w-measure;
   }
 
-  .policy :is(p, ul) {
-    @apply text-sm text-ink-2 mb-6;
+  .prose {
+    @apply text-sm text-ink-2 text-pretty wrap-break-word;
   }
 
-  .policy > :is(p, ul):last-child {
-    @apply mb-0;
+  .prose > * + * {
+    @apply mt-6;
+  }
+
+  .prose :is(h2, h3, h4) {
+    @apply text-ink;
+  }
+
+  .prose h2 {
+    @apply text-xl;
+  }
+
+  .prose h3 {
+    @apply text-lg;
+  }
+
+  .prose h4 {
+    @apply text-sm font-semibold;
+  }
+
+  .prose > h2 {
+    @apply mt-10;
+  }
+
+  .prose > :is(h2, h3, h4) + * {
+    @apply mt-3;
+  }
+
+  .prose :is(ul, ol) {
+    @apply pl-5;
+  }
+
+  .prose ul {
+    @apply list-disc;
+  }
+
+  .prose ol {
+    @apply list-decimal;
+  }
+
+  .prose ul ul {
+    list-style-type: circle;
+  }
+
+  .prose li {
+    @apply marker:text-ink-3;
+  }
+
+  .prose li + li {
+    @apply mt-1;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-brand pl-5 text-ink;
+  }
+
+  .prose blockquote + blockquote {
+    @apply mt-0 pt-2;
+  }
+
+  .prose strong {
+    @apply font-semibold text-ink;
+  }
+
+  .prose code {
+    @apply rounded-sm bg-ink/6 px-1 py-0.5 font-mono text-[0.875em] text-ink;
+  }
+
+  .prose img {
+    @apply mx-auto h-auto max-h-[80svh] w-auto max-w-full rounded-xl;
+  }
+
+  .post-thumb {
+    @apply aspect-[4/3] w-20 shrink-0 rounded-lg sm:w-36 sm:rounded-xl;
   }
 
   .faq {

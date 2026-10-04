@@ -1,5 +1,6 @@
 import { realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { contentDocument } from "@rupeefund/content/schema";
 import { DUMMY_SITEKEYS } from "./turnstile-dummy-keys.mjs";
 
 export type Fetch = (url: string, init?: RequestInit) => Promise<Response>;
@@ -22,7 +23,22 @@ async function accessRedirect(fetch: Fetch, url: string): Promise<string | null>
   return `answered ${res.status} ${location}`.trim() + ", not a redirect to Cloudflare Access";
 }
 
-function probes(site: string, admin: string): [string, Probe][] {
+async function signInRedirect(fetch: Fetch, cms: string): Promise<string | null> {
+  const res = await fetch(`${cms}/_emdash/admin`, MANUAL);
+  const location = res.headers.get("location") ?? "";
+  const target = URL.canParse(location, cms) ? new URL(location, cms) : null;
+  const toLogin =
+    target?.origin === new URL(cms).origin && target.pathname === "/_emdash/admin/login";
+  if (res.status === 302 && toLogin) return null;
+  return `answered ${res.status} ${location}`.trim() + ", not a redirect to the cms sign-in";
+}
+
+async function notFound(fetch: Fetch, url: string): Promise<string | null> {
+  const { status } = await fetch(url, MANUAL);
+  return status === 404 ? null : `answered ${status}, not 404`;
+}
+
+function probes(site: string, admin: string, cms: string): [string, Probe][] {
   return [
     [
       "site health",
@@ -64,12 +80,54 @@ function probes(site: string, admin: string): [string, Probe][] {
     ],
     ["admin refuses the page", (fetch) => accessRedirect(fetch, `${admin}/`)],
     ["admin refuses the counts", (fetch) => accessRedirect(fetch, `${admin}/api/summary`)],
+    [
+      "cms content",
+      async (fetch) => {
+        const res = await fetch(`${cms}/published.json`);
+        if (res.status !== 200) return `answered ${res.status}`;
+        const parsed = contentDocument.safeParse(await res.json().catch(() => null));
+        return parsed.success ? null : `breaks the schema: ${parsed.error.message}`;
+      },
+    ],
+    [
+      "cms setup is done",
+      async (fetch) => {
+        const res = await fetch(`${cms}/_emdash/api/setup/status`);
+        const body = (await res.json().catch(() => null)) as {
+          data?: { needsSetup?: unknown };
+        } | null;
+        if (res.status === 200 && body?.data?.needsSetup === false) return null;
+        return `answered ${res.status}, the cms has no admin yet`;
+      },
+    ],
+    ["cms refuses the admin", (fetch) => signInRedirect(fetch, cms)],
+    ["cms refuses the preview", (fetch) => notFound(fetch, `${cms}/preview/posts/x`)],
+    [
+      "cms refuses the stored files",
+      async (fetch) => {
+        const problems: string[] = [];
+        for (const path of [
+          "/_emdash/api/media/file/x.png",
+          "/_image?href=/_emdash/api/media/file/x.png",
+        ]) {
+          const res = await fetch(`${cms}${path}`, MANUAL);
+          const gated = res.status === 404 && (await res.text()) === "Not found";
+          if (!gated) problems.push(`${path} answered ${res.status} without the sign-in gate`);
+        }
+        return problems.length === 0 ? null : problems.join(", ");
+      },
+    ],
   ];
 }
 
-export async function runChecks(site: string, admin: string, fetch: Fetch): Promise<Check[]> {
+export async function runChecks(
+  site: string,
+  admin: string,
+  cms: string,
+  fetch: Fetch,
+): Promise<Check[]> {
   const checks: Check[] = [];
-  for (const [name, probe] of probes(site, admin)) {
+  for (const [name, probe] of probes(site, admin, cms)) {
     try {
       const problem = await probe(fetch);
       checks.push({ name, ok: problem === null, detail: problem ?? "" });
@@ -89,7 +147,8 @@ async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   const site = option(argv, "--site", "https://rupeefund.org");
   const admin = option(argv, "--admin", "https://admin.rupeefund.org");
-  const checks = await runChecks(site, admin, (url, init) => fetch(url, init));
+  const cms = option(argv, "--cms", "https://cms.rupeefund.org");
+  const checks = await runChecks(site, admin, cms, (url, init) => fetch(url, init));
   for (const { name, ok, detail } of checks) {
     process.stdout.write(ok ? `PASS ${name}\n` : `FAIL ${name}: ${detail}\n`);
   }

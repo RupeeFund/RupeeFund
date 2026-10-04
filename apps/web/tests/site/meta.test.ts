@@ -16,7 +16,7 @@ describe("sitemap", () => {
 
   it("lists the public pages", () => {
     const xml = read("sitemap-0.xml");
-    expect(xml.match(/<loc>/g)).toHaveLength(8);
+    expect(xml.match(/<loc>/g)).toHaveLength(13);
     for (const path of [
       "/privacy",
       "/refunds",
@@ -25,6 +25,11 @@ describe("sitemap", () => {
       "/faq",
       "/terms",
       "/code-of-conduct",
+      "/blog",
+      "/blog/test-post",
+      "/blog/test-long-read",
+      "/blog/test-season-notes",
+      "/blog/test-short",
     ]) {
       expect(xml, `sitemap is missing ${path}`).toContain(`https://rupeefund.org${path}`);
     }

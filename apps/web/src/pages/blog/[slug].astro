@@ -1,0 +1,26 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../layouts/Base.astro";
+import PostArticle from "@rupeefund/site/PostArticle.astro";
+import { loadContent } from "../../build/content.ts";
+import { SITE_NAME } from "../../lib/seo.ts";
+
+export const getStaticPaths = (async () => {
+  const { content } = await loadContent();
+  return content.posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const route = {
+  path: `/blog/${post.slug}`,
+  title: `${post.title} — ${SITE_NAME}`,
+  description: post.excerpt,
+  indexable: true,
+};
+---
+
+<Base route={route}>
+  <div class="wrap section-y">
+    <PostArticle post={post} />
+  </div>
+</Base>
