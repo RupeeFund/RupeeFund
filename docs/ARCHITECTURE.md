@@ -206,6 +206,8 @@ Only two addresses of `rupeefund-cms` are public:
 
 `PUBLIC_LIMITER` limits both. When the build gets a `429`, it waits for the time in `Retry-After`, up to one minute, and tries again. It tries five times. Each answer that the Worker code makes carries `x-robots-tag: noindex`. The static files in `apps/cms/public/` do not.
 
+The root, `/`, sends the visitor to `/_emdash/admin`.
+
 The media addresses send only PNG, JPEG, GIF, WebP and AVIF files, with a sandbox policy. The schema refuses every other image type, so an SVG with a script cannot reach either site.
 
 ### 11.3 Who gets in
