@@ -230,6 +230,8 @@ The first promote with the content manager also builds `rupeefund-web`. That bui
 
 ### 11.1 Make the resources
 
+R2 must be on for the account. If it is off, go to **R2 Object Storage** in the dashboard and turn it on. Then:
+
 ```sh
 pnpm --filter @rupeefund/cms exec wrangler d1 create rupeefund-content --location apac
 pnpm --filter @rupeefund/cms exec wrangler r2 bucket create rupeefund-media --location apac
@@ -258,9 +260,12 @@ pnpm --filter @rupeefund/cms exec wrangler secret put DEPLOY_HOOK_URL
 
 The URL starts a build. Keep it secret.
 
+Do this before the first deploy of `rupeefund-cms`. The deploy fails when `DEPLOY_HOOK_URL` is not set. When `rupeefund-cms` does not exist, the command asks to make it. Answer yes. Then the Worker exists with the secret and no code.
+
 ### 11.4 Set up the content
 
-1. Make the Workers Builds project of `rupeefund-cms` (section 1) and promote.
+1. Open `rupeefund-cms` in **Workers & Pages**. Go to **Settings** > **Builds** > **Connect**. Do not use **Import a repository**, because it makes a new Worker. Select this repository and the branch `live`, and use the settings in section 1. Turn off the builds for the other branches.
+1. Promote (section 3).
 1. Open `https://cms.rupeefund.org/_emdash/admin`. Access asks you to sign in. Then the setup wizard opens.
 1. Tick the sample content. The sample content is the present text of the site.
 1. Make your admin account and its passkey.
@@ -296,7 +301,9 @@ If the content manager fails, go back (section 11.7) to the time you wrote down.
 ### 11.7 Go back
 
 - **Wrong words on the site.** Restore the earlier revision of the entry in the editor, and publish it. The site builds again. A rollback of `rupeefund-web` stays only until the next publish.
+
 - **A publish that does not reach the site.** The build of `rupeefund-web` fails, and the last good site stays live. Open `rupeefund-cms` in **Workers & Pages** and go to **Observability**. Find the `published_invalid` event. It gives the problem and its place, such as `posts.3.title` or `Publish the home page`. Correct the entry and publish it again. A `published_load_failed` event tells that the database did not answer. Then publish again later.
+
 - **A broken content manager.** Run `pnpm --filter @rupeefund/cms exec wrangler rollback`. If the bad version changed the database, also restore the database to the time before the deploy:
 
   ```sh
