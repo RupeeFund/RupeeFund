@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, onTestFinished, vi } from "vitest";
 import fixture from "../tests/fixtures/published-entries.json";
 import type { Collections } from "./published.ts";
 import { mediaResponse, publishedResponse, type PublicDeps } from "./public-routes.ts";
@@ -37,7 +37,9 @@ describe("the published document route", () => {
     expect(res.status).toBe(503);
   });
 
-  it("answers 500 with the reason when the content breaks the site's rules", async () => {
+  it("answers 500 when the content breaks the site's rules, and logs the reason only", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    onTestFinished(() => log.mockRestore());
     const res = await publishedResponse(
       request("/published.json"),
       deps({
@@ -45,7 +47,9 @@ describe("the published document route", () => {
       }),
     );
     expect(res.status).toBe(500);
-    expect(await res.text()).toContain("home page");
+    expect(await res.text()).not.toContain("home page");
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('"event":"published_invalid"'));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("home page"));
   });
 
   it("answers 429 past the rate limit", async () => {

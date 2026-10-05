@@ -240,7 +240,7 @@ The `* * * * *` cron runs the scheduled publish. It reads D1 each minute. These 
 
 ### 11.7 The blog
 
-A post has a kind, an optional season and its authors. The authors are the EmDash bylines. `packages/content/src/html.ts` gives the blocks that a post can show. The build refuses an embed, raw HTML, a gallery and a reference. `apps/cms/src/published.ts` names the block in the error.
+A post has a kind, an optional season and its authors. The authors are the EmDash bylines. `packages/content/src/html.ts` gives the blocks that a post can show. The build refuses an embed, raw HTML, a gallery and a reference. `apps/cms/src/published.ts` names the block in the error. The error goes to the log of `rupeefund-cms` as `published_invalid`. `/published.json` answers 500 with no detail, so the build log does not show the reason.
 
 ### 11.8 EmDash updates
 

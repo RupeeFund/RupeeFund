@@ -296,6 +296,7 @@ If the content manager fails, go back (section 11.7) to the time you wrote down.
 ### 11.7 Go back
 
 - **Wrong words on the site.** Restore the earlier revision of the entry in the editor, and publish it. The site builds again. A rollback of `rupeefund-web` stays only until the next publish.
+- **A publish that does not reach the site.** The build of `rupeefund-web` fails, and the last good site stays live. Open `rupeefund-cms` in **Workers & Pages** and go to **Observability**. Find the `published_invalid` event. It gives the problem and its place, such as `posts.3.title` or `Publish the home page`. Correct the entry and publish it again. A `published_load_failed` event tells that the database did not answer. Then publish again later.
 - **A broken content manager.** Run `pnpm --filter @rupeefund/cms exec wrangler rollback`. If the bad version changed the database, also restore the database to the time before the deploy:
 
   ```sh

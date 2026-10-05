@@ -1,5 +1,5 @@
 import { mediaKeys } from "@rupeefund/content/media";
-import { MEDIA_FILE } from "@rupeefund/content/schema";
+import { MEDIA_FILE, type Content } from "@rupeefund/content/schema";
 import { buildDocument, ContentError, type Collections } from "./published.ts";
 
 export interface PublicDeps {
@@ -19,13 +19,14 @@ async function allowed(request: Request, deps: PublicDeps): Promise<boolean> {
   return (await deps.limiter.limit({ key })).success;
 }
 
-async function publishedDocument(deps: PublicDeps) {
+async function publishedDocument(deps: PublicDeps): Promise<Content | "invalid" | null> {
   try {
     return buildDocument(await deps.load());
   } catch (error) {
-    if (error instanceof ContentError) return error;
-    console.error(JSON.stringify({ event: "published_load_failed", error: String(error) }));
-    return null;
+    const invalid = error instanceof ContentError;
+    const event = invalid ? "published_invalid" : "published_load_failed";
+    console.error(JSON.stringify({ event, error: String(error) }));
+    return invalid ? "invalid" : null;
   }
 }
 
@@ -33,7 +34,9 @@ export async function publishedResponse(request: Request, deps: PublicDeps): Pro
   if (!(await allowed(request, deps))) return plain(429, "Too many requests");
   const document = await publishedDocument(deps);
   if (document === null) return plain(503, "The content store did not answer");
-  if (document instanceof ContentError) return plain(500, document.message);
+  if (document === "invalid") {
+    return plain(500, "The published content breaks a rule of the site. Read the cms log.");
+  }
   return new Response(JSON.stringify(document), {
     headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
   });
@@ -48,7 +51,7 @@ export async function mediaResponse(
   if (!MEDIA_FILE.test(key)) return plain(404, "Not found");
   const document = await publishedDocument(deps);
   if (document === null) return plain(503, "The content store did not answer");
-  if (document instanceof ContentError || !mediaKeys(document).includes(key)) {
+  if (document === "invalid" || !mediaKeys(document).includes(key)) {
     return plain(404, "Not found");
   }
   return (await deps.readMedia(key)) ?? plain(404, "Not found");
