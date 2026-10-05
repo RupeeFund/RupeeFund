@@ -251,6 +251,8 @@ pnpm --filter @rupeefund/cms exec wrangler secret put DEPLOY_HOOK_URL
 
 The URL starts a build. Keep it secret.
 
+To make the hook with the `cf` CLI, run `cf builds deploy-hooks create rupeefund-web --branch live --deploy-hook-name cms-publish`. The command shows the `deploy_hook_uuid` and not the URL. The URL is `https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/<deploy_hook_uuid>`, so the ID is also a secret. Run the command in your own terminal, not where others can read the output.
+
 Do this before the first deploy of `rupeefund-cms`. The deploy fails when `DEPLOY_HOOK_URL` is not set. When `rupeefund-cms` does not exist, the command asks to make it. Answer yes. Then the Worker exists with the secret and no code.
 
 ### 11.4 Set up the content
@@ -305,7 +307,7 @@ If the content manager fails, go back (section 11.7) to the time you wrote down.
 
 ### 11.8 Change a content field
 
-`apps/cms/seed/seed.json` applies only at the first setup. On the live content manager, an admin adds or removes a field in the content manager itself. `docs/ARCHITECTURE.md` section 11.6 names the code that changes with a field.
+`apps/cms/seed/seed.json` applies only at the first setup. On the live content manager, an admin adds or removes a field in the content manager itself. The site shows only the fields and the collections that its code reads. A new field or collection does not show until the code reads it. `docs/ARCHITECTURE.md` section 11.6 names the code that changes with a field.
 
 Keep this order, or each build of `rupeefund-web` fails until the content agrees with the code:
 
