@@ -217,11 +217,9 @@ The Worker refuses every request (`docs/ARCHITECTURE.md` section 10.1). This is 
 
 `docs/ARCHITECTURE.md` section 11 tells how the parts work together.
 
-The first promote with the content manager also builds `rupeefund-web`. That build fails, because the content manager has no content yet. The old site stays live. Section 11.4 builds the site again.
-
 ### 11.1 Make the resources
 
-R2 must be on for the account. If it is off, go to **R2 Object Storage** in the dashboard and turn it on. Then:
+Turn on R2 for the account in the dashboard, under **R2 Object Storage**. Then make the resources:
 
 ```sh
 pnpm --filter @rupeefund/cms exec wrangler d1 create rupeefund-content --location apac
@@ -229,42 +227,38 @@ pnpm --filter @rupeefund/cms exec wrangler r2 bucket create rupeefund-media --lo
 pnpm --filter @rupeefund/cms exec wrangler kv namespace create rupeefund-cms-session
 ```
 
-`apac` keeps the data near the readers, as for `rupeefund-waitlist`. Put the database ID in `d1_databases` and the namespace ID in `kv_namespaces` of `apps/cms/wrangler.jsonc`. Merge that change before the promote in section 11.4. Without the IDs, the deploy makes new, empty resources.
+`apac` keeps the data near the readers, as for `rupeefund-waitlist`. Put the database ID in `d1_databases` and the namespace ID in `kv_namespaces` of `apps/cms/wrangler.jsonc`, and merge the change.
 
 ### 11.2 Close the setup to strangers
 
-The content manager signs people in with passkeys. Until it has an admin, any person who opens it can run the setup and become the admin. Put a temporary Access application in front of it for the setup:
+Until the content manager has an admin, any person who opens it can become the admin. Put a temporary Access application in front of it:
 
 1. Go to **Zero Trust** > **Access** > **Applications**.
 1. Add a self-hosted application on `cms.rupeefund.org` with the path `/_emdash/*`.
 1. Set the login method and the policy as in section 10.2.
 
-Remove this application in section 11.4, after you make the admin.
+### 11.3 Make the Worker and connect the rebuild
 
-### 11.3 Connect the rebuild
+1. Open `rupeefund-web` in **Workers & Pages**. Go to **Settings** > **Builds** > **Deploy Hooks**, and add a hook for the branch `live`. Copy its URL. Keep the URL secret, because it starts a build.
+1. Set the URL as a secret of `rupeefund-cms`. The command also makes the Worker, so answer yes when it asks.
 
-Open `rupeefund-web` in **Workers & Pages**. Go to **Settings** > **Builds** > **Deploy Hooks**. Add a hook for the branch `live`. Set its URL as a secret:
+   ```sh
+   pnpm --filter @rupeefund/cms exec wrangler secret put DEPLOY_HOOK_URL
+   ```
 
-```sh
-pnpm --filter @rupeefund/cms exec wrangler secret put DEPLOY_HOOK_URL
-```
-
-The URL starts a build. Keep it secret.
-
-To make the hook with the `cf` CLI, run `cf builds deploy-hooks create rupeefund-web --branch live --deploy-hook-name cms-publish`. The command shows the `deploy_hook_uuid` and not the URL. The URL is `https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/<deploy_hook_uuid>`, so the ID is also a secret. Run the command in your own terminal, not where others can read the output.
-
-Do this before the first deploy of `rupeefund-cms`. The deploy fails when `DEPLOY_HOOK_URL` is not set. When `rupeefund-cms` does not exist, the command asks to make it. Answer yes. Then the Worker exists with the secret and no code.
+1. Open `rupeefund-cms` in **Workers & Pages**. Go to **Settings** > **Builds** > **Connect**. Select this repository and the branch `live`, and use the settings in section 1. Turn off the builds for the other branches.
 
 ### 11.4 Set up the content
 
-1. Open `rupeefund-cms` in **Workers & Pages**. Go to **Settings** > **Builds** > **Connect**. Do not use **Import a repository**, because it makes a new Worker. Select this repository and the branch `live`, and use the settings in section 1. Turn off the builds for the other branches.
+The promote also builds `rupeefund-web`. That build fails until the content manager has content, and the old site stays live. Do these steps in one sitting:
+
 1. Promote (section 3).
-1. Open `https://cms.rupeefund.org/_emdash/admin`. Access asks you to sign in. Then the setup wizard opens.
-1. Tick the sample content. The sample content is the present text of the site.
+1. Open `https://cms.rupeefund.org/_emdash/admin` and sign in to Access. The setup wizard opens.
+1. Select **Sample content**. It is the present text of the site.
 1. Make your admin account and its passkey.
 1. Delete the Access application of section 11.2.
-
-Then run `pnpm live:check`. The five `cms` lines must say `PASS`. Then unpublish one FAQ entry and publish it again in the editor. The Deploy Hook then builds the site from the CMS. Read the build log of `rupeefund-web` to prove it.
+1. Publish an entry, for example a new FAQ entry. The Deploy Hook builds the site from the content manager.
+1. Run `pnpm live:check`. Each line must say `PASS`.
 
 If the content manager loses all its people, put the Access application of section 11.2 back before you open it again.
 
@@ -307,9 +301,9 @@ If the content manager fails, go back (section 11.7) to the time you wrote down.
 
 ### 11.8 Change a content field
 
-`apps/cms/seed/seed.json` applies only at the first setup. On the live content manager, an admin adds or removes a field in the content manager itself. The site shows only the fields and the collections that its code reads. A new field or collection does not show until the code reads it. `docs/ARCHITECTURE.md` section 11.6 names the code that changes with a field.
+The site shows only the fields and the collections that its code reads. `docs/ARCHITECTURE.md` section 11.6 names that code. On the live content manager, an admin adds or removes a field in the content manager itself. `apps/cms/seed/seed.json` applies only at the first setup.
 
-Keep this order, or each build of `rupeefund-web` fails until the content agrees with the code:
+Keep this order, so that each build finds the fields that its code reads:
 
 - **To add a field.** Add the field in the live content manager, and fill it in each entry. Then promote the code that reads it.
 - **To remove a field.** Promote the code that stops reading it. Then remove the field in the live content manager.
