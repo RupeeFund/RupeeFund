@@ -275,7 +275,7 @@ If the content manager loses all its people, put the Access application of secti
 The content manager sends no email. To add a person:
 
 1. Go to **Users** in the content manager and invite the email address of the person. The person gets the Author role (30). Select a different role if necessary.
-1. Copy the invite link and send it to the person yourself.
+1. Copy the invite link and send it to the person yourself, with a link to `docs/EDITING.md`.
 1. The person opens the link and makes a passkey.
 
 The person signs in with that passkey from then on. Self-signup stays off.
