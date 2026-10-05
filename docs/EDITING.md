@@ -4,7 +4,7 @@ The content manager at [cms.rupeefund.org/\_emdash/admin](https://cms.rupeefund.
 
 ## 1. Sign in
 
-An admin sends you an invite link. Open it and make a passkey. Then sign in with that passkey.
+An admin sends you an invite link. Open it and make a passkey. Then sign in with that passkey. The site sends no email, so **Sign in with email link** does not work.
 
 | Role   | What the role can do                                                 |
 | ------ | -------------------------------------------------------------------- |

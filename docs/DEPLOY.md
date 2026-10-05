@@ -35,7 +35,7 @@ pnpm wrangler d1 execute rupeefund-waitlist --local --persist-to ../../.wrangler
 
 ## 3. How to promote
 
-Run the `Promote` workflow from the Actions tab on `main`. It fast-forwards `live` to the tip of `main`. It stops when CI has not passed on that commit. It also stops when the promote adds a migration and you did not tick the box that says you applied it (section 4).
+Wait until CI on the tip of `main` passes. Then run the `Promote` workflow from the Actions tab on `main`. It fast-forwards `live` to the tip of `main`. It stops when CI has not passed on that commit. It also stops when the promote adds a migration and you did not tick the box that says you applied it (section 4).
 
 Without the workflow, make sure CI passed on the commit. Then fast-forward `live`:
 
@@ -307,3 +307,4 @@ Keep this order, so that each build finds the fields that its code reads:
 
 - **To add a field.** Add the field in the live content manager, and fill it in each entry. Then promote the code that reads it.
 - **To remove a field.** Promote the code that stops reading it. Then remove the field in the live content manager.
+- **To make a field optional.** Promote the code that accepts an empty value. Then untick **Required** on the field in the live content manager.
