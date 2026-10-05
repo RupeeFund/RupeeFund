@@ -218,7 +218,7 @@ The files that EmDash stores are private. `apps/cms/src/middleware.ts` answers 4
 
 ### 11.4 What a publish does
 
-`apps/cms/src/plugin.ts` adds two rules:
+`apps/cms/src/plugin.ts` adds three rules:
 
 - Only an admin edits, publishes, schedules or unpublishes a policy. So the scheduler publishes only the text of an admin.
 - Nobody deletes a policy, because each build needs all four. To change a policy, edit it.

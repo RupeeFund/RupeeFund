@@ -8,6 +8,19 @@ The site builds the blog but hides it. The footer has no Blog link, the pages ha
 
 Urgent when: the blog has a few posts.
 
+## GitHub sign-in for the admin panel
+
+The admin panel admits the members of the Cloudflare account (`docs/DEPLOY.md` section 10). So each person who reads the list also gets a role in the Cloudflare dashboard. One GitHub team must admit the panel users in its place.
+
+To do:
+
+1. Make a GitHub OAuth App in the organization that holds the team. Its callback URL is `https://<team-name>.cloudflareaccess.com/cdn-cgi/access/callback`.
+1. Add GitHub as an identity provider in Zero Trust, with the client ID and the secret of the OAuth App.
+1. In the Access application of `rupeefund-admin`, set GitHub as the only login method. Add a policy that includes the GitHub organization and the team.
+1. Update `docs/DEPLOY.md` section 10.
+
+Urgent when: a person who must not open the Cloudflare dashboard needs the panel.
+
 ## Email sign-in for the content manager
 
 Today a person joins the content manager only through an invite. An admin copies the invite link and sends it by hand. The person then signs in with a passkey.

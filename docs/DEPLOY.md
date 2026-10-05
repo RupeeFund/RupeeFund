@@ -183,16 +183,9 @@ The move:
 
 The panel needs no secret. Cloudflare Access does the login. The Worker needs one variable, `ACCESS_AUD` in `apps/admin/wrangler.jsonc`: the audience tag of its Access application. The Worker refuses every request whose Access pass carries another tag.
 
-### 10.1 Set up GitHub sign-in
+### 10.1 The login method
 
-The panel admits the members of one GitHub team. A person needs a GitHub account, not a Cloudflare account.
-
-In the GitHub organization that holds the team, go to **Settings** > **Developer settings** > **OAuth Apps** > **New OAuth App**. Use these values. `<team-name>` is the name of your Zero Trust organization.
-
-- Homepage URL: `https://<team-name>.cloudflareaccess.com`
-- Authorization callback URL: `https://<team-name>.cloudflareaccess.com/cdn-cgi/access/callback`
-
-Make a client secret. Then go to **Zero Trust** > **Integrations** > **Identity providers**, add **GitHub**, and paste the client ID and the secret. Select **Test**. If the organization restricts third-party access, an organization owner must approve the OAuth App, or Access cannot read the teams.
+The panel admits the members of the Cloudflare account. They sign in with the Cloudflare identity provider, which Cloudflare adds to each Zero Trust organization. A person who is not a member of the account cannot sign in. `docs/TODO.md` holds the plan to use a GitHub team in its place.
 
 ### 10.2 Protect the Worker
 
@@ -200,11 +193,9 @@ Go to **Workers & Pages**. Open `rupeefund-admin`. Open the **Access** tab. Put 
 
 Copy the **Application Audience (AUD) Tag** of the new application into `ACCESS_AUD` and into `access.dev.aud` in `apps/admin/wrangler.jsonc`. When you remove and add the application again, the tag changes. Update both values, or the panel refuses every person.
 
-In the application, set **GitHub** as the only login method. Turn off **Accept all available identity providers**, the Cloudflare identity provider and **One-time PIN**.
+In the application, set the Cloudflare identity provider as the only login method. Then select the reusable policy `Cloudflare account members`. Set the session duration. A long session stays signed in on a device that nobody watches.
 
-Then add the policy: action **Allow**, rule type **Include**, selector **GitHub organization**, with the organization and the team. If the selector offers no team, make an organization that holds only the panel users, and select it. Set the session duration. A long session stays signed in on a device that nobody watches.
-
-To add or remove a person, change the team on GitHub. A removed person keeps access until the session ends, so also revoke the session in **Zero Trust** > **Team & Resources** > **Users**. A person who joins the team after a failed sign-in stays refused. That person must revoke the OAuth App in their GitHub settings and sign in again.
+To add or remove a person, add or remove the person as a member of the Cloudflare account. A member can also open the Cloudflare dashboard with the role that you give. A removed person keeps access until the session ends, so also revoke the session in **Zero Trust** > **Team & Resources** > **Users**.
 
 A person takes a seat at the first sign-in and keeps it until you remove the person. When no seat is free, Access refuses the next person. Read the seat count in the Zero Trust overview before you invite the team.
 
@@ -246,7 +237,7 @@ The content manager signs people in with passkeys. Until it has an admin, any pe
 
 1. Go to **Zero Trust** > **Access** > **Applications**.
 1. Add a self-hosted application on `cms.rupeefund.org` with the path `/_emdash/*`.
-1. Add the policy as in section 10.2.
+1. Set the login method and the policy as in section 10.2.
 
 Remove this application in section 11.4, after you make the admin.
 
@@ -311,3 +302,12 @@ If the content manager fails, go back (section 11.7) to the time you wrote down.
   ```
 
   Time Travel keeps 7 days on the Workers Free plan ([Cloudflare documentation](https://developers.cloudflare.com/d1/reference/time-travel/)). The restore removes each edit after that time.
+
+### 11.8 Change a content field
+
+`apps/cms/seed/seed.json` applies only at the first setup. On the live content manager, an admin adds or removes a field in the content manager itself. `docs/ARCHITECTURE.md` section 11.6 names the code that changes with a field.
+
+Keep this order, or each build of `rupeefund-web` fails until the content agrees with the code:
+
+- **To add a field.** Add the field in the live content manager, and fill it in each entry. Then promote the code that reads it.
+- **To remove a field.** Promote the code that stops reading it. Then remove the field in the live content manager.
