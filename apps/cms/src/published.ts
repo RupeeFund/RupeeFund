@@ -87,7 +87,13 @@ function season(data: Raw): { name: unknown; year: unknown } | undefined {
   return { name: data.season, year };
 }
 
-const byOrder = (a: Entry, b: Entry) => Number(a.data.order) - Number(b.data.order);
+const orderOf = ({ data }: Entry) =>
+  data.order === null || data.order === undefined ? Number.POSITIVE_INFINITY : Number(data.order);
+
+const publishedOf = ({ data }: Entry) => String(isoDate(data.publishedAt) ?? "");
+
+const byOrder = (a: Entry, b: Entry) =>
+  orderOf(a) - orderOf(b) || publishedOf(a).localeCompare(publishedOf(b));
 
 function only(entries: Entry[], name: string): Raw {
   const [entry] = entries;
@@ -117,11 +123,11 @@ export function buildDocument(collections: Collections): Content {
         authors: authors(data.bylines),
       };
     }),
-    faq: collections.faq.toSorted(byOrder).map(({ slug, data }) => ({
+    faq: collections.faq.toSorted(byOrder).map(({ slug, data }, index) => ({
       slug,
       question: data.title,
       answer: portableText(data.answer, `faq/${slug}`),
-      order: data.order,
+      order: index + 1,
       home: data.home === true,
       sources: data.sources ?? [],
     })),
@@ -150,14 +156,14 @@ export function buildDocument(collections: Collections): Content {
       foundationTitle: peoplePage.foundation_title,
       foundationBody: portableText(peoplePage.foundation_body, "people page"),
     },
-    people: collections.people.toSorted(byOrder).map(({ slug, data }) => ({
+    people: collections.people.toSorted(byOrder).map(({ slug, data }, index) => ({
       slug,
       name: data.title,
       bio: data.bio || undefined,
       profileUrl: data.profile_url || undefined,
       username: data.username || undefined,
       photoUrl: data.photo_url || undefined,
-      order: data.order,
+      order: index + 1,
     })),
     policies: collections.policies.map(({ slug, data }) => ({
       slug,

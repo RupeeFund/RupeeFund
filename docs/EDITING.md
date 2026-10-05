@@ -68,7 +68,7 @@ The site refuses all of its content when one entry has one of these problems:
 
 ## 6. The other pages
 
-- **FAQ.** Each entry has a question, an answer and an order. A lower order shows first. Tick **Show on the home page** to show the entry there too. A source is a title and an `https://` link.
+- **FAQ.** Each entry has a question, an answer and an optional order. A lower order shows first. An entry with no order shows after the others, the oldest first. Tick **Show on the home page** to show the entry there too. A source is a title and an `https://` link.
 - **Home page** and **People page.** Each is one entry. Change its words. Do not make a second entry.
-- **Community team.** Each person has a name, an order and an optional bio, profile URL, username and photo URL.
+- **Community team.** Each person has a name and an optional order, bio, profile URL, username and photo URL. The order works as in the FAQ.
 - **Policies.** Only an admin can edit a policy. Nobody can delete a policy. To change one, edit it and publish it.

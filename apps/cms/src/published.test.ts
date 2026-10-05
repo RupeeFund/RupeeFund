@@ -89,9 +89,25 @@ describe("the published document", () => {
     const first = input.people[0]!;
     input.people.unshift({ slug: "later", data: { ...first.data, title: "Later", order: 9 } });
     const doc = buildDocument(input);
-    const orders = doc.faq.map((q) => q.order);
-    expect(orders).toEqual([...orders].sort((a, b) => a - b));
+    expect(doc.faq.map((q) => q.slug)).toEqual(["voting", "other-funds"]);
     expect(doc.people.map((p) => p.slug)).toEqual([first.slug, "later"]);
+  });
+
+  it("puts an entry with no order after the others, oldest first, and numbers each by its place", () => {
+    const input = collections();
+    const [later, earlier] = input.faq;
+    const newest = structuredClone(later!);
+    newest.slug = "newest";
+    newest.data = { ...newest.data, publishedAt: "2026-10-05T11:40:00.000Z", order: null };
+    later!.data.order = "7";
+    delete earlier!.data.order;
+    input.faq.splice(1, 0, newest);
+    const doc = buildDocument(input);
+    expect(doc.faq.map((q) => [q.slug, q.order])).toEqual([
+      [later!.slug, 1],
+      [earlier!.slug, 2],
+      ["newest", 3],
+    ]);
   });
 
   it("lists every media file the published entries use, so the media route serves no other", () => {
