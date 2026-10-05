@@ -11,9 +11,10 @@
     {
       "binding": "DB",
       "database_name": "rupeefund-content",
+      "database_id": "4bd0ce8b-7259-468b-823d-17ec13b8e6b4",
     },
   ],
-  "kv_namespaces": [{ "binding": "SESSION" }],
+  "kv_namespaces": [{ "binding": "SESSION", "id": "ba8662a991d345168a0bdc4d02645dfc" }],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "rupeefund-media" }],
   "ratelimits": [
     {
