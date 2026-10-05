@@ -87,7 +87,7 @@
           "slug": "order",
           "label": "Order",
           "type": "integer",
-          "required": false
+          "required": true
         },
         {
           "slug": "home",
@@ -309,7 +309,7 @@
           "slug": "order",
           "label": "Order",
           "type": "integer",
-          "required": false
+          "required": true
         }
       ]
     },

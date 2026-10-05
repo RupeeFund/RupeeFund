@@ -307,4 +307,5 @@ Keep this order, so that each build finds the fields that its code reads:
 
 - **To add a field.** Add the field in the live content manager, and fill it in each entry. Then promote the code that reads it.
 - **To remove a field.** Promote the code that stops reading it. Then remove the field in the live content manager.
-- **To make a field optional.** Promote the code that accepts an empty value. Then untick **Required** on the field in the live content manager.
+
+EmDash cannot change **Required** or **Unique** on an existing field. The switch shows, but the save fails.

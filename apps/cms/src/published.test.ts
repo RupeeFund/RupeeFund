@@ -93,6 +93,13 @@ describe("the published document", () => {
     expect(doc.people.map((p) => p.slug)).toEqual([first.slug, "later"]);
   });
 
+  it("shows entries with the same order oldest first", () => {
+    const input = collections();
+    for (const entry of input.faq) entry.data.order = 99;
+    const doc = buildDocument(input);
+    expect(doc.faq.map((q) => q.slug)).toEqual(["voting", "other-funds"]);
+  });
+
   it("puts an entry with no order after the others, oldest first, and numbers each by its place", () => {
     const input = collections();
     const [later, earlier] = input.faq;
