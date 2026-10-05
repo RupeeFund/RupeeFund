@@ -9,14 +9,14 @@ describe("sitemap", () => {
 
   it("excludes every route the sitemap filter names", () => {
     const xml = read("sitemap-0.xml");
-    for (const slug of ["404", "waitlist-confirmed"]) {
+    for (const slug of ["404", "waitlist-confirmed", "blog"]) {
       expect(xml).not.toContain(`rupeefund.org/${slug}`);
     }
   });
 
   it("lists the public pages", () => {
     const xml = read("sitemap-0.xml");
-    expect(xml.match(/<loc>/g)).toHaveLength(13);
+    expect(xml.match(/<loc>/g)).toHaveLength(8);
     for (const path of [
       "/privacy",
       "/refunds",
@@ -25,11 +25,6 @@ describe("sitemap", () => {
       "/faq",
       "/terms",
       "/code-of-conduct",
-      "/blog",
-      "/blog/how-to-write-a-post-for-this-blog",
-      "/blog/how-to-be-a-good-open-source-contributor",
-      "/blog/how-open-source-gets-funded-today",
-      "/blog/small-steady-funding-for-indian-open-source",
     ]) {
       expect(xml, `sitemap is missing ${path}`).toContain(`https://rupeefund.org${path}`);
     }

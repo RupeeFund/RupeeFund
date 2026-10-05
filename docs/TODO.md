@@ -2,6 +2,12 @@
 
 This list holds the work that we know about and did not do yet. Each item tells what to do, why, and the condition that makes it urgent. Remove an item when its work merges.
 
+## Show the blog
+
+The site builds the blog but hides it. The footer has no Blog link, the pages have no feed link, the sitemap leaves out `/blog`, and each blog page has `noindex`. To show the blog, revert the commit `feat(web): hide the blog until launch`.
+
+Urgent when: the blog has a few posts.
+
 ## Email sign-in for the content manager
 
 Today a person joins the content manager only through an invite. An admin copies the invite link and sends it by hand. The person then signs in with a passkey.

@@ -91,12 +91,13 @@ describe("the blog", () => {
     expect(feed).toContain("<title>How to write a post for this blog</title>");
   });
 
-  it("announces the feed on every page and links the blog from the footer", () => {
+  it("keeps the blog out of the footer, the feed links and the search index until launch", () => {
     const home = read("index.html");
-    expect(home).toContain(
-      '<link rel="alternate" type="application/rss+xml" title="The Rupee Fund"' +
-        ' href="https://rupeefund.org/blog/rss.xml">',
+    expect(home).not.toContain('type="application/rss+xml"');
+    expect(read("blog.html")).toContain('<meta name="robots" content="noindex">');
+    expect(read("blog/how-open-source-gets-funded-today.html")).toContain(
+      '<meta name="robots" content="noindex">',
     );
-    expect(home.slice(home.indexOf("<footer"))).toContain('href="/blog"');
+    expect(home.slice(home.indexOf("<footer"))).not.toContain('href="/blog"');
   });
 });
