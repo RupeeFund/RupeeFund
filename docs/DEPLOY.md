@@ -231,12 +231,12 @@ The first promote with the content manager also builds `rupeefund-web`. That bui
 ### 11.1 Make the resources
 
 ```sh
-pnpm --filter @rupeefund/cms exec wrangler d1 create rupeefund-content
-pnpm --filter @rupeefund/cms exec wrangler r2 bucket create rupeefund-media
+pnpm --filter @rupeefund/cms exec wrangler d1 create rupeefund-content --location apac
+pnpm --filter @rupeefund/cms exec wrangler r2 bucket create rupeefund-media --location apac
 pnpm --filter @rupeefund/cms exec wrangler kv namespace create rupeefund-cms-session
 ```
 
-Put the database ID in `d1_databases` and the namespace ID in `kv_namespaces` of `apps/cms/wrangler.jsonc`. Merge that change before the promote in section 11.4. Without the IDs, the deploy makes new, empty resources.
+`apac` keeps the data near the readers, as for `rupeefund-waitlist`. Put the database ID in `d1_databases` and the namespace ID in `kv_namespaces` of `apps/cms/wrangler.jsonc`. Merge that change before the promote in section 11.4. Without the IDs, the deploy makes new, empty resources.
 
 ### 11.2 Close the setup to strangers
 

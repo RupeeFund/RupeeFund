@@ -25,7 +25,7 @@ Urgent when: guests write for the blog often, or a guest cannot use a passkey.
 
 ## Check an entry before it publishes
 
-A publish can succeed in the content manager while the site build fails, for example on a source link that is not `https:`. Only the Workers Builds log shows the failure. Add a `content:beforePublish` rule to `apps/cms/src/plugin.ts` that builds the document with the entry and refuses the publish with the schema message.
+A publish can succeed in the content manager while the site build fails, for example on a source link that is not `https:`. Only the log of `rupeefund-cms` shows the reason, as the `published_invalid` event. Add a `content:beforePublish` rule to `apps/cms/src/plugin.ts` that builds the document with the entry and refuses the publish with the schema message.
 
 Urgent when: a publish breaks a site build.
 

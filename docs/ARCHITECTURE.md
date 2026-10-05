@@ -59,15 +59,16 @@ The **Export** button on the dashboard and `pnpm list:export --remote` do the sa
 
 Every Cloudflare resource of this repository follows these rules. A fork deploys to its own account, so the `rupeefund-` prefix keeps its names clear of the names a contributor already has.
 
-| Resource                  | Rule                                                   |
-| ------------------------- | ------------------------------------------------------ |
-| Worker                    | `rupeefund-<surface>`                                  |
-| D1 database               | `rupeefund-<data>`, named for the data, not the Worker |
-| R2 bucket                 | `rupeefund-<data>`                                     |
-| Custom domain             | `<surface>.rupeefund.org`, with `web` at the apex      |
-| Turnstile widget          | the hostname it serves                                 |
-| Rate limit `namespace_id` | a number that no other limiter used                    |
-| Binding                   | the role inside its Worker, in `UPPER_SNAKE`           |
+| Resource                  | Rule                                                     |
+| ------------------------- | -------------------------------------------------------- |
+| Worker                    | `rupeefund-<surface>`                                    |
+| D1 database               | `rupeefund-<data>`, named for the data, not the Worker   |
+| R2 bucket                 | `rupeefund-<data>`                                       |
+| KV namespace              | `rupeefund-<surface>-<data>`, because one Worker owns it |
+| Custom domain             | `<surface>.rupeefund.org`, with `web` at the apex        |
+| Turnstile widget          | the hostname it serves                                   |
+| Rate limit `namespace_id` | a number that no other limiter used                      |
+| Binding                   | the role inside its Worker, in `UPPER_SNAKE`             |
 
 ## 8. Security headers
 
