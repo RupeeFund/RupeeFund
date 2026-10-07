@@ -26,3 +26,6 @@ overrides:
   undici@7: ">=7.29.1 <8"
   fflate@0.7: ">=0.7.5 <0.8"
   http-cache-semantics@4: ">=4.2.1 <5"
+  source-map-js@1: ">=1.2.2 <2"
+  sharp@0: ">=0.35.5 <0.36"
+  smol-toml@1: ">=1.9.0 <2"
