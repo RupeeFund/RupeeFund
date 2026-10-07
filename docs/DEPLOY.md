@@ -4,20 +4,24 @@ The system runs on the Workers Free plan.
 
 ## 1. The branch model
 
-| Branch | Site                  | Worker            | Trigger                                     |
-| ------ | --------------------- | ----------------- | ------------------------------------------- |
-| `main` | none                  | none              | never                                       |
-| `live` | `rupeefund.org`       | `rupeefund-web`   | the maintainer, with the `Promote` workflow |
-| `live` | `admin.rupeefund.org` | `rupeefund-admin` | the maintainer, with the `Promote` workflow |
-| `live` | `cms.rupeefund.org`   | `rupeefund-cms`   | the maintainer, with the `Promote` workflow |
+| Branch | Site                  | Worker            | Trigger               |
+| ------ | --------------------- | ----------------- | --------------------- |
+| `main` | none                  | none              | never                 |
+| `live` | `rupeefund.org`       | `rupeefund-web`   | a promote (section 3) |
+| `live` | `admin.rupeefund.org` | `rupeefund-admin` | a promote (section 3) |
+| `live` | `cms.rupeefund.org`   | `rupeefund-cms`   | a promote (section 3) |
 
 Each Worker has its own Cloudflare Workers Builds project, and each watches `live`. One promote ships all Workers. Each project uses the repository root as the root directory, because pnpm installs the whole workspace from the root lockfile.
 
-| Worker            | Build command                                    | Deploy command                                        |
-| ----------------- | ------------------------------------------------ | ----------------------------------------------------- |
-| `rupeefund-web`   | `pnpm turbo run build --filter=@rupeefund/web`   | `pnpm --filter @rupeefund/web exec wrangler deploy`   |
-| `rupeefund-admin` | `pnpm turbo run build --filter=@rupeefund/admin` | `pnpm --filter @rupeefund/admin exec wrangler deploy` |
-| `rupeefund-cms`   | `pnpm turbo run build --filter=@rupeefund/cms`   | `pnpm --filter @rupeefund/cms exec wrangler deploy`   |
+| Worker            | Build command                                                                                                                                           | Deploy command                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `rupeefund-web`   | `pnpm check && pnpm turbo run build --filter=@rupeefund/web`                                                                                            | `pnpm --filter @rupeefund/web exec wrangler deploy`   |
+| `rupeefund-admin` | `pnpm check && pnpm turbo run build --filter=@rupeefund/admin && pnpm --filter @rupeefund/admin exec node ../../packages/db/scripts/assert-applied.mts` | `pnpm --filter @rupeefund/admin exec wrangler deploy` |
+| `rupeefund-cms`   | `pnpm check && pnpm turbo run build --filter=@rupeefund/cms`                                                                                            | `pnpm --filter @rupeefund/cms exec wrangler deploy`   |
+
+The build is the only gate of a deploy. `pnpm check` runs first, and the build of `rupeefund-web` and `rupeefund-admin` also checks the migrations of the live database (section 4). When a step fails, Workers Builds deploys nothing, and the earlier version stays live. CI on `main` and the browser tests are signals. They do not stop a deploy.
+
+The Workers Builds API token of `rupeefund-web` and `rupeefund-admin` needs the D1 Read permission for the migration check.
 
 Turn off branch builds for all branches except `live` on each project. Keep them off. `docs/ARCHITECTURE.md` section 3 gives the reason.
 
@@ -35,14 +39,16 @@ pnpm wrangler d1 execute rupeefund-waitlist --local --persist-to ../../.wrangler
 
 ## 3. How to promote
 
-Wait until CI on the tip of `main` passes. Then run the `Promote` workflow from the Actions tab on `main`. It fast-forwards `live` to the tip of `main`. It stops when CI has not passed on that commit. It also stops when the promote adds a migration and you did not tick the box that says you applied it (section 4).
+A promote fast-forwards `live` to a commit on `main`. Workers Builds then builds and deploys each Worker (section 1). Apply each new migration before you promote (section 4).
 
-Without the workflow, make sure CI passed on the commit. Then fast-forward `live`:
+From a computer:
 
 ```sh
 git fetch origin
 git push origin <sha>:live
 ```
+
+From the phone, run the `Promote` workflow from the Actions tab on `main`. It fast-forwards `live` to the tip of `main` and does nothing else. A second run on the same commit changes nothing.
 
 Do not force the push. `live` is always a prefix of `main`, so a promote takes a commit and everything before it. Promote often.
 
@@ -54,13 +60,15 @@ The deployment applies no migration. You apply each one by hand, in this order:
 
 1. Export the live database.
 1. Apply the migration to the live database.
-1. Fast-forward `live`.
+1. Promote (section 3).
 
 ```sh
 pnpm db:migrate --remote
 ```
 
 The command exports the live database to a new temporary folder first, and prints the file path. On macOS and Linux, only your user can read that folder. It stops when the export fails. Then it applies the new migrations and confirms that none are left. Wrangler asks you to confirm the apply. Delete the export file when you are done, because it holds the list. Without `--remote`, the command migrates the local database.
+
+The build of `rupeefund-web` and `rupeefund-admin` refuses a commit with a migration that the live database has not applied. Workers Builds then deploys nothing. Apply the migration, then retry the build in the Workers Builds dashboard. A second promote of the same commit starts no build.
 
 **Make each migration additive.** During a promote two Worker versions read the one live database. Add a column with a default or with NULL permitted. A change that removes a column needs two promotes: one that stops all reads of the column, and a later one that drops it.
 

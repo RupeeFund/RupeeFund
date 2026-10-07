@@ -7,6 +7,7 @@ const localBin = (name) => resolve("node_modules", ".bin", WIN ? `${name}.cmd` :
 
 const steps = [
   [process.execPath, ["scripts/assert-deploy-env.mjs"], false],
+  [process.execPath, ["../../packages/db/scripts/assert-applied.mts"], false],
   [localBin("astro"), ["build"], WIN],
   [process.execPath, ["scripts/assert-dist-sitekey.mjs"], false],
 ];

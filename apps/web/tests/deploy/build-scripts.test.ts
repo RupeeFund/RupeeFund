@@ -14,8 +14,13 @@ describe("one build chain serves the one environment", () => {
     expect(scripts.preview).toContain("--assets dist-preview");
   });
 
-  it("runs the config guard, the build and the sitekey guard in that order", () => {
-    const order = ["scripts/assert-deploy-env.mjs", "astro", "scripts/assert-dist-sitekey.mjs"];
+  it("runs the config guard, the migration guard, the build and the sitekey guard in order", () => {
+    const order = [
+      "scripts/assert-deploy-env.mjs",
+      "../../packages/db/scripts/assert-applied.mts",
+      "astro",
+      "scripts/assert-dist-sitekey.mjs",
+    ];
     const positions = order.map((step) => builder.indexOf(step));
     expect(positions.every((p) => p > -1)).toBe(true);
     expect([...positions].sort((a, b) => a - b)).toEqual(positions);
