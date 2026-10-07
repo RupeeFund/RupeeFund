@@ -241,7 +241,7 @@ Each collection has typed fields. The layout stays in code, so an editor changes
 - `packages/content/src/schema.ts`, the document
 - the component in `packages/site/src/`
 
-The content manager has no cron trigger (`"crons": []` in `apps/cms/wrangler.jsonc`). Each EmDash tick starts the full runtime and uses more than the 10 ms CPU limit of the Workers Free plan. So a scheduled publish does not occur, and the EmDash cleanup does not run. Publish each entry by hand.
+The content manager has no cron trigger (`"crons": []` in `apps/cms/wrangler.jsonc`). Each EmDash tick starts the full runtime and uses more than the 10 ms CPU limit of the Workers Free plan. So the EmDash cleanup does not run, and the plugin refuses each schedule (`scheduleGate` in `apps/cms/src/site-hooks.ts`). An entry goes live only when a person publishes it.
 
 ### 11.7 The blog
 

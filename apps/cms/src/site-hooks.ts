@@ -17,6 +17,13 @@ export function policyGate(
   return { cancel: true, reason: "Only an admin can publish, schedule or unpublish a policy." };
 }
 
+export function scheduleGate(): ContentPolicyDecision {
+  return {
+    cancel: true,
+    reason: "The content manager does not publish at a set time. Publish the entry now.",
+  };
+}
+
 export function policyEditGate(event: Pick<ContentHookEvent, "collection" | "actor">): void {
   if (event.collection !== "policies") return;
   if ((event.actor?.role ?? 0) >= ADMIN_ROLE) return;

@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { policyDeleteGate, policyEditGate, policyGate, rebuildSite } from "./site-hooks.ts";
+import {
+  policyDeleteGate,
+  policyEditGate,
+  policyGate,
+  rebuildSite,
+  scheduleGate,
+} from "./site-hooks.ts";
 
 const editor = { id: "u1", role: 40, source: "api" as const };
 const admin = { id: "u2", role: 50, source: "api" as const };
@@ -27,6 +33,15 @@ describe("the policy gate", () => {
 
   it("lets the scheduler publish a policy that an admin scheduled", () => {
     expect(policyGate({ collection: "policies", origin: { source: "scheduler" } })).toBeUndefined();
+  });
+});
+
+describe("the schedule gate", () => {
+  it("refuses each schedule, because no cron publishes it", () => {
+    expect(scheduleGate()).toEqual({
+      cancel: true,
+      reason: "The content manager does not publish at a set time. Publish the entry now.",
+    });
   });
 });
 

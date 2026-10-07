@@ -1,6 +1,12 @@
 import { env } from "cloudflare:workers";
 import { definePlugin, type PluginContext } from "emdash";
-import { policyDeleteGate, policyEditGate, policyGate, rebuildSite } from "./site-hooks.ts";
+import {
+  policyDeleteGate,
+  policyEditGate,
+  policyGate,
+  rebuildSite,
+  scheduleGate,
+} from "./site-hooks.ts";
 
 async function rebuild(_event: unknown, ctx: PluginContext): Promise<void> {
   const result = await rebuildSite(env.DEPLOY_HOOK_URL, fetch);
@@ -16,7 +22,7 @@ export function createPlugin() {
       "content:beforeSave": async (event) => policyEditGate(event),
       "content:beforeDelete": async (event) => policyDeleteGate(event),
       "content:beforePublish": async (event) => policyGate(event),
-      "content:beforeSchedule": async (event) => policyGate(event),
+      "content:beforeSchedule": async () => scheduleGate(),
       "content:beforeUnpublish": async (event) => policyGate(event),
       "content:afterPublish": rebuild,
       "content:afterUnpublish": rebuild,
