@@ -29,3 +29,12 @@ overrides:
   source-map-js@1: ">=1.2.2 <2"
   sharp@0: ">=0.35.5 <0.36"
   smol-toml@1: ">=1.9.0 <2"
+minimumReleaseAgeExclude:
+  - "@emdash-cms/admin@1.2.0"
+  - "@emdash-cms/auth@1.2.0"
+  - "@emdash-cms/blocks@1.2.0"
+  - "@emdash-cms/cloudflare@1.2.0"
+  - "@emdash-cms/gutenberg-to-portable-text@1.2.0"
+  - "@emdash-cms/plugin-types@0.6.0"
+  - "@emdash-cms/registry-verification@0.3.4"
+  - emdash@1.2.0

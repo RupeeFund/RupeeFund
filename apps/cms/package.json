@@ -15,14 +15,14 @@
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.3",
     "@astrojs/react": "^7.0.0",
-    "@emdash-cms/cloudflare": "1.1.0",
+    "@emdash-cms/cloudflare": "1.2.0",
     "@fontsource-variable/inter": "catalog:",
     "@rupeefund/content": "workspace:*",
     "@rupeefund/site": "workspace:*",
     "@rupeefund/ui": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.5",
-    "emdash": "1.1.0",
+    "emdash": "1.2.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "tailwindcss": "catalog:"
