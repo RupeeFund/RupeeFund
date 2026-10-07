@@ -239,7 +239,7 @@ Each collection has typed fields. The layout stays in code, so an editor changes
 - `packages/content/src/schema.ts`, the document
 - the component in `packages/site/src/`
 
-The `* * * * *` cron runs the scheduled publish. It reads D1 each minute. These reads use the shared allowance of section 10.4.
+The content manager has no cron trigger (`"crons": []` in `apps/cms/wrangler.jsonc`). Each EmDash tick starts the full runtime and uses more than the 10 ms CPU limit of the Workers Free plan. So a scheduled publish does not occur, and the EmDash cleanup does not run. Publish each entry by hand.
 
 ### 11.7 The blog
 

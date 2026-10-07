@@ -28,6 +28,6 @@
   },
   "observability": { "enabled": true },
   "triggers": {
-    "crons": ["* * * * *"],
+    "crons": [],
   },
 }

@@ -16,7 +16,7 @@ An admin sends you an invite link. Open it and make a passkey. Then sign in with
 
 1. Save the entry as a draft.
 1. Click **Preview**. The preview shows the draft as the site will show it.
-1. Click **Publish**, or set a time to publish it later.
+1. Click **Publish**. Do not set a time to publish later. The content manager does not publish at a set time.
 
 Each publish, unpublish, delete or restore builds the site again. The change is on the site after some minutes.
 
