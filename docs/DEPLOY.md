@@ -309,3 +309,18 @@ Keep this order, so that each build finds the fields that its code reads:
 - **To remove a field.** Promote the code that stops reading it. Then remove the field in the live content manager.
 
 EmDash cannot change **Required** or **Unique** on an existing field. The switch shows, but the save fails.
+
+### 11.9 Block the scanners
+
+Each request that reaches `rupeefund-cms` starts the Worker and uses CPU time. A WAF custom rule on the zone blocks the paths that the content manager does not serve. The Workers Free plan gives 10 ms of CPU time to each request.
+
+1. Go to the zone > **Security** > **WAF** > **Custom rules**.
+1. Add the rule `cms: block paths outside the content manager routes`, with the action **Block**, and this expression:
+
+   ```txt
+   (http.host eq "cms.rupeefund.org" or starts_with(http.host, "cms.rupeefund.org:")) and not (http.request.uri.path in {"/" "/_emdash" "/_image" "/published.json"} or starts_with(http.request.uri.path, "/_emdash/") or starts_with(http.request.uri.path, "/_astro/") or starts_with(http.request.uri.path, "/_server-islands/") or starts_with(http.request.uri.path, "/media/") or starts_with(http.request.uri.path, "/preview/") or starts_with(http.request.uri.path, "/seasons/") or starts_with(http.request.uri.path, "/.well-known/oauth-") or starts_with(http.request.uri.path, "/cdn-cgi/"))
+   ```
+
+1. Run `pnpm live:check`. Each line must say `PASS`.
+
+When you add a route or a folder in `apps/cms/public/`, add its path to the rule.

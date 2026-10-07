@@ -208,6 +208,8 @@ Only two addresses of `rupeefund-cms` are public:
 
 The root, `/`, sends the visitor to `/_emdash/admin`.
 
+A WAF custom rule on the zone blocks each other path before it reaches the Worker. `docs/DEPLOY.md` section 11.9 gives the rule.
+
 The media addresses send only PNG, JPEG, GIF, WebP and AVIF files, with a sandbox policy. The schema refuses every other image type, so an SVG with a script cannot reach either site.
 
 ### 11.3 Who gets in
