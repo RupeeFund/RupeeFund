@@ -12,9 +12,8 @@ export function policyGate(
   event: Pick<ContentPolicyEvent, "collection" | "origin" | "actor">,
 ): ContentPolicyDecision {
   if (event.collection !== "policies") return;
-  if (event.origin.source === "scheduler") return;
   if ((event.actor?.role ?? 0) >= ADMIN_ROLE) return;
-  return { cancel: true, reason: "Only an admin can publish, schedule or unpublish a policy." };
+  return { cancel: true, reason: "Only an admin can publish or unpublish a policy." };
 }
 
 export function scheduleGate(): ContentPolicyDecision {

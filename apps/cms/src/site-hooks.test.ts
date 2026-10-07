@@ -19,7 +19,7 @@ describe("the policy gate", () => {
   it("refuses a policy action by an editor, with a reason", () => {
     expect(policyGate({ collection: "policies", origin: api, actor: editor })).toEqual({
       cancel: true,
-      reason: "Only an admin can publish, schedule or unpublish a policy.",
+      reason: "Only an admin can publish or unpublish a policy.",
     });
   });
 
@@ -29,10 +29,6 @@ describe("the policy gate", () => {
 
   it("lets an admin act on a policy", () => {
     expect(policyGate({ collection: "policies", origin: api, actor: admin })).toBeUndefined();
-  });
-
-  it("lets the scheduler publish a policy that an admin scheduled", () => {
-    expect(policyGate({ collection: "policies", origin: { source: "scheduler" } })).toBeUndefined();
   });
 });
 
@@ -46,7 +42,7 @@ describe("the schedule gate", () => {
 });
 
 describe("the policy edit gate", () => {
-  it("refuses an edit of a policy by an editor, so a scheduled policy keeps the admin's text", () => {
+  it("refuses an edit of a policy by an editor", () => {
     expect(() => policyEditGate({ collection: "policies", actor: editor })).toThrow(
       expect.objectContaining({
         name: "ContentSaveRejectedError",

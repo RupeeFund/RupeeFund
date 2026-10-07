@@ -224,7 +224,7 @@ The files that EmDash stores are private. `apps/cms/src/middleware.ts` answers 4
 
 `apps/cms/src/plugin.ts` adds three rules:
 
-- Only an admin edits, publishes, schedules or unpublishes a policy. So the scheduler publishes only the text of an admin.
+- Only an admin edits, publishes or unpublishes a policy.
 - Nobody deletes a policy, because each build needs all four. To change a policy, edit it.
 - A publish, an unpublish, a delete or a restore posts to `DEPLOY_HOOK_URL`, the Deploy Hook of `rupeefund-web`. The site then builds again. Requests that arrive before a build starts make one build.
 
@@ -241,7 +241,7 @@ Each collection has typed fields. The layout stays in code, so an editor changes
 - `packages/content/src/schema.ts`, the document
 - the component in `packages/site/src/`
 
-The content manager has no cron trigger (`"crons": []` in `apps/cms/wrangler.jsonc`). Each EmDash tick starts the full runtime and uses more than the 10 ms CPU limit of the Workers Free plan. So the EmDash cleanup does not run, and the plugin refuses each schedule (`scheduleGate` in `apps/cms/src/site-hooks.ts`). An entry goes live only when a person publishes it.
+The content manager has no cron trigger (`"crons": []` in `apps/cms/wrangler.jsonc`). Each EmDash tick starts the full runtime, and a tick often uses more than the 10 ms CPU limit of the Workers Free plan. So the plugin refuses each schedule (`scheduleGate` in `apps/cms/src/site-hooks.ts`). An entry goes live only when a person publishes it. The EmDash cleanup also does not run. Expired sign-in challenges and tokens stay in D1, and an upload that did not finish stays in R2. A scheduled backup in the EmDash settings does not run.
 
 ### 11.7 The blog
 

@@ -323,4 +323,4 @@ Each request that reaches `rupeefund-cms` starts the Worker and uses CPU time. A
 
 1. Run `pnpm live:check`. Each line must say `PASS`.
 
-When you add a route or a folder in `apps/cms/public/`, add its path to the rule.
+The rule also blocks the EmDash `/robots.txt` and sitemaps, because no person or crawler needs them on this host. When you add a route or a folder in `apps/cms/public/`, add its path to the rule.
