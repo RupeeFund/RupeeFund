@@ -103,6 +103,13 @@ function probes(site: string, admin: string, cms: string): [string, Probe][] {
     ["cms refuses the admin", (fetch) => signInRedirect(fetch, cms)],
     ["cms refuses the preview", (fetch) => notFound(fetch, `${cms}/preview/posts/x`)],
     [
+      "cms blocks the scanners",
+      async (fetch) => {
+        const { status } = await fetch(`${cms}/wp-login.php`, MANUAL);
+        return status === 403 ? null : `answered ${status}, not 403 from the WAF rule`;
+      },
+    ],
+    [
       "cms refuses the stored files",
       async (fetch) => {
         const problems: string[] = [];

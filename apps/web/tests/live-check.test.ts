@@ -42,6 +42,7 @@ function healthy(): Record<string, Route> {
     [`${CMS}/preview/posts/x`]: notFound,
     [`${CMS}/_emdash/api/media/file/x.png`]: notFound,
     [`${CMS}/_image?href=/_emdash/api/media/file/x.png`]: notFound,
+    [`${CMS}/wp-login.php`]: () => new Response("Forbidden", { status: 403 }),
   };
 }
 
@@ -153,6 +154,11 @@ describe("the live check", () => {
       "cms refuses the preview",
       "cms refuses the stored files",
     ]);
+  });
+
+  it("fails when a scanner path on the cms reaches the Worker", async () => {
+    const routes = { ...healthy(), [`${CMS}/wp-login.php`]: notFound };
+    expect(await failed(routes)).toEqual(["cms blocks the scanners"]);
   });
 
   it("fails when EmDash answers for a stored file in place of the sign-in gate", async () => {
