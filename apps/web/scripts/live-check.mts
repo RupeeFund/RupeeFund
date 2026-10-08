@@ -22,20 +22,34 @@ async function accessRedirect(fetch: Fetch, url: string): Promise<string | null>
   return `answered ${res.status} ${location}`.trim() + ", not a redirect to Cloudflare Access";
 }
 
-async function signInRedirect(fetch: Fetch, cms: string): Promise<string | null> {
-  const res = await fetch(`${cms}/_emdash/admin`, MANUAL);
+async function signInRedirect(fetch: Fetch, site: string): Promise<string | null> {
+  const res = await fetch(`${site}/_emdash/admin`, MANUAL);
   const location = res.headers.get("location") ?? "";
-  const target = URL.canParse(location, cms) ? new URL(location, cms) : null;
+  const target = URL.canParse(location, site) ? new URL(location, site) : null;
   const toLogin =
-    target?.origin === new URL(cms).origin && target.pathname === "/_emdash/admin/login";
+    target?.origin === new URL(site).origin && target.pathname === "/_emdash/admin/login";
   if (res.status === 302 && toLogin) return null;
-  return `answered ${res.status} ${location}`.trim() + ", not a redirect to the cms sign-in";
+  return `answered ${res.status} ${location}`.trim() + ", not a redirect to the sign-in";
 }
 
-async function notFound(fetch: Fetch, url: string): Promise<string | null> {
-  const { status } = await fetch(url, MANUAL);
-  return status === 404 ? null : `answered ${status}, not 404`;
+async function eachAnswers(
+  fetch: Fetch,
+  urls: readonly string[],
+  passes: (res: Response) => Promise<boolean>,
+): Promise<string | null> {
+  const problems: string[] = [];
+  for (const url of urls) {
+    const res = await fetch(url, MANUAL);
+    if (!(await passes(res))) problems.push(`${new URL(url).pathname} answered ${res.status}`);
+  }
+  return problems.length === 0 ? null : problems.join(", ");
 }
+
+const SECURITY_HEADERS: Readonly<Record<string, string | null>> = {
+  "content-security-policy": null,
+  "strict-transport-security": null,
+  "x-frame-options": "DENY",
+};
 
 function probes(site: string, admin: string, cms: string): [string, Probe][] {
   return [
@@ -60,11 +74,23 @@ function probes(site: string, admin: string, cms: string): [string, Probe][] {
       "site security headers",
       async (fetch) => {
         const { headers } = await fetch(`${site}/`);
-        const missing = ["content-security-policy", "strict-transport-security"].filter(
-          (name) => !headers.has(name),
-        );
-        return missing.length === 0 ? null : `missing ${missing.join(", ")}`;
+        const wrong = Object.entries(SECURITY_HEADERS)
+          .filter(
+            ([name, value]) =>
+              !headers.has(name) || (value !== null && headers.get(name) !== value),
+          )
+          .map(([name]) => name);
+        return wrong.length === 0 ? null : `missing or wrong ${wrong.join(", ")}`;
       },
+    ],
+    [
+      "site renders the content",
+      (fetch) =>
+        eachAnswers(
+          fetch,
+          ["/", "/faq", "/people", "/blog"].map((path) => `${site}${path}`),
+          async (res) => res.status === 200,
+        ),
     ],
     [
       "site brand files",
@@ -77,41 +103,57 @@ function probes(site: string, admin: string, cms: string): [string, Probe][] {
         return bad.length === 0 ? null : bad.join(", ");
       },
     ],
-    ["admin refuses the page", (fetch) => accessRedirect(fetch, `${admin}/`)],
-    ["admin refuses the counts", (fetch) => accessRedirect(fetch, `${admin}/api/summary`)],
+    ["content manager asks for a sign-in", (fetch) => signInRedirect(fetch, site)],
     [
-      "cms setup is done",
+      "content manager stays out of search",
       async (fetch) => {
-        const res = await fetch(`${cms}/_emdash/api/setup/status`);
-        const body = (await res.json().catch(() => null)) as {
-          data?: { needsSetup?: unknown };
-        } | null;
-        if (res.status === 200 && body?.data?.needsSetup === false) return null;
-        return `answered ${res.status}, the cms has no admin yet`;
+        const { headers } = await fetch(`${site}/_emdash/admin/login`, MANUAL);
+        return headers.get("x-robots-tag")?.includes("noindex") ? null : "no noindex header";
       },
     ],
-    ["cms refuses the admin", (fetch) => signInRedirect(fetch, cms)],
-    ["cms refuses the preview", (fetch) => notFound(fetch, `${cms}/preview/posts/x`)],
     [
-      "cms blocks the scanners",
+      "site denies the unused routes",
+      (fetch) =>
+        eachAnswers(
+          fetch,
+          [
+            "/_emdash/api/health",
+            "/_emdash/api/setup/status",
+            "/_emdash/api/oauth/register",
+            "/.well-known/oauth-protected-resource",
+          ].map((path) => `${site}${path}`),
+          async (res) => res.status === 404,
+        ),
+    ],
+    [
+      "site refuses the unpublished files",
+      (fetch) =>
+        eachAnswers(
+          fetch,
+          [
+            "/_emdash/api/media/file/x.png",
+            "/_image?href=/_emdash/api/media/file/x.png",
+            "/media/x.png",
+          ].map((path) => `${site}${path}`),
+          async (res) => res.status === 404 && (await res.text()) === "Not found",
+        ),
+    ],
+    [
+      "site blocks the scanners",
       async (fetch) => {
-        const { status } = await fetch(`${cms}/wp-login.php`, MANUAL);
+        const { status } = await fetch(`${site}/wp-login.php`, MANUAL);
         return status === 403 ? null : `answered ${status}, not 403 from the WAF rule`;
       },
     ],
+    ["admin refuses the page", (fetch) => accessRedirect(fetch, `${admin}/`)],
+    ["admin refuses the counts", (fetch) => accessRedirect(fetch, `${admin}/api/summary`)],
     [
-      "cms refuses the stored files",
+      "cms points at the site",
       async (fetch) => {
-        const problems: string[] = [];
-        for (const path of [
-          "/_emdash/api/media/file/x.png",
-          "/_image?href=/_emdash/api/media/file/x.png",
-        ]) {
-          const res = await fetch(`${cms}${path}`, MANUAL);
-          const gated = res.status === 404 && (await res.text()) === "Not found";
-          if (!gated) problems.push(`${path} answered ${res.status} without the sign-in gate`);
-        }
-        return problems.length === 0 ? null : problems.join(", ");
+        const res = await fetch(`${cms}/`, MANUAL);
+        const location = res.headers.get("location") ?? "";
+        if (res.status === 301 && location === `${site}/admin`) return null;
+        return `answered ${res.status} ${location}`.trim() + `, not a 301 to ${site}/admin`;
       },
     ],
   ];

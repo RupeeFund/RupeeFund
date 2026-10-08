@@ -40,6 +40,11 @@ test.describe("public pages smoke", () => {
     expect([response.status(), response.headers()["location"]]).toEqual([302, "/people"]);
   });
 
+  test("the admin path opens the content manager", async ({ page }) => {
+    const response = await page.request.fetch("/admin", { maxRedirects: 0 });
+    expect([response.status(), response.headers()["location"]]).toEqual([302, "/_emdash/admin"]);
+  });
+
   test("an unknown route serves the 404 page", async ({ page }) => {
     const response = await page.goto("/no-such-page");
     expect(response?.status()).toBe(404);

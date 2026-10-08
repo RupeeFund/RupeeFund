@@ -42,4 +42,10 @@ export const PEOPLE = entries("people").map(({ slug, data }) => ({
   photoUrl: typeof data.photo_url === "string" && data.photo_url ? data.photo_url : undefined,
 }));
 
-export const MEDIA: readonly string[] = readdirSync("tests/fixtures/content/media");
+const MEDIA = readdirSync("tests/fixtures/content/media");
+
+const published = JSON.stringify(fixture.posts.filter((post) => post.status === "published"));
+
+export const PUBLISHED_MEDIA: readonly string[] = MEDIA.filter((file) => published.includes(file));
+
+export const DRAFT_MEDIA: readonly string[] = MEDIA.filter((file) => !published.includes(file));

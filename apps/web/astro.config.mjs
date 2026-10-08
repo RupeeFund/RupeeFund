@@ -25,7 +25,7 @@ export default defineConfig({
     format: "file",
   },
   adapter: cloudflare({
-    imageService: "passthrough",
+    imageService: "cloudflare-binding",
     persistState: { path: "../../.wrangler/state" },
   }),
   integrations: [
@@ -36,6 +36,7 @@ export default defineConfig({
       storage: r2({ binding: "MEDIA" }),
       siteUrl: SITE_URL,
       mcp: false,
+      middleware: { outer: "./src/outer.ts" },
       plugins: [
         {
           id: "rupeefund-site",

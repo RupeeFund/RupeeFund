@@ -1,10 +1,11 @@
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { extname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
 const STATE = resolve(process.argv[2] ?? "../../.wrangler/state");
 const FIXTURES = "tests/fixtures/content";
+const TYPES = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp" };
 const D1_FILES = join(STATE, "v3", "d1", "miniflare-D1DatabaseObject");
 
 // workaround: nodejs/node#21825 — a .cmd needs a shell, which searches CWD first
@@ -64,6 +65,8 @@ for (const file of readdirSync(join(FIXTURES, "media"))) {
     STATE,
     "--file",
     join(FIXTURES, "media", file),
+    "--content-type",
+    TYPES[extname(file).slice(1).toLowerCase()] ?? "application/octet-stream",
   ]);
 }
 

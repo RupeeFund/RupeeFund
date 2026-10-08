@@ -43,6 +43,7 @@
     "@types/node": "catalog:",
     "@types/react": "^19.3.0",
     "astro": "^7.3.5",
+    "devalue": "5.9.4",
     "jsdom": "catalog:",
     "react": "^19.3.0",
     "satori": "^0.33.5",

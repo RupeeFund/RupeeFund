@@ -24,6 +24,7 @@
   ],
   "kv_namespaces": [{ "binding": "SESSION", "id": "ba8662a991d345168a0bdc4d02645dfc" }],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "rupeefund-media" }],
+  "images": { "binding": "IMAGES" },
   "vars": {
     "TURNSTILE_HOSTNAMES": "rupeefund.org",
     "TURNSTILE_ACTION": "waitlist_signup",

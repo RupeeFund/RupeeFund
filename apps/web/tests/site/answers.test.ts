@@ -1,12 +1,31 @@
 import { describe, expect, it } from "vitest";
 import { answers } from "./dist.ts";
-import { MEDIA_ROUTES, MISSING, ROUTES } from "./routes.ts";
+import {
+  ALLOWED_WRITES,
+  ANONYMOUS_SCHEMA_WRITE,
+  CONTENT_MANAGER,
+  DENIED,
+  GATED_MEDIA,
+  MEDIA_ROUTES,
+  MISSING,
+  REFUSED_WRITES,
+  RESIZED_MEDIA,
+  ROUTES,
+  SESSION_SCHEMA_WRITE,
+  SIGNED_IN_READS,
+  TOKEN_SCHEMA_WRITE,
+  callName,
+} from "./routes.ts";
+
+const HSTS = "max-age=63072000; includeSubDomains; preload";
 
 describe("the live pages", () => {
-  it("answer 200 for each page, and 404 for the not-found page", () => {
+  it("answer 200 for each page, 404 for the not-found page and 500 for the error page", () => {
     const statuses = Object.fromEntries(ROUTES.map((route) => [route, answers()[route]?.status]));
     expect(statuses).toEqual(
-      Object.fromEntries(ROUTES.map((route) => [route, route === "/404" ? 404 : 200])),
+      Object.fromEntries(
+        ROUTES.map((route) => [route, route === "/404" ? 404 : route === "/500" ? 500 : 200]),
+      ),
     );
   });
 
@@ -14,11 +33,77 @@ describe("the live pages", () => {
     expect(answers()[route]?.status).toBe(404);
   });
 
-  it.each(MEDIA_ROUTES)("serve the image %s from the media library", (route) => {
-    expect(answers()[route]).toEqual({
+  it.each(MEDIA_ROUTES)("serve %s, which published content uses", (route) => {
+    expect(answers()[route]).toMatchObject({
       status: 200,
       type: "image/jpeg",
-      csp: "default-src 'none'; sandbox",
+      csp: expect.stringContaining("sandbox"),
+    });
+  });
+
+  it.each(GATED_MEDIA)("refuse %s to a stranger, because only a draft uses it", (route) => {
+    expect(answers()[route]).toMatchObject({ status: 404, body: "Not found" });
+  });
+
+  it.each(RESIZED_MEDIA)("refuse to resize %s for a stranger", (route) => {
+    expect(answers()[route]).toMatchObject({ status: 404, body: "Not found" });
+  });
+
+  it.each(ROUTES)("ask the browser to use HTTPS and refuse framing on %s", (route) => {
+    expect(answers()[route]).toMatchObject({ hsts: HSTS, frame: "DENY", robots: null });
+  });
+});
+
+describe("the content manager routes", () => {
+  it.each(DENIED)("answer 404 for %s, which no one here uses", (route) => {
+    expect(answers()[route]?.status).toBe(404);
+  });
+
+  it.each(CONTENT_MANAGER)("keep %s out of search engines", (route) => {
+    expect(answers()[route]).toMatchObject({
+      robots: "noindex, nofollow",
+      hsts: HSTS,
+    });
+  });
+});
+
+describe("the content guard", () => {
+  it.each(REFUSED_WRITES.map(callName))("refuses %s", (name) => {
+    expect(answers()[name]).toMatchObject({
+      status: 403,
+      body: expect.stringContaining("Only an Admin can change this"),
+    });
+  });
+
+  it.each(ALLOWED_WRITES.map(callName))("passes %s on to the content manager", (name) => {
+    expect(answers()[name]?.status).toBe(200);
+  });
+
+  it("refuses a schema change from an Admin's browser session", () => {
+    expect(answers()[callName(SESSION_SCHEMA_WRITE)]).toMatchObject({
+      status: 403,
+      body: expect.stringContaining("Change the schema with an API token"),
+    });
+  });
+
+  it("leaves a schema change with no sign-in to the content manager", () => {
+    expect(answers()[callName(ANONYMOUS_SCHEMA_WRITE)]?.status).toBe(401);
+  });
+
+  it("passes a schema change from an API token on to the content manager", () => {
+    expect(answers()[callName(TOKEN_SCHEMA_WRITE)]).toMatchObject({
+      status: 400,
+      body: expect.stringContaining("VALIDATION_ERROR"),
+    });
+  });
+});
+
+describe("the media for a signed-in user", () => {
+  it.each(SIGNED_IN_READS.map(callName))("serves %s privately", (name) => {
+    expect(answers()[name]).toMatchObject({
+      status: 200,
+      type: expect.stringMatching(/^image\//),
+      cache: "private, no-store",
     });
   });
 });

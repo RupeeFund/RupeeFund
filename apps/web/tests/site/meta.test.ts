@@ -53,7 +53,7 @@ describe("_headers", () => {
     expect(headers).toContain("Cache-Control: public, max-age=31536000, immutable");
   });
 
-  it("sets HSTS", () => {
+  it("sets HSTS on the static files", () => {
     expect(headers).toContain("Strict-Transport-Security");
   });
 });

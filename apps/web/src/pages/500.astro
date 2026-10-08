@@ -1,0 +1,17 @@
+---
+import Base from "../layouts/Base.astro";
+import { pageRoute } from "../lib/seo.ts";
+---
+
+<Base route={pageRoute("/500", "Something went wrong")}>
+  <div class="wrap section-y flex flex-1 flex-col justify-center">
+    <div>
+      <p class="eyebrow tabular-nums text-brand-fg mb-2">500</p>
+      <h1 class="page-title text-ink mb-4">Something went wrong</h1>
+      <p class="text-sm text-ink-2 text-pretty mb-6">
+        We could not load this page. Try again in a minute.
+      </p>
+      <a href="/" class="btn btn-primary btn-lg"> Back to home </a>
+    </div>
+  </div>
+</Base>

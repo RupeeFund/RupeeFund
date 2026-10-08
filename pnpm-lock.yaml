@@ -177,6 +177,9 @@ importers:
       astro:
         specifier: ^7.3.5
         version: 7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
+      devalue:
+        specifier: 5.9.4
+        version: 5.9.4
       jsdom:
         specifier: 'catalog:'
         version: 30.0.1

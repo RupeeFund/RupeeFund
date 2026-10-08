@@ -2858,12 +2858,12 @@
         "season_year": 2026,
         "featured_image": {
           "provider": "local",
-          "id": "01M42TEAM00000000000000000",
+          "id": "01M42DRAFT0000000000000000",
           "alt": "A team gathered around a laptop in an office",
           "width": 1200,
           "height": 675,
           "meta": {
-            "storageKey": "01M42TEAM00000000000000000.jpg",
+            "storageKey": "01M42DRAFT0000000000000000.jpg",
             "caption": "Photo: Vitaly Gariev, Unsplash"
           }
         },

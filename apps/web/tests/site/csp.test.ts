@@ -1,16 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { PAGES, read, styles } from "./dist.ts";
+import { SITE_CSP } from "../../src/lib/edge.ts";
+import { answers, PAGES, read, styles } from "./dist.ts";
+import { ROUTES } from "./routes.ts";
 
 const headers = () => read("_headers");
 
+const PAGE_ROUTES = ROUTES.filter((route) => answers()[route]?.type?.startsWith("text/html"));
+
 function policy(): Record<string, string[]> {
-  const line = headers()
-    .split("\n")
-    .map((l) => l.trim())
-    .find((l) => l.startsWith("Content-Security-Policy:"));
-  if (line === undefined) throw new Error("no enforced Content-Security-Policy in _headers");
   const out: Record<string, string[]> = {};
-  for (const part of line.slice("Content-Security-Policy:".length).split(";")) {
+  for (const part of SITE_CSP.split(";")) {
     const [name, ...values] = part.trim().split(/\s+/);
     if (name !== undefined && name.length > 0) out[name] = values;
   }
@@ -41,10 +40,17 @@ describe("the shipped Content-Security-Policy is enforced, not advisory", () => 
     expect(headers()).not.toContain("Content-Security-Policy-Report-Only");
   });
 
-  it("applies to every page, not just a couple of them", () => {
+  it("reaches every page that the server renders", () => {
+    expect(PAGE_ROUTES.length).toBeGreaterThan(10);
+    for (const route of PAGE_ROUTES) {
+      expect(answers()[route]?.csp, `${route} has no site policy`).toBe(SITE_CSP);
+    }
+  });
+
+  it("reaches every static file through _headers, with the same policy", () => {
     const h = headers();
     const sitewide = h.slice(h.indexOf("/*"), h.indexOf("/_astro/*"));
-    expect(sitewide).toContain("Content-Security-Policy:");
+    expect(sitewide).toContain(`Content-Security-Policy: ${SITE_CSP}\n`);
   });
 
   it("forbids framing and plugins outright", () => {
@@ -110,9 +116,6 @@ describe("the policy permits everything the built pages actually load", () => {
   });
 
   it("names no payment origin, now that no page loads one", () => {
-    const line = headers()
-      .split("\n")
-      .find((l) => l.trim().startsWith("Content-Security-Policy:"));
-    expect(line).not.toContain("razorpay");
+    expect(SITE_CSP).not.toContain("razorpay");
   });
 });

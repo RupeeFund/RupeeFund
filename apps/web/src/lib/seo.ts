@@ -97,6 +97,12 @@ const ROUTE_SEO: readonly RouteSeo[] = [
     description: `That page doesn’t exist. ${INITIATIVE}.`,
     indexable: false,
   },
+  {
+    path: "/500",
+    title: "Something went wrong — The Rupee Fund",
+    description: `We could not load this page. ${INITIATIVE}.`,
+    indexable: false,
+  },
 ];
 
 export function normalizePath(path: string): string {

@@ -7,16 +7,19 @@ const CMS = "https://cms.test";
 const SECURE = {
   "content-security-policy": "default-src 'self'",
   "strict-transport-security": "max-age=63072000",
+  "x-frame-options": "DENY",
 };
 
 type Route = () => Response;
 
 const notFound: Route = () => new Response("Not found", { status: 404 });
 
+const page: Route = () => new Response("<html></html>", { headers: SECURE });
+
 const toLogin: Route = () =>
   new Response(null, {
     status: 302,
-    headers: { location: `${CMS}/_emdash/admin/login?redirect=%2F_emdash%2Fadmin` },
+    headers: { location: `${SITE}/_emdash/admin/login?redirect=%2F_emdash%2Fadmin` },
   });
 
 const toAccess: Route = () =>
@@ -29,17 +32,26 @@ function healthy(): Record<string, Route> {
   return {
     [`${SITE}/api/health`]: () => Response.json({ ok: true }),
     [`${SITE}/subscribe`]: () => new Response('<div data-sitekey="0x4AAAAreal"></div>'),
-    [`${SITE}/`]: () => new Response("<html></html>", { headers: SECURE }),
+    [`${SITE}/`]: page,
+    [`${SITE}/faq`]: page,
+    [`${SITE}/people`]: page,
+    [`${SITE}/blog`]: page,
     [`${SITE}/logo.svg`]: () => new Response("<svg/>"),
     [`${SITE}/favicon.svg`]: () => new Response("<svg/>"),
+    [`${SITE}/_emdash/admin`]: toLogin,
+    [`${SITE}/_emdash/admin/login`]: () =>
+      new Response("<html></html>", { headers: { "x-robots-tag": "noindex, nofollow" } }),
+    [`${SITE}/_emdash/api/health`]: notFound,
+    [`${SITE}/_emdash/api/setup/status`]: notFound,
+    [`${SITE}/_emdash/api/oauth/register`]: notFound,
+    [`${SITE}/.well-known/oauth-protected-resource`]: notFound,
+    [`${SITE}/_emdash/api/media/file/x.png`]: notFound,
+    [`${SITE}/_image?href=/_emdash/api/media/file/x.png`]: notFound,
+    [`${SITE}/media/x.png`]: notFound,
+    [`${SITE}/wp-login.php`]: () => new Response("Forbidden", { status: 403 }),
     [`${ADMIN}/`]: toAccess,
     [`${ADMIN}/api/summary`]: toAccess,
-    [`${CMS}/_emdash/api/setup/status`]: () => Response.json({ data: { needsSetup: false } }),
-    [`${CMS}/_emdash/admin`]: toLogin,
-    [`${CMS}/preview/posts/x`]: notFound,
-    [`${CMS}/_emdash/api/media/file/x.png`]: notFound,
-    [`${CMS}/_image?href=/_emdash/api/media/file/x.png`]: notFound,
-    [`${CMS}/wp-login.php`]: () => new Response("Forbidden", { status: 403 }),
+    [`${CMS}/`]: () => new Response(null, { status: 301, headers: { location: `${SITE}/admin` } }),
   };
 }
 
@@ -82,27 +94,24 @@ describe("the live check", () => {
     expect(await failed(routes)).toEqual(["site sitekey"]);
   });
 
-  it("fails both admin lines when the Worker refuses alone, with no Access", async () => {
-    const forbidden: Route = () => Response.json({ error: "forbidden" }, { status: 403 });
-    const routes = { ...healthy(), [`${ADMIN}/`]: forbidden, [`${ADMIN}/api/summary`]: forbidden };
-    expect(await failed(routes)).toEqual(["admin refuses the page", "admin refuses the counts"]);
-  });
-
-  it("fails an admin line that redirects anywhere but Cloudflare Access", async () => {
-    const elsewhere: Route = () =>
-      new Response(null, { status: 302, headers: { location: "https://evil.example/login" } });
-    const routes = { ...healthy(), [`${ADMIN}/`]: elsewhere };
-    expect(await failed(routes)).toEqual(["admin refuses the page"]);
-  });
-
   it("fails when the signup form carries no sitekey", async () => {
     const routes = { ...healthy(), [`${SITE}/subscribe`]: () => new Response("<form></form>") };
     expect(await failed(routes)).toEqual(["site sitekey"]);
   });
 
-  it("fails when the home page lacks the security headers", async () => {
-    const routes = { ...healthy(), [`${SITE}/`]: () => new Response("<html></html>") };
-    expect(await failed(routes)).toEqual(["site security headers"]);
+  it("fails when the home page lacks a security header", async () => {
+    const framed: Route = () =>
+      new Response("<html></html>", { headers: { ...SECURE, "x-frame-options": "SAMEORIGIN" } });
+    expect(await failed({ ...healthy(), [`${SITE}/`]: framed })).toEqual(["site security headers"]);
+    const bare: Route = () => new Response("<html></html>");
+    expect(await failed({ ...healthy(), [`${SITE}/`]: bare })).toEqual(["site security headers"]);
+  });
+
+  it("fails when a content page does not render", async () => {
+    const broken: Route = () => new Response("Internal error", { status: 500 });
+    expect(await failed({ ...healthy(), [`${SITE}/faq`]: broken })).toEqual([
+      "site renders the content",
+    ]);
   });
 
   it("fails when a brand file is missing", async () => {
@@ -113,8 +122,57 @@ describe("the live check", () => {
     expect(await failed(routes)).toEqual(["site brand files"]);
   });
 
-  it("fails when the admin panel serves a page to a stranger", async () => {
-    const routes = { ...healthy(), [`${ADMIN}/`]: () => new Response("<html></html>") };
+  it("fails when the content manager opens to a stranger or signs in on another host", async () => {
+    const elsewhere: Route = () =>
+      new Response(null, {
+        status: 302,
+        headers: { location: "https://evil.example/_emdash/admin/login" },
+      });
+    expect(await failed({ ...healthy(), [`${SITE}/_emdash/admin`]: page })).toEqual([
+      "content manager asks for a sign-in",
+    ]);
+    expect(await failed({ ...healthy(), [`${SITE}/_emdash/admin`]: elsewhere })).toEqual([
+      "content manager asks for a sign-in",
+    ]);
+  });
+
+  it("fails when the content manager is open to search engines", async () => {
+    const routes = { ...healthy(), [`${SITE}/_emdash/admin/login`]: page };
+    expect(await failed(routes)).toEqual(["content manager stays out of search"]);
+  });
+
+  it("fails when an unused route answers", async () => {
+    const routes = { ...healthy(), [`${SITE}/_emdash/api/health`]: () => Response.json({}) };
+    expect(await failed(routes)).toEqual(["site denies the unused routes"]);
+  });
+
+  it("fails when a stored file opens to a stranger", async () => {
+    const image: Route = () => new Response("png", { headers: { "content-type": "image/png" } });
+    const routes = { ...healthy(), [`${SITE}/media/x.png`]: image };
+    expect(await failed(routes)).toEqual(["site refuses the unpublished files"]);
+  });
+
+  it("fails when EmDash answers for a stored file in place of the gate", async () => {
+    const missing: Route = () => Response.json({ error: { code: "NOT_FOUND" } }, { status: 404 });
+    const routes = { ...healthy(), [`${SITE}/_image?href=/_emdash/api/media/file/x.png`]: missing };
+    expect(await failed(routes)).toEqual(["site refuses the unpublished files"]);
+  });
+
+  it("fails when a scanner path reaches the Worker", async () => {
+    const routes = { ...healthy(), [`${SITE}/wp-login.php`]: notFound };
+    expect(await failed(routes)).toEqual(["site blocks the scanners"]);
+  });
+
+  it("fails both admin lines when the Worker refuses alone, with no Access", async () => {
+    const forbidden: Route = () => Response.json({ error: "forbidden" }, { status: 403 });
+    const routes = { ...healthy(), [`${ADMIN}/`]: forbidden, [`${ADMIN}/api/summary`]: forbidden };
+    expect(await failed(routes)).toEqual(["admin refuses the page", "admin refuses the counts"]);
+  });
+
+  it("fails an admin line that redirects anywhere but Cloudflare Access", async () => {
+    const elsewhere: Route = () =>
+      new Response(null, { status: 302, headers: { location: "https://evil.example/login" } });
+    const routes = { ...healthy(), [`${ADMIN}/`]: elsewhere };
     expect(await failed(routes)).toEqual(["admin refuses the page"]);
   });
 
@@ -133,50 +191,10 @@ describe("the live check", () => {
     expect(await failed(routes)).toEqual(["admin refuses the page", "admin refuses the counts"]);
   });
 
-  it("fails when the cms admin, the draft preview or a stored file opens to a stranger", async () => {
-    const page: Route = () => new Response("<html></html>");
-    const routes = {
-      ...healthy(),
-      [`${CMS}/_emdash/admin`]: page,
-      [`${CMS}/preview/posts/x`]: page,
-      [`${CMS}/_emdash/api/media/file/x.png`]: page,
-    };
-    expect(await failed(routes)).toEqual([
-      "cms refuses the admin",
-      "cms refuses the preview",
-      "cms refuses the stored files",
+  it("fails when the old cms host does not send a visitor to the site admin path", async () => {
+    const stillServes: Route = () => new Response("<html></html>");
+    expect(await failed({ ...healthy(), [`${CMS}/`]: stillServes })).toEqual([
+      "cms points at the site",
     ]);
-  });
-
-  it("fails when a scanner path on the cms reaches the Worker", async () => {
-    const routes = { ...healthy(), [`${CMS}/wp-login.php`]: notFound };
-    expect(await failed(routes)).toEqual(["cms blocks the scanners"]);
-  });
-
-  it("fails when EmDash answers for a stored file in place of the sign-in gate", async () => {
-    const missing: Route = () => Response.json({ error: { code: "NOT_FOUND" } }, { status: 404 });
-    const routes = { ...healthy(), [`${CMS}/_image?href=/_emdash/api/media/file/x.png`]: missing };
-    expect(await failed(routes)).toEqual(["cms refuses the stored files"]);
-  });
-
-  it("fails when the cms still waits for its first admin", async () => {
-    const toSetup: Route = () =>
-      new Response(null, { status: 302, headers: { location: `${CMS}/_emdash/admin/setup` } });
-    const routes = {
-      ...healthy(),
-      [`${CMS}/_emdash/api/setup/status`]: () => Response.json({ data: { needsSetup: true } }),
-      [`${CMS}/_emdash/admin`]: toSetup,
-    };
-    expect(await failed(routes)).toEqual(["cms setup is done", "cms refuses the admin"]);
-  });
-
-  it("fails when the cms admin sends a stranger to a sign-in on another host", async () => {
-    const elsewhere: Route = () =>
-      new Response(null, {
-        status: 302,
-        headers: { location: "https://evil.example/_emdash/admin/login" },
-      });
-    const routes = { ...healthy(), [`${CMS}/_emdash/admin`]: elsewhere };
-    expect(await failed(routes)).toEqual(["cms refuses the admin"]);
   });
 });

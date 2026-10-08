@@ -1,12 +1,37 @@
 import { execSync, spawn } from "node:child_process";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
 import { dirname, join, resolve } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { setTimeout as sleep } from "node:timers/promises";
-import { MEDIA_ROUTES, MISSING, RENDERED, ROUTES, fileFor } from "./routes.ts";
+import { stringify } from "devalue";
+import {
+  ALLOWED_WRITES,
+  CONTENT_MANAGER,
+  DENIED,
+  GATED_MEDIA,
+  ANONYMOUS_SCHEMA_WRITE,
+  MEDIA_ROUTES,
+  MISSING,
+  REFUSED_WRITES,
+  RENDERED,
+  RESIZED_MEDIA,
+  ROUTES,
+  SESSION,
+  SESSION_SCHEMA_WRITE,
+  SIGNED_IN_READS,
+  TOKENS,
+  TOKEN_SCHEMA_WRITE,
+  callName,
+  fileFor,
+  type Answer,
+  type Call,
+} from "./routes.ts";
 
 const TEST_SITEKEY = "1x00000000000000000000AA";
 const STATE = "../../.wrangler/site-test";
+const D1_FILES = join(STATE, "v3", "d1", "miniflare-D1DatabaseObject");
 
 // workaround: nodejs/node#21825 — a .cmd needs a shell, which searches CWD first
 const WIN = process.platform === "win32";
@@ -42,32 +67,119 @@ async function ready(base: string): Promise<void> {
   throw new Error(`The preview server at ${base} did not start`);
 }
 
+function addCallers(): void {
+  for (const file of readdirSync(D1_FILES).filter((name) => name.endsWith(".sqlite"))) {
+    const db = new DatabaseSync(join(D1_FILES, file));
+    const content = db
+      .prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'ec_pages'")
+      .get();
+    if (content) {
+      const addUser = db.prepare("INSERT INTO users (id, email, role) VALUES (?, ?, ?)");
+      addUser.run(SESSION.user, `${SESSION.user}@example.com`, SESSION.role);
+      for (const { user, role, token, scopes } of Object.values(TOKENS)) {
+        const hash = createHash("sha256").update(token).digest("base64url");
+        addUser.run(user, `${user}@example.com`, role);
+        db.prepare(
+          `INSERT INTO _emdash_api_tokens (id, name, token_hash, prefix, user_id, scopes)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+        ).run(user, user, hash, token.slice(0, 8), user, JSON.stringify(scopes));
+      }
+    }
+    db.close();
+  }
+  const session = join(STATE, "session.txt");
+  writeFileSync(session, stringify(new Map([["user", { data: { id: SESSION.user } }]])));
+  const store = `--binding SESSION --local --persist-to ${STATE}`;
+  exec(`wrangler kv key put ${SESSION.id} --path ${session} ${store}`);
+  rmSync(session);
+}
+
+function headersFor(as: Call["as"]): Record<string, string> {
+  const json = { "content-type": "application/json", "x-emdash-request": "1" };
+  if (as === "anonymous") return json;
+  if (as === "session") return { ...json, cookie: `astro-session=${SESSION.id}` };
+  return { ...json, authorization: `Bearer ${TOKENS[as].token}` };
+}
+
+async function call(base: string, { as, method, path }: Call): Promise<Answer> {
+  const res = await fetch(`${base}${path}`, {
+    method,
+    headers: headersFor(as),
+    body: method === "GET" ? undefined : "{}",
+  });
+  return {
+    status: res.status,
+    type: res.headers.get("content-type"),
+    csp: null,
+    frame: null,
+    robots: null,
+    hsts: null,
+    body: (await res.text()).slice(0, 200),
+    cache: res.headers.get("cache-control"),
+  };
+}
+
 async function render(base: string): Promise<void> {
   rmSync(RENDERED, { recursive: true, force: true });
-  const answers: Record<string, { status: number; type: string | null; csp: string | null }> = {};
-  for (const route of [...ROUTES, ...MISSING, ...MEDIA_ROUTES]) {
+  const answers: Record<string, Answer> = {};
+  const all = [
+    ...ROUTES,
+    ...MISSING,
+    ...MEDIA_ROUTES,
+    ...GATED_MEDIA,
+    ...RESIZED_MEDIA,
+    ...DENIED,
+    ...CONTENT_MANAGER,
+  ];
+  for (const route of all) {
     const res = await fetch(`${base}${route}`, { redirect: "manual" });
     answers[route] = {
       status: res.status,
       type: res.headers.get("content-type"),
       csp: res.headers.get("content-security-policy"),
+      frame: res.headers.get("x-frame-options"),
+      robots: res.headers.get("x-robots-tag"),
+      hsts: res.headers.get("strict-transport-security"),
+      body: null,
+      cache: res.headers.get("cache-control"),
     };
     const body = Buffer.from(await res.arrayBuffer());
+    if (res.status >= 400) answers[route].body = body.toString("utf8").slice(0, 200);
     if (!ROUTES.includes(route)) continue;
     const file = join(RENDERED, fileFor(route));
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, body);
   }
+  const calls = [
+    ...REFUSED_WRITES,
+    ...ALLOWED_WRITES,
+    ...SIGNED_IN_READS,
+    SESSION_SCHEMA_WRITE,
+    TOKEN_SCHEMA_WRITE,
+    ANONYMOUS_SCHEMA_WRITE,
+  ];
+  for (const one of calls) answers[callName(one)] = await call(base, one);
   writeFileSync(join(RENDERED, "answers.json"), JSON.stringify(answers, null, 2));
+}
+
+const VITEST_ENV = new Set(["DEV", "PROD", "SSR", "MODE", "BASE_URL", "NODE_ENV", "TEST"]);
+
+function outsideVitest(): NodeJS.ProcessEnv {
+  return Object.fromEntries(
+    Object.entries(process.env).filter(
+      ([name]) => !VITEST_ENV.has(name) && !name.startsWith("VITEST"),
+    ),
+  );
 }
 
 export default async function setup(): Promise<void> {
   exec("astro build --outDir dist-preview", {
-    ...process.env,
+    ...outsideVitest(),
     PUBLIC_TURNSTILE_SITEKEY: TEST_SITEKEY,
     PUBLIC_ALLOW_TEST_SITEKEY: "true",
   });
   exec(`node scripts/seed-local.mjs ${STATE}`);
+  addCallers();
   const port = await freePort();
   const base = `http://localhost:${port}`;
   const wrangler = resolve("node_modules", ".bin", WIN ? "wrangler.cmd" : "wrangler");

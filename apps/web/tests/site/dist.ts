@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { RENDERED } from "./routes.ts";
+import { RENDERED, type Answer } from "./routes.ts";
 
 export const OUT = "dist-preview/client";
 
@@ -16,10 +16,7 @@ export const headerOf = (file: string): string => {
 
 export const PAGES: readonly string[] = readdirSync(RENDERED).filter((f) => f.endsWith(".html"));
 
-export const answers = (): Record<
-  string,
-  { status: number; type: string | null; csp: string | null }
-> => JSON.parse(read("answers.json"));
+export const answers = (): Record<string, Answer> => JSON.parse(read("answers.json"));
 
 export const styles = (): string =>
   readdirSync(`${OUT}/_astro`)
