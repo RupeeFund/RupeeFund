@@ -129,11 +129,39 @@ const uniqueSlugs = <T extends { slug: string }>(entries: T[]) =>
 
 const UNIQUE_SLUGS = { message: "Give each entry its own slug" };
 
-export const portableText = z.array(
-  z.union([textBlock, imageBlock, codeBlock, divider, table, refused]),
-);
-
 const text = z.string().trim().min(1);
+
+const callout = z.object({
+  _type: z.literal("callout"),
+  tone: z.enum(["note", "highlight"]).default("note"),
+  text,
+});
+
+const quote = z.object({
+  _type: z.literal("quote"),
+  text,
+  attribution: z.string().trim().optional(),
+});
+
+const callToAction = z.object({
+  _type: z.literal("cta"),
+  label: text,
+  url: z.string().refine(isSafeHref, "Use a link to this site or an https address"),
+});
+
+export const portableText = z.array(
+  z.union([
+    textBlock,
+    imageBlock,
+    codeBlock,
+    divider,
+    table,
+    callout,
+    quote,
+    callToAction,
+    refused,
+  ]),
+);
 
 export const POST_KINDS = ["Update", "Season report", "Essay", "Guide"] as const;
 

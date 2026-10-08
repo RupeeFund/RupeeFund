@@ -30,6 +30,55 @@ export function createPlugin() {
       "content:write",
       "hooks.content-policy:register",
     ],
+    admin: {
+      portableTextBlocks: [
+        {
+          type: "callout",
+          label: "Callout",
+          description: "A short note set apart from the text",
+          category: "Sections",
+          fields: [
+            {
+              type: "select",
+              action_id: "tone",
+              label: "Tone",
+              options: [
+                { label: "Note", value: "note" },
+                { label: "Highlight", value: "highlight" },
+              ],
+              initial_value: "note",
+            },
+            { type: "text_input", action_id: "text", label: "Text", multiline: true },
+          ],
+        },
+        {
+          type: "quote",
+          label: "Quote",
+          description: "A quote with the name of the person who said it",
+          category: "Sections",
+          fields: [
+            { type: "text_input", action_id: "text", label: "Quote", multiline: true },
+            { type: "text_input", action_id: "attribution", label: "Who said it" },
+          ],
+        },
+        {
+          type: "cta",
+          label: "Call to action",
+          icon: "link",
+          description: "A button that links to a page",
+          category: "Sections",
+          fields: [
+            { type: "text_input", action_id: "label", label: "Button text" },
+            {
+              type: "text_input",
+              action_id: "url",
+              label: "Link",
+              placeholder: "/subscribe or https://…",
+            },
+          ],
+        },
+      ],
+    },
     hooks: {
       "content:beforeSave": async (event, ctx) => saveGate(event, store(ctx)),
       "content:beforeDelete": async (event, ctx) => deleteGate(event, store(ctx)),

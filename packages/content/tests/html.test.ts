@@ -151,6 +151,43 @@ describe("the editor blocks", () => {
   });
 });
 
+describe("the post building blocks", () => {
+  it("renders a callout as a note, with its text escaped", () => {
+    expect(toHtml([{ _type: "callout", tone: "note", text: "Read <this> first" }])).toBe(
+      '<aside class="callout" data-tone="note" role="note"><p>Read &lt;this&gt; first</p></aside>',
+    );
+  });
+
+  it("renders a highlighted callout", () => {
+    expect(toHtml([{ _type: "callout", tone: "highlight", text: "Mind the date" }])).toContain(
+      'data-tone="highlight"',
+    );
+  });
+
+  it("renders a quote with its attribution", () => {
+    expect(toHtml([{ _type: "quote", text: "Fund the commons", attribution: "A member" }])).toBe(
+      '<figure class="pull-quote"><blockquote><p>Fund the commons</p></blockquote>' +
+        "<figcaption>A member</figcaption></figure>",
+    );
+  });
+
+  it("renders a quote with no attribution", () => {
+    expect(toHtml([{ _type: "quote", text: "Fund the commons" }])).toBe(
+      '<figure class="pull-quote"><blockquote><p>Fund the commons</p></blockquote></figure>',
+    );
+  });
+
+  it("renders a call to action as a button link", () => {
+    expect(toHtml([{ _type: "cta", label: "Join the list", url: "/subscribe" }])).toBe(
+      '<p class="cta"><a href="/subscribe" class="btn btn-primary">Join the list</a></p>',
+    );
+  });
+
+  it("drops a call to action whose link it does not trust", () => {
+    expect(toHtml([{ _type: "cta", label: "Click", url: "javascript:alert(1)" }])).toBe("");
+  });
+});
+
 describe("the inline renderer", () => {
   it("renders one paragraph without its paragraph tag, for a styled parent", () => {
     expect(toInlineHtml(linked("/privacy"))).toBe(

@@ -102,6 +102,28 @@ describe("the content document", () => {
     expect(parse(doc).success).toBe(true);
   });
 
+  it("accepts the post building blocks", () => {
+    const doc = validDocument();
+    doc.posts[0]!.body = [
+      { _type: "callout", _key: "a", id: "x", tone: "highlight", text: "Mind the date" },
+      { _type: "quote", text: "Fund the commons", attribution: "A member" },
+      { _type: "cta", label: "Join the list", url: "/subscribe" },
+    ] as never;
+    expect(parse(doc).success).toBe(true);
+  });
+
+  it("refuses a call to action with a script link", () => {
+    const doc = validDocument();
+    doc.posts[0]!.body = [{ _type: "cta", label: "Click", url: "javascript:alert(1)" }] as never;
+    expect(parse(doc).success).toBe(false);
+  });
+
+  it("refuses an empty callout", () => {
+    const doc = validDocument();
+    doc.posts[0]!.body = [{ _type: "callout", tone: "note", text: "  " }] as never;
+    expect(parse(doc).success).toBe(false);
+  });
+
   it.each(["iframe", "htmlBlock"])("refuses a %s block", (type) => {
     const doc = validDocument();
     doc.posts[0]!.body = [{ _type: type, src: "https://example.org" }] as never;

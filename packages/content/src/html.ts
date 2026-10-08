@@ -3,6 +3,8 @@ import { isSafeHref, type PortableText } from "./schema.ts";
 
 const attr = (value: string) => escapeHTML(value);
 
+const plain = (value: unknown) => (typeof value === "string" ? escapeHTML(value) : "");
+
 type Span = { _type: "span"; text: string; marks?: string[] };
 type Cell = {
   isHeader?: boolean;
@@ -59,6 +61,23 @@ const components: PortableTextComponents = {
     },
     break: () => "<hr>",
     table: ({ value }) => renderTable(value as Table),
+    callout: ({ value }) => {
+      const tone = value.tone === "highlight" ? "highlight" : "note";
+      const text = `<p>${plain(value.text)}</p>`;
+      return `<aside class="callout" data-tone="${tone}" role="note">${text}</aside>`;
+    },
+    quote: ({ value }) => {
+      const by = plain(value.attribution);
+      const caption = by ? `<figcaption>${by}</figcaption>` : "";
+      const quote = `<blockquote><p>${plain(value.text)}</p></blockquote>`;
+      return `<figure class="pull-quote">${quote}${caption}</figure>`;
+    },
+    cta: ({ value }) => {
+      const url = typeof value.url === "string" ? value.url : "";
+      if (!isSafeHref(url)) return "";
+      const link = `<a href="${attr(url)}" class="btn btn-primary">${plain(value.label)}</a>`;
+      return `<p class="cta">${link}</p>`;
+    },
   },
 };
 
