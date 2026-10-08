@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { read } from "./dist.ts";
-import { FIXTURE } from "./fixture.ts";
+import { FAQ } from "../fixtures/content.ts";
 
-const entries = FIXTURE.faq.toSorted((a, b) => a.order - b.order);
+const entries = FAQ.toSorted((a, b) => a.order - b.order);
 
 const questions = (html: string): string[] =>
   [...html.matchAll(/<summary[^>]*>\s*<span>([^<]*)<\/span>/g)].map(([, q]) => q);

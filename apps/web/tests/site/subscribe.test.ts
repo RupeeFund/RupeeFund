@@ -1,12 +1,11 @@
 // @vitest-environment jsdom
-import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
-import { OUT } from "./dist.ts";
+import { read } from "./dist.ts";
 
 let html = "";
 let doc: Document;
 beforeAll(() => {
-  html = readFileSync(`${OUT}/subscribe.html`, "utf8");
+  html = read("subscribe.html");
   doc = new DOMParser().parseFromString(html, "text/html");
 });
 
@@ -34,7 +33,7 @@ describe("Subscribe page (/subscribe)", () => {
   });
 
   it("promises no longer that the launch email is the only email, on either outcome page", () => {
-    const confirmed = readFileSync(`${OUT}/waitlist-confirmed.html`, "utf8");
+    const confirmed = read("waitlist-confirmed.html");
     for (const page of [html, confirmed]) {
       expect(page.toLowerCase()).not.toContain("nothing else");
     }

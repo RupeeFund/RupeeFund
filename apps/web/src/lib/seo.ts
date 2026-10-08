@@ -124,6 +124,15 @@ export function seoForPath(
   };
 }
 
+export function pageRoute(path: string, title: string): RouteSeo {
+  const normalized = normalizePath(path);
+  const named = { path: normalized, title: `${title} — ${SITE_NAME}` };
+  const listed = ROUTE_SEO.find((entry) => entry.path === normalized);
+  return listed
+    ? { ...listed, ...named }
+    : { ...named, description: `${title}. ${INITIATIVE}.`, indexable: true };
+}
+
 const NON_INDEXABLE_PATHS: readonly string[] = ROUTE_SEO.filter((route) => !route.indexable).map(
   (route) => route.path,
 );

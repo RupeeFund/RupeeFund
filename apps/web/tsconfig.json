@@ -8,15 +8,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": [
-    ".astro/types.d.ts",
-    "src/**/*",
-    "tests/**/*",
-    "scripts/**/*",
-    "vitest.config.ts",
-    "vitest.components.config.ts",
-    "playwright.config.ts",
-    "astro.config.mjs"
-  ],
+  "include": [".astro/types.d.ts", "worker-configuration.d.ts", "src/**/*", "astro.config.mjs"],
   "exclude": ["dist", "src/worker"]
 }

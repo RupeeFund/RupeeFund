@@ -1,15 +1,17 @@
 ---
-import Base from "../layouts/Base.astro";
 import HomeContent from "../components/site/HomeContent.astro";
-import { content } from "../build/published.ts";
+import { faq, landingContent } from "../content/load.ts";
+import Base from "../layouts/Base.astro";
 import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
 import { TAGLINE } from "../lib/seo.ts";
+
+const [home, questions] = await Promise.all([landingContent(), faq()]);
 ---
 
 <Base>
   <HomeContent
-    home={content.home}
-    faq={content.faq}
+    home={home}
+    faq={questions}
     seasons={SEASONS}
     tagline={TAGLINE}
     ctaLabel={SUBSCRIBE_CTA}

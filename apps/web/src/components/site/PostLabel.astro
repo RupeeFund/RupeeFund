@@ -1,9 +1,9 @@
 ---
-import type { Content } from "../../content/schema.ts";
+import type { Post } from "../../content/schema.ts";
 import { SEASONS } from "./constants.ts";
 
 interface Props {
-  post: Content["posts"][number];
+  post: Post;
   compact?: boolean;
 }
 
@@ -12,7 +12,7 @@ const season = post.season && SEASONS.find((s) => s.name === post.season?.name);
 ---
 
 <span class="inline-flex flex-wrap items-center gap-x-2.5 gap-y-1">
-  <span class="eyebrow text-brand-fg">{post.kind}</span>
+  <span class="eyebrow text-brand-fg">{post.category}</span>
   {
     season && post.season && (
       <span class="inline-flex items-center gap-1.5">

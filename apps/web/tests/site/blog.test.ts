@@ -1,6 +1,5 @@
-import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { OUT, read, styles } from "./dist.ts";
+import { read, styles } from "./dist.ts";
 
 describe("the blog", () => {
   it("lists each post with a link to its page", () => {
@@ -41,6 +40,13 @@ describe("the blog", () => {
     expect(read("blog/how-open-source-gets-funded-today.html")).toContain("Post-monsoon 2026");
   });
 
+  it("labels a post with its category, and a post with none with its kind", () => {
+    const label = (slug: string) =>
+      /<span class="eyebrow text-brand-fg">([^<]*)<\/span>/.exec(read(`blog/${slug}.html`))?.[1];
+    expect(label("how-open-source-gets-funded-today")).toBe("Article");
+    expect(label("small-steady-funding-for-indian-open-source")).toBe("Essay");
+  });
+
   it("renders each block and mark of the body", () => {
     const post = read("blog/how-to-write-a-post-for-this-blog.html");
     for (const tag of ["<strong>", "<em>", "<code>", "<h3>", "<h4>", "<h5>", "<h6>", "<hr>"]) {
@@ -67,20 +73,6 @@ describe("the blog", () => {
     );
     expect(post).toContain('<a href="/faq" class="inline-link">');
     expect(post).toContain('<a href="mailto:rupeefund@fossunited.org" class="inline-link">');
-  });
-
-  it("copies each post image into the build", () => {
-    for (const file of [
-      "01M42CODE00000000000000000.jpg",
-      "01M42COINS0000000000000000.jpg",
-      "01M42GROUP0000000000000000.jpg",
-      "01M42HTML00000000000000000.jpg",
-      "01M42PAIR00000000000000000.jpg",
-      "01M42STAGE0000000000000000.jpg",
-      "01M42TEAM00000000000000000.jpg",
-    ]) {
-      expect(existsSync(`${OUT}/media/${file}`)).toBe(true);
-    }
   });
 
   it("publishes an RSS feed that links each post", () => {

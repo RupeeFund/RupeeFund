@@ -1,11 +1,9 @@
-import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { runChecks, type Fetch } from "../scripts/live-check.mts";
 
 const SITE = "https://site.test";
 const ADMIN = "https://admin.test";
 const CMS = "https://cms.test";
-const CONTENT = readFileSync("tests/fixtures/content/published.json", "utf8");
 const SECURE = {
   "content-security-policy": "default-src 'self'",
   "strict-transport-security": "max-age=63072000",
@@ -36,7 +34,6 @@ function healthy(): Record<string, Route> {
     [`${SITE}/favicon.svg`]: () => new Response("<svg/>"),
     [`${ADMIN}/`]: toAccess,
     [`${ADMIN}/api/summary`]: toAccess,
-    [`${CMS}/published.json`]: () => new Response(CONTENT),
     [`${CMS}/_emdash/api/setup/status`]: () => Response.json({ data: { needsSetup: false } }),
     [`${CMS}/_emdash/admin`]: toLogin,
     [`${CMS}/preview/posts/x`]: notFound,
@@ -134,11 +131,6 @@ describe("the live check", () => {
     delete routes[`${ADMIN}/`];
     delete routes[`${ADMIN}/api/summary`];
     expect(await failed(routes)).toEqual(["admin refuses the page", "admin refuses the counts"]);
-  });
-
-  it("fails when the cms content breaks the site schema", async () => {
-    const routes = { ...healthy(), [`${CMS}/published.json`]: () => Response.json({ version: 1 }) };
-    expect(await failed(routes)).toEqual(["cms content"]);
   });
 
   it("fails when the cms admin, the draft preview or a stored file opens to a stranger", async () => {

@@ -1,12 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { contentDocument } from "./schema.ts";
-import { mediaKeys } from "./media.ts";
-import { validDocument } from "./fixture.ts";
+import { mediaFile } from "./media.ts";
 
-describe("the media list", () => {
-  it("names each media file that the content uses, once", () => {
-    const doc = validDocument();
-    doc.posts[0]!.body = [{ _type: "image", src: "/media/01ABC.png", alt: "Again" }];
-    expect(mediaKeys(contentDocument.parse(doc))).toEqual(["01ABC.png"]);
+describe("a media file answer", () => {
+  it("serves a raster image with its type and a sandbox policy", () => {
+    const res = mediaFile("01ABC.png", "x", "no-store");
+    expect(res?.headers.get("content-type")).toBe("image/png");
+    expect(res?.headers.get("content-security-policy")).toBe("default-src 'none'; sandbox");
+    expect(res?.headers.get("cache-control")).toBe("no-store");
   });
+
+  it("tells the browser not to guess another type", () => {
+    expect(mediaFile("01ABC.png", "x", "no-store")?.headers.get("x-content-type-options")).toBe(
+      "nosniff",
+    );
+  });
+
+  it.each(["01ABC.svg", "01ABC.html", "backups/site.json", "../x.png", "a/b.png"])(
+    "refuses %s, which can carry a script or leaves the media library",
+    (key) => expect(mediaFile(key, "x", "no-store")).toBeNull(),
+  );
 });

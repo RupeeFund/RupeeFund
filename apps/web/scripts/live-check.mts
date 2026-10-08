@@ -1,6 +1,5 @@
 import { realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
-import { contentDocument } from "../src/content/schema.ts";
 import { DUMMY_SITEKEYS } from "./turnstile-dummy-keys.mjs";
 
 export type Fetch = (url: string, init?: RequestInit) => Promise<Response>;
@@ -80,15 +79,6 @@ function probes(site: string, admin: string, cms: string): [string, Probe][] {
     ],
     ["admin refuses the page", (fetch) => accessRedirect(fetch, `${admin}/`)],
     ["admin refuses the counts", (fetch) => accessRedirect(fetch, `${admin}/api/summary`)],
-    [
-      "cms content",
-      async (fetch) => {
-        const res = await fetch(`${cms}/published.json`);
-        if (res.status !== 200) return `answered ${res.status}`;
-        const parsed = contentDocument.safeParse(await res.json().catch(() => null));
-        return parsed.success ? null : `breaks the schema: ${parsed.error.message}`;
-      },
-    ],
     [
       "cms setup is done",
       async (fetch) => {

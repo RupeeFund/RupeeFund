@@ -1,0 +1,22 @@
+---
+import NotFound from "../components/NotFound.astro";
+import PageBody from "../components/site/PageBody.astro";
+import { page } from "../content/load.ts";
+import Base from "../layouts/Base.astro";
+import { pageRoute } from "../lib/seo.ts";
+
+const entry = await page(Astro.params.slug ?? "");
+if (!entry) Astro.response.status = 404;
+---
+
+{
+  entry ? (
+    <Base route={pageRoute(`/${entry.slug}`, entry.title)}>
+      <div class="wrap section-y">
+        <PageBody page={entry} />
+      </div>
+    </Base>
+  ) : (
+    <NotFound />
+  )
+}

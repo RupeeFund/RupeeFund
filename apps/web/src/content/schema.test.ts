@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { contentDocument, isSafeHref } from "./schema.ts";
-import { validDocument } from "./fixture.ts";
-
-const parse = (doc: unknown) => contentDocument.safeParse(doc);
+import { faqEntry, isSafeHref, landing, page, peoplePage, person, post } from "./schema.ts";
+import {
+  validFaq,
+  validLanding,
+  validPage,
+  validPeoplePage,
+  validPerson,
+  validPost,
+} from "./fixture.ts";
 
 describe("a safe link", () => {
   it.each(["https://fossunited.org", "mailto:rupeefund@fossunited.org", "/privacy", "#top"])(
@@ -24,65 +29,47 @@ describe("a safe link", () => {
   ])("refuses %j", (href) => expect(isSafeHref(href)).toBe(false));
 });
 
-describe("the content document", () => {
-  it("accepts a complete document", () => {
-    expect(parse(validDocument()).success).toBe(true);
-  });
+const withBody = (body: unknown) => post.safeParse({ ...validPost(), body });
 
-  it("refuses a document with no FAQ, so an empty answer cannot blank the site", () => {
-    expect(parse({ ...validDocument(), faq: [] }).success).toBe(false);
-  });
-
-  it("refuses a policy that is published twice", () => {
-    const doc = validDocument();
-    doc.policies.push({ ...doc.policies[0]!, title: "Second privacy" });
-    expect(parse(doc).success).toBe(false);
-  });
-
-  it.each(["posts", "faq", "people"] as const)("refuses two %s entries with one slug", (name) => {
-    const doc = validDocument();
-    (doc[name] as unknown[]).push({ ...doc[name][0]! });
-    expect(parse(doc).error?.message).toContain("Give each entry its own slug");
+describe("the entry schemas", () => {
+  it("accept a complete entry of each collection", () => {
+    expect(post.safeParse(validPost()).success).toBe(true);
+    expect(faqEntry.safeParse(validFaq()).success).toBe(true);
+    expect(landing.safeParse(validLanding()).success).toBe(true);
+    expect(peoplePage.safeParse(validPeoplePage()).success).toBe(true);
+    expect(person.safeParse(validPerson()).success).toBe(true);
+    expect(page.safeParse(validPage()).success).toBe(true);
   });
 
   it("refuses a title that holds only spaces", () => {
-    const doc = validDocument();
-    doc.posts[0]!.title = "   ";
-    expect(parse(doc).success).toBe(false);
+    expect(post.safeParse({ ...validPost(), title: "   " }).success).toBe(false);
   });
 
   it("refuses a heading or a list where the page expects a plain paragraph", () => {
-    const heading = validDocument();
-    heading.home.pitchBody = [{ ...heading.home.pitchBody[0]!, style: "h2" }] as never;
-    const list = validDocument();
-    list.peoplePage.foundationBody = [
-      { ...list.peoplePage.foundationBody[0]!, listItem: "bullet" },
-    ] as never;
-    expect(parse(heading).success).toBe(false);
-    expect(parse(list).success).toBe(false);
+    const home = validLanding();
+    const heading = { ...home, pitchBody: [{ ...home.pitchBody[0]!, style: "h2" }] };
+    const team = validPeoplePage();
+    const list = {
+      ...team,
+      foundationBody: [{ ...team.foundationBody[0]!, listItem: "bullet" }],
+    };
+    expect(landing.safeParse(heading).success).toBe(false);
+    expect(peoplePage.safeParse(list).success).toBe(false);
   });
 
   it("refuses two paragraphs in a step, because the page shows one", () => {
-    const doc = validDocument();
-    doc.home.steps[0]!.body = [...doc.home.steps[0]!.body, ...doc.home.steps[0]!.body];
-    expect(parse(doc).success).toBe(false);
+    const home = validLanding();
+    const body = [...home.steps[0]!.body, ...home.steps[0]!.body];
+    expect(landing.safeParse({ ...home, steps: [{ title: "x", body }] }).success).toBe(false);
   });
 
   it("refuses a team photo address that is not a URL, with a schema message", () => {
-    const doc = validDocument();
-    doc.people[0]!.photoUrl = "https://";
-    expect(parse(doc).success).toBe(false);
-  });
-
-  it("refuses a document that misses a policy", () => {
-    const doc = validDocument();
-    expect(parse({ ...doc, policies: doc.policies.slice(1) }).success).toBe(false);
+    expect(person.safeParse({ ...validPerson(), photoUrl: "https://" }).success).toBe(false);
   });
 
   it("accepts every block the editor makes that the site can show", () => {
-    const doc = validDocument();
     const span = (text: string, marks: string[] = []) => ({ _type: "span", text, marks });
-    doc.posts[0]!.body = [
+    const body = [
       ...["h1", "h2", "h3", "h4", "h5", "h6"].map((style) => ({
         _type: "block",
         style,
@@ -98,36 +85,30 @@ describe("the content document", () => {
         markDefs: [],
         rows: [{ _type: "tableRow", cells: [{ _type: "tableCell", content: [span("A")] }] }],
       },
-    ] as never;
-    expect(parse(doc).success).toBe(true);
+    ];
+    expect(withBody(body).success).toBe(true);
   });
 
   it("accepts the post building blocks", () => {
-    const doc = validDocument();
-    doc.posts[0]!.body = [
+    const body = [
       { _type: "callout", _key: "a", id: "x", tone: "highlight", text: "Mind the date" },
       { _type: "quote", text: "Fund the commons", attribution: "A member" },
       { _type: "cta", label: "Join the list", url: "/subscribe" },
-    ] as never;
-    expect(parse(doc).success).toBe(true);
+    ];
+    expect(withBody(body).success).toBe(true);
   });
 
   it("refuses a call to action with a script link", () => {
-    const doc = validDocument();
-    doc.posts[0]!.body = [{ _type: "cta", label: "Click", url: "javascript:alert(1)" }] as never;
-    expect(parse(doc).success).toBe(false);
+    const body = [{ _type: "cta", label: "Click", url: "javascript:alert(1)" }];
+    expect(withBody(body).success).toBe(false);
   });
 
   it("refuses an empty callout", () => {
-    const doc = validDocument();
-    doc.posts[0]!.body = [{ _type: "callout", tone: "note", text: "  " }] as never;
-    expect(parse(doc).success).toBe(false);
+    expect(withBody([{ _type: "callout", tone: "note", text: "  " }]).success).toBe(false);
   });
 
   it.each(["iframe", "htmlBlock"])("refuses a %s block", (type) => {
-    const doc = validDocument();
-    doc.posts[0]!.body = [{ _type: type, src: "https://example.org" }] as never;
-    const result = parse(doc);
+    const result = withBody([{ _type: type, src: "https://example.org" }]);
     expect(result.success).toBe(false);
     expect(result.error?.message).toContain("does not show embeds or raw HTML");
   });
@@ -151,22 +132,17 @@ describe("the content document", () => {
   });
 
   it("keeps the links and spans of a table cell", () => {
-    const doc = validDocument();
-    doc.posts[0]!.body = [cellWithLink("/faq")] as never;
-    expect(contentDocument.parse(doc).posts[0]?.body[0]).toMatchObject({
+    expect(withBody([cellWithLink("/faq")]).data?.body[0]).toMatchObject({
       rows: [{ cells: [{ colspan: 2, markDefs: [{ href: "/faq" }] }] }],
     });
   });
 
   it("refuses a script link in the defs of a table cell", () => {
-    const doc = validDocument();
-    doc.posts[0]!.body = [cellWithLink("javascript:alert(1)")] as never;
-    expect(parse(doc).success).toBe(false);
+    expect(withBody([cellWithLink("javascript:alert(1)")]).success).toBe(false);
   });
 
   it("refuses a script link in a table cell", () => {
-    const doc = validDocument();
-    doc.posts[0]!.body = [
+    const body = [
       {
         _type: "table",
         markDefs: [{ _key: "l", _type: "link", href: "javascript:alert(1)" }],
@@ -177,25 +153,23 @@ describe("the content document", () => {
           },
         ],
       },
-    ] as never;
-    expect(parse(doc).success).toBe(false);
+    ];
+    expect(withBody(body).success).toBe(false);
   });
 
-  it("gives a post the kind Update when the editor sets none", () => {
-    const parsed = contentDocument.parse(validDocument());
-    expect(parsed.posts[0]?.kind).toBe("Update");
-    expect(parsed.posts[0]?.authors).toEqual([]);
+  it("gives a post the category Update and no authors when the editor sets none", () => {
+    const parsed = post.parse(validPost());
+    expect(parsed.category).toBe("Update");
+    expect(parsed.authors).toEqual([]);
   });
 
   it("refuses a season the fund does not run", () => {
-    const doc = validDocument();
-    doc.posts[0]!.season = { name: "Spring", year: 2026 } as never;
-    expect(parse(doc).success).toBe(false);
+    const season = { name: "Spring", year: 2026 };
+    expect(post.safeParse({ ...validPost(), season }).success).toBe(false);
   });
 
   it("refuses a script link in a Portable Text answer", () => {
-    const doc = validDocument();
-    doc.faq[0]!.answer = [
+    const answer = [
       {
         _type: "block",
         style: "normal",
@@ -203,42 +177,35 @@ describe("the content document", () => {
         children: [{ _type: "span", text: "x", marks: ["l"] }],
       },
     ];
-    expect(parse(doc).success).toBe(false);
+    expect(faqEntry.safeParse({ ...validFaq(), answer }).success).toBe(false);
   });
 
   it("refuses a script link in a source, outside Portable Text", () => {
-    const doc = validDocument();
-    doc.faq[0]!.sources = [{ title: "x", url: "javascript:alert(1)" }];
-    expect(parse(doc).success).toBe(false);
+    const sources = [{ title: "x", url: "javascript:alert(1)" }];
+    expect(faqEntry.safeParse({ ...validFaq(), sources }).success).toBe(false);
   });
 
   it("refuses an image that the site does not serve itself", () => {
-    const doc = validDocument();
-    doc.posts[0]!.image = { src: "https://cdn.example/x.png", alt: "" };
-    expect(parse(doc).success).toBe(false);
+    const image = { src: "https://cdn.example/x.png", alt: "" };
+    expect(post.safeParse({ ...validPost(), image }).success).toBe(false);
   });
 
   it("refuses an image that can carry a script, such as an SVG", () => {
-    const doc = validDocument();
-    doc.posts[0]!.image = { src: "/media/01ABC.svg", alt: "" };
-    expect(parse(doc).success).toBe(false);
+    const image = { src: "/media/01ABC.svg", alt: "" };
+    expect(post.safeParse({ ...validPost(), image }).success).toBe(false);
   });
 
   it("refuses a slug that is not a plain path segment", () => {
-    const doc = validDocument();
-    doc.posts[0]!.slug = "../x";
-    expect(parse(doc).success).toBe(false);
+    expect(post.safeParse({ ...validPost(), slug: "../x" }).success).toBe(false);
   });
 
   it("refuses a team photo on a host the site policy does not allow", () => {
-    const doc = validDocument();
-    doc.people[0]!.photoUrl = "https://cdn.example/me.png";
-    expect(parse(doc).success).toBe(false);
+    const photoUrl = "https://cdn.example/me.png";
+    expect(person.safeParse({ ...validPerson(), photoUrl }).success).toBe(false);
   });
 
   it("refuses a mark that is neither a decorator nor a link", () => {
-    const doc = validDocument();
-    doc.faq[0]!.answer = [
+    const answer = [
       {
         _type: "block",
         style: "normal",
@@ -246,6 +213,15 @@ describe("the content document", () => {
         children: [{ _type: "span", text: "x", marks: ["missing"] }],
       },
     ];
-    expect(parse(doc).success).toBe(false);
+    expect(faqEntry.safeParse({ ...validFaq(), answer }).success).toBe(false);
+  });
+
+  it("makes a page a plain page when the editor sets no kind", () => {
+    const { slug, title, body } = validPage();
+    expect(page.parse({ slug, title, body }).kind).toBe("page");
+  });
+
+  it("refuses a page kind the site does not know", () => {
+    expect(page.safeParse({ ...validPage(), kind: "news" }).success).toBe(false);
   });
 });

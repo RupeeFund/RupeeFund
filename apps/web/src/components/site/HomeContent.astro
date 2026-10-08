@@ -1,13 +1,13 @@
 ---
 import { toInlineHtml } from "../../content/html.ts";
-import type { Content } from "../../content/schema.ts";
+import type { FaqEntry, Landing } from "../../content/schema.ts";
 import FaqList from "./FaqList.astro";
 import Icon from "./Icon.astro";
 import type { Season } from "./constants.ts";
 
 interface Props {
-  home: Content["home"];
-  faq: Content["faq"];
+  home: Landing;
+  faq: FaqEntry[];
   seasons: readonly Season[];
   tagline: string;
   ctaLabel: string;

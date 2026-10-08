@@ -1,17 +1,18 @@
 ---
-import Base from "../layouts/Base.astro";
 import PeopleContent from "../components/site/PeopleContent.astro";
-import { content } from "../build/published.ts";
+import { people, peoplePageContent } from "../content/load.ts";
+import Base from "../layouts/Base.astro";
 import { REMOVAL_ADDRESS } from "../lib/launch.ts";
 
 const joinMail = `mailto:${REMOVAL_ADDRESS}?subject=${encodeURIComponent(
   "Joining the community team of The Rupee Fund",
 )}`;
+const [page, members] = await Promise.all([peoplePageContent(), people()]);
 ---
 
 <Base>
   <div class="wrap section-y">
     <h1 class="page-title text-ink mb-10">People</h1>
-    <PeopleContent page={content.peoplePage} people={content.people} joinMail={joinMail} />
+    <PeopleContent page={page} people={members} joinMail={joinMail} />
   </div>
 </Base>

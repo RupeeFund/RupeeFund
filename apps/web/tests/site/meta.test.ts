@@ -1,21 +1,20 @@
-import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { OUT, PAGES, read } from "./dist.ts";
+import { answers, PAGES, read } from "./dist.ts";
 
 describe("sitemap", () => {
-  it("generates the sitemap index", () => {
-    expect(existsSync(`${OUT}/sitemap-index.xml`)).toBe(true);
+  it("answers as XML", () => {
+    expect(answers()["/sitemap.xml"]?.type).toContain("application/xml");
   });
 
   it("excludes every route the sitemap filter names", () => {
-    const xml = read("sitemap-0.xml");
+    const xml = read("sitemap.xml");
     for (const slug of ["404", "waitlist-confirmed", "blog"]) {
       expect(xml).not.toContain(`rupeefund.org/${slug}`);
     }
   });
 
   it("lists the public pages", () => {
-    const xml = read("sitemap-0.xml");
+    const xml = read("sitemap.xml");
     expect(xml.match(/<loc>/g)).toHaveLength(8);
     for (const path of [
       "/privacy",
@@ -32,8 +31,8 @@ describe("sitemap", () => {
 });
 
 describe("robots.txt", () => {
-  it("points at the generated sitemap index", () => {
-    expect(read("robots.txt")).toContain("Sitemap: https://rupeefund.org/sitemap-index.xml");
+  it("points at the sitemap", () => {
+    expect(read("robots.txt")).toContain("Sitemap: https://rupeefund.org/sitemap.xml");
   });
 
   it("permits crawlers, because the one deployed site is the public one", () => {

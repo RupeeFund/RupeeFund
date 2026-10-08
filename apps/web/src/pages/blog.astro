@@ -1,12 +1,11 @@
 ---
-import Base from "../layouts/Base.astro";
 import PostList from "../components/site/PostList.astro";
-import { newestFirst } from "../build/content.ts";
-import { content } from "../build/published.ts";
+import { posts } from "../content/load.ts";
+import Base from "../layouts/Base.astro";
 ---
 
 <Base>
   <div class="wrap section-y">
-    <PostList posts={newestFirst(content.posts)} />
+    <PostList posts={await posts()} />
   </div>
 </Base>

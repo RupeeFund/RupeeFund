@@ -1,11 +1,11 @@
 ---
-import type { Content } from "../../content/schema.ts";
+import type { Post } from "../../content/schema.ts";
 import { longDate } from "./dates.ts";
 import PostLabel from "./PostLabel.astro";
 import { readingMinutes } from "./reading.ts";
 
 interface Props {
-  posts: Content["posts"];
+  posts: Post[];
 }
 
 const { posts } = Astro.props;

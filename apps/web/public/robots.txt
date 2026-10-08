@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://rupeefund.org/sitemap-index.xml
+Sitemap: https://rupeefund.org/sitemap.xml

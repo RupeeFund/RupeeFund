@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import FaqList from "./FaqList.astro";
-import PolicyBody from "./PolicyBody.astro";
+import PageBody from "./PageBody.astro";
 import PostArticle from "./PostArticle.astro";
 import PostList from "./PostList.astro";
 import Prose from "./Prose.astro";
@@ -55,11 +55,12 @@ describe("the shared components", () => {
     expect(html).toContain('href="/faq"');
   });
 
-  it("render a policy with its own effective date", async () => {
-    const html = await render(PolicyBody, {
-      policy: {
+  it("render a legal page with its own effective date", async () => {
+    const html = await render(PageBody, {
+      page: {
         slug: "terms",
         title: "Terms",
+        kind: "legal",
         effectiveDate: "1 October 2026",
         body: para("Rule."),
       },
@@ -67,6 +68,14 @@ describe("the shared components", () => {
     expect(html).toContain("Terms");
     expect(html).toContain("Effective date: 1 October 2026.");
     expect(html).toContain("<p>Rule.</p>");
+  });
+
+  it("render a page with no effective date", async () => {
+    const html = await render(PageBody, {
+      page: { slug: "about", title: "About", kind: "page", body: para("Us.") },
+    });
+    expect(html).not.toContain("Effective date");
+    expect(html).toContain("<p>Us.</p>");
   });
 });
 
@@ -78,7 +87,7 @@ describe("the blog components", () => {
     image: { src: "/media/01ABC.png", alt: "A red box", width: 8, height: 6 },
     body: para("Body."),
     publishedAt: "2026-10-02T17:40:48.365Z",
-    kind: "Update" as const,
+    category: "Update",
     authors: [],
   };
 
@@ -94,12 +103,12 @@ describe("the blog components", () => {
     expect(html).toContain("<p>Body.</p>");
   });
 
-  it("give a post its context: kind, season, lede, authors, dates and reading time", async () => {
+  it("give a post its category, season, lede, authors, dates and reading time", async () => {
     const words = Array.from({ length: 450 }, () => "word").join(" ");
     const html = await render(PostArticle, {
       post: {
         ...post,
-        kind: "Essay",
+        category: "Essay",
         season: { name: "Monsoon", year: 2026 },
         authors: [],
         updatedAt: "2026-10-04T09:00:00.000Z",
@@ -142,8 +151,8 @@ describe("the blog components", () => {
     expect(nextDay).toMatch(/Updated <time[^>]*>3 October 2026</);
   });
 
-  it("give each row of the list its kind and reading time", async () => {
-    const html = await render(PostList, { posts: [{ ...post, kind: "Guide" }] });
+  it("give each row of the list its category and reading time", async () => {
+    const html = await render(PostList, { posts: [{ ...post, category: "Guide" }] });
     expect(html).toContain("Guide");
     expect(html).toContain("1 min read");
   });

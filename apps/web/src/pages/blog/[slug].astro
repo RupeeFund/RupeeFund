@@ -1,30 +1,29 @@
 ---
-import type { GetStaticPaths } from "astro";
-import Base from "../../layouts/Base.astro";
+import NotFound from "../../components/NotFound.astro";
 import PostArticle from "../../components/site/PostArticle.astro";
-import { newestFirst } from "../../build/content.ts";
-import { content } from "../../build/published.ts";
+import { post, posts } from "../../content/load.ts";
+import Base from "../../layouts/Base.astro";
 import { isListed, SITE_NAME } from "../../lib/seo.ts";
 
-export const getStaticPaths = (async () => {
-  const posts = newestFirst(content.posts);
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: { post, more: posts.filter((other) => other.slug !== post.slug).slice(0, 2) },
-  }));
-}) satisfies GetStaticPaths;
-
-const { post, more } = Astro.props;
-const route = {
-  path: `/blog/${post.slug}`,
-  title: `${post.title} — ${SITE_NAME}`,
-  description: post.excerpt,
+const entry = await post(Astro.params.slug ?? "");
+if (!entry) Astro.response.status = 404;
+const more = entry ? (await posts()).filter((other) => other.slug !== entry.slug).slice(0, 2) : [];
+const route = entry && {
+  path: `/blog/${entry.slug}`,
+  title: `${entry.title} — ${SITE_NAME}`,
+  description: entry.excerpt,
   indexable: isListed("/blog"),
 };
 ---
 
-<Base route={route}>
-  <div class="wrap section-y">
-    <PostArticle post={post} more={more} />
-  </div>
-</Base>
+{
+  entry && route ? (
+    <Base route={route}>
+      <div class="wrap section-y">
+        <PostArticle post={entry} more={more} />
+      </div>
+    </Base>
+  ) : (
+    <NotFound />
+  )
+}

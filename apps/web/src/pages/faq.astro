@@ -1,13 +1,13 @@
 ---
-import Base from "../layouts/Base.astro";
 import FaqList from "../components/site/FaqList.astro";
-import { content } from "../build/published.ts";
+import { faq } from "../content/load.ts";
+import Base from "../layouts/Base.astro";
 import { REMOVAL_ADDRESS } from "../lib/launch.ts";
 ---
 
 <Base>
   <div class="wrap section-y">
     <h1 class="page-title text-ink mb-10">Frequently asked questions</h1>
-    <FaqList faq={content.faq} contactAddress={REMOVAL_ADDRESS} />
+    <FaqList faq={await faq()} contactAddress={REMOVAL_ADDRESS} />
   </div>
 </Base>

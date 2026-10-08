@@ -209,27 +209,3 @@ describe("the deploy guard keeps the site off every host but the custom domain",
     });
   }
 });
-
-describe("a deploy build reads the live content, and nothing else", () => {
-  it("refuses a content file in Workers Builds", () => {
-    const result = run({
-      WORKERS_CI: "1",
-      CMS_CONTENT_FILE: "tests/fixtures/content/published.json",
-    });
-    expect(result.code).toBe(1);
-    expect(result.stderr).toContain("CMS_CONTENT_FILE");
-  });
-
-  it("refuses another content URL in Workers Builds", () => {
-    const result = run({
-      WORKERS_CI: "1",
-      CMS_CONTENT_URL: "http://localhost:8790/published.json",
-    });
-    expect(result.code).toBe(1);
-    expect(result.stderr).toContain("CMS_CONTENT_URL");
-  });
-
-  it("permits a content file outside Workers Builds, for CI and tests", () => {
-    expect(run({ CMS_CONTENT_FILE: "tests/fixtures/content/published.json" }).code).toBe(0);
-  });
-});

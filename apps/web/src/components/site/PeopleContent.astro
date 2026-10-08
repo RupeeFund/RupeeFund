@@ -1,10 +1,10 @@
 ---
 import { toInlineHtml } from "../../content/html.ts";
-import type { Content } from "../../content/schema.ts";
+import type { PeoplePage, Person } from "../../content/schema.ts";
 
 interface Props {
-  page: Content["peoplePage"];
-  people: Content["people"];
+  page: PeoplePage;
+  people: Person[];
   joinMail: string;
 }
 
@@ -17,7 +17,7 @@ const initials = (name: string) =>
     .join("")
     .slice(0, 2);
 
-const handle = (member: Content["people"][number]) =>
+const handle = (member: Person) =>
   member.username ? `@${member.username}` : "FOSS United profile";
 ---
 

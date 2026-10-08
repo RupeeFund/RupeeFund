@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isListed, normalizePath, seoForPath } from "./seo.ts";
+import { isListed, normalizePath, pageRoute, seoForPath } from "./seo.ts";
 
 describe("normalizePath", () => {
   it("strips the .html build-format extension", () => {
@@ -60,6 +60,23 @@ describe("seoForPath with a route", () => {
     expect(seoForPath("/blog/hello.html", route)).toMatchObject({
       title: "Hello — The Rupee Fund",
       canonical: "https://rupeefund.org/blog/hello",
+    });
+  });
+});
+
+describe("pageRoute", () => {
+  it("names a page that the table lists from its title, and keeps the table description", () => {
+    const route = pageRoute("/privacy", "Privacy notice");
+    expect(route.title).toBe("Privacy notice — The Rupee Fund");
+    expect(route.description).toContain("IP address");
+  });
+
+  it("names a page that the table does not list from its title", () => {
+    expect(pageRoute("/about", "About us")).toEqual({
+      path: "/about",
+      title: "About us — The Rupee Fund",
+      description: "About us. A community initiative from FOSS United.",
+      indexable: true,
     });
   });
 });

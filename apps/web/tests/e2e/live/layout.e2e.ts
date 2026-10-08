@@ -2,20 +2,19 @@
 // The evaluate callbacks read layout in the browser. The DOM lib stays scoped
 // to the files that need it rather than widening tsconfig.node.json.
 import { expect, test } from "@playwright/test";
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync } from "node:fs";
+import { PAGES, POST_SLUGS } from "../../fixtures/content.ts";
 
-const fixture = JSON.parse(readFileSync("tests/fixtures/content/published.json", "utf8")) as {
-  posts: { slug: string }[];
-};
-
-const posts = fixture.posts.map(({ slug }) => `/blog/${slug}`);
+const posts = POST_SLUGS.map((slug) => `/blog/${slug}`);
+const pages = PAGES.map(({ slug }) => `/${slug}`);
 const routes = [
   ...readdirSync("src/pages")
-    .filter((file) => file.endsWith(".astro"))
+    .filter((file) => file.endsWith(".astro") && !file.startsWith("["))
     .map((file) => (file === "index.astro" ? "/" : `/${file.slice(0, -6)}`)),
+  ...pages,
   ...posts,
 ];
-const READING = ["/privacy", "/refunds", "/terms", "/code-of-conduct", "/blog", ...posts];
+const READING = [...pages, "/blog", ...posts];
 const FRAMED = routes.filter((route) => !READING.includes(route));
 
 test("every choice group stays inside the narrow form with fallback fonts", async ({ page }) => {

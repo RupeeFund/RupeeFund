@@ -1,6 +1,7 @@
 ---
 import SocialIcon from "./SocialIcon.astro";
 import { REMOVAL_ADDRESS } from "../lib/launch.ts";
+import { menu } from "../content/load.ts";
 import type { SocialIconName } from "./SocialIcon.astro";
 
 interface Social {
@@ -17,13 +18,7 @@ const SOCIALS: readonly Social[] = [
   { slug: "telegram", name: "Telegram", href: "https://t.me/fossunited" },
 ];
 
-const LINKS = [
-  { href: "/people", label: "People" },
-  // { href: "/blog", label: "Blog" },
-  { href: "https://fossunited.org/about", label: "About FOSS United" },
-  { href: "https://forum.fossunited.org", label: "Community forum" },
-  { href: "https://github.com/RupeeFund/RupeeFund", label: "Source on GitHub" },
-] as const;
+const links = await menu("footer");
 ---
 
 <footer class="bg-ink text-paper [--focus:var(--color-white)] pt-16 pb-10">
@@ -47,7 +42,7 @@ const LINKS = [
     </div>
     <ul class="flex flex-wrap justify-center gap-x-2 text-sm">
       {
-        LINKS.map(({ href, label }) => {
+        links.map(({ href, label }) => {
           const external = href.startsWith("https://");
           return (
             <li>

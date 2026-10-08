@@ -19,7 +19,8 @@ const mediaSrc = z
     (src) => src.startsWith("/media/") && MEDIA_FILE.test(src.slice(7)),
     "Use a PNG, JPEG, GIF, WebP or AVIF image from the media library",
   );
-const slug = z.string().regex(/^[a-z0-9][a-z0-9-]*$/);
+export const SLUG = /^[a-z0-9][a-z0-9-]*$/;
+const slug = z.string().regex(SLUG);
 const photoUrl = z
   .string()
   .refine(
@@ -124,11 +125,6 @@ const paragraphs = z.array(paragraph).min(1);
 
 const oneParagraph = z.array(paragraph).length(1, "Use one paragraph here");
 
-const uniqueSlugs = <T extends { slug: string }>(entries: T[]) =>
-  new Set(entries.map((entry) => entry.slug)).size === entries.length;
-
-const UNIQUE_SLUGS = { message: "Give each entry its own slug" };
-
 const text = z.string().trim().min(1);
 
 const callout = z.object({
@@ -163,93 +159,77 @@ export const portableText = z.array(
   ]),
 );
 
-export const POST_KINDS = ["Update", "Season report", "Essay", "Guide"] as const;
-
 export const SEASON_NAMES = ["Winter", "Summer", "Monsoon", "Post-monsoon"] as const;
 
-export const POLICY_SLUGS = ["privacy", "terms", "refunds", "code-of-conduct"] as const;
+export const PAGE_KINDS = ["page", "legal"] as const;
 
-export const contentDocument = z.object({
-  version: z.literal(1),
-  posts: z
-    .array(
-      z.object({
-        slug,
-        title: text,
-        excerpt: text,
-        image: image.optional(),
-        body: portableText,
-        publishedAt: z.iso.datetime(),
-        updatedAt: z.iso.datetime().optional(),
-        kind: z.enum(POST_KINDS).default("Update"),
-        season: z.object({ name: z.enum(SEASON_NAMES), year: z.number().int() }).optional(),
-        authors: z.array(text).default([]),
-      }),
-    )
-    .refine(uniqueSlugs, UNIQUE_SLUGS),
-  faq: z
-    .array(
-      z.object({
-        slug,
-        question: text,
-        answer: portableText.min(1),
-        order: z.number().int(),
-        home: z.boolean(),
-        sources: z.array(z.object({ title: text, url: href })),
-      }),
-    )
-    .min(1)
-    .refine(uniqueSlugs, UNIQUE_SLUGS),
-  home: z.object({
-    heroLede: text,
-    pitchTitle: text,
-    pitchBody: paragraphs,
-    pitchSourceTitle: text,
-    pitchSourceUrl: href,
-    stepsTitle: text,
-    steps: z.array(z.object({ title: text, body: oneParagraph })).min(1),
-    seasonsTitle: text,
-    why: z.array(z.object({ title: text, body: text })).min(1),
-    faqTitle: text,
-  }),
-  peoplePage: z.object({
-    teamTitle: text,
-    teamIntro: text,
-    joinTitle: text,
-    joinBody: text,
-    foundationTitle: text,
-    foundationBody: oneParagraph,
-  }),
-  people: z
-    .array(
-      z.object({
-        slug,
-        name: text,
-        bio: text.optional(),
-        profileUrl: href.optional(),
-        username: text.optional(),
-        photoUrl: photoUrl.optional(),
-        order: z.number().int(),
-      }),
-    )
-    .refine(uniqueSlugs, UNIQUE_SLUGS),
-  policies: z
-    .array(
-      z.object({
-        slug: z.enum(POLICY_SLUGS),
-        title: text,
-        effectiveDate: text,
-        body: portableText.min(1),
-      }),
-    )
-    .refine(
-      (policies) =>
-        POLICY_SLUGS.every((name) => policies.filter((p) => p.slug === name).length === 1),
-      { message: `Publish each policy once: ${POLICY_SLUGS.join(", ")}` },
-    ),
+export const post = z.object({
+  slug,
+  title: text,
+  excerpt: text,
+  image: image.optional(),
+  body: portableText,
+  publishedAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime().optional(),
+  category: text.default("Update"),
+  season: z.object({ name: z.enum(SEASON_NAMES), year: z.number().int() }).optional(),
+  authors: z.array(text).default([]),
 });
 
-export type ContentDocument = z.input<typeof contentDocument>;
-export type Content = z.output<typeof contentDocument>;
+export const faqEntry = z.object({
+  slug,
+  question: text,
+  answer: portableText.min(1),
+  order: z.number().int(),
+  home: z.boolean(),
+  sources: z.array(z.object({ title: text, url: href })),
+});
+
+export const landing = z.object({
+  heroLede: text,
+  pitchTitle: text,
+  pitchBody: paragraphs,
+  pitchSourceTitle: text,
+  pitchSourceUrl: href,
+  stepsTitle: text,
+  steps: z.array(z.object({ title: text, body: oneParagraph })).min(1),
+  seasonsTitle: text,
+  why: z.array(z.object({ title: text, body: text })).min(1),
+  faqTitle: text,
+});
+
+export const peoplePage = z.object({
+  teamTitle: text,
+  teamIntro: text,
+  joinTitle: text,
+  joinBody: text,
+  foundationTitle: text,
+  foundationBody: oneParagraph,
+});
+
+export const person = z.object({
+  slug,
+  name: text,
+  bio: text.optional(),
+  profileUrl: href.optional(),
+  username: text.optional(),
+  photoUrl: photoUrl.optional(),
+  order: z.number().int(),
+});
+
+export const page = z.object({
+  slug,
+  title: text,
+  kind: z.enum(PAGE_KINDS).default("page"),
+  effectiveDate: text.optional(),
+  body: portableText.min(1),
+});
+
+export type Post = z.output<typeof post>;
+export type FaqEntry = z.output<typeof faqEntry>;
+export type Landing = z.output<typeof landing>;
+export type PeoplePage = z.output<typeof peoplePage>;
+export type Person = z.output<typeof person>;
+export type Page = z.output<typeof page>;
 export type PortableText = z.input<typeof portableText>;
 export type Image = z.output<typeof image>;

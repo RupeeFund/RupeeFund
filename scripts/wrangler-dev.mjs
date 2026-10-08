@@ -12,8 +12,7 @@ const args = [
   "dev",
   ...process.argv.slice(2),
   ...(portless ? ["--port", PORT] : []),
-  "--persist-to",
-  "../../.wrangler/state",
+  ...(process.argv.includes("--persist-to") ? [] : ["--persist-to", "../../.wrangler/state"]),
   ...(portless ? ["--show-interactive-dev-session=false"] : []),
 ];
 

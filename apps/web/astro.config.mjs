@@ -2,34 +2,11 @@ import { defineConfig } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
-import sitemap from "@astrojs/sitemap";
 import { d1, r2 } from "@emdash-cms/cloudflare";
 import emdash from "emdash/astro";
 import { fileURLToPath } from "node:url";
-import { loadContent } from "./src/build/content.ts";
-import { copyMedia } from "./src/build/media.ts";
 import { writeSiteCard } from "./src/build/og.ts";
-import { isListed, SITE_URL } from "./src/lib/seo.ts";
-
-const cmsMedia = {
-  name: "cms-media",
-  hooks: {
-    "astro:build:done": async ({ dir }) => {
-      await copyMedia(await loadContent(), fileURLToPath(dir));
-    },
-  },
-};
-
-const PUBLISHED = "virtual:cms-content";
-
-const publishedContent = {
-  name: "published-content",
-  resolveId: (id) => (id === PUBLISHED ? `\0${PUBLISHED}` : undefined),
-  load: async (id) =>
-    id === `\0${PUBLISHED}`
-      ? `export default ${JSON.stringify((await loadContent()).content)};`
-      : undefined,
-};
+import { SITE_URL } from "./src/lib/seo.ts";
 
 const ogCard = {
   name: "og-card",
@@ -42,6 +19,7 @@ const ogCard = {
 
 export default defineConfig({
   site: SITE_URL,
+  output: "server",
   trailingSlash: "never",
   build: {
     format: "file",
@@ -51,7 +29,6 @@ export default defineConfig({
     persistState: { path: "../../.wrangler/state" },
   }),
   integrations: [
-    cmsMedia,
     ogCard,
     react(),
     emdash({
@@ -68,15 +45,10 @@ export default defineConfig({
         },
       ],
     }),
-    sitemap({
-      // isListed reads the one table that also drives the `noindex` meta tag,
-      // so a page cannot be excluded from one and not the other.
-      filter: (page) => isListed(new URL(page).pathname),
-    }),
   ],
   server: { port: Number(process.env.PORT ?? 8787) },
   devToolbar: { enabled: false },
   vite: {
-    plugins: [tailwindcss(), publishedContent],
+    plugins: [tailwindcss()],
   },
 });

@@ -1,9 +1,9 @@
 ---
-import type { Content } from "../../content/schema.ts";
+import type { FaqEntry } from "../../content/schema.ts";
 import Faq from "./Faq.astro";
 
 interface Props {
-  faq: Content["faq"];
+  faq: FaqEntry[];
   contactAddress: string;
   homeOnly?: boolean;
 }

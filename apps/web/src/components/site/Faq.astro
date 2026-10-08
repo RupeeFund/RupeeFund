@@ -1,10 +1,10 @@
 ---
-import type { Content } from "../../content/schema.ts";
+import type { FaqEntry } from "../../content/schema.ts";
 import Icon from "./Icon.astro";
 import Prose from "./Prose.astro";
 
 interface Props {
-  faq: Content["faq"][number];
+  faq: FaqEntry;
 }
 
 const { question, answer, sources } = Astro.props.faq;

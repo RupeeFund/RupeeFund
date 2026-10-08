@@ -1,5 +1,5 @@
 ---
-import type { Content } from "../../content/schema.ts";
+import type { Post } from "../../content/schema.ts";
 import { SUBSCRIBE_CTA } from "./constants.ts";
 import { dayKey, longDate } from "./dates.ts";
 import Icon from "./Icon.astro";
@@ -8,8 +8,8 @@ import Prose from "./Prose.astro";
 import { readingMinutes } from "./reading.ts";
 
 interface Props {
-  post: Content["posts"][number];
-  more?: Content["posts"];
+  post: Post;
+  more?: Post[];
 }
 
 const { post, more = [] } = Astro.props;
