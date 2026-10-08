@@ -3,14 +3,16 @@ import HomeContent from "../components/site/HomeContent.astro";
 import { faq, landingContent } from "../content/load.ts";
 import Base from "../layouts/Base.astro";
 import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
+import { ADMIN_ROLE } from "../lib/protect.ts";
 import { TAGLINE } from "../lib/seo.ts";
 
 const [home, questions] = await Promise.all([landingContent(), faq()]);
+const admin = (Astro.locals.user?.role ?? 0) >= ADMIN_ROLE;
 ---
 
 <Base>
   <HomeContent
-    home={home}
+    home={admin ? home : { ...home, edit: undefined }}
     faq={questions}
     seasons={SEASONS}
     tagline={TAGLINE}

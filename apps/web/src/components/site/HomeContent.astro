@@ -1,12 +1,13 @@
 ---
 import { toInlineHtml } from "../../content/html.ts";
+import type { Editable } from "../../content/entries.ts";
 import type { FaqEntry, Landing } from "../../content/schema.ts";
 import FaqList from "./FaqList.astro";
 import Icon from "./Icon.astro";
 import type { Season } from "./constants.ts";
 
 interface Props {
-  home: Landing;
+  home: Editable<Landing>;
   faq: FaqEntry[];
   seasons: readonly Season[];
   tagline: string;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const { home, faq, seasons, tagline, ctaLabel, contactAddress } = Astro.props;
+const { edit } = home;
 ---
 
 <section class="wrap pt-6 pb-[clamp(3rem,8vh,5rem)] sm:pt-[clamp(2.5rem,8vh,5rem)]">
@@ -26,7 +28,9 @@ const { home, faq, seasons, tagline, ctaLabel, contactAddress } = Astro.props;
     >
       {tagline}
     </p>
-    <p class="lede max-w-[36rem] text-ink-2 lg:col-start-2 lg:row-start-2">{home.heroLede}</p>
+    <p class="lede max-w-[36rem] text-ink-2 lg:col-start-2 lg:row-start-2" {...edit?.hero_lede}>
+      {home.heroLede}
+    </p>
     <div class="flex flex-wrap items-center gap-x-6 gap-y-3 sm:mt-3 lg:col-start-2 lg:row-start-3">
       <a href="/subscribe" class="btn btn-primary btn-lg" data-hero-cta>
         <Icon name="bell" size={18} />
@@ -40,7 +44,7 @@ const { home, faq, seasons, tagline, ctaLabel, contactAddress } = Astro.props;
 </section>
 
 <section class="wrap section-y grid items-start bg-brand text-ink lg:grid-cols-2 lg:gap-16">
-  <h2 class="section-title lg:mb-0">{home.pitchTitle}</h2>
+  <h2 class="section-title lg:mb-0" {...edit?.pitch_title}>{home.pitchTitle}</h2>
   <div class="max-w-[36rem]">
     {
       home.pitchBody.map((block, i) => (
@@ -53,7 +57,8 @@ const { home, faq, seasons, tagline, ctaLabel, contactAddress } = Astro.props;
         href={home.pitchSourceUrl}
         target="_blank"
         rel="noopener"
-        class="inline-link inline-link-ink">{home.pitchSourceTitle}</a
+        class="inline-link inline-link-ink"
+        {...edit?.pitch_source_title}>{home.pitchSourceTitle}</a
       >
     </p>
   </div>
@@ -62,8 +67,8 @@ const { home, faq, seasons, tagline, ctaLabel, contactAddress } = Astro.props;
 <section class="wrap section-y bg-paper">
   <div class="grid gap-16 lg:grid-cols-2">
     <div>
-      <h2 class="section-title text-ink">{home.stepsTitle}</h2>
-      <ol class="flex flex-col gap-8">
+      <h2 class="section-title text-ink" {...edit?.steps_title}>{home.stepsTitle}</h2>
+      <ol class="flex flex-col gap-8" {...edit?.steps}>
         {
           home.steps.map((step, i) => (
             <li class="step">
@@ -81,7 +86,7 @@ const { home, faq, seasons, tagline, ctaLabel, contactAddress } = Astro.props;
     </div>
 
     <div class="flex flex-col">
-      <h2 class="section-title text-ink">{home.seasonsTitle}</h2>
+      <h2 class="section-title text-ink" {...edit?.seasons_title}>{home.seasonsTitle}</h2>
       <ul>
         {
           seasons.map((s) => (
@@ -113,7 +118,7 @@ const { home, faq, seasons, tagline, ctaLabel, contactAddress } = Astro.props;
 
 <section aria-labelledby="why-title" class="wrap section-y bg-white">
   <h2 id="why-title" class="sr-only">Why contribute</h2>
-  <div class="grid gap-10 lg:grid-cols-3 lg:gap-16">
+  <div class="grid gap-10 lg:grid-cols-3 lg:gap-16" {...edit?.why}>
     {
       home.why.map((reason) => (
         <div>
@@ -126,6 +131,6 @@ const { home, faq, seasons, tagline, ctaLabel, contactAddress } = Astro.props;
 </section>
 
 <section class="wrap section-y bg-paper">
-  <h2 class="section-title text-ink">{home.faqTitle}</h2>
+  <h2 class="section-title text-ink" {...edit?.faq_title}>{home.faqTitle}</h2>
   <FaqList faq={faq} homeOnly contactAddress={contactAddress} />
 </section>

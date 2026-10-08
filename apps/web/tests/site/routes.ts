@@ -90,6 +90,12 @@ export const TOKENS = {
 
 export const SESSION = { user: "site-test-browser", role: 50, id: randomUUID() } as const;
 
+export const EDITOR_SESSION = {
+  user: "site-test-editor-browser",
+  role: 40,
+  id: randomUUID(),
+} as const;
+
 export interface Call {
   as: keyof typeof TOKENS | "session" | "anonymous";
   method: string;
@@ -127,3 +133,40 @@ export const SIGNED_IN_READS: readonly Call[] = [...GATED_MEDIA, ...RESIZED_MEDI
 
 export const fileFor = (route: string): string =>
   route === "/" ? "index.html" : /\.\w+$/.test(route) ? route.slice(1) : `${route.slice(1)}.html`;
+
+export interface Visit {
+  path: string;
+  as: "anonymous" | "admin" | "editor";
+  editMode: boolean;
+}
+
+export interface Seen {
+  status: number;
+  location: string | null;
+  cache: string | null;
+  toolbar: boolean;
+  marks: string[];
+}
+
+export const LEGAL_PAGE = PAGES.find(({ kind }) => kind === "legal")!;
+
+export const VISITS = {
+  "a stranger's edit link": { path: "/?_edit=1", as: "anonymous", editMode: false },
+  "a stranger's edit cookie": { path: "/", as: "anonymous", editMode: true },
+  "an Admin's edit link": { path: "/?_edit=1", as: "admin", editMode: false },
+  "an Admin on the landing page": { path: "/", as: "admin", editMode: true },
+  "an Admin on a legal page": { path: `/${LEGAL_PAGE.slug}`, as: "admin", editMode: true },
+  "an Editor on the landing page": { path: "/", as: "editor", editMode: true },
+  "an Editor on a legal page": { path: `/${LEGAL_PAGE.slug}`, as: "editor", editMode: true },
+} as const satisfies Record<string, Visit>;
+
+export const LANDING_MARKS = [
+  "hero_lede",
+  "pitch_title",
+  "pitch_source_title",
+  "steps_title",
+  "steps",
+  "seasons_title",
+  "why",
+  "faq_title",
+];

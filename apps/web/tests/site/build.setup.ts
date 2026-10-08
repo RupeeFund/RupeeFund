@@ -10,6 +10,7 @@ import {
   ALLOWED_WRITES,
   CONTENT_MANAGER,
   DENIED,
+  EDITOR_SESSION,
   GATED_MEDIA,
   ANONYMOUS_SCHEMA_WRITE,
   MEDIA_ROUTES,
@@ -23,15 +24,19 @@ import {
   SIGNED_IN_READS,
   TOKENS,
   TOKEN_SCHEMA_WRITE,
+  VISITS,
   callName,
   fileFor,
   type Answer,
   type Call,
+  type Seen,
+  type Visit,
 } from "./routes.ts";
 
 const TEST_SITEKEY = "1x00000000000000000000AA";
 const STATE = "../../.wrangler/site-test";
 const D1_FILES = join(STATE, "v3", "d1", "miniflare-D1DatabaseObject");
+const BROWSERS = [SESSION, EDITOR_SESSION];
 
 // workaround: nodejs/node#21825 — a .cmd needs a shell, which searches CWD first
 const WIN = process.platform === "win32";
@@ -75,7 +80,7 @@ function addCallers(): void {
       .get();
     if (content) {
       const addUser = db.prepare("INSERT INTO users (id, email, role) VALUES (?, ?, ?)");
-      addUser.run(SESSION.user, `${SESSION.user}@example.com`, SESSION.role);
+      for (const { user, role } of BROWSERS) addUser.run(user, `${user}@example.com`, role);
       for (const { user, role, token, scopes } of Object.values(TOKENS)) {
         const hash = createHash("sha256").update(token).digest("base64url");
         addUser.run(user, `${user}@example.com`, role);
@@ -88,9 +93,11 @@ function addCallers(): void {
     db.close();
   }
   const session = join(STATE, "session.txt");
-  writeFileSync(session, stringify(new Map([["user", { data: { id: SESSION.user } }]])));
   const store = `--binding SESSION --local --persist-to ${STATE}`;
-  exec(`wrangler kv key put ${SESSION.id} --path ${session} ${store}`);
+  for (const { user, id } of BROWSERS) {
+    writeFileSync(session, stringify(new Map([["user", { data: { id: user } }]])));
+    exec(`wrangler kv key put ${id} --path ${session} ${store}`);
+  }
   rmSync(session);
 }
 
@@ -116,6 +123,30 @@ async function call(base: string, { as, method, path }: Call): Promise<Answer> {
     hsts: null,
     body: (await res.text()).slice(0, 200),
     cache: res.headers.get("cache-control"),
+  };
+}
+
+const fieldOf = (ref: string): string =>
+  JSON.parse(ref.replaceAll("&quot;", '"').replaceAll("&amp;", "&")).field ?? "(entry)";
+
+const SESSION_OF = { admin: SESSION, editor: EDITOR_SESSION } as const;
+
+async function visit(base: string, { path, as, editMode }: Visit): Promise<Seen> {
+  const cookies = [
+    ...(as === "anonymous" ? [] : [`astro-session=${SESSION_OF[as].id}`]),
+    ...(editMode ? ["emdash-edit-mode=true"] : []),
+  ];
+  const res = await fetch(`${base}${path}`, {
+    redirect: "manual",
+    headers: cookies.length ? { cookie: cookies.join("; ") } : {},
+  });
+  const html = await res.text();
+  return {
+    status: res.status,
+    location: res.headers.get("location"),
+    cache: res.headers.get("cache-control"),
+    toolbar: html.includes('id="emdash-toolbar"'),
+    marks: [...html.matchAll(/data-emdash-ref="([^"]+)"/g)].map(([, ref]) => fieldOf(ref!)),
   };
 }
 
@@ -160,6 +191,9 @@ async function render(base: string): Promise<void> {
   ];
   for (const one of calls) answers[callName(one)] = await call(base, one);
   writeFileSync(join(RENDERED, "answers.json"), JSON.stringify(answers, null, 2));
+  const seen: Record<string, Seen> = {};
+  for (const [name, one] of Object.entries(VISITS)) seen[name] = await visit(base, one);
+  writeFileSync(join(RENDERED, "visits.json"), JSON.stringify(seen, null, 2));
 }
 
 const VITEST_ENV = new Set(["DEV", "PROD", "SSR", "MODE", "BASE_URL", "NODE_ENV", "TEST"]);

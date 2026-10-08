@@ -6,7 +6,7 @@ import { d1, r2 } from "@emdash-cms/cloudflare";
 import emdash from "emdash/astro";
 import { fileURLToPath } from "node:url";
 import { writeSiteCard } from "./src/build/og.ts";
-import { SITE_URL } from "./src/lib/seo.ts";
+import { SITE_NAME, SITE_URL } from "./src/lib/seo.ts";
 
 const ogCard = {
   name: "og-card",
@@ -36,6 +36,13 @@ export default defineConfig({
       storage: r2({ binding: "MEDIA" }),
       siteUrl: SITE_URL,
       mcp: false,
+      admin: {
+        siteName: SITE_NAME,
+        logo: "/logo.svg",
+        favicon: "/favicon.svg",
+        footerLabel: SITE_NAME,
+      },
+      toolbar: "client",
       middleware: { outer: "./src/outer.ts" },
       plugins: [
         {

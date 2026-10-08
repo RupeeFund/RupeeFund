@@ -16,6 +16,7 @@
       "slug": "posts",
       "label": "Blog posts",
       "labelSingular": "Blog post",
+      "sortOrder": 2,
       "supports": ["drafts", "revisions", "preview", "scheduling", "search", "seo"],
       "fields": [
         {
@@ -73,6 +74,7 @@
       "slug": "pages",
       "label": "Pages",
       "labelSingular": "Page",
+      "sortOrder": 3,
       "supports": ["drafts", "revisions", "preview", "search", "seo"],
       "urlPattern": "/{slug}",
       "fields": [
@@ -111,6 +113,7 @@
       "slug": "landing",
       "label": "Landing page",
       "labelSingular": "Landing page",
+      "sortOrder": 1,
       "supports": ["drafts", "revisions", "preview"],
       "fields": [
         {
@@ -217,6 +220,7 @@
       "slug": "faq",
       "label": "FAQ",
       "labelSingular": "Question",
+      "sortOrder": 4,
       "supports": ["drafts", "revisions", "preview", "search"],
       "fields": [
         {
@@ -271,6 +275,8 @@
       "slug": "people_page",
       "label": "People page",
       "labelSingular": "People page",
+      "sortOrder": 5,
+      "group": "People",
       "supports": ["drafts", "revisions", "preview"],
       "fields": [
         {
@@ -321,6 +327,8 @@
       "slug": "people",
       "label": "Community team",
       "labelSingular": "Team member",
+      "sortOrder": 6,
+      "group": "People",
       "supports": ["drafts", "revisions", "preview"],
       "fields": [
         {

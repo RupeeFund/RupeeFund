@@ -1,4 +1,4 @@
-import { getEmDashCollection, getEmDashEntry, getMenu } from "emdash";
+import { getEmDashCollection, getEmDashEntry, getMenu, type EditProxy } from "emdash";
 import {
   ContentError,
   toFaq,
@@ -10,6 +10,7 @@ import {
   toPost,
   toPosts,
   valid,
+  type Editable,
   type Entry,
 } from "./entries.ts";
 import {
@@ -31,10 +32,16 @@ export interface MenuLink {
   href: string;
 }
 
-const asEntry = (entry: { id: string; data: unknown }): Entry => ({
+const asEntry = (entry: { id: string; data: unknown; edit?: EditProxy }): Entry => ({
   slug: entry.id,
   data: { ...(entry.data as Record<string, unknown>) },
+  edit: entry.edit,
 });
+
+function editable<T>(entry: Entry | null, map: (entry: Entry) => T): Editable<T> | null {
+  const [content] = entry ? valid([entry], map) : [];
+  return entry && content ? { ...content, edit: entry.edit } : null;
+}
 
 async function published(collection: string): Promise<Entry[]> {
   const entries: Entry[] = [];
@@ -76,18 +83,16 @@ export const pages = async (): Promise<Page[]> => toPages(await published("pages
 
 export const people = async (): Promise<Person[]> => toPeople(await published("people"));
 
-export async function post(slug: string): Promise<Post | null> {
-  const entry = await one("posts", slug);
-  return entry ? (valid([entry], toPost)[0] ?? null) : null;
-}
+export const post = async (slug: string): Promise<Editable<Post> | null> =>
+  editable(await one("posts", slug), toPost);
 
-export async function page(slug: string): Promise<Page | null> {
-  const entry = await one("pages", slug);
-  return entry ? (valid([entry], toPage)[0] ?? null) : null;
-}
+export const page = async (slug: string): Promise<Editable<Page> | null> =>
+  editable(await one("pages", slug), toPage);
 
-export const landingContent = async (): Promise<Landing> =>
-  toLanding((await required("landing", LANDING_SLUG)).data);
+export async function landingContent(): Promise<Editable<Landing>> {
+  const entry = await required("landing", LANDING_SLUG);
+  return { ...toLanding(entry.data), edit: entry.edit };
+}
 
 export const peoplePageContent = async (): Promise<PeoplePage> =>
   toPeoplePage((await required("people_page", PEOPLE_PAGE_SLUG)).data);

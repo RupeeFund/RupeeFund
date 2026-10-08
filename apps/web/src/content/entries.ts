@@ -1,3 +1,4 @@
+import type { EditProxy } from "emdash";
 import type { z } from "zod";
 import {
   faqEntry,
@@ -18,7 +19,10 @@ import {
 export interface Entry {
   slug: string;
   data: Record<string, unknown>;
+  edit?: EditProxy;
 }
+
+export type Editable<T> = T & { edit?: EditProxy };
 
 export class ContentError extends Error {}
 
