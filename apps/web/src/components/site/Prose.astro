@@ -1,0 +1,12 @@
+---
+import { toHtml } from "../../content/html.ts";
+import type { PortableText } from "../../content/schema.ts";
+
+interface Props {
+  blocks: PortableText;
+}
+
+const { blocks } = Astro.props;
+---
+
+<Fragment set:html={toHtml(blocks)} />

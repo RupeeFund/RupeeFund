@@ -1,6 +1,6 @@
 import type { ReasonField, RoleField } from "@rupeefund/db/schema";
 
-export { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "@rupeefund/site/constants.ts";
+export { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../components/site/constants.ts";
 
 export const SUBSCRIBE_HEADING = "I am interested!";
 

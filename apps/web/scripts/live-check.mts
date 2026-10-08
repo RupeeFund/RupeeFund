@@ -1,6 +1,6 @@
 import { realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
-import { contentDocument } from "@rupeefund/content/schema";
+import { contentDocument } from "../src/content/schema.ts";
 import { DUMMY_SITEKEYS } from "./turnstile-dummy-keys.mjs";
 
 export type Fetch = (url: string, init?: RequestInit) => Promise<Response>;

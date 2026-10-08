@@ -1,0 +1,37 @@
+---
+import type { Content } from "../../content/schema.ts";
+import { SEASONS } from "./constants.ts";
+
+interface Props {
+  post: Content["posts"][number];
+  compact?: boolean;
+}
+
+const { post, compact = false } = Astro.props;
+const season = post.season && SEASONS.find((s) => s.name === post.season?.name);
+---
+
+<span class="inline-flex flex-wrap items-center gap-x-2.5 gap-y-1">
+  <span class="eyebrow text-brand-fg">{post.kind}</span>
+  {
+    season && post.season && (
+      <span class="inline-flex items-center gap-1.5">
+        {!compact && (
+          <img
+            src={`/seasons/${season.spriteSlug}.svg`}
+            alt=""
+            width="20"
+            height="20"
+            class="h-5 w-5"
+          />
+        )}
+        <span
+          class="eyebrow rounded-md px-1.5 text-white"
+          style={`background-color: ${season.accent}`}
+        >
+          {season.name} {post.season.year}
+        </span>
+      </span>
+    )
+  }
+</span>

@@ -1,0 +1,34 @@
+---
+import type { Content } from "../../content/schema.ts";
+import Icon from "./Icon.astro";
+import Prose from "./Prose.astro";
+
+interface Props {
+  faq: Content["faq"][number];
+}
+
+const { question, answer, sources } = Astro.props.faq;
+---
+
+<details class="faq group">
+  <summary class="faq-summary">
+    <span>{question}</span>
+    <Icon name="plus" size={20} class="faq-plus" />
+  </summary>
+  <div class="faq-answer"><Prose blocks={answer} /></div>
+  {
+    sources.length > 0 && (
+      <p class="faq-sources">
+        {sources.length === 1 ? "Source:" : "Sources:"}{" "}
+        {sources.map((source, i) => (
+          <>
+            {i > 0 && ", "}
+            <a href={source.url} target="_blank" rel="noopener" class="inline-link">
+              {source.title}
+            </a>
+          </>
+        ))}
+      </p>
+    )
+  }
+</details>

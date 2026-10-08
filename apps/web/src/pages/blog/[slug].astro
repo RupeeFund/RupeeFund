@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths } from "astro";
 import Base from "../../layouts/Base.astro";
-import PostArticle from "@rupeefund/site/PostArticle.astro";
+import PostArticle from "../../components/site/PostArticle.astro";
 import { newestFirst } from "../../build/content.ts";
 import { content } from "../../build/published.ts";
 import { isListed, SITE_NAME } from "../../lib/seo.ts";

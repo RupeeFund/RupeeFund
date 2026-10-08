@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { contentDocument, type Content } from "@rupeefund/content/schema";
+import { contentDocument, type Content } from "../content/schema.ts";
 import { fetchPatiently, type Wait } from "./fetch.ts";
 
 export const CMS_CONTENT_URL = "https://cms.rupeefund.org/published.json";

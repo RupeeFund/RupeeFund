@@ -14,8 +14,6 @@
   "scripts": {
     "dev": "pnpm db:migrate && pnpm -C apps/web run dev",
     "dev:admin": "pnpm db:migrate && pnpm -C apps/admin run dev",
-    "dev:cms": "pnpm -C apps/cms run dev",
-    "dev:site-cms": "pnpm db:migrate && CMS_CONTENT_URL=http://localhost:8790/published.json pnpm -C apps/web run dev",
     "dev:portless": "pnpm db:migrate && portless",
     "build": "turbo run build",
     "preview": "turbo run preview --filter=@rupeefund/web",

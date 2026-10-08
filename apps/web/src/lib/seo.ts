@@ -1,4 +1,4 @@
-import { TAGLINE } from "@rupeefund/site/constants.ts";
+import { TAGLINE } from "../components/site/constants.ts";
 import { SUBSCRIBE_HEADING } from "./launch.ts";
 
 export { TAGLINE };

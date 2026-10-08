@@ -23,9 +23,11 @@
     "@astrojs/cloudflare": "^14.3.3",
     "@astrojs/react": "^7.0.0",
     "@emdash-cms/cloudflare": "1.2.0",
+    "@portabletext/to-html": "^6.0.0",
     "emdash": "1.2.0",
     "hono": "catalog:",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
@@ -36,9 +38,7 @@
     "@fontsource/inter": "^5.3.0",
     "@playwright/test": "^1.62.1",
     "@resvg/resvg-js": "^2.6.2",
-    "@rupeefund/content": "workspace:*",
     "@rupeefund/db": "workspace:*",
-    "@rupeefund/site": "workspace:*",
     "@rupeefund/ui": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "catalog:",

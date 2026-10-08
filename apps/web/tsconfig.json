@@ -14,6 +14,7 @@
     "tests/**/*",
     "scripts/**/*",
     "vitest.config.ts",
+    "vitest.components.config.ts",
     "playwright.config.ts",
     "astro.config.mjs"
   ],

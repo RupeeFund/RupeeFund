@@ -111,67 +111,6 @@ importers:
         specifier: 'catalog:'
         version: 4.146.0(@cloudflare/workers-types@5.20261007.1)(@types/node@26.2.0)
 
-  apps/cms:
-    dependencies:
-      '@astrojs/cloudflare':
-        specifier: ^14.3.3
-        version: 14.3.3(@types/node@26.2.0)(astro@7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))(esbuild@0.28.2)(jiti@2.7.0)(wrangler@4.146.0(@cloudflare/workers-types@5.20261007.1)(@types/node@26.2.0))(yaml@2.9.0)
-      '@astrojs/react':
-        specifier: ^7.0.0
-        version: 7.0.0(@types/node@26.2.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(yaml@2.9.0)
-      '@emdash-cms/cloudflare':
-        specifier: 1.2.0
-        version: 1.2.0(c2ab5b7b1d3d297d54a1fa4ba8e50f85)
-      '@fontsource-variable/inter':
-        specifier: 'catalog:'
-        version: 5.3.0
-      '@rupeefund/content':
-        specifier: workspace:*
-        version: link:../../packages/content
-      '@rupeefund/site':
-        specifier: workspace:*
-        version: link:../../packages/site
-      '@rupeefund/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@tailwindcss/vite':
-        specifier: ^4.3.3
-        version: 4.3.3(vite@8.3.2(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
-      astro:
-        specifier: ^7.3.5
-        version: 7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
-      emdash:
-        specifier: 1.2.0
-        version: 1.2.0(@astrojs/react@7.0.0(@types/node@26.2.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(yaml@2.9.0))(@atcute/cbor@2.3.8(@atcute/cid@2.5.0))(@atcute/cid@2.5.0)(@atcute/identity@2.0.2(@atcute/lexicons@2.1.1)(typescript@6.0.3))(@date-fns/tz@1.5.0)(@floating-ui/dom@1.8.0)(@tiptap/extensions@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(astro@7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))(date-fns@4.4.0)(echarts@6.1.0)(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
-      react:
-        specifier: ^19.3.0
-        version: 19.3.0
-      react-dom:
-        specifier: ^19.3.0
-        version: 19.3.0(react@19.3.0)
-      tailwindcss:
-        specifier: 'catalog:'
-        version: 4.3.3
-    devDependencies:
-      '@astrojs/check':
-        specifier: ^0.9.10
-        version: 0.9.10(prettier-plugin-astro@0.14.1)(prettier@3.9.6)(typescript@6.0.3)
-      '@cloudflare/workers-types':
-        specifier: 'catalog:'
-        version: 5.20261007.1
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.2.0
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.11(@types/node@26.2.0)(jsdom@30.0.1)(vite@8.3.2(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
-      wrangler:
-        specifier: 'catalog:'
-        version: 4.146.0(@cloudflare/workers-types@5.20261007.1)(@types/node@26.2.0)
-
   apps/web:
     dependencies:
       '@astrojs/cloudflare':
@@ -183,6 +122,9 @@ importers:
       '@emdash-cms/cloudflare':
         specifier: 1.2.0
         version: 1.2.0(cac455b8f0ac2b55ce88845cca8e1d6a)
+      '@portabletext/to-html':
+        specifier: ^6.0.0
+        version: 6.0.0
       emdash:
         specifier: 1.2.0
         version: 1.2.0(@astrojs/react@7.0.0(@types/node@26.2.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(yaml@2.9.0))(@atcute/cbor@2.3.8(@atcute/cid@2.5.0))(@atcute/cid@2.5.0)(@atcute/identity@2.0.2(@atcute/lexicons@2.1.1)(typescript@6.0.3))(@date-fns/tz@1.5.0)(@floating-ui/dom@1.8.0)(@tiptap/extensions@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(astro@7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))(date-fns@4.4.0)(echarts@6.1.0)(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
@@ -192,6 +134,9 @@ importers:
       react-dom:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
+      zod:
+        specifier: ^4.6.5
+        version: 4.6.5
     devDependencies:
       '@astrojs/check':
         specifier: ^0.9.10
@@ -217,15 +162,9 @@ importers:
       '@resvg/resvg-js':
         specifier: ^2.6.2
         version: 2.6.2
-      '@rupeefund/content':
-        specifier: workspace:*
-        version: link:../../packages/content
       '@rupeefund/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@rupeefund/site':
-        specifier: workspace:*
-        version: link:../../packages/site
       '@rupeefund/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -266,25 +205,6 @@ importers:
         specifier: 'catalog:'
         version: 4.146.0(@cloudflare/workers-types@5.20261007.1)(@types/node@26.2.0)
 
-  packages/content:
-    dependencies:
-      '@portabletext/to-html':
-        specifier: ^6.0.0
-        version: 6.0.0
-      zod:
-        specifier: ^4.6.5
-        version: 4.6.5
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.2.0
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.11(@types/node@26.2.0)(jsdom@30.0.1)(vite@8.3.2(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
-
   packages/db:
     devDependencies:
       '@cloudflare/workers-types':
@@ -293,22 +213,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 26.2.0
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.11(@types/node@26.2.0)(jsdom@30.0.1)(vite@8.3.2(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
-
-  packages/site:
-    dependencies:
-      '@rupeefund/content':
-        specifier: workspace:*
-        version: link:../content
-    devDependencies:
-      astro:
-        specifier: ^7.3.5
-        version: 7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -5956,50 +5860,6 @@ snapshots:
       - date-fns
       - zod
 
-  '@emdash-cms/cloudflare@1.2.0(c2ab5b7b1d3d297d54a1fa4ba8e50f85)':
-    dependencies:
-      '@astrojs/cloudflare': 14.3.3(@types/node@26.2.0)(astro@7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))(esbuild@0.28.2)(jiti@2.7.0)(wrangler@4.146.0(@cloudflare/workers-types@5.20261007.1)(@types/node@26.2.0))(yaml@2.9.0)
-      '@cloudflare/ai-search-snippet': 0.0.42
-      '@cloudflare/workers-types': 5.20261007.1
-      astro: 7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
-      emdash: 1.2.0(@astrojs/react@7.0.0(@types/node@26.2.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(yaml@2.9.0))(@atcute/cbor@2.3.8(@atcute/cid@2.5.0))(@atcute/cid@2.5.0)(@atcute/identity@2.0.2(@atcute/lexicons@2.1.1)(typescript@6.0.3))(@date-fns/tz@1.5.0)(@floating-ui/dom@1.8.0)(@tiptap/extensions@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(astro@7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))(date-fns@4.4.0)(echarts@6.1.0)(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
-      jose: 6.2.12
-      kysely: 0.29.6
-      kysely-d1: 0.4.0(kysely@0.29.6)
-      ulidx: 2.4.1
-      wrangler: 4.146.0(@cloudflare/workers-types@5.20261007.1)(@types/node@26.2.0)
-    optionalDependencies:
-      '@cloudflare/kumo': 2.6.0(@date-fns/tz@1.5.0)(@phosphor-icons/react@2.1.10(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@types/react@19.3.0)(date-fns@4.4.0)(echarts@6.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zod@4.5.4)
-      '@phosphor-icons/react': 2.1.10(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      pg: 8.23.1
-      react: 19.3.0
-    transitivePeerDependencies:
-      - '@astrojs/react'
-      - '@atcute/cbor'
-      - '@atcute/cid'
-      - '@atcute/identity'
-      - '@cfworker/json-schema'
-      - '@date-fns/tz'
-      - '@emdash-cms/auth-atproto'
-      - '@emotion/is-prop-valid'
-      - '@floating-ui/dom'
-      - '@lingui/babel-plugin-lingui-macro'
-      - '@tiptap/extensions'
-      - '@types/react'
-      - '@types/react-dom'
-      - babel-plugin-macros
-      - bufferutil
-      - date-fns
-      - echarts
-      - pg-native
-      - prosemirror-model
-      - prosemirror-state
-      - prosemirror-view
-      - react-dom
-      - supports-color
-      - typescript
-      - utf-8-validate
-
   '@emdash-cms/cloudflare@1.2.0(cac455b8f0ac2b55ce88845cca8e1d6a)':
     dependencies:
       '@astrojs/cloudflare': 14.3.3(@types/node@26.2.0)(astro@7.3.5(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))(esbuild@0.28.2)(jiti@2.7.0)(wrangler@4.146.0(@cloudflare/workers-types@5.20261007.1)(@types/node@26.2.0))(yaml@2.9.0)
@@ -7157,13 +7017,6 @@ snapshots:
       '@tailwindcss/oxide': 4.3.3
       tailwindcss: 4.3.3
       vite: 8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0)
-
-  '@tailwindcss/vite@4.3.3(vite@8.3.2(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))':
-    dependencies:
-      '@tailwindcss/node': 4.3.3
-      '@tailwindcss/oxide': 4.3.3
-      tailwindcss: 4.3.3
-      vite: 8.3.2(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0)
 
   '@tanstack/history@1.161.4': {}
 

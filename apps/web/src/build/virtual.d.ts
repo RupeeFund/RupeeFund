@@ -1,4 +1,4 @@
 declare module "virtual:cms-content" {
-  const content: import("@rupeefund/content/schema").Content;
+  const content: import("../content/schema.ts").Content;
   export default content;
 }

@@ -3,6 +3,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     projects: [
+      "./vitest.components.config.ts",
       {
         test: {
           name: "web:browser",
@@ -13,7 +14,7 @@ export default defineConfig({
       {
         test: {
           name: "web:lib",
-          include: ["src/lib/**/*.test.ts", "src/build/**/*.test.ts"],
+          include: ["src/lib/**/*.test.ts", "src/build/**/*.test.ts", "src/content/**/*.test.ts"],
         },
       },
       {

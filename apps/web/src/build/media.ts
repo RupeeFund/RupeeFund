@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { mediaKeys } from "@rupeefund/content/media";
+import { mediaKeys } from "../content/media.ts";
 import type { LoadedContent } from "./content.ts";
 import { fetchPatiently, type Wait } from "./fetch.ts";
 
