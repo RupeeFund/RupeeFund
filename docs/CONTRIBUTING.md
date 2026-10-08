@@ -20,13 +20,13 @@ You need Node 24 or later and [pnpm](https://pnpm.io/installation). You need no 
 
 ```sh
 pnpm install
-pnpm db:reset   # make the local database and fill it with made-up rows
-pnpm dev        # serve the site
+pnpm db:reset   # make the local databases and fill them with sample content and made-up rows
+pnpm dev        # serve the site and the content manager
 ```
 
 The terminal shows the address of the site. When you save a file, the browser reloads. If the build fails, the terminal shows the error and the site stays as it was. To work on the admin panel, run `pnpm dev:admin` in a second terminal.
 
-The site reads its words from a sample file, so you need no content manager. To work on the content manager, run `pnpm dev:cms`. Open `http://localhost:8790/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`. In a codespace, open port 8790 from the **Ports** tab and add the same path. This page adds the sample content and signs you in as an admin. When you invite a person, the invite link shows in the output of `pnpm dev:cms`. To serve the site from your local content, run `pnpm dev:site-cms` in place of `pnpm dev`. The site builds again a few seconds after you publish.
+To sign in to the content manager, open `http://localhost:8787/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`. In a codespace, open port 8787 from the **Ports** tab and add the same path. This page signs you in as an admin. The site shows each publish at the next page load. The content manager sends no email. When you invite a person, it shows the invite link.
 
 - When pnpm tells you to run `pnpm install`, run it.
 - `pnpm db:reset` erases your local data. Run it again for a clean start.

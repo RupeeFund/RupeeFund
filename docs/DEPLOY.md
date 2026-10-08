@@ -1,6 +1,6 @@
 # Deployment
 
-The system runs on the Workers Free plan.
+The account uses the Workers Paid plan.
 
 ## 1. The branch model
 
@@ -9,15 +9,13 @@ The system runs on the Workers Free plan.
 | `main` | none                  | none              | never                 |
 | `live` | `rupeefund.org`       | `rupeefund-web`   | a promote (section 3) |
 | `live` | `admin.rupeefund.org` | `rupeefund-admin` | a promote (section 3) |
-| `live` | `cms.rupeefund.org`   | `rupeefund-cms`   | a promote (section 3) |
 
-Each Worker has its own Cloudflare Workers Builds project, and each watches `live`. One promote ships all Workers. Each project uses the repository root as the root directory, because pnpm installs the whole workspace from the root lockfile.
+`rupeefund-web` serves the site and the content manager. Each Worker has its own Cloudflare Workers Builds project, and each watches `live`. One promote ships both Workers. Each project uses the repository root as the root directory, because pnpm installs the whole workspace from the root lockfile.
 
 | Worker            | Build command                                                                                                                                           | Deploy command                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | `rupeefund-web`   | `pnpm check && pnpm turbo run build --filter=@rupeefund/web`                                                                                            | `pnpm --filter @rupeefund/web exec wrangler deploy`   |
 | `rupeefund-admin` | `pnpm check && pnpm turbo run build --filter=@rupeefund/admin && pnpm --filter @rupeefund/admin exec node ../../packages/db/scripts/assert-applied.mts` | `pnpm --filter @rupeefund/admin exec wrangler deploy` |
-| `rupeefund-cms`   | `pnpm check && pnpm turbo run build --filter=@rupeefund/cms`                                                                                            | `pnpm --filter @rupeefund/cms exec wrangler deploy`   |
 
 The build is the only gate of a deploy. `pnpm check` runs first, and the build of `rupeefund-web` and `rupeefund-admin` also checks the migrations of the live database (section 4). When a step fails, Workers Builds deploys nothing, and the earlier version stays live. CI on `main` and the browser tests are signals. They do not stop a deploy.
 
@@ -25,7 +23,7 @@ The Workers Builds API token of `rupeefund-web` and `rupeefund-admin` needs the 
 
 Turn off branch builds for all branches except `live` on each project. Keep them off. `docs/ARCHITECTURE.md` section 3 gives the reason.
 
-Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand. It uploads whatever `apps/web/dist` holds and skips the build guards. You can run `pnpm wrangler rollback` in an incident, because it ships no new code. For the admin Worker, run `pnpm --filter @rupeefund/admin exec wrangler rollback`. For the content manager, read section 11.7.
+Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand. It uploads whatever `apps/web/dist` holds and skips the build guards. You can run `pnpm wrangler rollback` in an incident, because it ships no new code. It also rolls back the content manager, so read section 11.4 first. For the admin Worker, run `pnpm --filter @rupeefund/admin exec wrangler rollback`.
 
 ## 2. How to prove a change
 
@@ -52,7 +50,7 @@ From the phone, run the `Promote` workflow from the Actions tab on `main`. It fa
 
 Do not force the push. `live` is always a prefix of `main`, so a promote takes a commit and everything before it. Promote often.
 
-To go back, run `pnpm wrangler rollback` and `pnpm --filter @rupeefund/admin exec wrangler rollback`. Then purge the zone cache. The next publish in the content manager builds the site again from `live`. For the content manager, read section 11.7. Do not delete the Worker. A deleted Worker loses its custom domain and every earlier deployment.
+To go back, run `pnpm wrangler rollback` and `pnpm --filter @rupeefund/admin exec wrangler rollback`. Then purge the zone cache. If the bad version changed the content database, read section 11.4. Do not delete the Worker. A deleted Worker loses its custom domain and every earlier deployment.
 
 ## 4. How to apply a migration
 
@@ -103,7 +101,7 @@ Purge the zone cache first. Then:
 pnpm live:check
 ```
 
-It checks the site, the admin Worker and the CMS Worker, prints one `PASS` or `FAIL` line for each check, and exits 1 on a failure. `apps/web/scripts/live-check.mts` lists the checks.
+It checks the site, the content manager, the admin Worker and the old content manager address. It prints one `PASS` or `FAIL` line for each check, and exits 1 on a failure. `apps/web/scripts/live-check.mts` lists the checks.
 
 Then complete the form one time, and read the row:
 
@@ -111,7 +109,7 @@ Then complete the form one time, and read the row:
 pnpm wrangler d1 execute rupeefund-waitlist --remote --command "SELECT email, consent_at FROM waitlist"
 ```
 
-Then sign in to the admin panel with a browser (section 10.3).
+Then sign in to the content manager and open an entry. Sign in to the admin panel with a browser (section 10.3).
 
 ## 7. How to remove a person
 
@@ -153,7 +151,7 @@ Before you clear it, count the rows with that `exported_at`. The number must equ
 
 ## 9. How to move to a different account
 
-The domain uses Cloudflare Registrar. A move to a different Cloudflare account takes only the registration. You make the zone, the Workers, the databases, the media bucket and the Turnstile widget again in the new account.
+The domain uses Cloudflare Registrar. A move to a different Cloudflare account takes only the registration. You make the zone, the Workers, the databases, the media bucket, the session namespace and the Turnstile widget again in the new account.
 
 A Worker custom domain needs an active zone, and the zone becomes active only after the registration moves. So the site is down from the move until the first deploy in the new account. After the move, Cloudflare locks the registration against transfer for 30 days ([Cloudflare documentation](https://developers.cloudflare.com/registrar/account-options/inter-account-transfer/)).
 
@@ -161,30 +159,52 @@ Before the move:
 
 1. Turn off DNSSEC on the old zone. Wait until `dig +short DS rupeefund.org @a0.org.afilias-nst.info` returns nothing.
 
-1. Add `rupeefund.org` as a zone in the new account. Copy the DNS records, the redirect rule, Always Use HTTPS and Bot Fight Mode from the old zone. Do not add an apex record. The custom domain makes it.
+1. Add `rupeefund.org` as a zone in the new account. Copy the DNS records, the redirect rules, the WAF custom rules, Always Use HTTPS and Bot Fight Mode from the old zone. Do not add an apex record. The custom domain makes it.
 
-1. Make the database with `pnpm wrangler d1 create`. Copy the `database_id` into `apps/web/wrangler.jsonc` **and into `apps/admin/wrangler.jsonc`**. Both Workers bind the one database. Apply every migration with `pnpm wrangler d1 migrations apply rupeefund-waitlist --remote`.
+1. Tell the editors to stop all edits until the move ends.
+
+1. Export the data from the old account. Do this step before you change a `wrangler.jsonc`, because wrangler finds a database by the ID in that file. D1 does not export a database that has virtual tables, and the search index of each collection is a virtual table. So the loop turns off the search first:
+
+   ```sh
+   for c in posts faq pages; do
+     curl -fsS -X POST -H "authorization: Bearer $EMDASH_TOKEN" -H "x-emdash-request: 1" \
+       -H "content-type: application/json" -d "{\"collection\":\"$c\",\"enabled\":false}" \
+       https://rupeefund.org/_emdash/api/search/enable
+   done
+   CLOUDFLARE_ACCOUNT_ID=<old> pnpm wrangler d1 export rupeefund-waitlist --remote --no-schema --table waitlist --output /tmp/waitlist-rows.sql
+   CLOUDFLARE_ACCOUNT_ID=<old> pnpm wrangler d1 export rupeefund-content --remote --output /tmp/content.sql
+   ```
+
+   `EMDASH_TOKEN` is an API token with the **Admin** scope (section 11.5). The loop names each collection that has `search` in `supports` in `apps/web/seed/seed.json`. Compare the two lists before you run it.
+
+1. Make the waitlist database with `pnpm wrangler d1 create rupeefund-waitlist --location apac`. Copy its `database_id` into the first entry of `d1_databases` in `apps/web/wrangler.jsonc` **and into `apps/admin/wrangler.jsonc`**. Both Workers bind that database. Apply every migration with `pnpm wrangler d1 migrations apply rupeefund-waitlist --remote`.
+
+1. Make the resources of the content manager (section 11.1).
 
 1. Make one Turnstile widget for `rupeefund.org`. Put its sitekey in `apps/web/src/lib/turnstile.ts`. Set its secret with `pnpm wrangler secret put TURNSTILE_SECRET`.
 
-1. Copy the rows. Give each command its account:
+1. Import the data into the new account:
 
    ```sh
-   CLOUDFLARE_ACCOUNT_ID=<old> pnpm wrangler d1 export <old-database> --remote --no-schema --table waitlist --output /tmp/waitlist-rows.sql
    CLOUDFLARE_ACCOUNT_ID=<new> pnpm wrangler d1 execute rupeefund-waitlist --remote --file /tmp/waitlist-rows.sql
+   CLOUDFLARE_ACCOUNT_ID=<new> pnpm wrangler d1 execute rupeefund-content --remote --file /tmp/content.sql
    ```
 
-   Delete `/tmp/waitlist-rows.sql` after the move. It holds the list.
+   The content export holds the tables and the people of the content manager, so the live site needs no setup wizard. The sessions do not move, so each person signs in again.
 
-1. Make the resources of the content manager (section 11.1). Copy the content database the same way, with `--table` removed. Copy each object of `rupeefund-media` to the new bucket, for example with [rclone](https://developers.cloudflare.com/r2/examples/rclone/). Set `DEPLOY_HOOK_URL` after the move (section 11.3).
+1. Copy each object of `rupeefund-media` to the new bucket, for example with [rclone](https://developers.cloudflare.com/r2/examples/rclone/).
+
+1. Delete `/tmp/waitlist-rows.sql` and `/tmp/content.sql` after the move. They hold the list and the email addresses of the editors.
 
 The move:
 
-1. Disconnect the three Workers Builds projects in the old account. Connect each in the new account, with the settings in section 1.
+1. Disconnect the two Workers Builds projects in the old account. Connect each in the new account, with the settings in section 1.
 1. In the old account, open **Domain Registration**, then the domain, then **Configuration**, and move it to the new account. Accept the move in the new account.
 1. When the zone is active, promote. The deploy makes the custom domain.
-1. Repeat sections 10.1 to 10.3 for the admin Worker, and section 11.3 for the rebuild.
+1. Run the search loop of the export step again, with `true` in place of `false`. The site does not use the search, but the content manager does.
+1. Repeat sections 10.1 to 10.3 for the admin Worker.
 1. Verify with section 6. Look for rows that the old Worker took after the copy, and copy them.
+1. Tell the editors that they can edit again.
 1. Turn on DNSSEC in the new zone.
 
 ## 10. The admin panel
@@ -223,54 +243,21 @@ The Worker refuses every request (`docs/ARCHITECTURE.md` section 10.1). This is 
 
 ## 11. The content manager
 
-`docs/ARCHITECTURE.md` section 11 tells how the parts work together.
+`docs/ARCHITECTURE.md` section 11 tells how the parts work together. The content manager is at `https://rupeefund.org/_emdash/admin`. `https://rupeefund.org/admin` sends a person there.
 
 ### 11.1 Make the resources
 
-Turn on R2 for the account in the dashboard, under **R2 Object Storage**. Then make the resources:
+The live account has the resources. Make them again only for a move to a new account (section 9). Turn on R2 for the account in the dashboard, under **R2 Object Storage**. Then make the resources:
 
 ```sh
-pnpm --filter @rupeefund/cms exec wrangler d1 create rupeefund-content --location apac
-pnpm --filter @rupeefund/cms exec wrangler r2 bucket create rupeefund-media --location apac
-pnpm --filter @rupeefund/cms exec wrangler kv namespace create rupeefund-cms-session
+pnpm wrangler d1 create rupeefund-content --location apac
+pnpm wrangler r2 bucket create rupeefund-media --location apac
+pnpm wrangler kv namespace create rupeefund-web-session
 ```
 
-`apac` keeps the data near the readers, as for `rupeefund-waitlist`. Put the database ID in `d1_databases` and the namespace ID in `kv_namespaces` of `apps/cms/wrangler.jsonc`, and merge the change.
+`apac` keeps the data near the readers, as for `rupeefund-waitlist`. In `apps/web/wrangler.jsonc`, put the database ID in the `DB` entry of `d1_databases`. Put the namespace ID in `kv_namespaces`. Then merge the change.
 
-### 11.2 Close the setup to strangers
-
-Until the content manager has an admin, any person who opens it can become the admin. Put a temporary Access application in front of it:
-
-1. Go to **Zero Trust** > **Access** > **Applications**.
-1. Add a self-hosted application on `cms.rupeefund.org` with the path `/_emdash/*`.
-1. Set the login method and the policy as in section 10.2.
-
-### 11.3 Make the Worker and connect the rebuild
-
-1. Open `rupeefund-web` in **Workers & Pages**. Go to **Settings** > **Builds** > **Deploy Hooks**, and add a hook for the branch `live`. Copy its URL. Keep the URL secret, because it starts a build.
-1. Set the URL as a secret of `rupeefund-cms`. The command also makes the Worker, so answer yes when it asks.
-
-   ```sh
-   pnpm --filter @rupeefund/cms exec wrangler secret put DEPLOY_HOOK_URL
-   ```
-
-1. Open `rupeefund-cms` in **Workers & Pages**. Go to **Settings** > **Builds** > **Connect**. Select this repository and the branch `live`, and use the settings in section 1. Turn off the builds for the other branches.
-
-### 11.4 Set up the content
-
-The promote also builds `rupeefund-web`. That build fails until the content manager has content, and the old site stays live. Do these steps in one sitting:
-
-1. Promote (section 3).
-1. Open `https://cms.rupeefund.org/_emdash/admin` and sign in to Access. The setup wizard opens.
-1. Select **Sample content**. It is the present text of the site.
-1. Make your admin account and its passkey.
-1. Delete the Access application of section 11.2.
-1. Publish an entry, for example a new FAQ entry. The Deploy Hook builds the site from the content manager.
-1. Run `pnpm live:check`. Each line must say `PASS`.
-
-If the content manager loses all its people, put the Access application of section 11.2 back before you open it again.
-
-### 11.5 Invite a person
+### 11.2 Invite a person
 
 The content manager sends no email. To add a person:
 
@@ -280,9 +267,9 @@ The content manager sends no email. To add a person:
 
 The person signs in with that passkey from then on. Self-signup stays off.
 
-To remove a person, disable the account in **Users**. Until the session of that person ends, the person can still open the stored images (`docs/TODO.md`).
+To remove a person, disable the account in **Users**.
 
-### 11.6 Update EmDash
+### 11.3 Update EmDash
 
 EmDash changes its database on the first request after the deploy. Renovate opens one pull request for all EmDash packages and does not merge it.
 
@@ -291,44 +278,80 @@ EmDash changes its database on the first request after the deploy. Renovate open
 1. Promote (section 3).
 1. Run `pnpm live:check`. Sign in to the content manager and open an entry.
 
-If the content manager fails, go back (section 11.7) to the time you wrote down.
+If the site or the content manager fails, go back (section 11.4) to the time you wrote down.
 
-### 11.7 Go back
+### 11.4 Go back
 
-- **Wrong words on the site.** Restore the earlier revision of the entry in the editor, and publish it. The site builds again. A rollback of `rupeefund-web` stays only until the next publish.
+- **Wrong words on the site.** Restore the earlier revision of the entry in the editor, and publish it. The site shows it at the next page load.
 
-- **A publish that does not reach the site.** The build of `rupeefund-web` fails, and the last good site stays live. Open `rupeefund-cms` in **Workers & Pages** and go to **Observability**. Find the `published_invalid` event. It gives the problem and its place, such as `posts.3.title` or `Publish the home page`. Correct the entry and publish it again. A `published_load_failed` event tells that the database did not answer. Then publish again later.
+- **An entry that does not show.** The site refused the entry and left it out (`docs/ARCHITECTURE.md` section 11.1). Open `rupeefund-web` in **Workers & Pages**. Go to **Observability**. Search for `The site leaves out an entry`. The line gives the entry and the problem, for example `posts/hello`. Correct the entry. Then publish it again. `docs/EDITING.md` section 6 lists what the site refuses.
 
-- **A broken content manager.** Run `pnpm --filter @rupeefund/cms exec wrangler rollback`. If the bad version changed the database, also restore the database to the time before the deploy:
+- **A broken site or content manager.** Run `pnpm wrangler rollback`. If the bad version changed the content database, also restore the database to the time before the deploy:
 
   ```sh
-  pnpm --filter @rupeefund/cms exec wrangler d1 time-travel restore rupeefund-content --timestamp=<time>
+  pnpm wrangler d1 time-travel restore rupeefund-content --timestamp=<time>
   ```
 
-  Time Travel keeps 7 days on the Workers Free plan ([Cloudflare documentation](https://developers.cloudflare.com/d1/reference/time-travel/)). The restore removes each edit after that time.
+  Time Travel keeps 30 days on the Workers Paid plan ([Cloudflare documentation](https://developers.cloudflare.com/d1/reference/time-travel/)). The restore removes each edit after that time.
 
-### 11.8 Change a content field
+### 11.5 Change a content field
 
-The site shows only the fields and the collections that its code reads. `docs/ARCHITECTURE.md` section 11.6 names that code. On the live content manager, an admin adds or removes a field in the content manager itself. `apps/cms/seed/seed.json` applies only at the first setup.
+The site shows only the fields and the collections that its code reads. `docs/ARCHITECTURE.md` section 11.6 names that code. The live content manager refuses a schema change from a browser. Change the live model with an API token and `pnpm model:add`. The command reads `apps/web/seed/seed.json`. It adds to the live site each collection, field, search index and taxonomy that it does not have.
 
-Keep this order, so that each build finds the fields that its code reads:
+1. Sign in as an admin. Open `https://rupeefund.org/_emdash/admin/settings/api-tokens`. Make a token with the **Admin** scope. Keep it in your password manager.
 
-- **To add a field.** Add the field in the live content manager, and fill it in each entry. Then promote the code that reads it.
-- **To remove a field.** Promote the code that stops reading it. Then remove the field in the live content manager.
+1. Add the field to `apps/web/seed/seed.json`.
 
-EmDash cannot change **Required** or **Unique** on an existing field. The switch shows, but the save fails.
+1. Put the token in the environment variable `EMDASH_TOKEN`. Then list the changes:
 
-### 11.9 Block the scanners
-
-Each request that reaches `rupeefund-cms` starts the Worker and uses CPU time. A WAF custom rule on the zone blocks the paths that the content manager does not serve. The Workers Free plan gives 10 ms of CPU time to each request.
-
-1. Go to the zone > **Security** > **WAF** > **Custom rules**.
-1. Add the rule `cms: block paths outside the content manager routes`, with the action **Block**, and this expression:
-
-   ```txt
-   (http.host eq "cms.rupeefund.org" or starts_with(http.host, "cms.rupeefund.org:")) and not (http.request.uri.path in {"/" "/_emdash" "/_image" "/published.json"} or starts_with(http.request.uri.path, "/_emdash/") or starts_with(http.request.uri.path, "/_astro/") or starts_with(http.request.uri.path, "/_server-islands/") or starts_with(http.request.uri.path, "/media/") or starts_with(http.request.uri.path, "/preview/") or starts_with(http.request.uri.path, "/seasons/") or starts_with(http.request.uri.path, "/.well-known/oauth-") or starts_with(http.request.uri.path, "/cdn-cgi/"))
+   ```sh
+   pnpm model:add --url https://rupeefund.org
    ```
 
-1. Run `pnpm live:check`. Each line must say `PASS`.
+   The command changes nothing. Each line names one addition. A `note:` line changes nothing. A `conflict:` line names a field of a different type, or a taxonomy that does not cover a collection. With a conflict, the command refuses to apply.
 
-The rule also blocks the EmDash `/robots.txt` and sitemaps, because no person or crawler needs them on this host. When you add a route or a folder in `apps/cms/public/`, add its path to the rule.
+1. Apply the changes:
+
+   ```sh
+   pnpm model:add --url https://rupeefund.org --apply
+   ```
+
+   The command stops at the first error and prints it. List the changes again to see what is left.
+
+1. Revoke the token on the same page.
+
+Keep this order, so that each version of the code finds the fields that it reads:
+
+- **To add a field.** Add the field to the live site, and fill it in each entry. Then promote the code that reads it.
+
+- **To remove a field.** Promote the code that stops reading it. Then remove the field with the token. `pnpm model:add` never removes a field.
+
+  ```sh
+  curl -fsS -X DELETE -H "authorization: Bearer $EMDASH_TOKEN" -H "x-emdash-request: 1" \
+    https://rupeefund.org/_emdash/api/schema/collections/<collection>/fields/<field>
+  ```
+
+### 11.6 Block the scanners
+
+Each request that no static file answers starts the Worker and uses CPU time. A WAF custom rule on the zone blocks the paths of common scanners first.
+
+1. Go to the zone > **Security** > **WAF** > **Custom rules**.
+
+1. Add the rule `site: block scanner paths`, with the action **Block**, and this expression:
+
+   ```txt
+   (http.host eq "rupeefund.org" or starts_with(http.host, "rupeefund.org:")) and (starts_with(http.request.uri.path, "/wp-") or ends_with(http.request.uri.path, ".php"))
+   ```
+
+1. Run `pnpm live:check`. The line `site blocks the scanners` must say `PASS`.
+
+The rule blocks each path that starts with `/wp-` or ends with `.php`. Do not give a page such a path.
+
+### 11.7 The old address
+
+The content manager ran in the Worker `rupeefund-cms` at `cms.rupeefund.org` before it moved into `rupeefund-web`. The zone sends that address to `https://rupeefund.org/admin` with two parts:
+
+- A proxied `AAAA` record `cms` with the address `100::`. No server has that address. Cloudflare answers first.
+- A Redirect Rule: when the hostname is `cms.rupeefund.org`, a 301 to `https://rupeefund.org/admin`.
+
+`pnpm live:check` checks the 301. Thirty days after the move, delete the `rupeefund-cms` Worker and its WAF rule `cms: block paths outside the content manager routes`. Keep the DNS record and the Redirect Rule.

@@ -29,8 +29,8 @@ EmDash can also sign a person in with a link by email, and it can send the invit
 
 To do:
 
-1. Select a service that sends mail from a Worker on the Workers Free plan.
-1. Add the EmDash email plugin for that service to `apps/cms`.
+1. Select a service that sends mail from a Worker.
+1. Add the EmDash email plugin for that service to `apps/web`.
 1. Turn on the email sign-in. Keep self-signup off, so only an invited person gets an account.
 1. Add the sender address and the secret to `docs/DEPLOY.md` section 11.
 
@@ -38,18 +38,24 @@ Urgent when: guests write for the blog often, or a guest cannot use a passkey.
 
 ## Check an entry before it publishes
 
-A publish can succeed in the content manager while the site build fails, for example on a source link that is not `https:`. Only the log of `rupeefund-cms` shows the reason, as the `published_invalid` event. Add a `content:beforePublish` rule to `apps/cms/src/plugin.ts` that builds the document with the entry and refuses the publish with the schema message.
+A publish can succeed in the content manager while the site refuses the entry, for example on a source link that is not `https:`. The site then leaves the entry out, and only the log of `rupeefund-web` shows the reason (`docs/DEPLOY.md` section 11.4). A refused landing page takes the home page down. Extend `publishGate` in `apps/web/src/plugin/hooks.ts`. Make it check the entry against `apps/web/src/content/schema.ts` and refuse the publish with the schema message.
 
-Urgent when: a publish breaks a site build.
+Urgent when: a publish takes a page off the site.
 
-## Move the season icons to the shared package
+## Preview the entries without an address
 
-`apps/web/public/seasons/` and `apps/cms/public/seasons/` hold the same four files. Move them to `packages/ui` and use one copy.
+The landing page, the FAQ, the people page and the community team have no `urlPattern` in `apps/web/seed/seed.json`. So **Preview** opens `/<collection>/<id>`, a page that does not exist. Give each one the address of the page that shows it, for example `/` for the landing page.
 
-Urgent when: a season icon changes.
+Urgent when: an editor needs a preview before a publish.
 
-## Refuse a disabled person at the stored files
+## Keep drafts out of the feed and the sitemap
 
-`apps/cms/src/session-gate.ts` lets any live session open the stored files and `/_image`. It does not read the user record, so a disabled person can open the stored images until the session ends. Read the user by the session ID and refuse a disabled account, as EmDash does for its own routes.
+In the edit mode, EmDash puts the draft text over each published entry. `/blog/rss.xml` and `/sitemap.xml` then show that draft text to the editor.
 
-Urgent when: an admin disables a person who had access to drafts.
+Urgent when: an editor shares a feed or a sitemap from a browser in the edit mode.
+
+## Make the first admin of a new content database
+
+The live site refuses the setup wizard (`apps/web/src/lib/edge.ts`). So a new, empty content database cannot get its first admin there. Today a move copies the database with its people (`docs/DEPLOY.md` section 9).
+
+Urgent when: the content manager must start from an empty database.

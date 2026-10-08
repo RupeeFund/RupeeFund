@@ -2,38 +2,59 @@
 
 ## 1. What the system does
 
-The system shows public pages and collects a mailing list. It takes no payment and holds no vote. A content manager holds the words of the pages. Refer to section 11.
+The system shows public pages and collects a mailing list. It takes no payment and holds no vote. A content manager, EmDash, holds the words of the pages. Refer to section 11.
 
 `packages/db/src/schema.ts` gives what the system stores for each person. It stores no payment instrument.
 
 ## 2. The parts
 
-| Part          | Technology                   | Function                                      |
-| ------------- | ---------------------------- | --------------------------------------------- |
-| Site          | Astro                        | Makes static HTML at build time               |
-| Public Worker | Hono on Cloudflare Workers   | Answers `/api/health` and `/api/waitlist`     |
-| Admin Worker  | Hono on Cloudflare Workers   | Shows the team the list. Refer to section 10. |
-| Database      | Cloudflare D1                | Keeps the `waitlist` table                    |
-| CMS Worker    | EmDash on Cloudflare Workers | Holds the content. Refer to section 11.       |
-| Scripts       | TypeScript in `src/scripts/` | Adds behaviour to the static pages            |
+| Part            | Technology                                   | Function                                                                 |
+| --------------- | -------------------------------------------- | ------------------------------------------------------------------------ |
+| Site Worker     | Astro, EmDash and Hono on Cloudflare Workers | Renders each page on request, runs the content manager, answers `/api/*` |
+| Admin Worker    | Hono on Cloudflare Workers                   | Shows the team the list. Refer to section 10.                            |
+| Waitlist data   | Cloudflare D1                                | Keeps the `waitlist` table                                               |
+| Content data    | Cloudflare D1                                | Keeps the entries, the revisions and the people of the content manager   |
+| Media           | Cloudflare R2                                | Keeps the images that editors upload                                     |
+| Sessions        | Cloudflare KV                                | Keeps the sessions of the content manager                                |
+| Browser scripts | TypeScript in `src/scripts/`                 | Adds behaviour to the pages in the browser                               |
 
-On `rupeefund.org`, only a request to `/api/*` reaches the public Worker. Cloudflare serves every other path from the static files.
+`apps/web/wrangler.jsonc` names the resources of the site Worker, and `apps/admin/wrangler.jsonc` the resources of the admin Worker.
 
-On `admin.rupeefund.org`, the admin Worker answers every path. Both Workers use one database. Only the public Worker adds rows. The admin Worker writes only the export stamp, `exported_at`.
+`src/worker.ts` is the entry of the site Worker. It sends each request under `/api/` to the Hono app in `src/worker/api.ts`, and each other request to Astro. EmDash runs inside Astro. It serves `/_emdash/*` and gives the pages their content. A request that matches a static file gets the file, and the Worker does not run.
+
+Both Workers use the waitlist database. Only the site Worker adds rows. The admin Worker writes only the export stamp, `exported_at`.
 
 AGENTS.md maps the packages.
 
 A path in this document starts at the repository root. `src/` means `apps/web/src/`.
 
-To add an endpoint, write a handler in `src/worker/routes/`. Connect it in `src/worker/index.ts` above the `/api/*` catch-all. Use a path under `/api/`, because no other path reaches the Worker.
+To add an endpoint, write a handler in `src/worker/routes/`. Connect it in `src/worker/api.ts` above the `/api/*` catch-all. Use a path under `/api/`, because only that path reaches Hono.
 
 Each command under `scripts` in `package.json` runs in the pnpm shell emulator, so it runs the same on Windows. It accepts a `NAME=value` prefix, `&&`, `||`, `|`, a redirect and `$(...)`. Do not use `if`, `for` or `case`: they fail without a clear error.
 
-## 3. The one environment
+## 3. Addresses and hosts
 
-The one environment is `live`, at `rupeefund.org`, `admin.rupeefund.org` and `cms.rupeefund.org`. Section 7 names its resources. Three Workers are not three environments. There is no preview URL.
+| Address                        | What answers                 | Function                                                            |
+| ------------------------------ | ---------------------------- | ------------------------------------------------------------------- |
+| `rupeefund.org/` and each page | Site Worker, Astro           | Renders the page from the published content (section 11.1)          |
+| `rupeefund.org/api/*`          | Site Worker, Hono            | The signup and the health check (section 4)                         |
+| `rupeefund.org/_emdash/*`      | Site Worker, EmDash          | The content manager and its API (section 11)                        |
+| `rupeefund.org/admin`          | `apps/web/public/_redirects` | Sends the person to `/_emdash/admin`                                |
+| `rupeefund.org/media/<key>`    | Site Worker                  | The images of the published content (section 11.2)                  |
+| `admin.rupeefund.org`          | Admin Worker                 | The admin panel, behind Cloudflare Access (section 10)              |
+| `cms.rupeefund.org`            | A Redirect Rule on the zone  | The old address of the content manager. It sends a 301 to `/admin`. |
 
-A second address for `rupeefund-web` keeps the live bindings and writes to the live list. So the configuration refuses a `workers.dev` address and a preview URL. The configuration does not stop a second custom domain. That rule is a decision, not a check. Prove a change on your own machine, against a local database.
+The next table holds the addresses for later work. No part serves them yet. Keep them free for that work.
+
+| Address                    | Later part      | Where it fits                                                                                              |
+| -------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `rupeefund.org/platform/*` | Voting platform | A route group in this app, or its own Worker on the same host. It uses the sign-in of the content manager. |
+| `dashboard.rupeefund.org`  | Data dashboard  | The next version of `admin.rupeefund.org`                                                                  |
+| `rupeefund.org/stats`      | Public figures  | Public pages that read totals only                                                                         |
+
+The one environment is `live`. Two Workers are not two environments. There is no preview URL.
+
+A second address for the site Worker keeps the live bindings and writes to the live list and the live content. So the configuration refuses a `workers.dev` address and a preview URL. The configuration does not stop a second custom domain. That rule is a decision, not a check. Prove a change on your own machine, against a local database.
 
 ## 4. How a person joins the list
 
@@ -43,13 +64,17 @@ Each row needs a Turnstile token, and Turnstile needs JavaScript. A browser with
 
 ## 5. The database
 
-`packages/db/migrations/` holds every migration. The live database keeps its own ledger, so `wrangler d1 migrations apply` runs only the files it has not seen. `docs/DEPLOY.md` section 4 gives the rules for a new migration.
+`packages/db/migrations/` holds every migration of the waitlist database. The live database keeps its own ledger, so `wrangler d1 migrations apply` runs only the files it has not seen. `docs/DEPLOY.md` section 4 gives the rules for a new migration.
 
 `packages/db/src/schema.ts` holds the type of each table row and the values the form accepts. The site, the admin panel and the export import them from there. A migration that adds or changes a column must change that file too. `packages/db/tests/schema.test.ts` holds the two together. Its typecheck fails when the type changes alone, and its run fails when a migration changes alone.
 
 `packages/db/migrations/` and `schema.ts` give each column. An empty answer column means the form did not ask that question when the person signed up. The migration that added the column tells when.
 
 A second signup with the same email address changes nothing. The first row stands, and the person sees the normal confirmation. The form cannot prove who owns an address, so it never rewrites a row and never reveals that one exists. To change an answer or to return after a removal, a person writes to the team, and an operator edits the row by hand.
+
+Keep the waitlist database first in `d1_databases` of `apps/web/wrangler.jsonc`. The admin Worker test compares its database with the first one there.
+
+The content database belongs to EmDash. EmDash makes and changes its tables itself (section 11.8).
 
 ## 6. The export
 
@@ -72,11 +97,18 @@ Every Cloudflare resource of this repository follows these rules. A fork deploys
 
 ## 8. Security headers
 
-`apps/web/public/_headers` sets the security headers on every page. The content security policy permits inline scripts for two reasons. The build emits inline module scripts. Bot Fight Mode on the zone injects one inline script. The policy also permits `static.cloudflareinsights.com` because Web Analytics on the zone injects its beacon. `apps/web/tests/site/csp.test.ts` fails when a page loads a host the policy does not name.
+`src/outer.ts` runs first on each request that reaches Astro. It answers 404 to each EmDash route that the site does not use. Then it sets the security headers on the answer. `src/lib/edge.ts` holds the list of routes and the headers.
 
-`apps/web/public/_headers` applies to `rupeefund.org` only. The admin Worker sets its own headers. Refer to section 10.5.
+- A page of the site gets the content security policy of the site and refuses a frame.
+- An answer under `/_emdash/` does not get the policy of the site. It gets `x-robots-tag: noindex, nofollow`, so search engines do not list the content manager.
 
-`run_worker_first` in `apps/web/wrangler.jsonc` sends `/api/*` to the Worker, so `_headers` does not apply to those answers. `apps/web/src/worker/index.ts` sets the headers of those answers itself.
+The policy permits inline scripts for two reasons. The build emits inline module scripts. Bot Fight Mode on the zone injects one inline script. The policy also permits `static.cloudflareinsights.com` because Web Analytics on the zone injects its beacon.
+
+A static file goes out before the Worker runs, so `apps/web/public/_headers` sets the same headers on the static files. `apps/web/tests/site/csp.test.ts` fails when the two policies differ, and when a page loads a host that the policy does not name.
+
+`src/worker/api.ts` sets the headers of the `/api/*` answers itself.
+
+These headers apply to `rupeefund.org` only. The admin Worker sets its own headers. Refer to section 10.5.
 
 ## 9. Brand files
 
@@ -92,7 +124,7 @@ To sync from a local brand checkout before it reaches `main`, set `BRAND_DIR` to
 
 The panel shows the team the waitlist. It writes one thing: the export stamp, `exported_at`. Refer to section 10.8.
 
-**Keep the two Workers apart.** Do not add an admin route to `rupeefund-web`. A Cloudflare Access policy covers a whole Worker. If a policy covers `rupeefund-web`, it asks every visitor to sign in before the signup form shows. Also, an admin deployment cannot break the form. The same rule keeps EmDash out of `rupeefund-web`.
+**Keep the two Workers apart.** Do not add the panel to the site Worker. A Cloudflare Access policy covers a whole Worker. If a policy covers the site Worker, it asks every visitor to sign in before the signup form shows. Also, an admin deployment cannot break the form.
 
 ### 10.1 Who gets in
 
@@ -135,11 +167,11 @@ A person who ticked no box answered. A row with `NULL` in every box of a questio
 
 A response that carries an address, a name, or a question sets `Cache-Control: private, no-store`. Only `/api/summary` permits a cache, because it carries counts alone.
 
-The log keeps 3 days on the Workers Free plan. Treat it as an operations record, not as a permanent one.
+The log keeps 7 days on the Workers Paid plan. Treat it as an operations record, not as a permanent one.
 
 ### 10.4 The row budget
 
-D1 counts the rows a query scans, and the daily free allowance is for the whole account. The public signup shares it. An exhausted allowance makes the signup fail, so the panel must stay cheap.
+D1 counts the rows a query scans. The account pays for each row past the monthly allowance, and the site, the content manager and the panel share that allowance. So the panel must stay cheap.
 
 For a table of N rows, one pass reads N rows, one `GROUP BY` reads 2N, a page reads its own rows, and a reveal reads 1. One load of the dashboard reads about 5N rows.
 
@@ -157,7 +189,7 @@ For a table of N rows, one pass reads N rows, one `GROUP BY` reads 2N, a page re
 
 `apps/admin/src/headers.ts` holds the policy. The Worker wraps every answer it makes, so a refusal carries the same headers as a page.
 
-The policy is tighter than `apps/web/public/_headers`. It starts at `default-src 'none'`, names no external host, and permits no form and no frame. It keeps `'unsafe-inline'` for the script, because the shell carries one inline script and because Bot Fight Mode injects a script on the zone. The style comes from `/assets/` alone, so `style-src` is `'self'`.
+The policy is tighter than the policy of the site. It starts at `default-src 'none'`, names no external host, and permits no form and no frame. It keeps `'unsafe-inline'` for the script, because the shell carries one inline script and because Bot Fight Mode injects a script on the zone. The style comes from `/assets/` alone, so `style-src` is `'self'`.
 
 The panel makes no cross-origin request, so `connect-src 'self'` is the whole network policy.
 
@@ -187,66 +219,72 @@ If you lose a download after the stamp, read `at` from the log. Then follow `doc
 
 ## 11. The content manager
 
-EmDash runs in `rupeefund-cms` at `cms.rupeefund.org`. It holds the blog, the FAQ, the home page, the people page and the policies. The site stays static. A page that is an app, such as `/subscribe`, stays in code.
+EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the landing page, the blog, the pages, the FAQ, the people page, the community team and the two menus. A page that is an app, such as `/subscribe`, stays in code.
 
-### 11.1 How the content reaches the site
+`apps/web/astro.config.mjs` sets up EmDash: the content database, the media bucket, the look of the admin, the edit toolbar (section 11.5), the outer middleware (section 8) and the site plugin `src/plugin.ts` (section 11.4).
 
-The build of `rupeefund-web` reads `https://cms.rupeefund.org/published.json`. `apps/web/src/build/content.ts` holds the address. `packages/content/src/schema.ts` gives the shape of the document. The build reads the document one time and uses it for the pages and the images. The build exits 1 when the address does not answer in 30 seconds, answers with an error, or sends a document that breaks the schema. The last good deployment then stays live. Turborepo never caches the site build, because the document is not a file in the repository.
+### 11.1 How a page gets its content
 
-The build copies each image of the document into `dist/media/`. So the content security policy names no new host.
+Each page reads the published entries when a request comes. `src/content/load.ts` reads them through EmDash. `src/content/entries.ts` checks each entry against `src/content/schema.ts` and gives it to the components in `src/components/site/`. The site has no content build and no content cache, so the next page load shows a publish.
 
-`CMS_CONTENT_FILE` and `CMS_CONTENT_URL` replace the address on your machine and in CI. The deploy guard refuses both in Workers Builds.
+An entry that fails the check does not show. A list leaves it out, and the page of that entry answers 404. The log of the site Worker then gets `The site leaves out an entry:`, with the entry and the problem.
+
+A landing page or a people page that fails the check, or a read of the database that fails, shows `src/pages/500.astro`. A menu that fails to load shows empty.
 
 ### 11.2 The public addresses
 
-Only two addresses of `rupeefund-cms` are public:
-
-- `/published.json` sends the published entries and nothing else.
-- `/media/<key>` sends a file only when published content uses it.
-
-`PUBLIC_LIMITER` limits both. When the build gets a `429`, it waits for the time in `Retry-After`, up to one minute, and tries again. It tries five times. Each answer that the Worker code makes carries `x-robots-tag: noindex`. The static files in `apps/cms/public/` do not.
-
-The root, `/`, sends the visitor to `/_emdash/admin`.
-
-A WAF custom rule on the zone blocks each other path before it reaches the Worker. `docs/DEPLOY.md` section 11.9 gives the rule.
-
-The media addresses send only PNG, JPEG, GIF, WebP and AVIF files, with a sandbox policy. The schema refuses every other image type, so an SVG with a script cannot reach either site.
+- `/media/<key>` and `/_emdash/api/media/file/<key>` send a file without a sign-in only when published content uses it. Else they need a signed-in, active person, and answer 404 to the others. `src/middleware.ts` makes the check. `/_image` always needs a signed-in person.
+- `/media/<key>` sends only a PNG, JPEG, GIF, WebP or AVIF file. The check of section 11.1 refuses each other image type, so an SVG with a script cannot reach a page.
+- The site owns `/robots.txt` and `/sitemap.xml`. `src/outer.ts` answers 404 to the sitemaps of EmDash.
+- `src/outer.ts` answers 404 to each EmDash route that the site does not use, for example the setup wizard, the OAuth server and the import. Under `astro dev` the setup wizard stays open, so a new local database can get its first admin.
+- A WAF custom rule on the zone blocks common scanner paths before they start the Worker (`docs/DEPLOY.md` section 11.6).
 
 ### 11.3 Who gets in
 
 EmDash signs people in with passkeys. A person joins only through an invite from an admin. The content manager sends no email, so the admin sends the invite link by hand. Self-signup stays off. A new person gets the Author role (30) by default. An editor has role 40, and an admin has role 50.
 
-Until the first admin exists, any person can run the setup. A temporary Access application closes the setup until then (`docs/DEPLOY.md` section 11.2).
+The live site refuses the setup wizard. So a new content database cannot get its first admin on the live site. `docs/DEPLOY.md` section 9 copies the database with its people.
 
-The files that EmDash stores are private. `apps/cms/src/middleware.ts` answers 404 to `/_emdash/api/media/file/*` and `/_image` without a signed-in person. The public site gets its files from `/media/<key>`.
+### 11.4 The rules on content
 
-### 11.4 What a publish does
+Two parts hold the rules. When you change one, read the other.
 
-`apps/cms/src/plugin.ts` adds three rules:
+`src/plugin.ts` registers the hooks in `src/plugin/hooks.ts`:
 
-- Only an admin edits, publishes or unpublishes a policy.
-- Nobody deletes a policy, because each build needs all four. To change a policy, edit it.
-- A publish, an unpublish, a delete or a restore posts to `DEPLOY_HOOK_URL`, the Deploy Hook of `rupeefund-web`. The site then builds again. Requests that arrive before a build starts make one build.
+- The landing page has one entry. Only an admin edits, publishes or unpublishes it.
+- Only an admin edits, publishes or unpublishes a legal page: a page with the kind `legal`, or an entry of the old `policies` collection.
+- Nobody deletes a legal page. To remove one, an admin changes its kind to `page` first.
+- The content manager refuses each schedule, because the Worker has no cron trigger. An entry goes live only when a person publishes it.
 
-### 11.5 The draft preview
+`src/middleware.ts` refuses a write by a person below Admin to the landing page, the policies and the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each schema change from a browser session. Only an API token changes the schema (section 11.6).
 
-The **Preview** button opens `/preview/<collection>/<id>?_preview=<token>`. The page renders the draft with the components of `packages/site`, the same components that the site uses. Without a valid token for that entry, the page answers 404. An editor in the EmDash edit mode is the exception: EmDash shows that person each draft. The images of a preview come from `/preview/media/<key>`, which needs a signed-in person.
+The Worker has no cron trigger, so the EmDash cleanup does not run. Expired tokens stay in D1, and an upload that did not finish stays in R2. A scheduled backup in the EmDash settings does not run.
+
+### 11.5 Preview and edit in place
+
+The **Preview** button of a post or a page opens the entry at its address with a `_preview` token. EmDash then shows that draft. The other collections have no address of their own, so their **Preview** opens a page that does not exist.
+
+`toolbar: "client"` adds a small script to each page. The script shows an **Edit** button to a browser that signed in to the content manager. The button turns on the edit mode. The page then shows the drafts, and an editor changes a short field in place. In the edit mode, an answer carries `Cache-Control: private, no-store`. A visitor gets the same page with no button. EmDash sends a visitor who adds `?_edit=1` to the page without it. A visitor who sets the edit cookie gets the published page.
+
+The templates mark the fields with `entry.edit`: `PostArticle.astro`, `PageBody.astro` and `HomeContent.astro`. `src/pages/index.astro` and `src/pages/[slug].astro` remove the marks for a person below Admin on the landing page and on a legal page, because that person cannot save them.
 
 ### 11.6 The content model
 
 Each collection has typed fields. The layout stays in code, so an editor changes the words and not the structure. To change a field, change these together:
 
-- `apps/cms/seed/seed.json`, the model
-- `apps/cms/src/published.ts`, the map to the document
-- `packages/content/src/schema.ts`, the document
-- the component in `packages/site/src/`
+- `apps/web/seed/seed.json`, the model of a new database
+- the live database, with `pnpm model:add` (`docs/DEPLOY.md` section 11.5)
+- `src/content/schema.ts` and the map in `src/content/entries.ts`
+- the component in `src/components/site/`
 
-The content manager has no cron trigger (`"crons": []` in `apps/cms/wrangler.jsonc`). Each EmDash tick starts the full runtime, and a tick often uses more than the 10 ms CPU limit of the Workers Free plan. So the plugin refuses each schedule (`scheduleGate` in `apps/cms/src/site-hooks.ts`). An entry goes live only when a person publishes it. The EmDash cleanup also does not run. Expired sign-in challenges and tokens stay in D1, and an upload that did not finish stays in R2. A scheduled backup in the EmDash settings does not run.
+The seed applies only to a new database. `pnpm db:reset` applies it to your local database. `pnpm model:add` reads the seed and adds to the live database each collection, field, search index and taxonomy that it does not have. It changes nothing else. It reports a conflict for a field of a different type and for a taxonomy that does not cover a collection. It never removes a field.
 
 ### 11.7 The blog
 
-A post has a kind, an optional season and its authors. The authors are the EmDash bylines. `packages/content/src/html.ts` gives the blocks that a post can show. The build refuses an embed, raw HTML, a gallery and a reference. `apps/cms/src/published.ts` names the block in the error. The error goes to the log of `rupeefund-cms` as `published_invalid`. `/published.json` answers 500 with no detail, so the build log does not show the reason.
+A post has a category, an optional season, its authors and a body. The category is a term of the `category` taxonomy. The authors are the EmDash bylines. A post with no category shows its old `kind` field.
+
+`src/content/schema.ts` gives the blocks that a body can hold, and `src/content/html.ts` renders them. `src/plugin.ts` adds three blocks to the editor: the callout, the quote and the call to action. An embed, raw HTML, a gallery or a reference fails the check of section 11.1.
 
 ### 11.8 EmDash updates
 
-EmDash changes its own database on the first request after a deploy of a new version. There is no step to approve it. So Renovate does not merge an EmDash update by itself (`renovate.json`). `docs/DEPLOY.md` section 11.6 gives the steps for an update.
+EmDash changes its own database on the first request after a deploy of a new version. There is no step to approve it. So Renovate does not merge an EmDash update by itself (`renovate.json`). `docs/DEPLOY.md` section 11.3 gives the steps for an update.
