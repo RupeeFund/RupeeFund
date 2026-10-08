@@ -1,0 +1,41 @@
+import { definePlugin, type PluginContext } from "emdash";
+import { deleteGate, publishGate, saveGate, scheduleGate, type Store } from "./plugin/hooks.ts";
+
+function store(ctx: PluginContext): Store {
+  const content = ctx.content;
+  if (content === undefined) throw new Error("rupeefund-site needs the content:read capability");
+  return {
+    async get(collection, id) {
+      const item = await content.get(collection, id);
+      if (item === null) return null;
+      if (!item.draftRevisionId || item.draftRevisionId === item.liveRevisionId) {
+        return { data: item.data };
+      }
+      if (content.getRevision === undefined) throw new Error("drafts cannot be read");
+      const draft = await content.getRevision(collection, id, item.draftRevisionId);
+      if (draft === null) throw new Error(`draft ${item.draftRevisionId} cannot be read`);
+      return { data: item.data, draft: draft.data };
+    },
+    count: async (collection) => (await content.list(collection, { limit: 2 })).items.length,
+  };
+}
+
+export function createPlugin() {
+  return definePlugin({
+    id: "rupeefund-site",
+    version: "2.0.0",
+    capabilities: [
+      "content:read",
+      "content:revisions:read",
+      "content:write",
+      "hooks.content-policy:register",
+    ],
+    hooks: {
+      "content:beforeSave": async (event, ctx) => saveGate(event, store(ctx)),
+      "content:beforeDelete": async (event, ctx) => deleteGate(event, store(ctx)),
+      "content:beforePublish": async (event, ctx) => publishGate(event, store(ctx)),
+      "content:beforeUnpublish": async (event, ctx) => publishGate(event, store(ctx)),
+      "content:beforeSchedule": async () => scheduleGate(),
+    },
+  });
+}

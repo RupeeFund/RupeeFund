@@ -24,6 +24,12 @@ export default defineConfig({
       },
       {
         test: {
+          name: "web:cms",
+          include: ["src/plugin/**/*.test.ts"],
+        },
+      },
+      {
+        test: {
           name: "web:deploy",
           include: ["tests/deploy/**/*.test.ts"],
         },

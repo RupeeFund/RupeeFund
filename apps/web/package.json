@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    "./plugin": "./src/plugin.ts"
+  },
   "scripts": {
     "dev": "CMS_CONTENT_FILE=tests/fixtures/content/published.json PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA TURNSTILE_SECRET=1x0000000000000000000000000000000AA TURNSTILE_HOSTNAMES=example.com TURNSTILE_ACTION= astro dev",
     "build": "node scripts/build.mjs",
@@ -20,7 +23,6 @@
     "@astrojs/cloudflare": "^14.3.3",
     "@astrojs/react": "^7.0.0",
     "@emdash-cms/cloudflare": "1.2.0",
-    "@rupeefund/cms": "workspace:*",
     "emdash": "1.2.0",
     "hono": "catalog:",
     "react-dom": "^19.3.0"
@@ -50,6 +52,9 @@
     "vite": "^8.2.1",
     "vitest": "catalog:",
     "wrangler": "catalog:"
+  },
+  "emdash": {
+    "seed": "seed/seed.json"
   },
   "portless": {
     "name": "rupeefund",

@@ -62,9 +62,9 @@ export default defineConfig({
       plugins: [
         {
           id: "rupeefund-site",
-          version: "1.0.0",
+          version: "2.0.0",
           format: "native",
-          entrypoint: "@rupeefund/cms/plugin",
+          entrypoint: "@rupeefund/web/plugin",
         },
       ],
     }),
