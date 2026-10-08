@@ -1,10 +1,10 @@
 import rss from "@astrojs/rss";
 import type { APIRoute } from "astro";
-import { loadContent, newestFirst } from "../../build/content.ts";
+import { newestFirst } from "../../build/content.ts";
+import { content } from "../../build/published.ts";
 import { SITE_NAME, SITE_URL } from "../../lib/seo.ts";
 
 export const GET: APIRoute = async () => {
-  const { content } = await loadContent();
   return rss({
     title: SITE_NAME,
     description: `News and updates from ${SITE_NAME}.`,

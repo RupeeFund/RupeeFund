@@ -35,13 +35,15 @@ describe("every build path that uses the test sitekey opts in explicitly", () =>
       "PUBLIC_ALLOW_TEST_SITEKEY=true",
       `PUBLIC_TURNSTILE_SITEKEY=${TEST_SITEKEY}`,
       "TURNSTILE_SECRET=1x0000000000000000000000000000000AA",
-      "--var TURNSTILE_HOSTNAMES:example.com",
-      "--var TURNSTILE_ACTION:",
     ];
     for (const value of values) {
       expect(scripts.preview).toContain(value);
       expect(scripts.dev).toContain(value);
     }
+    expect(scripts.preview).toContain(
+      "--var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
+    );
+    expect(scripts.dev).toContain("TURNSTILE_HOSTNAMES=example.com TURNSTILE_ACTION= astro dev");
   });
 
   it("never lets CI reach for the test sitekey, so the deploy guard runs as it does in production", () => {

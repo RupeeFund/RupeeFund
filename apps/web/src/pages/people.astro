@@ -1,10 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
 import PeopleContent from "@rupeefund/site/PeopleContent.astro";
-import { loadContent } from "../build/content.ts";
+import { content } from "../build/published.ts";
 import { REMOVAL_ADDRESS } from "../lib/launch.ts";
-
-const { content } = await loadContent();
 
 const joinMail = `mailto:${REMOVAL_ADDRESS}?subject=${encodeURIComponent(
   "Joining the community team of The Rupee Fund",

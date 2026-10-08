@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 
-export const OUT = "dist-preview";
+export const OUT = "dist-preview/client";
 
 export const read = (file: string): string => readFileSync(`${OUT}/${file}`, "utf8");
 

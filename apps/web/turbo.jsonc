@@ -9,7 +9,7 @@
       "outputs": ["dist/**"],
     },
     "typecheck": {
-      "outputs": ["worker-configuration.d.ts"],
+      "outputs": [],
     },
     "test": {
       "inputs": [

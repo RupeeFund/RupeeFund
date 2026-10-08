@@ -159,11 +159,22 @@ describe("the project ships exactly one environment", () => {
     expect(stderr).toContain("declares an env block");
   });
 
-  it("names one database and one migrations directory", () => {
+  it("binds the waitlist first with the one migrations directory, and the content after it", () => {
     const dbs = config().d1_databases as Record<string, string>[];
-    expect(dbs).toHaveLength(1);
-    expect(dbs[0].database_name).toBe("rupeefund-waitlist");
-    expect(dbs[0].migrations_dir).toBe("../../packages/db/migrations");
+    expect(
+      dbs.map(({ binding, database_name, migrations_dir }) => ({
+        binding,
+        database_name,
+        migrations_dir,
+      })),
+    ).toEqual([
+      {
+        binding: "WAITLIST_DB",
+        database_name: "rupeefund-waitlist",
+        migrations_dir: "../../packages/db/migrations",
+      },
+      { binding: "DB", database_name: "rupeefund-content", migrations_dir: undefined },
+    ]);
   });
 });
 

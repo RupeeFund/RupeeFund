@@ -1,11 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
 import HomeContent from "@rupeefund/site/HomeContent.astro";
-import { loadContent } from "../build/content.ts";
+import { content } from "../build/published.ts";
 import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
 import { TAGLINE } from "../lib/seo.ts";
-
-const { content } = await loadContent();
 ---
 
 <Base>

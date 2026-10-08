@@ -1,18 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ExecutionContext } from "@cloudflare/workers-types";
-import { app } from "./index.ts";
-import { makeD1 } from "./testkit.ts";
+import { app } from "./api.ts";
+import { makeD1, makeLimiter } from "./testkit.ts";
 import type { Env } from "./types.ts";
 
 function makeEnv(over: Partial<Env> = {}): Env {
   return {
-    DB: makeD1(),
-    ASSETS: {
-      fetch: async (input: Request | URL) => {
-        const { pathname } = input instanceof URL ? input : new URL(input.url);
-        return new Response(`asset:${pathname}`);
-      },
-    } as unknown as Env["ASSETS"],
+    WAITLIST_DB: makeD1(),
     ...over,
   };
 }
@@ -71,14 +65,45 @@ describe("the payment and voting API is gone, not merely gated", () => {
   }
 });
 
-const LAUNCH_PAGE_REQUESTS = ["/", "/subscribe"] as const;
+describe("a signup writes to the waitlist database alone", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
 
-describe("the mailing-list pages still serve", () => {
-  for (const path of LAUNCH_PAGE_REQUESTS) {
-    it(`serves ${path} from the assets binding`, async () => {
-      const res = await app.request(path, {}, makeEnv(), ctx);
-      expect(res.status).toBe(200);
-      expect(await res.text()).toContain(`asset:${path}`);
+  it("stores the signup while the content database is out of reach", async () => {
+    vi.stubGlobal(
+      "fetch",
+      async () =>
+        new Response(
+          JSON.stringify({ success: true, hostname: "rupeefund.org", action: "waitlist_signup" }),
+        ),
+    );
+    const env = makeEnv({
+      SIGNUP_LIMITER: makeLimiter() as unknown as Env["SIGNUP_LIMITER"],
+      TURNSTILE_SECRET: "test-turnstile",
+      TURNSTILE_HOSTNAMES: "rupeefund.org",
+      TURNSTILE_ACTION: "waitlist_signup",
     });
-  }
+    Object.defineProperty(env, "DB", {
+      get() {
+        throw new Error("the signup read the content database");
+      },
+    });
+    const res = await app.request(
+      "/api/waitlist",
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: "Asha",
+          email: "asha@example.com",
+          amount: "128",
+          turnstileToken: "tok",
+        }),
+      },
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(200);
+  });
 });

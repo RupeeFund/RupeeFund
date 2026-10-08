@@ -2,13 +2,12 @@
 import type { POLICY_SLUGS } from "@rupeefund/content/schema";
 import PolicyBody from "@rupeefund/site/PolicyBody.astro";
 import Base from "./Base.astro";
-import { loadContent } from "../build/content.ts";
+import { content } from "../build/published.ts";
 
 interface Props {
   slug: (typeof POLICY_SLUGS)[number];
 }
 
-const { content } = await loadContent();
 const policy = content.policies.find((entry) => entry.slug === Astro.props.slug)!;
 ---
 

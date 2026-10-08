@@ -11,7 +11,6 @@ describe("one build chain serves the one environment", () => {
 
   it("builds the preview somewhere else, so dist can only come from the guarded chain", () => {
     expect(scripts.preview).toContain("--outDir dist-preview");
-    expect(scripts.preview).toContain("--assets dist-preview");
   });
 
   it("runs the config guard, the migration guard, the build and the sitekey guard in order", () => {

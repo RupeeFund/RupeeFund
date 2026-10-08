@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "CMS_CONTENT_FILE=tests/fixtures/content/published.json PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA TURNSTILE_SECRET=1x0000000000000000000000000000000AA node scripts/dev.mts --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
+    "dev": "CMS_CONTENT_FILE=tests/fixtures/content/published.json PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA TURNSTILE_SECRET=1x0000000000000000000000000000000AA TURNSTILE_HOSTNAMES=example.com TURNSTILE_ACTION= astro dev",
     "build": "node scripts/build.mjs",
-    "preview": "CMS_CONTENT_FILE=tests/fixtures/content/published.json PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA astro build --outDir dist-preview && TURNSTILE_SECRET=1x0000000000000000000000000000000AA node ../../scripts/wrangler-dev.mjs --assets dist-preview --port 8789 --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
-    "typecheck": "wrangler types && tsc -b tsconfig.build.json && astro check",
+    "preview": "CMS_CONTENT_FILE=tests/fixtures/content/published.json PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA astro build --outDir dist-preview && TURNSTILE_SECRET=1x0000000000000000000000000000000AA node ../../scripts/wrangler-dev.mjs --port 8789 --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
+    "typecheck": "tsc -b tsconfig.build.json && astro check",
     "test": "vitest run",
     "test:e2e": "playwright test --project live --project live-no-js",
     "brand:sync": "node scripts/brand-sync.mts",
@@ -17,7 +17,13 @@
     "list:export": "node scripts/list-export.mts"
   },
   "dependencies": {
-    "hono": "catalog:"
+    "@astrojs/cloudflare": "^14.3.3",
+    "@astrojs/react": "^7.0.0",
+    "@emdash-cms/cloudflare": "1.2.0",
+    "@rupeefund/cms": "workspace:*",
+    "emdash": "1.2.0",
+    "hono": "catalog:",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

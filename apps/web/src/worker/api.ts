@@ -29,7 +29,7 @@ const DENY_ALL_LIMITER: WaitlistLimiter = {
 
 app.post("/api/waitlist", (c) =>
   handleWaitlist(c.req.raw, {
-    repo: createRepo(c.env.DB),
+    repo: createRepo(c.env.WAITLIST_DB),
     now: () => Date.now(),
     limiter: c.env.SIGNUP_LIMITER ?? DENY_ALL_LIMITER,
     verifyToken: createTurnstile(c.env.TURNSTILE_SECRET ?? "", {
@@ -41,9 +41,3 @@ app.post("/api/waitlist", (c) =>
 );
 
 app.all("/api/*", (c) => c.json({ error: "not_found" }, 404));
-
-app.all("*", (c) => c.env.ASSETS.fetch(c.req.raw));
-
-export default {
-  fetch: app.fetch,
-};

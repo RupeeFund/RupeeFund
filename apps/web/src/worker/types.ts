@@ -1,10 +1,9 @@
-import type { D1Database, Fetcher, RateLimit } from "@cloudflare/workers-types";
+import type { D1Database, RateLimit } from "@cloudflare/workers-types";
 import type { WaitlistRow } from "@rupeefund/db/schema";
 import type { WaitlistInput } from "./lib/validation.ts";
 
 export interface Env {
-  DB: D1Database;
-  ASSETS: Fetcher;
+  WAITLIST_DB: D1Database;
   SIGNUP_LIMITER?: RateLimit;
   TURNSTILE_SECRET?: string;
   TURNSTILE_HOSTNAMES?: string;

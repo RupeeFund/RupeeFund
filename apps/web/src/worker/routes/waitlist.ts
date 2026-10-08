@@ -42,7 +42,8 @@ async function readBodyWithin(request: Request, limit: number): Promise<string> 
   const body = request.body;
   if (body === null) return "";
   const reader = body.getReader();
-  const chunks: Uint8Array[] = [];
+  const decoder = new TextDecoder();
+  let text = "";
   let total = 0;
   for (;;) {
     const { done, value } = await reader.read();
@@ -52,9 +53,9 @@ async function readBodyWithin(request: Request, limit: number): Promise<string> 
       await reader.cancel();
       throw new BodyTooLarge();
     }
-    chunks.push(value);
+    text += decoder.decode(value, { stream: true });
   }
-  return new Blob(chunks).text();
+  return text + decoder.decode();
 }
 
 function parseFields(raw: string): Record<string, unknown> {

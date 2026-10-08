@@ -65,12 +65,12 @@ export function makeLogger(): {
   return { entries, log: (e) => entries.push(e) };
 }
 
-export function makeD1(): Env["DB"] {
+export function makeD1(): Env["WAITLIST_DB"] {
   const statement = {
     bind: () => statement,
     all: async () => ({ success: true, results: [], meta: {} }),
     first: async () => null,
     run: async () => ({ success: true, meta: { changes: 0 } }),
   };
-  return { prepare: () => statement } as unknown as Env["DB"];
+  return { prepare: () => statement } as unknown as Env["WAITLIST_DB"];
 }

@@ -2,11 +2,11 @@
 import type { GetStaticPaths } from "astro";
 import Base from "../../layouts/Base.astro";
 import PostArticle from "@rupeefund/site/PostArticle.astro";
-import { loadContent, newestFirst } from "../../build/content.ts";
+import { newestFirst } from "../../build/content.ts";
+import { content } from "../../build/published.ts";
 import { isListed, SITE_NAME } from "../../lib/seo.ts";
 
 export const getStaticPaths = (async () => {
-  const { content } = await loadContent();
   const posts = newestFirst(content.posts);
   return posts.map((post) => ({
     params: { slug: post.slug },

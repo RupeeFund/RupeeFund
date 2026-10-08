@@ -1,9 +1,10 @@
-import type { APIRoute } from "astro";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
+import { join } from "node:path";
 import { createElement } from "react";
-import { Logo } from "../../components/og/logo.tsx";
-import { renderPng } from "../../components/og/render.ts";
-import { INITIATIVE, TAGLINE } from "../../lib/seo.ts";
-import svg from "@rupeefund/ui/logo.svg?raw";
+import { Logo } from "../components/og/logo.tsx";
+import { renderPng } from "../components/og/render.ts";
+import { INITIATIVE, TAGLINE } from "../lib/seo.ts";
 
 const LOGO_WIDTH = 540;
 
@@ -13,11 +14,15 @@ function lockupNumber(source: string, pattern: RegExp): number {
   return value;
 }
 
-export const GET: APIRoute = async () => {
+export async function renderSiteCard(): Promise<Uint8Array<ArrayBuffer>> {
+  const svg = await readFile(
+    createRequire(import.meta.url).resolve("@rupeefund/ui/logo.svg"),
+    "utf8",
+  );
   const width = lockupNumber(svg, /viewBox="0 0 ([\d.]+) /);
   const height = lockupNumber(svg, /viewBox="0 0 [\d.]+ ([\d.]+)"/);
   const block = lockupNumber(svg, /id="block" width="([\d.]+)"/);
-  const png = await renderPng(
+  return renderPng(
     createElement(Logo, {
       logo: `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`,
       logoWidth: LOGO_WIDTH,
@@ -27,5 +32,9 @@ export const GET: APIRoute = async () => {
       caption: INITIATIVE,
     }),
   );
-  return new Response(png, { headers: { "Content-Type": "image/png" } });
-};
+}
+
+export async function writeSiteCard(outDir: string): Promise<void> {
+  await mkdir(join(outDir, "og"), { recursive: true });
+  await writeFile(join(outDir, "og", "site.png"), await renderSiteCard());
+}
