@@ -115,10 +115,28 @@ export const SESSION_SCHEMA_WRITE: Call = { as: "session", method: "POST", path:
 
 export const TOKEN_SCHEMA_WRITE: Call = { as: "admin", method: "POST", path: SCHEMA_WRITE };
 
-export const ANONYMOUS_SCHEMA_WRITE: Call = {
-  as: "anonymous",
-  method: "POST",
-  path: SCHEMA_WRITE,
+export const ANONYMOUS_CALLS: readonly Call[] = [
+  { as: "anonymous", method: "POST", path: SCHEMA_WRITE },
+  { as: "anonymous", method: "GET", path: "/_emdash/api/auth/oauth/github" },
+  { as: "anonymous", method: "POST", path: "/_emdash/api/auth/passkey/options" },
+  { as: "anonymous", method: "POST", path: "/_emdash/api/auth/magic-link/send" },
+  { as: "anonymous", method: "POST", path: "/_emdash/api/auth/signup/request" },
+  { as: "anonymous", method: "GET", path: "/_emdash/api/search?q=fund" },
+  { as: "anonymous", method: "GET", path: "/_emdash/api/search/suggest?q=fu" },
+  { as: "anonymous", method: "GET", path: "/_emdash/api/dashboard" },
+  { as: "anonymous", method: "GET", path: "/_emdash/admin" },
+];
+
+export const TOKEN_ON_PUBLIC_ROUTE: Call = {
+  as: "admin",
+  method: "GET",
+  path: "/_emdash/api/auth/oauth/github",
+};
+
+export const SIGNED_IN_SEARCH: Call = {
+  as: "session",
+  method: "GET",
+  path: "/_emdash/api/search?q=fund",
 };
 
 export const SIGNED_IN_READS: readonly Call[] = [...GATED_MEDIA, ...RESIZED_MEDIA.slice(0, 1)].map(

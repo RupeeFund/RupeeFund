@@ -5,14 +5,15 @@ import {
   EDIT_MODE_COOKIE,
   editModeReset,
   isDenied,
+  LOGOUT,
   notFound,
+  notSignedIn,
+  refusesAnonymous,
   requestPath,
   signInTarget,
   withHeaders,
 } from "./lib/edge.ts";
 import { ADMIN_ROLE } from "./lib/protect.ts";
-
-const LOGOUT = "/_emdash/api/auth/logout";
 
 const redirect = (location: string): Response =>
   new Response(null, { status: 302, headers: { location, "cache-control": "no-store" } });
@@ -37,12 +38,17 @@ export const onRequest = defineMiddleware(async ({ url, request, session }, next
   }
 
   const identity = dev ? null : await identityOf(request, env.AUTH_SECRET, origin);
+  const accept = request.headers.get("accept") ?? "";
   if (!dev && identity === null) {
     if (readCookie(request, SESSION_COOKIE) !== undefined) session?.destroy();
-    const target = signInTarget(request.method, path, request.headers.get("accept") ?? "");
+    const target = signInTarget(request.method, path, accept);
     if (target !== null) return withHeaders(path, redirect(target));
   }
   if (isDenied(path, dev, identity?.role === ADMIN_ROLE)) return withHeaders(path, notFound());
+  const authorization = request.headers.get("authorization") ?? "";
+  if (!dev && identity === null && refusesAnonymous(request.method, path, accept, authorization)) {
+    return withHeaders(path, notSignedIn());
+  }
   const editCookie = readCookie(request, EDIT_MODE_COOKIE) !== undefined;
   const reset = editModeReset(request.method, url, editCookie);
   if (reset !== null) return withHeaders(path, reset);

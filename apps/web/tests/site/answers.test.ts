@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { answers } from "./dist.ts";
 import {
   ALLOWED_WRITES,
-  ANONYMOUS_SCHEMA_WRITE,
+  ANONYMOUS_CALLS,
   CONTENT_MANAGER,
   DENIED,
   GATED_MEDIA,
@@ -13,6 +13,8 @@ import {
   ROUTES,
   SESSION_SCHEMA_WRITE,
   SIGNED_IN_READS,
+  SIGNED_IN_SEARCH,
+  TOKEN_ON_PUBLIC_ROUTE,
   TOKEN_SCHEMA_WRITE,
   callName,
 } from "./routes.ts";
@@ -86,8 +88,19 @@ describe("the content guard", () => {
     });
   });
 
-  it("leaves a schema change with no sign-in to the content manager", () => {
-    expect(answers()[callName(ANONYMOUS_SCHEMA_WRITE)]?.status).toBe(401);
+  it.each([...ANONYMOUS_CALLS, TOKEN_ON_PUBLIC_ROUTE].map(callName))(
+    "refuses %s before the content manager starts",
+    (name) => {
+      expect(answers()[name]).toMatchObject({
+        status: 401,
+        cache: "no-store",
+        body: expect.stringContaining("NOT_SIGNED_IN"),
+      });
+    },
+  );
+
+  it("gives a signed-in person the content manager search", () => {
+    expect(answers()[callName(SIGNED_IN_SEARCH)]?.status).toBe(200);
   });
 
   it("passes a schema change from an API token on to the content manager", () => {

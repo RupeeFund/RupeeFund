@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   editModeReset,
+  refusesAnonymous,
   isDenied,
   requestPath,
   signInTarget,
@@ -136,6 +137,60 @@ describe("editModeReset", () => {
   ])("leaves a %s with edit cookie %s alone", (method, editCookie) => {
     expect(editModeReset(method, url, editCookie)).toBeNull();
   });
+});
+
+describe("refusesAnonymous", () => {
+  const html = "text/html,application/xhtml+xml";
+
+  it.each([
+    ["GET", "/_emdash/api/auth/oauth/github", "*/*"],
+    ["POST", "/_emdash/api/auth/passkey/options", "*/*"],
+    ["POST", "/_emdash/api/auth/magic-link/send", "*/*"],
+    ["POST", "/_emdash/api/auth/signup/request", "*/*"],
+    ["GET", "/_emdash/api/search", "*/*"],
+    ["GET", "/_emdash/api/comments/posts/x", "*/*"],
+    ["GET", "/_emdash/api/dashboard", "application/json"],
+    ["GET", "/_emdash/admin", "*/*"],
+    ["HEAD", "/_emdash/admin", html],
+    ["GET", "/_emdash/admin/login", "*/*"],
+  ])("refuses an anonymous %s %s (%s)", (method, path, accept) => {
+    expect(refusesAnonymous(method, path, accept, "")).toBe(true);
+  });
+
+  it.each([
+    ["GET", "/_emdash/admin", html],
+    ["GET", "/_emdash/api/media/file/01ABC.jpg", "*/*"],
+    ["POST", "/_emdash/api/auth/logout", "*/*"],
+    ["GET", "/blog", html],
+    ["GET", "/media/01ABC.jpg", "*/*"],
+    ["GET", "/_emdashx/api/search", "*/*"],
+  ])("leaves an anonymous %s %s (%s) alone", (method, path, accept) => {
+    expect(refusesAnonymous(method, path, accept, "")).toBe(false);
+  });
+
+  it("leaves a call with an API token to the content manager", () => {
+    expect(
+      refusesAnonymous("POST", "/_emdash/api/schema/collections", "*/*", "Bearer ec_pat_x"),
+    ).toBe(false);
+  });
+
+  it.each([
+    "/_emdash/api/auth/oauth/github",
+    "/_emdash/api/auth/passkey/options",
+    "/_emdash/api/search",
+    "/_emdash/api/search/suggest",
+    "/_emdash/api/comments/posts/x",
+    "/_emdash/api/oauth/token",
+  ])("refuses %s even with a token, because EmDash does not check it there", (path) => {
+    expect(refusesAnonymous("GET", path, "*/*", "Bearer ec_pat_x")).toBe(true);
+  });
+
+  it.each(["Bearer ", "Bearer", "Basic eDp5"])(
+    "refuses a call whose authorization header %j holds no token",
+    (authorization) => {
+      expect(refusesAnonymous("GET", "/_emdash/api/dashboard", "*/*", authorization)).toBe(true);
+    },
+  );
 });
 
 describe("withHeaders", () => {

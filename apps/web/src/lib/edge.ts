@@ -87,6 +87,37 @@ export function signInTarget(method: string, path: string, accept: string): stri
   return inTree(path, "/_emdash/admin/login") ? "/" : "/auth/login";
 }
 
+export const LOGOUT = "/_emdash/api/auth/logout";
+
+const OPEN_TO_ANONYMOUS = ["/_emdash/api/media/file", LOGOUT];
+
+const TOKEN_UNCHECKED = [
+  "/_emdash/api/auth",
+  "/_emdash/api/oauth",
+  "/_emdash/api/setup",
+  "/_emdash/api/comments",
+  "/_emdash/api/search",
+  "/_emdash/api/health",
+  "/_emdash/api/site/domain-proof",
+  "/_emdash/api/snapshot",
+  "/_emdash/api/visual-editing",
+];
+
+const BEARER = /^Bearer \S/;
+
+export function refusesAnonymous(
+  method: string,
+  path: string,
+  accept: string,
+  authorization: string,
+): boolean {
+  if (OPEN_TO_ANONYMOUS.some((tree) => inTree(path, tree))) return false;
+  if (inTree(path, "/_emdash/api")) {
+    return !BEARER.test(authorization) || TOKEN_UNCHECKED.some((tree) => inTree(path, tree));
+  }
+  return inTree(path, "/_emdash/admin") && signInTarget(method, path, accept) === null;
+}
+
 export function withHeaders(path: string, response: Response): Response {
   const answer = new Response(response.body, response);
   for (const [name, value] of Object.entries(EVERY_RESPONSE)) answer.headers.set(name, value);
@@ -106,6 +137,12 @@ export const notFound = (): Response =>
     status: 404,
     headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
   });
+
+export const notSignedIn = (): Response =>
+  Response.json(
+    { success: false, error: { code: "NOT_SIGNED_IN", message: "Sign in with GitHub" } },
+    { status: 401, headers: { "cache-control": "no-store" } },
+  );
 
 export const forbidden = (message: string): Response =>
   Response.json(

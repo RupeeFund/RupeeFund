@@ -13,7 +13,7 @@ import {
   CONTENT_MANAGER,
   DENIED,
   GATED_MEDIA,
-  ANONYMOUS_SCHEMA_WRITE,
+  ANONYMOUS_CALLS,
   MEDIA_ROUTES,
   MISSING,
   REFUSED_WRITES,
@@ -23,6 +23,8 @@ import {
   SESSION,
   SESSION_SCHEMA_WRITE,
   SIGNED_IN_READS,
+  SIGNED_IN_SEARCH,
+  TOKEN_ON_PUBLIC_ROUTE,
   TOKENS,
   TOKEN_SCHEMA_WRITE,
   VISITS,
@@ -123,6 +125,7 @@ function headersFor(base: string, as: Call["as"]): Record<string, string> {
 async function call(base: string, { as, method, path }: Call): Promise<Answer> {
   const res = await fetch(`${base}${path}`, {
     method,
+    redirect: "manual",
     headers: headersFor(base, as),
     body: method === "GET" ? undefined : "{}",
   });
@@ -192,7 +195,9 @@ async function render(base: string): Promise<void> {
     ...SIGNED_IN_READS,
     SESSION_SCHEMA_WRITE,
     TOKEN_SCHEMA_WRITE,
-    ANONYMOUS_SCHEMA_WRITE,
+    SIGNED_IN_SEARCH,
+    TOKEN_ON_PUBLIC_ROUTE,
+    ...ANONYMOUS_CALLS,
   ];
   for (const one of calls) answers[callName(one)] = await call(base, one);
   writeFileSync(join(RENDERED, "answers.json"), JSON.stringify(answers, null, 2));
