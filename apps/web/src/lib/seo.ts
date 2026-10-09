@@ -29,7 +29,7 @@ const ROUTE_SEO: readonly RouteSeo[] = [
   {
     path: "/",
     title: "The Rupee Fund — a FOSS United community initiative",
-    description: `Your ₹15 can do a lot. Fund great projects from India. ${INITIATIVE}, run by volunteers.`,
+    description: `A little each month funds great projects from India. ${INITIATIVE}, run by volunteers.`,
     indexable: true,
   },
   {

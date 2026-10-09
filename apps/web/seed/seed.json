@@ -8,7 +8,6 @@
   },
   "settings": {
     "title": "The Rupee Fund",
-    "tagline": "Not charity — membership in a commons",
     "timezone": "Asia/Kolkata"
   },
   "collections": [
@@ -17,7 +16,7 @@
       "label": "Blog posts",
       "labelSingular": "Blog post",
       "sortOrder": 2,
-      "supports": ["drafts", "revisions", "preview", "scheduling", "search", "seo"],
+      "supports": ["drafts", "revisions", "preview", "search", "seo"],
       "fields": [
         {
           "slug": "title",
@@ -211,7 +210,7 @@
       "label": "FAQ",
       "labelSingular": "Question",
       "sortOrder": 4,
-      "supports": ["drafts", "revisions", "preview", "search"],
+      "supports": ["drafts", "revisions", "search"],
       "fields": [
         {
           "slug": "title",
@@ -267,7 +266,7 @@
       "labelSingular": "People page",
       "sortOrder": 5,
       "group": "People",
-      "supports": ["drafts", "revisions", "preview"],
+      "supports": ["drafts", "revisions"],
       "fields": [
         {
           "slug": "title",
@@ -319,7 +318,7 @@
       "labelSingular": "Team member",
       "sortOrder": 6,
       "group": "People",
-      "supports": ["drafts", "revisions", "preview"],
+      "supports": ["drafts", "revisions"],
       "fields": [
         {
           "slug": "title",
@@ -1901,19 +1900,7 @@
                 {
                   "_type": "span",
                   "_key": "k27",
-                  "text": " page. When contributions open, the money will go into a FOSS United Foundation account. The Foundation also runs its own grants programme, which has given more than ",
-                  "marks": []
-                },
-                {
-                  "_type": "span",
-                  "_key": "k28",
-                  "text": "₹3.3 crore to 135 grantees",
-                  "marks": ["strong"]
-                },
-                {
-                  "_type": "span",
-                  "_key": "k29",
-                  "text": ": projects, events and fellowships.",
+                  "text": " page. When contributions open, the money will go into a FOSS United Foundation account.",
                   "marks": []
                 }
               ]
@@ -1921,16 +1908,7 @@
           ],
           "order": 6,
           "home": true,
-          "sources": [
-            {
-              "title": "FOSS United grants",
-              "url": "https://fossunited.org/grants"
-            },
-            {
-              "title": "FOSS United grantees",
-              "url": "https://fossunited.org/grants/grantees"
-            }
-          ]
+          "sources": []
         }
       },
       {
@@ -1961,7 +1939,7 @@
                 {
                   "_type": "span",
                   "_key": "ko",
-                  "text": " have given more than ₹3.3 crore to 135 grantees in India. ",
+                  "text": " have given more than ₹3.3 crore in total to more than 130 grantees in India. ",
                   "marks": []
                 },
                 {
@@ -2371,7 +2349,7 @@
         "slug": "other-payment-methods",
         "status": "published",
         "data": {
-          "title": "Can I use other payment methods other than UPI?",
+          "title": "Can I pay with a method other than UPI?",
           "answer": [
             {
               "_type": "block",
@@ -2382,7 +2360,7 @@
                 {
                   "_type": "span",
                   "_key": "km",
-                  "text": "In the pilot phase, we aim to provide support with UPI Autopay only, we will eventually add other forms of payments.",
+                  "text": "We support UPI AutoPay only for now. We will add other payment methods later.",
                   "marks": []
                 }
               ]
@@ -2450,7 +2428,7 @@
         "status": "published",
         "data": {
           "title": "Shree Kumar",
-          "bio": "Shree (Kumar) is an active volunteer at FOSS United and was formerly an elected member of its Governance Board. Shree helps run IndiaFOSS, arguably India's largest volunteer run conference dedicated to Free and Open Source Software, Hardware, and the wider digital commons.",
+          "bio": "Shree (Kumar) is an active volunteer at FOSS United and was formerly an elected member of its Governance Board. Shree helps run IndiaFOSS, arguably India’s largest volunteer-run conference dedicated to free and open source software, hardware, and the wider digital commons.",
           "profile_url": "https://fossunited.org/u/shreekumar3d",
           "username": "shreekumar3d",
           "photo_url": "https://github.com/shreekumar3d.png?size=128",
