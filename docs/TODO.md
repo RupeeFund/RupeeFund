@@ -4,7 +4,7 @@ This list holds the work that we know about and did not do yet. Each item tells 
 
 ## Show the blog
 
-The site builds the blog but hides it. The footer has no Blog link, the pages have no feed link, the sitemap leaves out `/blog`, and each blog page has `noindex`. To show the blog, revert the commit `feat(web): hide the blog until launch`.
+The site builds the blog but hides it. The `/blog` entry in `apps/web/src/lib/seo.ts` has `indexable: false`. So each blog page has `noindex`, and the sitemap and the feed links leave out the blog. To show the blog, set `indexable: true` on that entry, update the tests in `apps/web/tests/site/`, and add a Blog link to the **Footer** menu in the content manager.
 
 Urgent when: the blog has a few posts.
 
