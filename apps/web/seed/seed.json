@@ -427,7 +427,7 @@
         "status": "published",
         "data": {
           "title": "Home",
-          "hero_lede": "The Rupee Fund pools your monthly contributions over UPI, from ₹15 a month, and you decide which projects get funded.",
+          "hero_lede": "The Rupee Fund pools your monthly contributions over UPI, and you decide which free and open source projects get funded.",
           "pitch_title": "Lots of us, a little each month, for great projects from India",
           "pitch_body": [
             {
@@ -465,7 +465,7 @@
           "steps": [
             {
               "title": "Subscribe",
-              "body": "Set up a **monthly** contribution with UPI AutoPay, from ₹15 a month. Small, regular contributions from many of us keep the fund steady."
+              "body": "Set up a **monthly** contribution with UPI AutoPay. Small, regular contributions from many of us keep the fund steady."
             },
             {
               "title": "Pool funds",
@@ -2137,7 +2137,7 @@
                 {
                   "_type": "span",
                   "_key": "k15",
-                  "text": ": winter (December to February), summer (March to May), monsoon (June to September) and post-monsoon (October and November). Contributors decide where each season’s pool goes.",
+                  "text": ": winter (December to February), summer (March to May), monsoon (June to August) and post-monsoon (September to November). Contributors decide where each season’s pool goes.",
                   "marks": []
                 }
               ]

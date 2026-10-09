@@ -30,15 +30,15 @@ export const SEASONS: readonly Season[] = [
   {
     spriteSlug: "monsoon",
     name: "Monsoon",
-    months: "Jun – Sep",
-    duration: "4 months",
+    months: "Jun – Aug",
+    duration: "3 months",
     accent: "#008039",
   },
   {
     spriteSlug: "post-monsoon",
     name: "Post-monsoon",
-    months: "Oct – Nov",
-    duration: "2 months",
+    months: "Sep – Nov",
+    duration: "3 months",
     accent: "#b229ad",
   },
 ];

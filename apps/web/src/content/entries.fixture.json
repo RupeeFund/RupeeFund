@@ -244,7 +244,7 @@
         "status": "published",
         "publishedAt": "2026-10-02T17:40:26.975Z",
         "title": "Home",
-        "hero_lede": "The Rupee Fund pools your monthly contributions over UPI, from ₹15 a month, and you decide which projects get funded.",
+        "hero_lede": "The Rupee Fund pools your monthly contributions over UPI, and you decide which free and open source projects get funded.",
         "pitch_title": "Lots of us, a little each month, for great projects from India",
         "pitch_body": [
           {
@@ -282,7 +282,7 @@
         "steps": [
           {
             "title": "Subscribe",
-            "body": "Set up a **monthly** contribution with UPI AutoPay, from ₹15 a month. Small, regular contributions from many of us keep the fund steady."
+            "body": "Set up a **monthly** contribution with UPI AutoPay. Small, regular contributions from many of us keep the fund steady."
           },
           {
             "title": "Pool funds",
