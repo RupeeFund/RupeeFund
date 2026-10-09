@@ -4,13 +4,13 @@ The content manager at [rupeefund.org/admin](https://rupeefund.org/admin) holds 
 
 ## 1. Sign in
 
-An admin sends you an invite link. Open it and make a passkey. Then sign in with that passkey. The site sends no email, so **Sign in with email link** does not work.
+Open [rupeefund.org/admin](https://rupeefund.org/admin) and sign in with GitHub. Your GitHub account must be in a content team of the `RupeeFund` organization. The team gives your role. To join a team or to change your role, ask an admin.
 
-| Role   | What the role can do                                                                         |
-| ------ | -------------------------------------------------------------------------------------------- |
-| Author | Write entries. Edit, publish and delete your own entries.                                    |
-| Editor | Edit, publish and delete each entry, except the landing page and a legal page.               |
-| Admin  | All of the above. Edit the landing page and the legal pages. Invite and remove other people. |
+| Role   | What the role can do                                                           |
+| ------ | ------------------------------------------------------------------------------ |
+| Author | Write entries. Edit, publish and delete your own entries.                      |
+| Editor | Edit, publish and delete each entry, except the landing page and a legal page. |
+| Admin  | All of the above. Edit the landing page and the legal pages.                   |
 
 ## 2. Publish a change
 

@@ -20,6 +20,10 @@ const ogCard = {
 export default defineConfig({
   site: SITE_URL,
   output: "server",
+  session: {
+    driver: { entrypoint: "@rupeefund/web/session-driver" },
+    ttl: 8 * 60 * 60,
+  },
   trailingSlash: "never",
   build: {
     format: "file",
@@ -43,6 +47,11 @@ export default defineConfig({
         footerLabel: SITE_NAME,
       },
       toolbar: "client",
+      auth: {
+        type: "github-team",
+        entrypoint: "@rupeefund/web/auth",
+        config: { syncRoles: true },
+      },
       middleware: { outer: "./src/outer.ts" },
       plugins: [
         {

@@ -4,12 +4,14 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./plugin": "./src/plugin.ts"
+    "./plugin": "./src/plugin.ts",
+    "./auth": "./src/auth/emdash.ts",
+    "./session-driver": "./src/auth/session-driver.ts"
   },
   "scripts": {
     "dev": "PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA TURNSTILE_SECRET=1x0000000000000000000000000000000AA TURNSTILE_HOSTNAMES=example.com TURNSTILE_ACTION= astro dev",
     "build": "node scripts/build.mjs",
-    "preview": "PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA astro build --outDir dist-preview && node scripts/seed-local.mjs ../../.wrangler/preview && TURNSTILE_SECRET=1x0000000000000000000000000000000AA node ../../scripts/wrangler-dev.mjs --port 8789 --persist-to ../../.wrangler/preview --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION:",
+    "preview": "PUBLIC_ALLOW_TEST_SITEKEY=true PUBLIC_TURNSTILE_SITEKEY=1x00000000000000000000AA astro build --outDir dist-preview && node scripts/seed-local.mjs ../../.wrangler/preview && TURNSTILE_SECRET=1x0000000000000000000000000000000AA node ../../scripts/wrangler-dev.mjs --port 8789 --persist-to ../../.wrangler/preview --var TURNSTILE_HOSTNAMES:example.com --var TURNSTILE_ACTION: --var AUTH_ORIGIN:http://localhost:8789",
     "typecheck": "wrangler types && tsc -b tsconfig.build.json && astro check",
     "test": "vitest run",
     "test:e2e": "playwright test --project live --project live-no-js",
@@ -37,6 +39,7 @@
     "@fontsource/inter": "^5.3.0",
     "@playwright/test": "^1.62.1",
     "@resvg/resvg-js": "^2.6.2",
+    "@rupeefund/auth": "workspace:*",
     "@rupeefund/db": "workspace:*",
     "@rupeefund/ui": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",

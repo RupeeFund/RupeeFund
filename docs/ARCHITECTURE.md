@@ -8,15 +8,14 @@ The system shows public pages and collects a mailing list. It takes no payment a
 
 ## 2. The parts
 
-| Part            | Technology                                   | Function                                                                 |
-| --------------- | -------------------------------------------- | ------------------------------------------------------------------------ |
-| Site Worker     | Astro, EmDash and Hono on Cloudflare Workers | Renders each page on request, runs the content manager, answers `/api/*` |
-| Admin Worker    | Hono on Cloudflare Workers                   | Shows the team the list. Refer to section 10.                            |
-| Waitlist data   | Cloudflare D1                                | Keeps the `waitlist` table                                               |
-| Content data    | Cloudflare D1                                | Keeps the entries, the revisions and the people of the content manager   |
-| Media           | Cloudflare R2                                | Keeps the images that editors upload                                     |
-| Sessions        | Cloudflare KV                                | Keeps the sessions of the content manager                                |
-| Browser scripts | TypeScript in `src/scripts/`                 | Adds behaviour to the pages in the browser                               |
+| Part            | Technology                                   | Function                                                                             |
+| --------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Site Worker     | Astro, EmDash and Hono on Cloudflare Workers | Renders each page on request, runs the content manager, answers `/api/*`             |
+| Admin Worker    | Hono on Cloudflare Workers                   | Shows the team the list. Refer to section 10.                                        |
+| Waitlist data   | Cloudflare D1                                | Keeps the `waitlist` table                                                           |
+| Content data    | Cloudflare D1                                | Keeps the entries, the revisions, the people and the sessions of the content manager |
+| Media           | Cloudflare R2                                | Keeps the images that editors upload                                                 |
+| Browser scripts | TypeScript in `src/scripts/`                 | Adds behaviour to the pages in the browser                                           |
 
 `apps/web/wrangler.jsonc` names the resources of the site Worker, and `apps/admin/wrangler.jsonc` the resources of the admin Worker.
 
@@ -236,14 +235,26 @@ A landing page or a people page that fails the check, or a read of the database 
 - `/media/<key>` and `/_emdash/api/media/file/<key>` send a file without a sign-in only when published content uses it. Else they need a signed-in, active person, and answer 404 to the others. `src/middleware.ts` makes the check. `/_image` always needs a signed-in person.
 - `/media/<key>` sends only a PNG, JPEG, GIF, WebP or AVIF file. The check of section 11.1 refuses each other image type, so an SVG with a script cannot reach a page.
 - The site owns `/robots.txt` and `/sitemap.xml`. `src/outer.ts` answers 404 to the sitemaps of EmDash.
-- `src/outer.ts` answers 404 to each EmDash route that the site does not use, for example the setup wizard, the OAuth server and the import. Under `astro dev` the setup wizard stays open, so a new local database can get its first admin.
+- `src/outer.ts` answers 404 to each EmDash route that the site does not use, for example the setup wizard, the OAuth server and the import. A signed-in admin gets the setup wizard. Under `astro dev` the setup wizard stays open to all.
 - A WAF custom rule on the zone blocks common scanner paths before they start the Worker (`docs/DEPLOY.md` section 11.6).
 
 ### 11.3 Who gets in
 
-EmDash signs people in with passkeys. A person joins only through an invite from an admin. The content manager sends no email, so the admin sends the invite link by hand. Self-signup stays off. A new person gets the Author role (30) by default. An editor has role 40, and an admin has role 50.
+People sign in with GitHub. `src/outer.ts` serves `/auth/login` and `/auth/callback` with the code in `packages/auth`. The callback reads the teams of the person in the `RupeeFund` organization:
 
-The live site refuses the setup wizard. So a new content database cannot get its first admin on the live site. `docs/DEPLOY.md` section 9 copies the database with its people.
+| GitHub team   | Role        |
+| ------------- | ----------- |
+| `cms-admins`  | Admin (50)  |
+| `cms-editors` | Editor (40) |
+| `cms-authors` | Author (30) |
+
+A person in two teams gets the higher role. A person in no team, or with no verified primary email, does not get in, and EmDash makes no account.
+
+The callback sets a signed cookie for 8 hours. On each request, `src/auth/emdash.ts` gives EmDash the person in that cookie, and EmDash sets the role from it. So a team change takes effect at the next sign-in, at the latest after 8 hours.
+
+EmDash writes the session on each request. KV takes one write per second to a key, so the sessions stay in the content database (`src/auth/session-store.ts`). `src/outer.ts` ends the session when the signed cookie is missing or not valid. **Log out** in the content manager clears both.
+
+Under `astro dev`, EmDash uses passkeys in place of GitHub.
 
 ### 11.4 The rules on content
 

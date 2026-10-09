@@ -26,7 +26,7 @@ pnpm dev        # serve the site and the content manager
 
 The terminal shows the address of the site. When you save a file, the browser reloads. If the build fails, the terminal shows the error and the site stays as it was. To work on the admin panel, run `pnpm dev:admin` in a second terminal.
 
-To sign in to the content manager, open `http://localhost:8787/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`. In a codespace, open port 8787 from the **Ports** tab and add the same path. This page signs you in as an admin. The site shows each publish at the next page load. The content manager sends no email. When you invite a person, it shows the invite link.
+To sign in to the content manager, open `http://localhost:8787/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`. In a codespace, open port 8787 from the **Ports** tab and add the same path. This page signs you in as an admin. The site shows each publish at the next page load. The live site signs people in with GitHub. `pnpm preview` runs that sign-in on your machine and needs the secrets of `docs/DEPLOY.md` section 5.
 
 - When pnpm tells you to run `pnpm install`, run it.
 - `pnpm db:reset` erases your local data. Run it again for a clean start.

@@ -22,15 +22,16 @@
       "database_id": "4bd0ce8b-7259-468b-823d-17ec13b8e6b4",
     },
   ],
-  "kv_namespaces": [{ "binding": "SESSION", "id": "ba8662a991d345168a0bdc4d02645dfc" }],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "rupeefund-media" }],
   "images": { "binding": "IMAGES" },
   "vars": {
     "TURNSTILE_HOSTNAMES": "rupeefund.org",
     "TURNSTILE_ACTION": "waitlist_signup",
+    "GITHUB_CLIENT_ID": "Iv23lithkWbcVrCtUnYi",
+    "AUTH_ORIGIN": "https://rupeefund.org",
   },
   "secrets": {
-    "required": ["TURNSTILE_SECRET"],
+    "required": ["TURNSTILE_SECRET", "GITHUB_CLIENT_SECRET", "AUTH_SECRET"],
   },
   "ratelimits": [
     {

@@ -159,6 +159,9 @@ importers:
       '@resvg/resvg-js':
         specifier: ^2.6.2
         version: 2.6.2
+      '@rupeefund/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@rupeefund/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -204,6 +207,18 @@ importers:
       wrangler:
         specifier: 'catalog:'
         version: 4.146.0(@cloudflare/workers-types@5.20261007.1)(@types/node@26.2.0)
+
+  packages/auth:
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.2.0
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.11(@types/node@26.2.0)(jsdom@30.0.1)(vite@8.3.2(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
 
   packages/db:
     devDependencies:

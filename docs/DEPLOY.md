@@ -89,6 +89,15 @@ The Workers Builds settings hold no variable. One Turnstile widget serves the si
 pnpm wrangler secret put TURNSTILE_SECRET
 ```
 
+The sign-in (`docs/ARCHITECTURE.md` section 11.3) needs two more secrets. A deploy fails while one is missing, so set them before the first promote:
+
+```sh
+pnpm wrangler secret put GITHUB_CLIENT_SECRET   # from the GitHub App, section 11.2
+openssl rand -base64 32 | pnpm wrangler secret put AUTH_SECRET
+```
+
+A new `AUTH_SECRET` signs each person out. For `pnpm preview`, put the two in `apps/web/.env`.
+
 A `--remote` command needs the Cloudflare account. Put `CLOUDFLARE_ACCOUNT_ID` in `apps/web/.env`. Wrangler reads that file itself. Without it, wrangler asks which account to use. Do not put the account in `wrangler.jsonc`.
 
 `pnpm dev` and `pnpm preview` carry the always-pass Turnstile test values and `PUBLIC_ALLOW_TEST_SITEKEY=true` themselves. Do not put a Turnstile value in `.env`. If an old `pnpm bootstrap` made `apps/web/.env`, delete its Turnstile lines. Never set that opt-in in the Workers Builds settings. A deployed build with the test sitekey refuses every signup, so `pnpm run build` exits 1 when it finds one.
@@ -151,7 +160,7 @@ Before you clear it, count the rows with that `exported_at`. The number must equ
 
 ## 9. How to move to a different account
 
-The domain uses Cloudflare Registrar. A move to a different Cloudflare account takes only the registration. You make the zone, the Workers, the databases, the media bucket, the session namespace and the Turnstile widget again in the new account.
+The domain uses Cloudflare Registrar. A move to a different Cloudflare account takes only the registration. You make the zone, the Workers, the databases, the media bucket and the Turnstile widget again in the new account.
 
 A Worker custom domain needs an active zone, and the zone becomes active only after the registration moves. So the site is down from the move until the first deploy in the new account. After the move, Cloudflare locks the registration against transfer for 30 days ([Cloudflare documentation](https://developers.cloudflare.com/registrar/account-options/inter-account-transfer/)).
 
@@ -181,7 +190,7 @@ Before the move:
 
 1. Make the resources of the content manager (section 11.1).
 
-1. Make one Turnstile widget for `rupeefund.org`. Put its sitekey in `apps/web/src/lib/turnstile.ts`. Set its secret with `pnpm wrangler secret put TURNSTILE_SECRET`.
+1. Make one Turnstile widget for `rupeefund.org`. Put its sitekey in `apps/web/src/lib/turnstile.ts`. Set its secret with `pnpm wrangler secret put TURNSTILE_SECRET`. Set the sign-in secrets of section 5.
 
 1. Import the data into the new account:
 
@@ -190,7 +199,7 @@ Before the move:
    CLOUDFLARE_ACCOUNT_ID=<new> pnpm wrangler d1 execute rupeefund-content --remote --file /tmp/content.sql
    ```
 
-   The content export holds the tables and the people of the content manager, so the live site needs no setup wizard. The sessions do not move, so each person signs in again.
+   The content export holds the tables and the people of the content manager, so the live site needs no setup wizard.
 
 1. Copy each object of `rupeefund-media` to the new bucket, for example with [rclone](https://developers.cloudflare.com/r2/examples/rclone/).
 
@@ -252,22 +261,19 @@ The live account has the resources. Make them again only for a move to a new acc
 ```sh
 pnpm wrangler d1 create rupeefund-content --location apac
 pnpm wrangler r2 bucket create rupeefund-media --location apac
-pnpm wrangler kv namespace create rupeefund-web-session
 ```
 
-`apac` keeps the data near the readers, as for `rupeefund-waitlist`. In `apps/web/wrangler.jsonc`, put the database ID in the `DB` entry of `d1_databases`. Put the namespace ID in `kv_namespaces`. Then merge the change.
+`apac` keeps the data near the readers, as for `rupeefund-waitlist`. In `apps/web/wrangler.jsonc`, put the database ID in the `DB` entry of `d1_databases`. Then merge the change.
 
-### 11.2 Invite a person
+A new content database needs the setup wizard. After the deploy, sign in as a member of `cms-admins` at `https://rupeefund.org/_emdash/admin`. EmDash opens the wizard. Keep **Sample content** and click **Continue**. The wizard fills the database from `apps/web/seed/seed.json`.
 
-The content manager sends no email. To add a person:
+### 11.2 Add a person
 
-1. Go to **Users** in the content manager and invite the email address of the person. The person gets the Author role (30). Select a different role if necessary.
-1. Copy the invite link and send it to the person yourself, with a link to `docs/EDITING.md`.
-1. The person opens the link and makes a passkey.
+Add the person to one team of the `RupeeFund` GitHub organization: `cms-authors`, `cms-editors` or `cms-admins`. Send them a link to `docs/EDITING.md`. EmDash makes the account at the first sign-in.
 
-The person signs in with that passkey from then on. Self-signup stays off.
+To remove a person, remove them from the team. The removal takes effect at the latest after 8 hours. To lock the person out at once, also disable the account in **Users**.
 
-To remove a person, disable the account in **Users**.
+The GitHub App `the-rupee-fund-cms` of the organization runs the sign-in. It needs two permissions, **Members** (read) and **Email addresses** (read), and two callback addresses, `https://rupeefund.org/auth/callback` and `http://localhost:8789/auth/callback`. It must be installed on the `RupeeFund` organization, or it cannot read the teams. Its client ID is `GITHUB_CLIENT_ID` in `apps/web/wrangler.jsonc`. To make a new client secret, open the settings of the app and click **Generate a new client secret**. Then set it (section 5).
 
 ### 11.3 Update EmDash
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isDenied, requestPath, SITE_CSP, withHeaders } from "./edge.ts";
+import { isDenied, requestPath, signInTarget, SITE_CSP, withHeaders } from "./edge.ts";
 
 describe("requestPath", () => {
   it.each([
@@ -65,10 +65,50 @@ describe("isDenied", () => {
     expect(isDenied(path, false)).toBe(false);
   });
 
+  it.each(["/_emdash/api/setup", "/_emdash/api/setup/status", "/_emdash/admin/setup"])(
+    "allows the set-up step %s to a signed-in admin",
+    (path) => {
+      expect(isDenied(path, false, true)).toBe(false);
+    },
+  );
+
+  it.each([
+    "/_emdash/api/setup/admin",
+    "/_emdash/api/setup/dev-bypass",
+    "/_emdash/api/setup/dev-reset",
+  ])("denies %s even to a signed-in admin", (path) => {
+    expect(isDenied(path, false, true)).toBe(true);
+  });
+
   it("allows set-up under astro dev, where a new local database needs its first Admin", () => {
     expect(isDenied("/_emdash/api/setup/admin", true)).toBe(false);
     expect(isDenied("/_emdash/admin/setup", true)).toBe(false);
     expect(isDenied("/_emdash/api/oauth/register", true)).toBe(true);
+  });
+});
+
+describe("signInTarget", () => {
+  const html = "text/html,application/xhtml+xml";
+
+  it.each(["/_emdash/admin", "/_emdash/admin/content/posts"])(
+    "sends a visitor who opens %s to the GitHub sign-in",
+    (path) => {
+      expect(signInTarget("GET", path, html)).toBe("/auth/login");
+    },
+  );
+
+  it("sends a visitor who just signed out home, not back through GitHub", () => {
+    expect(signInTarget("GET", "/_emdash/admin/login", html)).toBe("/");
+  });
+
+  it.each([
+    ["GET", "/_emdash/api/auth/me", "application/json"],
+    ["GET", "/_emdash/admin", "*/*"],
+    ["POST", "/_emdash/admin", html],
+    ["GET", "/_emdash/adminx", html],
+    ["GET", "/blog", html],
+  ])("leaves %s %s (%s) to the content manager", (method, path, accept) => {
+    expect(signInTarget(method, path, accept)).toBeNull();
   });
 });
 

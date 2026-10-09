@@ -1,11 +1,13 @@
 import { execSync, spawn } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
 import { dirname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { setTimeout as sleep } from "node:timers/promises";
 import { stringify } from "devalue";
+import { cookieNames, seal } from "@rupeefund/auth";
+import { CREATE_SESSIONS } from "../../src/auth/session-store.ts";
 import {
   ALLOWED_WRITES,
   CONTENT_MANAGER,
@@ -37,6 +39,8 @@ const TEST_SITEKEY = "1x00000000000000000000AA";
 const STATE = "../../.wrangler/site-test";
 const D1_FILES = join(STATE, "v3", "d1", "miniflare-D1DatabaseObject");
 const BROWSERS = [SESSION, EDITOR_SESSION];
+const AUTH_SECRET = randomBytes(32).toString("base64url");
+const identities = new Map<string, string>();
 
 // workaround: nodejs/node#21825 — a .cmd needs a shell, which searches CWD first
 const WIN = process.platform === "win32";
@@ -72,7 +76,11 @@ async function ready(base: string): Promise<void> {
   throw new Error(`The preview server at ${base} did not start`);
 }
 
-function addCallers(): void {
+async function addCallers(): Promise<void> {
+  for (const { user, role } of BROWSERS) {
+    const member = { email: `${user}@example.com`, name: user, role };
+    identities.set(user, await seal(member, AUTH_SECRET, 3600));
+  }
   for (const file of readdirSync(D1_FILES).filter((name) => name.endsWith(".sqlite"))) {
     const db = new DatabaseSync(join(D1_FILES, file));
     const content = db
@@ -89,29 +97,34 @@ function addCallers(): void {
            VALUES (?, ?, ?, ?, ?, ?)`,
         ).run(user, user, hash, token.slice(0, 8), user, JSON.stringify(scopes));
       }
+      db.exec(CREATE_SESSIONS);
+      const addSession = db.prepare(
+        "INSERT INTO rupeefund_sessions (key, value, updated_at) VALUES (?, ?, unixepoch())",
+      );
+      for (const { user, id } of BROWSERS) {
+        addSession.run(id, stringify(new Map([["user", { data: { id: user } }]])));
+      }
     }
     db.close();
   }
-  const session = join(STATE, "session.txt");
-  const store = `--binding SESSION --local --persist-to ${STATE}`;
-  for (const { user, id } of BROWSERS) {
-    writeFileSync(session, stringify(new Map([["user", { data: { id: user } }]])));
-    exec(`wrangler kv key put ${id} --path ${session} ${store}`);
-  }
-  rmSync(session);
 }
 
-function headersFor(as: Call["as"]): Record<string, string> {
+const signedIn = (base: string, { user, id }: (typeof BROWSERS)[number]): string[] => [
+  `astro-session=${id}`,
+  `${cookieNames(base).identity}=${identities.get(user)}`,
+];
+
+function headersFor(base: string, as: Call["as"]): Record<string, string> {
   const json = { "content-type": "application/json", "x-emdash-request": "1" };
   if (as === "anonymous") return json;
-  if (as === "session") return { ...json, cookie: `astro-session=${SESSION.id}` };
+  if (as === "session") return { ...json, cookie: signedIn(base, SESSION).join("; ") };
   return { ...json, authorization: `Bearer ${TOKENS[as].token}` };
 }
 
 async function call(base: string, { as, method, path }: Call): Promise<Answer> {
   const res = await fetch(`${base}${path}`, {
     method,
-    headers: headersFor(as),
+    headers: headersFor(base, as),
     body: method === "GET" ? undefined : "{}",
   });
   return {
@@ -133,7 +146,7 @@ const SESSION_OF = { admin: SESSION, editor: EDITOR_SESSION } as const;
 
 async function visit(base: string, { path, as, editMode }: Visit): Promise<Seen> {
   const cookies = [
-    ...(as === "anonymous" ? [] : [`astro-session=${SESSION_OF[as].id}`]),
+    ...(as === "anonymous" ? [] : signedIn(base, SESSION_OF[as])),
     ...(editMode ? ["emdash-edit-mode=true"] : []),
   ];
   const res = await fetch(`${base}${path}`, {
@@ -213,11 +226,21 @@ export default async function setup(): Promise<void> {
     PUBLIC_ALLOW_TEST_SITEKEY: "true",
   });
   exec(`node scripts/seed-local.mjs ${STATE}`);
-  addCallers();
+  await addCallers();
   const port = await freePort();
   const base = `http://localhost:${port}`;
   const wrangler = resolve("node_modules", ".bin", WIN ? "wrangler.cmd" : "wrangler");
-  const args = ["dev", "--port", String(port), "--persist-to", STATE];
+  const args = [
+    "dev",
+    "--port",
+    String(port),
+    "--persist-to",
+    STATE,
+    "--var",
+    `AUTH_SECRET:${AUTH_SECRET}`,
+    "--var",
+    `AUTH_ORIGIN:${base}`,
+  ];
   const server = spawn(
     WIN ? `"${wrangler}"` : wrangler,
     [...args, "--show-interactive-dev-session=false"],

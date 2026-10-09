@@ -30,6 +30,12 @@ const DENIED_TREES = [
 
 const SET_UP_TREES = ["/_emdash/api/setup", "/_emdash/admin/setup"];
 
+const ADMIN_SET_UP = new Set([
+  "/_emdash/api/setup",
+  "/_emdash/api/setup/status",
+  "/_emdash/admin/setup",
+]);
+
 const DENIED_PATHS = new Set([
   "/_emdash/api/snapshot",
   "/_emdash/api/typegen",
@@ -53,11 +59,18 @@ export function requestPath(raw: string): string | null {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
 }
 
-export function isDenied(path: string, dev: boolean): boolean {
+export function isDenied(path: string, dev: boolean, admin = false): boolean {
   if (DENIED_PATHS.has(path)) return true;
   if (DENIED_PATTERNS.some((pattern) => pattern.test(path))) return true;
   if (DENIED_TREES.some((tree) => inTree(path, tree))) return true;
-  return !dev && SET_UP_TREES.some((tree) => inTree(path, tree));
+  if (dev || (admin && ADMIN_SET_UP.has(path))) return false;
+  return SET_UP_TREES.some((tree) => inTree(path, tree));
+}
+
+export function signInTarget(method: string, path: string, accept: string): string | null {
+  if (method !== "GET" || !accept.includes("text/html") || !inTree(path, "/_emdash/admin"))
+    return null;
+  return inTree(path, "/_emdash/admin/login") ? "/" : "/auth/login";
 }
 
 export function withHeaders(path: string, response: Response): Response {
