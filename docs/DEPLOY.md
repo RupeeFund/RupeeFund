@@ -348,7 +348,7 @@ Each request that no static file answers starts the Worker and uses CPU time. A 
 
 The rule blocks each path that starts with `/wp-` or ends with `.php`. Do not give a page such a path.
 
-A rate-limit rule on the zone limits one address to 100 requests in 10 seconds. It does not count the static files under `/_astro/`. The Free plan permits one such rule, with the path as the only field.
+A rate-limit rule on the zone limits one address to 100 requests in 10 seconds. It does not count the static files under `/_astro/`. The Free plan permits one such rule, and its expression can use only the path and the verified-bot field.
 
 1. Go to the zone > **Security** > **WAF** > **Rate limiting rules**.
 1. Add the rule `site: limit each IP to 100 Worker requests per 10 seconds`, with the action **Block** for 10 seconds, and this expression:
