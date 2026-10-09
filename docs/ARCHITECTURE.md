@@ -238,6 +238,7 @@ A landing page or a people page that fails the check, or a read of the database 
 - `src/outer.ts` answers 404 to each EmDash route that the site does not use, for example the setup wizard, the OAuth server and the import. A signed-in admin gets the setup wizard. Under `astro dev` the setup wizard stays open to all.
 - `src/outer.ts` answers 401 to a call to `/_emdash/api/*` with no GitHub sign-in, before EmDash starts. So a visitor cannot use the search, the comments or the other sign-in methods of EmDash, and cannot make EmDash write to the database. An API token opens only the routes where EmDash checks the token. The list in `src/lib/edge.ts` follows the public routes of EmDash. Two routes stay open to all: the published files under `/_emdash/api/media/file/` and **Log out**. A call to `/_emdash/admin*` with no sign-in goes to `/auth/login` when it asks for a page, and gets 401 otherwise.
 - A WAF custom rule on the zone blocks common scanner paths before they start the Worker (`docs/DEPLOY.md` section 11.6).
+- A WAF rate-limit rule blocks an address for 10 seconds after 100 requests in 10 seconds (`docs/DEPLOY.md` section 11.6).
 
 ### 11.3 Who gets in
 

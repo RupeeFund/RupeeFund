@@ -339,6 +339,15 @@ Each request that no static file answers starts the Worker and uses CPU time. A 
 
 The rule blocks each path that starts with `/wp-` or ends with `.php`. Do not give a page such a path.
 
+A rate-limit rule on the zone limits one address to 100 requests in 10 seconds. It does not count the static files under `/_astro/`. The Free plan permits one such rule, with the path as the only field.
+
+1. Go to the zone > **Security** > **WAF** > **Rate limiting rules**.
+1. Add the rule `site: limit each IP to 100 Worker requests per 10 seconds`, with the action **Block** for 10 seconds, and this expression:
+
+   ```txt
+   (not starts_with(http.request.uri.path, "/_astro/"))
+   ```
+
 ### 11.7 The old address
 
 The content manager ran in the Worker `rupeefund-cms` at `cms.rupeefund.org` before it moved into `rupeefund-web`. The zone sends that address to `https://rupeefund.org/admin` with two parts:
