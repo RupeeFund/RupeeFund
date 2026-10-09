@@ -4,6 +4,23 @@ export const REMOVAL_ADDRESS = "rupeefund@fossunited.org";
 
 export const TAGLINE = "Not charity — membership in a commons";
 
+export interface NavLink {
+  label: string;
+  href: string;
+}
+
+export const HEADER_LINKS: readonly NavLink[] = [
+  { label: "FAQ", href: "/faq" },
+  { label: "People", href: "/people" },
+];
+
+export const FOOTER_LINKS: readonly NavLink[] = [
+  { label: "People", href: "/people" },
+  { label: "About FOSS United", href: "https://fossunited.org/team" },
+  { label: "Community forum", href: "https://forum.fossunited.org" },
+  { label: "Source on GitHub", href: "https://github.com/RupeeFund/RupeeFund" },
+];
+
 export interface Season {
   spriteSlug: string;
   name: string;

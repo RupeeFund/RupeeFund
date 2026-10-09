@@ -1,32 +1,24 @@
-import { getEmDashCollection, getEmDashEntry, getMenu } from "emdash";
+import { getEmDashCollection, getEmDashEntry } from "emdash";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fixture from "./entries.fixture.json";
 import { ContentError } from "./entries.ts";
-import { landingContent, menu, page, pages, post, posts } from "./load.ts";
+import { landingContent, page, pages, post, posts } from "./load.ts";
 
 vi.mock("emdash", () => ({
   getEmDashCollection: vi.fn(),
   getEmDashEntry: vi.fn(),
-  getMenu: vi.fn(),
 }));
 
 const collection = vi.mocked(getEmDashCollection);
 const single = vi.mocked(getEmDashEntry);
-const named = vi.mocked(getMenu);
 
 type Batch = Awaited<ReturnType<typeof getEmDashCollection>>;
 type Found = Awaited<ReturnType<typeof getEmDashEntry>>;
-type Menu = Awaited<ReturnType<typeof getMenu>>;
 
 const batch = (entries: unknown[], nextCursor?: string) =>
   ({ entries, ...(nextCursor ? { nextCursor } : {}) }) as unknown as Batch;
 
 const found = (entry: unknown) => ({ entry, isPreview: false }) as unknown as Found;
-
-const links = (items: { label: string; url: string }[]) =>
-  ({
-    items: items.map((item, index) => ({ id: `${index}`, children: [], ...item })),
-  }) as unknown as Menu;
 
 const fresh = () => structuredClone(fixture);
 
@@ -128,34 +120,5 @@ describe("a singleton", () => {
     single.mockResolvedValueOnce(found(null));
     collection.mockResolvedValueOnce(batch([]));
     await expect(landingContent()).rejects.toThrow(ContentError);
-  });
-});
-
-describe("a menu", () => {
-  it("gives each item as a link", async () => {
-    named.mockResolvedValueOnce(links([{ label: "Blog", url: "/blog" }]));
-    expect(await menu("primary")).toEqual([{ label: "Blog", href: "/blog" }]);
-  });
-
-  it("is empty when nobody made it", async () => {
-    named.mockResolvedValueOnce(null);
-    expect(await menu("footer")).toEqual([]);
-  });
-
-  it("leaves out a link that the site does not allow", async () => {
-    named.mockResolvedValueOnce(
-      links([
-        { label: "Plain", url: "http://example.com" },
-        { label: "Phone", url: "tel:123" },
-        { label: "FAQ", url: "/faq" },
-      ]),
-    );
-    expect(await menu("footer")).toEqual([{ label: "FAQ", href: "/faq" }]);
-  });
-
-  it("is empty, and logged, when EmDash cannot read it, so each page still renders", async () => {
-    named.mockRejectedValueOnce(new Error("D1 is down"));
-    expect(await menu("primary")).toEqual([]);
-    expect(console.error).toHaveBeenCalledWith(expect.stringContaining("D1 is down"));
   });
 });

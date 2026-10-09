@@ -1,4 +1,4 @@
-import { getEmDashCollection, getEmDashEntry, getMenu } from "emdash";
+import { getEmDashCollection, getEmDashEntry } from "emdash";
 import {
   ContentError,
   toFaq,
@@ -13,7 +13,6 @@ import {
   type Entry,
 } from "./entries.ts";
 import {
-  isSafeHref,
   SLUG,
   type FaqEntry,
   type Landing,
@@ -25,11 +24,6 @@ import {
 
 export const LANDING_SLUG = "landing";
 export const PEOPLE_PAGE_SLUG = "people";
-
-export interface MenuLink {
-  label: string;
-  href: string;
-}
 
 const asEntry = (entry: { id: string; data: unknown }): Entry => ({
   slug: entry.id,
@@ -92,15 +86,3 @@ export const landingContent = async (): Promise<Landing> =>
 
 export const peoplePageContent = async (): Promise<PeoplePage> =>
   toPeoplePage((await required("people_page", PEOPLE_PAGE_SLUG)).data);
-
-export async function menu(name: "primary" | "footer"): Promise<MenuLink[]> {
-  try {
-    const found = await getMenu(name);
-    return (found?.items ?? [])
-      .filter(({ url }) => isSafeHref(url))
-      .map(({ label, url }) => ({ label, href: url }));
-  } catch (error) {
-    console.error(`The site shows the ${name} menu empty: ${String(error)}`);
-    return [];
-  }
-}

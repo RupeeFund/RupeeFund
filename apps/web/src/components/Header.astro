@@ -2,11 +2,9 @@
 import Icon from "./site/Icon.astro";
 import { SUBSCRIBE_CTA } from "../lib/launch.ts";
 import { normalizePath } from "../lib/seo.ts";
-import { menu } from "../content/load.ts";
+import { HEADER_LINKS } from "./site/constants.ts";
 
 const path = normalizePath(Astro.url.pathname);
-
-const links = await menu("primary");
 
 const onForm = path === "/subscribe";
 const heroShowsCta = path === "/";
@@ -26,7 +24,7 @@ const heroShowsCta = path === "/";
       </a>
       <nav class="hidden md:flex gap-5 items-center min-h-12" aria-label="Primary">
         {
-          links.map((l) => (
+          HEADER_LINKS.map((l) => (
             <a href={l.href} aria-current={path === l.href ? "page" : undefined} class="nav-link">
               {l.label}
             </a>
@@ -66,7 +64,7 @@ const heroShowsCta = path === "/";
           aria-label="Mobile"
         >
           {
-            links.map((l) => (
+            HEADER_LINKS.map((l) => (
               <a
                 href={l.href}
                 aria-current={path === l.href ? "page" : undefined}

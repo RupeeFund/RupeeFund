@@ -375,50 +375,7 @@
       ]
     }
   ],
-  "menus": [
-    {
-      "name": "primary",
-      "label": "Header",
-      "items": [
-        {
-          "type": "custom",
-          "label": "FAQ",
-          "url": "/faq"
-        },
-        {
-          "type": "custom",
-          "label": "People",
-          "url": "/people"
-        }
-      ]
-    },
-    {
-      "name": "footer",
-      "label": "Footer",
-      "items": [
-        {
-          "type": "custom",
-          "label": "People",
-          "url": "/people"
-        },
-        {
-          "type": "custom",
-          "label": "About FOSS United",
-          "url": "https://fossunited.org/about"
-        },
-        {
-          "type": "custom",
-          "label": "Community forum",
-          "url": "https://forum.fossunited.org"
-        },
-        {
-          "type": "custom",
-          "label": "Source on GitHub",
-          "url": "https://github.com/RupeeFund/RupeeFund"
-        }
-      ]
-    }
-  ],
+
   "content": {
     "landing": [
       {
