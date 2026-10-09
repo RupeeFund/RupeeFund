@@ -103,7 +103,9 @@ pnpm wrangler secret put GITHUB_CLIENT_SECRET   # from the GitHub App, section 1
 openssl rand -base64 32 | pnpm wrangler secret put AUTH_SECRET
 ```
 
-A new `AUTH_SECRET` signs each person out. For `pnpm preview`, put the two in `apps/web/.env`.
+A new `AUTH_SECRET` signs each person out.
+
+For `pnpm preview`, put the two in `apps/web/.env`. Make a new `AUTH_SECRET` with `openssl rand -base64 32`. Do not copy the live value. The GitHub App has one client secret for the live site and for `localhost`, so `GITHUB_CLIENT_SECRET` is the live secret. Only the maintainer holds it. Do not give it to another person. Other contributors use `pnpm dev`, which signs in without GitHub.
 
 A `--remote` command needs the Cloudflare account. Put `CLOUDFLARE_ACCOUNT_ID` in `apps/web/.env`. Wrangler reads that file itself. Without it, wrangler asks which account to use. Do not put the account in `wrangler.jsonc`.
 
