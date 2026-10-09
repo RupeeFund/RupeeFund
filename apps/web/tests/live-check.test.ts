@@ -10,17 +10,16 @@ const SECURE = {
   "x-frame-options": "DENY",
 };
 
-type Route = () => Response;
+type Route = (init?: RequestInit) => Response;
 
 const notFound: Route = () => new Response("Not found", { status: 404 });
 
 const page: Route = () => new Response("<html></html>", { headers: SECURE });
 
-const toLogin: Route = () =>
-  new Response(null, {
-    status: 302,
-    headers: { location: `${SITE}/_emdash/admin/login?redirect=%2F_emdash%2Fadmin` },
-  });
+const toLogin: Route = (init) =>
+  new Headers(init?.headers).get("accept")?.includes("text/html")
+    ? new Response(null, { status: 302, headers: { location: "/auth/login" } })
+    : new Response(null, { status: 401 });
 
 const toAccess: Route = () =>
   new Response(null, {
@@ -56,10 +55,10 @@ function healthy(): Record<string, Route> {
 }
 
 function serve(routes: Record<string, Route>): Fetch {
-  return async (url) => {
+  return async (url, init) => {
     const route = routes[url];
     if (route === undefined) throw new TypeError(`fetch failed: ${url}`);
-    return route();
+    return route(init);
   };
 }
 
@@ -126,7 +125,7 @@ describe("the live check", () => {
     const elsewhere: Route = () =>
       new Response(null, {
         status: 302,
-        headers: { location: "https://evil.example/_emdash/admin/login" },
+        headers: { location: "https://evil.example/auth/login" },
       });
     expect(await failed({ ...healthy(), [`${SITE}/_emdash/admin`]: page })).toEqual([
       "content manager asks for a sign-in",

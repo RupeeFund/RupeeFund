@@ -23,11 +23,10 @@ async function accessRedirect(fetch: Fetch, url: string): Promise<string | null>
 }
 
 async function signInRedirect(fetch: Fetch, site: string): Promise<string | null> {
-  const res = await fetch(`${site}/_emdash/admin`, MANUAL);
+  const res = await fetch(`${site}/_emdash/admin`, { ...MANUAL, headers: { accept: "text/html" } });
   const location = res.headers.get("location") ?? "";
   const target = URL.canParse(location, site) ? new URL(location, site) : null;
-  const toLogin =
-    target?.origin === new URL(site).origin && target.pathname === "/_emdash/admin/login";
+  const toLogin = target?.origin === new URL(site).origin && target.pathname === "/auth/login";
   if (res.status === 302 && toLogin) return null;
   return `answered ${res.status} ${location}`.trim() + ", not a redirect to the sign-in";
 }
