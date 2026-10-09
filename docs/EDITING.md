@@ -28,7 +28,7 @@ To undo a change, open the entry, restore an earlier revision and publish it.
 
 When you are signed in, each page of the site shows an **Edit** button. Click it to turn on the edit mode. The page then shows the drafts. Click a title or a short text, and change it in place. Click an image to select a different one. Change the body and the other fields in the content manager.
 
-An editor sees no fields to edit on the landing page and on a legal page, because only an admin can change them.
+An editor sees no fields to edit on the landing page and on a legal page, because only an admin can change them. Ask an admin for a change.
 
 ## 4. Write a blog post
 
@@ -70,13 +70,13 @@ The site leaves an entry out when the entry has one of these problems:
 - A callout, a quote or a call to action with no text.
 - A team photo that is not on GitHub. Use the address of the GitHub profile photo.
 - A heading, a list or a quote in the pitch text of the landing page. Use plain paragraphs.
-- More than one paragraph in a step of the landing page, or in the foundation text of the people page.
+- More than one paragraph in the foundation text of the people page.
 - A slug with a character that is not a lowercase letter, a digit or a hyphen.
 
 ## 7. The other pages
 
 - **FAQ.** Each entry has a question, an answer and an order. A lower order shows first. Entries with the same order show the oldest first, so give a new entry a high order, such as 99, to show it last. Tick **Show on the home page** to show the entry there too. A source is a title and an `https://` link.
-- **Landing page** and **People page.** Each is one entry. Change its words. Do not make a second entry. Only an admin can change the landing page.
+- **Landing page** and **People page.** Each is one entry. Change its words. Do not make a second entry. Only an admin can change the landing page. To change it, ask an admin. In the text of a step, put `**` on each side of a bold word, for example `a **monthly** contribution`.
 - **Community team.** Each person has a name, an order and an optional bio, profile URL, username and photo URL. The order works as in the FAQ.
 - **Pages.** A page has a kind: a normal page or a legal page. Its address is `/` and then its slug. Only an admin can edit, publish or unpublish a legal page. Nobody can delete a legal page. To change a legal page, edit it. Then publish it.
 - **Menus.** The **Header** menu and the **Footer** menu hold the links at the top and at the bottom of each page. Change the links there.

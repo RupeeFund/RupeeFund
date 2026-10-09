@@ -48,7 +48,9 @@ export async function saveGate(
 ): Promise<void> {
   if (event.collection === "landing") {
     if (!isAdmin(event.actor))
-      throw new ContentSaveRejectedError("Only an admin can edit the landing page.");
+      throw new ContentSaveRejectedError(
+        "Only an admin can edit the landing page. Ask an admin for the change.",
+      );
     if (event.isNew && (await landingCount(store)) > 0) {
       throw new ContentSaveRejectedError("The landing page has one entry. Edit that entry.");
     }
@@ -59,7 +61,10 @@ export async function saveGate(
     event.collection === "policies" ||
     (event.collection === "pages" &&
       (isLegal(event.content) || (!event.isNew && (await storedIsLegal(store, event.id)))));
-  if (legal) throw new ContentSaveRejectedError("Only an admin can edit a legal page.");
+  if (legal)
+    throw new ContentSaveRejectedError(
+      "Only an admin can edit a legal page. Ask an admin for the change.",
+    );
 }
 
 export async function publishGate(
@@ -75,7 +80,10 @@ export async function publishGate(
     (event.collection === "pages" &&
       (isLegal(event.content.data) || (await storedIsLegal(store, event.content.id))));
   if (!guarded) return;
-  return { cancel: true, reason: "Only an admin can publish or unpublish this entry." };
+  return {
+    cancel: true,
+    reason: "Only an admin can publish or unpublish this entry. Ask an admin for the change.",
+  };
 }
 
 export async function deleteGate(

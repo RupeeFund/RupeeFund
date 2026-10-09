@@ -49,7 +49,9 @@ describe("the save gate", () => {
         { collection: "landing", content: {}, isNew: false, id: "l", actor: editor },
         store(),
       ),
-    ).rejects.toThrow(rejected("Only an admin can edit the landing page."));
+    ).rejects.toThrow(
+      rejected("Only an admin can edit the landing page. Ask an admin for the change."),
+    );
   });
 
   it("refuses a second landing page, even for an admin", async () => {
@@ -73,7 +75,9 @@ describe("the save gate", () => {
         { collection: "pages", content: { kind: "legal" }, isNew: true, actor: editor },
         store(),
       ),
-    ).rejects.toThrow(rejected("Only an admin can edit a legal page."));
+    ).rejects.toThrow(
+      rejected("Only an admin can edit a legal page. Ask an admin for the change."),
+    );
   });
 
   it("refuses an editor who turns a legal page into a plain page", async () => {
@@ -82,7 +86,9 @@ describe("the save gate", () => {
         { collection: "pages", content: { kind: "page" }, isNew: false, id: "p", actor: editor },
         store({ p: { kind: "legal" } }),
       ),
-    ).rejects.toThrow(rejected("Only an admin can edit a legal page."));
+    ).rejects.toThrow(
+      rejected("Only an admin can edit a legal page. Ask an admin for the change."),
+    );
   });
 
   it("refuses an editor's page save when the stored page cannot be read", async () => {
@@ -91,7 +97,9 @@ describe("the save gate", () => {
         { collection: "pages", content: {}, isNew: false, id: "p", actor: editor },
         store({}, { failing: true }),
       ),
-    ).rejects.toThrow(rejected("Only an admin can edit a legal page."));
+    ).rejects.toThrow(
+      rejected("Only an admin can edit a legal page. Ask an admin for the change."),
+    );
   });
 
   it("lets an editor edit a plain page", async () => {
@@ -109,13 +117,17 @@ describe("the save gate", () => {
         { collection: "policies", content: {}, isNew: false, id: "x", actor: editor },
         store(),
       ),
-    ).rejects.toThrow(rejected("Only an admin can edit a legal page."));
+    ).rejects.toThrow(
+      rejected("Only an admin can edit a legal page. Ask an admin for the change."),
+    );
   });
 
   it("refuses a save with no actor", async () => {
     await expect(
       saveGate({ collection: "pages", content: { kind: "legal" }, isNew: true }, store()),
-    ).rejects.toThrow(rejected("Only an admin can edit a legal page."));
+    ).rejects.toThrow(
+      rejected("Only an admin can edit a legal page. Ask an admin for the change."),
+    );
   });
 
   it("lets an admin edit a legal page", async () => {
@@ -149,7 +161,7 @@ describe("the publish gate", () => {
       ),
     ).toEqual({
       cancel: true,
-      reason: "Only an admin can publish or unpublish this entry.",
+      reason: "Only an admin can publish or unpublish this entry. Ask an admin for the change.",
     });
   });
 
@@ -230,7 +242,9 @@ describe("the save gate on drafts", () => {
         { collection: "pages", content: { title: "x" }, isNew: false, id: "p", actor: editor },
         store({ p: { kind: "page" } }, { drafts: { p: { kind: "legal" } } }),
       ),
-    ).rejects.toThrow(rejected("Only an admin can edit a legal page."));
+    ).rejects.toThrow(
+      rejected("Only an admin can edit a legal page. Ask an admin for the change."),
+    );
   });
 });
 

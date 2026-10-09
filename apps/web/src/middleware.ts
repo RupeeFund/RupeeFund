@@ -9,7 +9,7 @@ import { ADMIN_ROLE, isPublic, refusesWrite, sessionUserId } from "./lib/protect
 
 const SCHEMA_LOCKED = "Change the schema with an API token";
 
-const ADMIN_ONLY = "Only an Admin can change this";
+const ADMIN_ONLY = "Only an admin can change this. Ask an admin for the change.";
 
 const query: Query = async (sql, params) =>
   (

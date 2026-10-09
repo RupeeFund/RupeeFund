@@ -71,7 +71,7 @@ describe("the content guard", () => {
   it.each(REFUSED_WRITES.map(callName))("refuses %s", (name) => {
     expect(answers()[name]).toMatchObject({
       status: 403,
-      body: expect.stringContaining("Only an Admin can change this"),
+      body: expect.stringContaining("Only an admin can change this. Ask an admin for the change."),
     });
   });
 
