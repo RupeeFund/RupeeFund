@@ -33,15 +33,14 @@ Each command under `scripts` in `package.json` runs in the pnpm shell emulator, 
 
 ## 3. Addresses and hosts
 
-| Address                        | What answers                 | Function                                                            |
-| ------------------------------ | ---------------------------- | ------------------------------------------------------------------- |
-| `rupeefund.org/` and each page | Site Worker, Astro           | Renders the page from the published content (section 11.1)          |
-| `rupeefund.org/api/*`          | Site Worker, Hono            | The signup and the health check (section 4)                         |
-| `rupeefund.org/_emdash/*`      | Site Worker, EmDash          | The content manager and its API (section 11)                        |
-| `rupeefund.org/admin`          | `apps/web/public/_redirects` | Sends the person to `/_emdash/admin`                                |
-| `rupeefund.org/media/<key>`    | Site Worker                  | The images of the published content (section 11.2)                  |
-| `admin.rupeefund.org`          | Admin Worker                 | The admin panel, behind Cloudflare Access (section 10)              |
-| `cms.rupeefund.org`            | A Redirect Rule on the zone  | The old address of the content manager. It sends a 301 to `/admin`. |
+| Address                        | What answers                 | Function                                                   |
+| ------------------------------ | ---------------------------- | ---------------------------------------------------------- |
+| `rupeefund.org/` and each page | Site Worker, Astro           | Renders the page from the published content (section 11.1) |
+| `rupeefund.org/api/*`          | Site Worker, Hono            | The signup and the health check (section 4)                |
+| `rupeefund.org/_emdash/*`      | Site Worker, EmDash          | The content manager and its API (section 11)               |
+| `rupeefund.org/admin`          | `apps/web/public/_redirects` | Sends the person to `/_emdash/admin`                       |
+| `rupeefund.org/media/<key>`    | Site Worker                  | The images of the published content (section 11.2)         |
+| `admin.rupeefund.org`          | Admin Worker                 | The admin panel, behind Cloudflare Access (section 10)     |
 
 The next table holds the addresses for later work. No part serves them yet. Keep them free for that work.
 
@@ -53,11 +52,11 @@ The next table holds the addresses for later work. No part serves them yet. Keep
 
 The one environment is `live`. Two Workers are not two environments. There is no preview URL.
 
-A second address for the site Worker keeps the live bindings and writes to the live list and the live content. So the configuration refuses a `workers.dev` address and a preview URL. The configuration does not stop a second custom domain. That rule is a decision, not a check. Prove a change on your own machine, against a local database.
+A second address for the site Worker keeps the live bindings and writes to the live list and the live content. So the configuration refuses a `workers.dev` address and a preview URL. The configuration does not stop a second custom domain, so do not add one. Prove a change on your own machine, against a local database.
 
 ## 4. How a person joins the list
 
-`POST /api/waitlist` is the only address the public can write to. `apps/web/src/worker/routes/waitlist.ts` gives the order of the checks. Two of them are intentional: a request with no `Origin` header passes, and a filled hidden field gets a success answer and writes nothing. If the email address already has a row, the insert does nothing.
+`POST /api/waitlist` is the only address the public can write to. `apps/web/src/worker/routes/waitlist.ts` gives the order of the checks. A request with no `Origin` header passes. A filled hidden field gets a success answer and writes nothing.
 
 Each row needs a Turnstile token, and Turnstile needs JavaScript. A browser with no script sees a notice in place of the form. The notice gives an email address. When a person writes to it, the team adds the person by hand.
 
@@ -83,16 +82,15 @@ The **Export** button on the dashboard and `pnpm list:export --remote` do the sa
 
 Every Cloudflare resource of this repository follows these rules. A fork deploys to its own account, so the `rupeefund-` prefix keeps its names clear of the names a contributor already has.
 
-| Resource                  | Rule                                                     |
-| ------------------------- | -------------------------------------------------------- |
-| Worker                    | `rupeefund-<surface>`                                    |
-| D1 database               | `rupeefund-<data>`, named for the data, not the Worker   |
-| R2 bucket                 | `rupeefund-<data>`                                       |
-| KV namespace              | `rupeefund-<surface>-<data>`, because one Worker owns it |
-| Custom domain             | `<surface>.rupeefund.org`, with `web` at the apex        |
-| Turnstile widget          | the hostname it serves                                   |
-| Rate limit `namespace_id` | a number that no other limiter used                      |
-| Binding                   | the role inside its Worker, in `UPPER_SNAKE`             |
+| Resource                  | Rule                                                   |
+| ------------------------- | ------------------------------------------------------ |
+| Worker                    | `rupeefund-<surface>`                                  |
+| D1 database               | `rupeefund-<data>`, named for the data, not the Worker |
+| R2 bucket                 | `rupeefund-<data>`                                     |
+| Custom domain             | `<surface>.rupeefund.org`, with `web` at the apex      |
+| Turnstile widget          | the hostname it serves                                 |
+| Rate limit `namespace_id` | a number that no other limiter used                    |
+| Binding                   | the role inside its Worker, in `UPPER_SNAKE`           |
 
 ## 8. Security headers
 
@@ -133,7 +131,7 @@ One Cloudflare Access policy covers the whole `rupeefund-admin` Worker. Access c
 
 On your machine, the `access` block in `apps/admin/wrangler.jsonc` makes wrangler supply a mock `ctx.access`, so the local panel signs you in as `operator@example.com`. Its `aud` is the same as `ACCESS_AUD`, so the local panel passes the same check. Only `wrangler dev` reads that block. A deployment ignores it.
 
-The admin Worker binds no static files on purpose. Cloudflare serves a Worker that has static files behind an internal router, and that router does not pass `ctx.access` to the Worker. The Worker builds every page itself, so the router never exists.
+The admin Worker binds no static files. Cloudflare serves a Worker that has static files behind an internal router, and that router does not pass `ctx.access` to the Worker. The Worker builds every page itself, so the router never exists.
 
 ### 10.2 The addresses
 
@@ -218,7 +216,7 @@ If you lose a download after the stamp, read `at` from the log. Then follow `doc
 
 ## 11. The content manager
 
-EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the landing page, the blog, the pages, the FAQ, the people page, the community team and the two menus. A page that is an app, such as `/subscribe`, stays in code.
+EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the words of the pages (`docs/EDITING.md`). A page that is an app, such as `/subscribe`, stays in code.
 
 `apps/web/astro.config.mjs` sets up EmDash: the content database, the media bucket, the look of the admin, the outer middleware (section 8) and the site plugin `src/plugin.ts` (section 11.4).
 
@@ -235,10 +233,12 @@ A landing page or a people page that fails the check, or a read of the database 
 - `/media/<key>` and `/_emdash/api/media/file/<key>` send a file without a sign-in only when published content uses it. Else they need a signed-in, active person, and answer 404 to the others. `src/middleware.ts` makes the check. `/_image` always needs a signed-in person.
 - `/media/<key>` sends only a PNG, JPEG, GIF, WebP or AVIF file. The check of section 11.1 refuses each other image type, so an SVG with a script cannot reach a page.
 - The site owns `/robots.txt` and `/sitemap.xml`. `src/outer.ts` answers 404 to the sitemaps of EmDash.
-- `src/outer.ts` answers 404 to each EmDash route that the site does not use, for example the setup wizard, the OAuth server and the import. A signed-in admin gets the setup wizard. Under `astro dev` the setup wizard stays open to all.
-- `src/outer.ts` answers 401 to a call to `/_emdash/api/*` with no GitHub sign-in, before EmDash starts. So a visitor cannot use the search, the comments or the other sign-in methods of EmDash, and cannot make EmDash write to the database. An API token opens only the routes where EmDash checks the token. The list in `src/lib/edge.ts` follows the public routes of EmDash. Two routes stay open to all: the published files under `/_emdash/api/media/file/` and **Log out**. A call to `/_emdash/admin*` with no sign-in goes to `/auth/login` when it asks for a page, and gets 401 otherwise.
-- A WAF custom rule on the zone blocks common scanner paths before they start the Worker (`docs/DEPLOY.md` section 11.6).
-- A WAF rate-limit rule blocks an address for 10 seconds after 100 requests in 10 seconds (`docs/DEPLOY.md` section 11.6).
+- `src/outer.ts` answers 404 to each EmDash route that the site does not use, for example the setup wizard, the OAuth server and the import. A signed-in admin gets the first page of the setup wizard and its two calls. Under `astro dev` the setup routes stay open, for the local sign-in of `docs/CONTRIBUTING.md`.
+- `src/outer.ts` answers 401 to a call to `/_emdash/api/*` with no GitHub sign-in, before EmDash starts. So a visitor cannot use the search, the comments or the other sign-in methods of EmDash, and cannot make EmDash write to the database.
+- An API token opens only the routes where EmDash checks the token. The list in `src/lib/edge.ts` follows the public routes of EmDash.
+- Two EmDash routes stay open to all: the published files under `/_emdash/api/media/file/` and **Log out**.
+- A request for a page under `/_emdash/admin` with no sign-in goes to `/auth/login`. The EmDash login page goes to `/`. Each other call with no sign-in gets 401.
+- Two WAF rules on the zone block common scanner paths and limit the requests of each address, before they start the Worker (`docs/DEPLOY.md` section 11.6).
 
 ### 11.3 Who gets in
 
@@ -252,11 +252,9 @@ People sign in with GitHub. `src/outer.ts` serves `/auth/login` and `/auth/callb
 
 A person in two teams gets the higher role. A person in no team, or with no verified primary email, does not get in, and EmDash makes no account.
 
-The callback sets a signed cookie for 8 hours. On each request, `src/auth/emdash.ts` gives EmDash the person in that cookie, and EmDash sets the role from it. So a team change takes effect at the next sign-in, at the latest after 8 hours.
+The callback sets a signed cookie for 8 hours. On each request, `src/auth/emdash.ts` gives EmDash the person in that cookie, and EmDash sets the role from it. So a team change takes effect at the next sign-in (`docs/DEPLOY.md` section 11.2).
 
-EmDash writes the session on each request. KV takes one write per second to a key, so the sessions stay in the content database (`src/auth/session-store.ts`). `src/outer.ts` ends the session when the signed cookie is missing or not valid. **Log out** in the content manager clears both.
-
-Under `astro dev`, EmDash uses passkeys in place of GitHub.
+The sessions stay in the content database (`src/auth/session-store.ts`), because EmDash writes the session on each request and KV takes one write per second to a key. `src/outer.ts` ends the session when the signed cookie is missing or not valid. **Log out** in the content manager clears both.
 
 ### 11.4 The rules on content
 
@@ -267,9 +265,9 @@ Two parts hold the rules. When you change one, read the other.
 - The landing page has one entry. Only an admin edits, publishes or unpublishes it.
 - Only an admin edits, publishes or unpublishes a legal page: a page with the kind `legal`.
 - Nobody deletes a legal page. To remove one, an admin changes its kind to `page` first.
-- The content manager refuses each schedule. An entry goes live only when a person publishes it. One exception: an entry that an admin imports with a publish time. The daily run publishes it, but not a landing page or a legal page.
+- The content manager refuses each schedule. An entry goes live only when a person publishes it.
 
-`src/middleware.ts` refuses a write by a person below Admin to the landing page and the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each schema change from a browser session. Only an API token changes the schema (section 11.6).
+`src/middleware.ts` refuses a write by a person below Admin to the landing page and the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each change to the model from a browser session: the collections, the fields, the relations, the byline fields and the taxonomies. Only an API token changes the model (section 11.6).
 
 A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. It runs the EmDash maintenance. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A run that starts late skips the clean-up until the next day. The clean-up:
 
@@ -277,17 +275,17 @@ A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `
 - removes uploads that did not finish, from D1 and R2
 - keeps the newest 10,000 rows of the 404 log
 - keeps the newest 50 revisions of an entry and deletes the older revisions for good
-- removes stale media-usage rows and old import files in R2
+- removes stale media-usage rows and old transfer files in R2
 
-A scheduled backup in the EmDash settings runs then too, if you turn it on. EmDash suggests a run each minute. The site runs once a day because it refuses schedules. `emdash doctor` reports that `src/worker.ts` does not export the EmDash `scheduled()` handler. This is expected.
+A scheduled backup in the EmDash settings also runs then, if an admin turns it on. One run each day is enough, because the site refuses schedules.
 
 ### 11.5 Preview
 
-The **Preview** button of a post or a page opens the entry at its address with a `_preview` token. EmDash then shows that draft. The other collections have no address of their own, so their **Preview** opens a page that does not exist.
+The **Preview** button of a post or a page opens the entry at its address with a `_preview` token. EmDash then shows that draft. `docs/TODO.md` holds the plan for the other collections.
 
 `toolbar: false` turns off the EmDash edit toolbar. The site shows no **Edit** button, so a signed-in person cannot change a page by accident. An editor changes the content only in the content manager.
 
-EmDash still shows the drafts to a signed-in person whose browser has the old edit cookie `emdash-edit-mode`. So `src/outer.ts` sends each `GET` with that cookie back to the same address, and removes the cookie.
+EmDash shows the drafts to a signed-in person whose browser has the edit cookie `emdash-edit-mode`. So `src/outer.ts` sends each `GET` with that cookie back to the same address, and removes the cookie.
 
 ### 11.6 The content model
 
@@ -298,13 +296,13 @@ Each collection has typed fields. The layout stays in code, so an editor changes
 - `src/content/schema.ts` and the map in `src/content/entries.ts`
 - the component in `src/components/site/`
 
-The seed applies only to a new database. `pnpm db:reset` applies it to your local database.
+The seed applies only to a new database, such as the local one that `pnpm db:reset` makes.
 
 ### 11.7 The blog
 
 A post has a category, an optional season, its authors and a body. The category is a term of the `category` taxonomy. The authors are the EmDash bylines. A post with no category shows Blog.
 
-`src/content/schema.ts` gives the blocks that a body can hold, and `src/content/html.ts` renders them. `src/plugin.ts` adds three blocks to the editor: the callout, the quote and the call to action. An embed, raw HTML, a gallery or a reference fails the check of section 11.1.
+`src/content/schema.ts` gives the blocks that a body can hold, and `src/content/html.ts` renders them. `src/plugin.ts` adds three blocks to the editor: the callout, the quote and the call to action. `docs/EDITING.md` section 8 lists what the check of section 11.1 refuses.
 
 ### 11.8 EmDash updates
 
