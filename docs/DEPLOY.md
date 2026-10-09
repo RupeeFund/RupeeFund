@@ -10,7 +10,7 @@ The account uses the Workers Paid plan.
 | `live` | `rupeefund.org`       | `rupeefund-web`   | a promote (section 3) |
 | `live` | `admin.rupeefund.org` | `rupeefund-admin` | a promote (section 3) |
 
-`rupeefund-web` serves the site and the content manager. Each Worker has its own Cloudflare Workers Builds project, and each watches `live`. One promote ships both Workers. Each project uses the repository root as the root directory, because pnpm installs the whole workspace from the root lockfile.
+`rupeefund-web` serves the site and the content manager. Each Worker has its own Cloudflare Workers Builds project, and each watches `live`. A promote ships each Worker whose files changed. Each project uses the repository root as the root directory, because pnpm installs the whole workspace from the root lockfile.
 
 | Worker            | Build command                                                                                                                                           | Deploy command                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
@@ -22,6 +22,13 @@ The build is the only gate of a deploy. `pnpm check` runs first, and the build o
 The Workers Builds API token of `rupeefund-web` and `rupeefund-admin` needs the D1 Read permission for the migration check.
 
 Turn off branch builds for all branches except `live` on each project. Keep them off. `docs/ARCHITECTURE.md` section 3 gives the reason.
+
+Each project skips a push that changes only files it does not use. Set these **Build watch paths** to exclude, and keep **Build cache** on:
+
+| Worker            | Exclude                                   |
+| ----------------- | ----------------------------------------- |
+| `rupeefund-web`   | `docs/*`, `apps/admin/*`                  |
+| `rupeefund-admin` | `docs/*`, `apps/web/*`, `packages/auth/*` |
 
 Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand. It uploads whatever `apps/web/dist` holds and skips the build guards. You can run `pnpm wrangler rollback` in an incident, because it ships no new code. It also rolls back the content manager, so read section 11.4 first. For the admin Worker, run `pnpm --filter @rupeefund/admin exec wrangler rollback`.
 
