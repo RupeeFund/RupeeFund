@@ -4,7 +4,7 @@ The brand guidelines at [brand.rupeefund.org](https://brand.rupeefund.org) and t
 
 This file holds only what this repository adds to them. The site is in `apps/web`, so `src/` in this file means `apps/web/src/`.
 
-The guidelines do not record each component and detail of this repository. That gap is intentional. A brand rule goes in the guidelines. A component, a layout, a state or a class that only this repository uses goes in [Change the look](#change-the-look).
+The guidelines do not record each component and detail of this repository. A brand rule goes in the guidelines. A component, a layout, a state or a class that only this repository uses goes in [Change the look](#change-the-look).
 
 ## Change the guidelines first
 
@@ -39,7 +39,7 @@ Change the look only for a defect, for a brand rule or for a request from a main
 - **Styles.** `packages/ui/src/styles.css` builds the brand rules that the brand files do not hold. It holds the type scale and the classes for links, buttons, cards and forms. The site and the admin panel both use it. Reuse a class before you add one. Put a new class in that file.
 - **Headings.** `packages/ui/src/styles.css` holds three heading sizes. `display` is only for the h1 of the home page. `page-title` is the h1 of each other page of the site. `section-title` is each section h2 and the tagline of the home page. Add `heading` to a `p` that must look like a heading.
 - **Body size.** `text-sm` is the body size. The theme in `packages/ui/src/styles.css` changes the Tailwind scale.
-- **Prose.** Put the text from the content manager in `.prose`. It sets the spacing, the headings, the lists, the quotes, the code, the tables, the dividers and the images. An image is at the centre of the column, with its caption under it. An h1 from the editor shows as an h2, because the page title is the h1. The site does not show an embed, raw HTML, a gallery or a reference (`docs/ARCHITECTURE.md` section 11.1). Put each style of the HTML that `src/content/html.ts` makes in `packages/ui/src/styles.css`, so the prose styles stay in one file.
+- **Prose.** Put the text from the content manager in `.prose`. It sets the spacing, the headings, the lists, the quotes, the code, the tables, the dividers and the images. An image is at the centre of the column, with its caption under it. An h1 from the editor shows as an h2, because the page title is the h1. Put each style of the HTML that `src/content/html.ts` makes in `packages/ui/src/styles.css`, so the prose styles stay in one file.
 - **Row links.** A blog row is one link. The title is `row-link`, and its overlay covers the row. On hover, the title turns deep green in 150 ms, with no line, because the pointer crosses many rows.
 - **Buttons.** A button is `btn` with `btn-primary` or `btn-quiet`. Add `btn-on-white` to a quiet button on a white surface. Set its size or its state with a modifier from `packages/ui/src/styles.css`, not with utilities in the markup. `btn-icon` makes a square icon button. `btn-toggle` fills a button that has `aria-pressed="true"`.
 - **Links.** Add `inline-link-ink` to an inline link on a `bg-brand` surface. It sets the text, the line and the focus ring to ink.
@@ -59,7 +59,7 @@ Write the words on the site in the Voice of the brand guidelines. Do not use ASD
 
 A FAQ answer can hold several paragraphs, bold and italics. `.faq-answer` in `packages/ui/src/styles.css` spaces the paragraphs and sets bold text in ink. The site loads the italic Inter for `em`.
 
-The content manager holds the words of the landing page, the blog, the pages, the FAQ, the people page and the menus. Change them at `rupeefund.org/admin`, not in the code. `docs/ARCHITECTURE.md` section 11 tells how. Tick **Show on the home page** to show a question on the home page too. Give a source for each figure in an answer. The test of the seed content fails on a figure without one. The live site does not check it, so check each figure before you publish.
+The content manager holds the words of the pages (`docs/EDITING.md`). Change them at `rupeefund.org/admin`, not in the code. The test of the seed content fails on a figure in an FAQ answer without a source. The live site does not check it.
 
 ## Link preview cards
 
