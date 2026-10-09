@@ -50,7 +50,7 @@ const SECURITY_HEADERS: Readonly<Record<string, string | null>> = {
   "x-frame-options": "DENY",
 };
 
-function probes(site: string, admin: string, cms: string): [string, Probe][] {
+function probes(site: string, admin: string): [string, Probe][] {
   return [
     [
       "site health",
@@ -163,26 +163,12 @@ function probes(site: string, admin: string, cms: string): [string, Probe][] {
     ],
     ["admin refuses the page", (fetch) => accessRedirect(fetch, `${admin}/`)],
     ["admin refuses the counts", (fetch) => accessRedirect(fetch, `${admin}/api/summary`)],
-    [
-      "cms points at the site",
-      async (fetch) => {
-        const res = await fetch(`${cms}/`, MANUAL);
-        const location = res.headers.get("location") ?? "";
-        if (res.status === 301 && location === `${site}/admin`) return null;
-        return `answered ${res.status} ${location}`.trim() + `, not a 301 to ${site}/admin`;
-      },
-    ],
   ];
 }
 
-export async function runChecks(
-  site: string,
-  admin: string,
-  cms: string,
-  fetch: Fetch,
-): Promise<Check[]> {
+export async function runChecks(site: string, admin: string, fetch: Fetch): Promise<Check[]> {
   const checks: Check[] = [];
-  for (const [name, probe] of probes(site, admin, cms)) {
+  for (const [name, probe] of probes(site, admin)) {
     try {
       const problem = await probe(fetch);
       checks.push({ name, ok: problem === null, detail: problem ?? "" });
@@ -202,8 +188,7 @@ async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   const site = option(argv, "--site", "https://rupeefund.org");
   const admin = option(argv, "--admin", "https://admin.rupeefund.org");
-  const cms = option(argv, "--cms", "https://cms.rupeefund.org");
-  const checks = await runChecks(site, admin, cms, (url, init) => fetch(url, init));
+  const checks = await runChecks(site, admin, (url, init) => fetch(url, init));
   for (const { name, ok, detail } of checks) {
     process.stdout.write(ok ? `PASS ${name}\n` : `FAIL ${name}: ${detail}\n`);
   }

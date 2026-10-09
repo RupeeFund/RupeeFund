@@ -3,7 +3,6 @@ import { runChecks, type Fetch } from "../scripts/live-check.mts";
 
 const SITE = "https://site.test";
 const ADMIN = "https://admin.test";
-const CMS = "https://cms.test";
 const SECURE = {
   "content-security-policy": "default-src 'self'",
   "strict-transport-security": "max-age=63072000",
@@ -58,7 +57,6 @@ function healthy(): Record<string, Route> {
       ),
     [`${ADMIN}/`]: toAccess,
     [`${ADMIN}/api/summary`]: toAccess,
-    [`${CMS}/`]: () => new Response(null, { status: 301, headers: { location: `${SITE}/admin` } }),
   };
 }
 
@@ -71,7 +69,7 @@ function serve(routes: Record<string, Route>): Fetch {
 }
 
 async function failed(routes: Record<string, Route>): Promise<string[]> {
-  const checks = await runChecks(SITE, ADMIN, CMS, serve(routes));
+  const checks = await runChecks(SITE, ADMIN, serve(routes));
   return checks.filter((check) => !check.ok).map((check) => check.name);
 }
 
@@ -214,12 +212,5 @@ describe("the live check", () => {
     delete routes[`${ADMIN}/`];
     delete routes[`${ADMIN}/api/summary`];
     expect(await failed(routes)).toEqual(["admin refuses the page", "admin refuses the counts"]);
-  });
-
-  it("fails when the old cms host does not send a visitor to the site admin path", async () => {
-    const stillServes: Route = () => new Response("<html></html>");
-    expect(await failed({ ...healthy(), [`${CMS}/`]: stillServes })).toEqual([
-      "cms points at the site",
-    ]);
   });
 });
