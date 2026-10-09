@@ -15,7 +15,7 @@ An admin sends you an invite link. Open it and make a passkey. Then sign in with
 ## 2. Publish a change
 
 1. Save the entry as a draft.
-1. For a post or a page, click **Preview**. The preview shows the draft in the layout of the site. For the other entries, **Preview** opens a page that does not exist. Use the edit mode of section 3 to see their drafts on the page.
+1. For a post or a page, click **Preview**. For the other entries, **Preview** opens a page that does not exist, so use the edit mode of section 3.
 1. Click **Publish**. The content manager does not publish at a set time, and it refuses a schedule.
 
 The site shows the change at the next page load.
@@ -36,8 +36,7 @@ An editor sees no fields to edit on the landing page and on a legal page, becaus
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Title       | The heading of the post and the name of the browser tab.                                                                                             |
 | Excerpt     | One or two sentences under the title. The blog list, the RSS feed and search results also show it.                                                   |
-| Category    | The label above the title: Blog or Article.                                                                                                          |
-| Kind        | The old label. The site shows it only when the post has no category.                                                                                 |
+| Category    | The label above the title: Blog or Article. A post with no category shows Blog.                                                                      |
 | Season      | Optional. A label in the colour of the season.                                                                                                       |
 | Season year | The year of the season. If you leave it empty, the site uses the year of the publish date.                                                           |
 | Cover image | Optional. It shows on the blog list and across the top of the post. Give it alt text that tells what the image shows. Put the credit in the caption. |

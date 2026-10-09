@@ -296,40 +296,26 @@ If the site or the content manager fails, go back (section 11.4) to the time you
 
 ### 11.5 Change a content field
 
-The site shows only the fields and the collections that its code reads. `docs/ARCHITECTURE.md` section 11.6 names that code. The live content manager refuses a schema change from a browser. Change the live model with an API token and `pnpm model:add`. The command reads `apps/web/seed/seed.json`. It adds to the live site each collection, field, search index and taxonomy that it does not have.
+The site shows only the fields that its code reads (`docs/ARCHITECTURE.md` section 11.6). The live content manager refuses a schema change from a browser. Change a live field with an API token:
 
-1. Sign in as an admin. Open `https://rupeefund.org/_emdash/admin/settings/api-tokens`. Make a token with the **Admin** scope. Keep it in your password manager.
+1. Sign in as an admin. Open `https://rupeefund.org/_emdash/admin/settings/api-tokens`. Make a token with the **Admin** scope. Put it in the environment variable `EMDASH_TOKEN`.
 
-1. Add the field to `apps/web/seed/seed.json`.
-
-1. Put the token in the environment variable `EMDASH_TOKEN`. Then list the changes:
+1. Change the field in `apps/web/seed/seed.json`. Then change it on the live site. To add one, send its entry from the seed:
 
    ```sh
-   pnpm model:add --url https://rupeefund.org
+   api=https://rupeefund.org/_emdash/api/schema/collections/<collection>/fields
+   curl -fsS -X POST -H "authorization: Bearer $EMDASH_TOKEN" -H "x-emdash-request: 1" \
+     -H "content-type: application/json" -d '<field from the seed>' "$api"
+   curl -fsS -X DELETE -H "authorization: Bearer $EMDASH_TOKEN" -H "x-emdash-request: 1" \
+     "$api/<field>"
    ```
-
-   The command changes nothing. Each line names one addition. A `note:` line changes nothing. A `conflict:` line names a field of a different type, or a taxonomy that does not cover a collection. With a conflict, the command refuses to apply.
-
-1. Apply the changes:
-
-   ```sh
-   pnpm model:add --url https://rupeefund.org --apply
-   ```
-
-   The command stops at the first error and prints it. List the changes again to see what is left.
 
 1. Revoke the token on the same page.
 
 Keep this order, so that each version of the code finds the fields that it reads:
 
-- **To add a field.** Add the field to the live site, and fill it in each entry. Then promote the code that reads it.
-
-- **To remove a field.** Promote the code that stops reading it. Then remove the field with the token. `pnpm model:add` never removes a field.
-
-  ```sh
-  curl -fsS -X DELETE -H "authorization: Bearer $EMDASH_TOKEN" -H "x-emdash-request: 1" \
-    https://rupeefund.org/_emdash/api/schema/collections/<collection>/fields/<field>
-  ```
+- **To add a field.** Add it, and fill it in each entry. Then promote the code that reads it.
+- **To remove a field.** Promote the code that stops reading it. Then remove it.
 
 ### 11.6 Block the scanners
 

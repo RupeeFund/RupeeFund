@@ -56,6 +56,6 @@ Urgent when: an editor shares a feed or a sitemap from a browser in the edit mod
 
 ## Make the first admin of a new content database
 
-The live site refuses the setup wizard (`apps/web/src/lib/edge.ts`). So a new, empty content database cannot get its first admin there. Today a move copies the database with its people (`docs/DEPLOY.md` section 9).
+The live site refuses the setup wizard (`apps/web/src/lib/edge.ts`). The wizard fills a new database from the seed, with its content. With GitHub sign-in, the first person who signs in becomes the admin. So let a signed-in member of the admin team through to the wizard.
 
-Urgent when: the content manager must start from an empty database.
+Urgent when: now. The content manager moves into the site Worker with a new, empty database.

@@ -282,139 +282,19 @@
         "steps": [
           {
             "title": "Subscribe",
-            "body": [
-              {
-                "_type": "block",
-                "_key": "k4",
-                "style": "normal",
-                "markDefs": [],
-                "children": [
-                  {
-                    "_type": "span",
-                    "_key": "k5",
-                    "text": "Set up a ",
-                    "marks": []
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "k6",
-                    "text": "monthly",
-                    "marks": ["strong"]
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "k7",
-                    "text": " contribution with UPI AutoPay, from ₹15 a month. Small, regular contributions from many of us keep the fund steady.",
-                    "marks": []
-                  }
-                ]
-              }
-            ]
+            "body": "Set up a **monthly** contribution with UPI AutoPay, from ₹15 a month. Small, regular contributions from many of us keep the fund steady."
           },
           {
             "title": "Pool funds",
-            "body": [
-              {
-                "_type": "block",
-                "_key": "k8",
-                "style": "normal",
-                "markDefs": [],
-                "children": [
-                  {
-                    "_type": "span",
-                    "_key": "k9",
-                    "text": "Your contributions ",
-                    "marks": []
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "ka",
-                    "text": "pool",
-                    "marks": ["strong"]
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "kb",
-                    "text": " through the season. The fund runs four cycles a year, following the Indian weather seasons.",
-                    "marks": []
-                  }
-                ]
-              }
-            ]
+            "body": "Your contributions **pool** through the season. The fund runs four cycles a year, following the Indian weather seasons."
           },
           {
             "title": "Vote and nominate",
-            "body": [
-              {
-                "_type": "block",
-                "_key": "kc",
-                "style": "normal",
-                "markDefs": [],
-                "children": [
-                  {
-                    "_type": "span",
-                    "_key": "kd",
-                    "text": "Contribute regularly and you earn a ",
-                    "marks": []
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "ke",
-                    "text": "vote",
-                    "marks": ["strong"]
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "kf",
-                    "text": " each season. You decide how to split it across three kinds of projects. You may also ",
-                    "marks": []
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "kg",
-                    "text": "nominate",
-                    "marks": ["strong"]
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "kh",
-                    "text": " one project or person each season.",
-                    "marks": []
-                  }
-                ]
-              }
-            ]
+            "body": "Contribute regularly and you earn a **vote** each season. You decide how to split it across three kinds of projects. You may also **nominate** one project or person each season."
           },
           {
             "title": "Disburse",
-            "body": [
-              {
-                "_type": "block",
-                "_key": "ki",
-                "style": "normal",
-                "markDefs": [],
-                "children": [
-                  {
-                    "_type": "span",
-                    "_key": "kj",
-                    "text": "Each season, the pool ",
-                    "marks": []
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "kk",
-                    "text": "goes",
-                    "marks": ["strong"]
-                  },
-                  {
-                    "_type": "span",
-                    "_key": "kl",
-                    "text": " to the projects that you chose, over UPI. We publish every administrative cost, so you can follow your money all the way to a project.",
-                    "marks": []
-                  }
-                ]
-              }
-            ]
+            "body": "Each season, the pool **goes** to the projects that you chose, over UPI. We publish every administrative cost, so you can follow your money all the way to a project."
           }
         ],
         "seasons_title": "Funding seasons",

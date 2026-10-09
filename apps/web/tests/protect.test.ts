@@ -41,7 +41,6 @@ afterAll(() => db.close());
 describe("refusesWrite", () => {
   it.each([
     ["PUT", "/_emdash/api/content/landing/landing"],
-    ["POST", "/_emdash/api/content/policies/privacy/publish"],
     ["PUT", "/_emdash/api/content/pages/terms"],
     ["POST", "/_emdash/api/content/pages/terms/restore"],
     ["POST", "/_emdash/api/revisions/rev-terms/restore"],

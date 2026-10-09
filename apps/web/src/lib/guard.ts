@@ -5,7 +5,7 @@ export type WriteTarget =
   | { kind: "terms" }
   | { kind: "taxonomy"; taxonomy: string };
 
-export const GUARDED_COLLECTIONS = ["landing", "policies", "pages"] as const;
+export const GUARDED_COLLECTIONS = ["landing", "pages"] as const;
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 

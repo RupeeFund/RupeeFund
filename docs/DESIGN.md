@@ -33,7 +33,7 @@ Change the look only for a defect, for a brand rule or for a request from a main
   - Legal pages and blog posts: long text. Put the title and the text in `reading`, one column at the centre of the frame, `max-w-measure` (48 rem) wide.
   - Blog index: in `reading`, the title, a lede and the RSS link, then one row for each post, with a line between rows. A row has the label row, the title, the excerpt and a `post-thumb` image at the right. Do not use cards.
   - Blog post: a link back to the index, the label row, the title, the excerpt as the lede, the byline row, the lead image across the column with its caption, and the text.
-  - Label row (`PostLabel.astro`): the kind of post in `eyebrow` deep green, and the season pill in the accent of the season. The post page adds the season sprite. A row on the index adds the date and the reading time.
+  - Label row (`PostLabel.astro`): the category of the post in `eyebrow` deep green, and the season pill in the accent of the season. The post page adds the season sprite. A row on the index adds the date and the reading time.
   - Byline row: the authors from the content manager, or "The Rupee Fund volunteers", then the date, the updated date if it is a later day, and the reading time.
   - Short notices, for example `/404`: the full frame, in one column.
 - **Styles.** `packages/ui/src/styles.css` builds the brand rules that the brand files do not hold. It holds the type scale and the classes for links, buttons, cards and forms. The site and the admin panel both use it. Reuse a class before you add one. Put a new class in that file.

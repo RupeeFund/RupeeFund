@@ -171,7 +171,7 @@ export const post = z.object({
   body: portableText,
   publishedAt: z.iso.datetime(),
   updatedAt: z.iso.datetime().optional(),
-  category: text.default("Update"),
+  category: text.default("Blog"),
   season: z.object({ name: z.enum(SEASON_NAMES), year: z.number().int() }).optional(),
   authors: z.array(text).default([]),
 });

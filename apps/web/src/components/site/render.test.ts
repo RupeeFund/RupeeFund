@@ -92,7 +92,7 @@ describe("the blog components", () => {
     image: { src: "/media/01ABC.png", alt: "A red box", width: 8, height: 6 },
     body: para("Body."),
     publishedAt: "2026-10-02T17:40:48.365Z",
-    category: "Update",
+    category: "Blog",
     authors: [],
   };
 
@@ -113,14 +113,14 @@ describe("the blog components", () => {
     const html = await render(PostArticle, {
       post: {
         ...post,
-        category: "Essay",
+        category: "Article",
         season: { name: "Monsoon", year: 2026 },
         authors: [],
         updatedAt: "2026-10-04T09:00:00.000Z",
         body: para(words),
       },
     });
-    expect(html).toContain("Essay");
+    expect(html).toContain("Article");
     expect(html).toContain("Monsoon 2026");
     expect(html).toContain('src="/seasons/monsoon.svg"');
     expect(html).toMatch(/class="lede[^"]*"[^>]*>First post\.</);
@@ -192,7 +192,7 @@ describe("the live-edit annotations", () => {
     image: { src: "/media/01ABC.png", alt: "A red box", width: 8, height: 6 },
     body: para("Body."),
     publishedAt: "2026-10-02T17:40:48.365Z",
-    category: "Update",
+    category: "Blog",
     authors: [],
   };
   const legal = {

@@ -40,11 +40,11 @@ describe("the blog", () => {
     expect(read("blog/how-open-source-gets-funded-today.html")).toContain("Post-monsoon 2026");
   });
 
-  it("labels a post with its category, and a post with none with its kind", () => {
+  it("labels a post with its category, and a post with none as a blog post", () => {
     const label = (slug: string) =>
       /<span class="eyebrow text-brand-fg">([^<]*)<\/span>/.exec(read(`blog/${slug}.html`))?.[1];
     expect(label("how-open-source-gets-funded-today")).toBe("Article");
-    expect(label("small-steady-funding-for-indian-open-source")).toBe("Essay");
+    expect(label("how-to-write-a-post-for-this-blog")).toBe("Blog");
   });
 
   it("renders each block and mark of the body", () => {

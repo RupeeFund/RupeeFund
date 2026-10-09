@@ -79,6 +79,23 @@ function portableText(value: unknown, where: string): unknown {
   });
 }
 
+const BOLD_RUN = /\*\*(.+?)\*\*/gs;
+
+const span = (text: string, marks: string[]) => ({ _type: "span", text, marks });
+
+function paragraphFrom(text: unknown): unknown {
+  if (typeof text !== "string") return text;
+  const children: ReturnType<typeof span>[] = [];
+  let at = 0;
+  for (const run of text.matchAll(BOLD_RUN)) {
+    if (run.index > at) children.push(span(text.slice(at, run.index), []));
+    children.push(span(run[1]!, ["strong"]));
+    at = run.index + run[0].length;
+  }
+  if (at < text.length || children.length === 0) children.push(span(text.slice(at), []));
+  return [{ _type: "block", style: "normal", markDefs: [], children }];
+}
+
 const isoDate = (value: unknown) => (value instanceof Date ? value.toISOString() : value);
 
 function authors(bylines: unknown): string[] {
@@ -93,8 +110,7 @@ function category(data: Raw): unknown {
   const terms =
     isRecord(data.terms) && Array.isArray(data.terms.category) ? data.terms.category : [];
   const [term] = terms.filter(isRecord);
-  if (typeof term?.label === "string" && term.label) return term.label;
-  return typeof data.kind === "string" && data.kind ? data.kind : undefined;
+  return typeof term?.label === "string" && term.label ? term.label : undefined;
 }
 
 function season(data: Raw): { name: unknown; year: unknown } | undefined {
@@ -198,7 +214,7 @@ export function toLanding(data: Raw): Landing {
       steps: Array.isArray(data.steps)
         ? data.steps.map((step: unknown) => {
             const fields = isRecord(step) ? step : {};
-            return { title: fields.title, body: portableText(fields.body, "landing") };
+            return { title: fields.title, body: paragraphFrom(fields.body) };
           })
         : data.steps,
       seasonsTitle: data.seasons_title,

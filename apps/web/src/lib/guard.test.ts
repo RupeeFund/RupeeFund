@@ -46,7 +46,7 @@ describe("writeTarget", () => {
   it.each([
     ["PUT", "/_emdash/api/content/landing/landing", "landing", "landing"],
     ["POST", "/_emdash/api/content/landing", "landing", null],
-    ["POST", "/_emdash/api/content/policies/privacy/publish", "policies", "privacy"],
+    ["POST", "/_emdash/api/content/pages/terms/publish", "pages", "terms"],
     ["PUT", "/_emdash/api/content/pages/terms", "pages", "terms"],
     ["POST", "/_emdash/api/content/pages/terms/duplicate", "pages", "terms"],
     ["POST", "/_emdash/api/content/pages/01ABC/terms/category", "pages", "01ABC"],

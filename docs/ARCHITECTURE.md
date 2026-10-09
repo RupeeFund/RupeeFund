@@ -252,11 +252,11 @@ Two parts hold the rules. When you change one, read the other.
 `src/plugin.ts` registers the hooks in `src/plugin/hooks.ts`:
 
 - The landing page has one entry. Only an admin edits, publishes or unpublishes it.
-- Only an admin edits, publishes or unpublishes a legal page: a page with the kind `legal`, or an entry of the old `policies` collection.
+- Only an admin edits, publishes or unpublishes a legal page: a page with the kind `legal`.
 - Nobody deletes a legal page. To remove one, an admin changes its kind to `page` first.
 - The content manager refuses each schedule, because the Worker has no cron trigger. An entry goes live only when a person publishes it.
 
-`src/middleware.ts` refuses a write by a person below Admin to the landing page, the policies and the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each schema change from a browser session. Only an API token changes the schema (section 11.6).
+`src/middleware.ts` refuses a write by a person below Admin to the landing page and the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each schema change from a browser session. Only an API token changes the schema (section 11.6).
 
 The Worker has no cron trigger, so the EmDash cleanup does not run. Expired tokens stay in D1, and an upload that did not finish stays in R2. A scheduled backup in the EmDash settings does not run.
 
@@ -273,15 +273,15 @@ The templates mark the fields with `entry.edit`: `PostArticle.astro`, `PageBody.
 Each collection has typed fields. The layout stays in code, so an editor changes the words and not the structure. To change a field, change these together:
 
 - `apps/web/seed/seed.json`, the model of a new database
-- the live database, with `pnpm model:add` (`docs/DEPLOY.md` section 11.5)
+- the live database, with an API token (`docs/DEPLOY.md` section 11.5)
 - `src/content/schema.ts` and the map in `src/content/entries.ts`
 - the component in `src/components/site/`
 
-The seed applies only to a new database. `pnpm db:reset` applies it to your local database. `pnpm model:add` reads the seed and adds to the live database each collection, field, search index and taxonomy that it does not have. It changes nothing else. It reports a conflict for a field of a different type and for a taxonomy that does not cover a collection. It never removes a field.
+The seed applies only to a new database. `pnpm db:reset` applies it to your local database.
 
 ### 11.7 The blog
 
-A post has a category, an optional season, its authors and a body. The category is a term of the `category` taxonomy. The authors are the EmDash bylines. A post with no category shows its old `kind` field.
+A post has a category, an optional season, its authors and a body. The category is a term of the `category` taxonomy. The authors are the EmDash bylines. A post with no category shows Blog.
 
 `src/content/schema.ts` gives the blocks that a body can hold, and `src/content/html.ts` renders them. `src/plugin.ts` adds three blocks to the editor: the callout, the quote and the call to action. An embed, raw HTML, a gallery or a reference fails the check of section 11.1.
 

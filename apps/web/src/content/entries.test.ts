@@ -73,30 +73,21 @@ describe("a post", () => {
     expect(() => toPost(entry)).toThrow(ContentError);
   });
 
-  it("gives a post its kind, season, authors and updated date", () => {
+  it("gives a post its category, season, authors and updated date", () => {
     const entry = hello();
     Object.assign(entry.data, {
-      kind: "Essay",
+      terms: { category: [{ slug: "article", label: "Article" }] },
       season: "Monsoon",
       season_year: 2026,
       updatedAt: new Date("2026-10-03T10:00:00.000Z"),
       bylines: [{ byline: { displayName: "Asha Rao" } }, { byline: { displayName: "Ravi Iyer" } }],
     });
     expect(toPost(entry)).toMatchObject({
-      category: "Essay",
+      category: "Article",
       season: { name: "Monsoon", year: 2026 },
       authors: ["Asha Rao", "Ravi Iyer"],
       updatedAt: "2026-10-03T10:00:00.000Z",
     });
-  });
-
-  it("shows the category in place of the kind when the post has one", () => {
-    const entry = hello();
-    Object.assign(entry.data, {
-      kind: "Essay",
-      terms: { category: [{ slug: "article", label: "Article" }] },
-    });
-    expect(toPost(entry).category).toBe("Article");
   });
 
   it("takes the season year from the publish date when the editor leaves it out", () => {
@@ -175,6 +166,31 @@ describe("a single entry", () => {
     const input = entries();
     expect(toLanding(input.landing[0]!.data).steps.length).toBeGreaterThan(0);
     expect(toPeoplePage(input.people_page[0]!.data).teamTitle).toBeTruthy();
+  });
+
+  it("reads a step body as text, with two stars around each bold run", () => {
+    const data = entries().landing[0]!.data;
+    data.steps = [{ title: "Subscribe", body: "Set up a **monthly** gift, from ₹15." }];
+    expect(toLanding(data).steps[0]!.body).toEqual([
+      {
+        _type: "block",
+        style: "normal",
+        markDefs: [],
+        children: [
+          { _type: "span", text: "Set up a ", marks: [] },
+          { _type: "span", text: "monthly", marks: ["strong"] },
+          { _type: "span", text: " gift, from ₹15.", marks: [] },
+        ],
+      },
+    ]);
+  });
+
+  it("shows two stars as they are when nothing closes them", () => {
+    const data = entries().landing[0]!.data;
+    data.steps = [{ title: "Subscribe", body: "Gift **2x" }];
+    expect(toLanding(data).steps[0]!.body[0]!.children).toEqual([
+      { _type: "span", text: "Gift **2x", marks: [] },
+    ]);
   });
 
   it("refuses a landing page the site cannot show", () => {

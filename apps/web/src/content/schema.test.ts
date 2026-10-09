@@ -157,9 +157,9 @@ describe("the entry schemas", () => {
     expect(withBody(body).success).toBe(false);
   });
 
-  it("gives a post the category Update and no authors when the editor sets none", () => {
+  it("gives a post the category Blog and no authors when the editor sets none", () => {
     const parsed = post.parse(validPost());
-    expect(parsed.category).toBe("Update");
+    expect(parsed.category).toBe("Blog");
     expect(parsed.authors).toEqual([]);
   });
 

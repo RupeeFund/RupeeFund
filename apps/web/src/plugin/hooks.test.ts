@@ -111,17 +111,6 @@ describe("the save gate", () => {
     ).resolves.toBeUndefined();
   });
 
-  it("refuses an edit of an old policy by an editor", async () => {
-    await expect(
-      saveGate(
-        { collection: "policies", content: {}, isNew: false, id: "x", actor: editor },
-        store(),
-      ),
-    ).rejects.toThrow(
-      rejected("Only an admin can edit a legal page. Ask an admin for the change."),
-    );
-  });
-
   it("refuses a save with no actor", async () => {
     await expect(
       saveGate({ collection: "pages", content: { kind: "legal" }, isNew: true }, store()),
@@ -204,15 +193,6 @@ describe("the publish gate", () => {
     });
   });
 
-  it("refuses an old policy action by an editor", async () => {
-    expect(
-      await publishGate(
-        { collection: "policies", content: { id: "x", data: {} }, origin: api, actor: editor },
-        store(),
-      ),
-    ).toMatchObject({ cancel: true });
-  });
-
   it("refuses a legal action with no actor", async () => {
     expect(
       await publishGate({ collection: "pages", content: legal, origin: api }, store()),
@@ -264,11 +244,10 @@ describe("the delete gate", () => {
     ).toBe(false);
   });
 
-  it("keeps the one landing page and the old policies", async () => {
+  it("keeps the one landing page", async () => {
     expect(await deleteGate({ collection: "landing", id: "l" }, store({}, { landings: 1 }))).toBe(
       false,
     );
-    expect(await deleteGate({ collection: "policies", id: "x" }, store())).toBe(false);
   });
 
   it("keeps a landing page when the count cannot be read", async () => {

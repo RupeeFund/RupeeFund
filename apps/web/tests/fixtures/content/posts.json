@@ -24,8 +24,7 @@
       "status": "published",
       "data": {
         "title": "How to write a post for this blog",
-        "excerpt": "A guide for volunteer writers: choose a kind of post, keep the voice, link your sources and format each element. This post uses every element it describes.",
-        "kind": "Guide",
+        "excerpt": "A guide for volunteer writers: choose a category, keep the voice, link your sources and format each element. This post uses every element it describes.",
         "featured_image": {
           "provider": "local",
           "id": "01M42HTML00000000000000000",
@@ -133,7 +132,7 @@
               {
                 "_key": "s13",
                 "_type": "span",
-                "text": "Pick a kind of post",
+                "text": "Pick a category",
                 "marks": []
               }
             ]
@@ -147,31 +146,31 @@
               {
                 "_key": "s15",
                 "_type": "span",
-                "text": "Every post has a kind: an Update, a Season report, an ",
+                "text": "Every post has a category: a ",
                 "marks": []
               },
               {
                 "_key": "s16",
                 "_type": "span",
-                "text": "Essay",
+                "text": "Blog",
                 "marks": ["strong"]
               },
               {
                 "_key": "s17",
                 "_type": "span",
-                "text": " or a ",
+                "text": " post or an ",
                 "marks": []
               },
               {
                 "_key": "s18",
                 "_type": "span",
-                "text": "Guide",
+                "text": "Article",
                 "marks": ["strong"]
               },
               {
                 "_key": "s19",
                 "_type": "span",
-                "text": ". An essay argues for an idea. A guide teaches a task in steps. Choose the kind in the editor, and say in the first paragraph what the post is for.",
+                "text": ". A blog post shares news or a short update. An article argues for an idea or teaches a task in steps. Choose the category in the editor, and say in the first paragraph what the post is for.",
                 "marks": []
               }
             ]
@@ -1286,7 +1285,6 @@
       "data": {
         "title": "How to be a good open source contributor",
         "excerpt": "Read the guide, start small, write clear issues and pull requests, and take review well. A plain guide to your first contribution, with or without code.",
-        "kind": "Guide",
         "featured_image": {
           "provider": "local",
           "id": "01M42GROUP0000000000000000",
@@ -1934,7 +1932,6 @@
       "data": {
         "title": "How open source gets funded today, and where a community pool fits",
         "excerpt": "Grants, sponsorships, foundations and company backing each pay for open source in a different way. Here is what each does well, and what a pool of many small gifts can add.",
-        "kind": "Essay",
         "season": "Post-monsoon",
         "season_year": 2026,
         "featured_image": {
@@ -2371,7 +2368,6 @@
       "data": {
         "title": "Why Indian open source needs small, steady gifts",
         "excerpt": "More than 2 crore developers in India use GitHub, yet the work that keeps open source alive still depends on a few people. Many small, steady gifts can change that.",
-        "kind": "Essay",
         "featured_image": {
           "provider": "local",
           "id": "01M42COINS0000000000000000",
@@ -2841,6 +2837,9 @@
             ]
           }
         ]
+      },
+      "taxonomies": {
+        "category": ["article"]
       }
     },
     {
@@ -2853,7 +2852,6 @@
       "data": {
         "title": "An unpublished draft",
         "excerpt": "Grants, sponsorships, foundations and company backing each pay for open source in a different way. Here is what each does well, and what a pool of many small gifts can add.",
-        "kind": "Essay",
         "season": "Post-monsoon",
         "season_year": 2026,
         "featured_image": {

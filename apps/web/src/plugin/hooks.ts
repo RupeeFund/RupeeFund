@@ -7,7 +7,6 @@ import {
 } from "emdash";
 
 const ADMIN_ROLE = 50;
-const ADMIN_ONLY = new Set(["landing", "policies"]);
 
 export interface Store {
   get(
@@ -58,9 +57,8 @@ export async function saveGate(
   }
   if (isAdmin(event.actor)) return;
   const legal =
-    event.collection === "policies" ||
-    (event.collection === "pages" &&
-      (isLegal(event.content) || (!event.isNew && (await storedIsLegal(store, event.id)))));
+    event.collection === "pages" &&
+    (isLegal(event.content) || (!event.isNew && (await storedIsLegal(store, event.id))));
   if (legal)
     throw new ContentSaveRejectedError(
       "Only an admin can edit a legal page. Ask an admin for the change.",
@@ -76,7 +74,7 @@ export async function publishGate(
   }
   if (isAdmin(event.actor)) return;
   const guarded =
-    ADMIN_ONLY.has(event.collection) ||
+    event.collection === "landing" ||
     (event.collection === "pages" &&
       (isLegal(event.content.data) || (await storedIsLegal(store, event.content.id))));
   if (!guarded) return;
@@ -90,7 +88,6 @@ export async function deleteGate(
   event: Pick<ContentDeleteEvent, "collection" | "id">,
   store: Store,
 ): Promise<false | undefined> {
-  if (event.collection === "policies") return false;
   if (event.collection === "landing") {
     const landings = await landingCount(store);
     return Number.isFinite(landings) && landings > 1 ? undefined : false;
