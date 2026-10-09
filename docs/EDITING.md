@@ -1,6 +1,8 @@
 # Edit the site
 
-The content manager at [rupeefund.org/admin](https://rupeefund.org/admin) holds the words of the site: the landing page, the blog, the pages, the FAQ, the people page, the community team and the menus. The layout of each page stays the same. You change the words, not the structure.
+The content manager at [rupeefund.org/admin](https://rupeefund.org/admin) holds the blog, the pages, the FAQ, the people page and the community team. The layout of each page stays the same. You change the words, not the structure.
+
+The words of the home page and the links at the top and at the bottom of each page are not in the content manager. To change them, ask a maintainer.
 
 ## 1. Sign in
 
@@ -26,8 +28,8 @@ You stay signed in for 8 hours. Then you sign in again. A change to your team ta
 | Edit, publish, unpublish and delete the entries that you wrote                                | Yes    | Yes    | Yes   |
 | Edit, publish, unpublish and delete the other entries, and their images                       | No     | Yes    | Yes   |
 | Change the author or the publish date of an entry                                             | No     | Yes    | Yes   |
-| Change the menus, the categories and the bylines                                              | No     | Yes    | Yes   |
-| Edit, publish and unpublish the landing page and the legal pages                              | No     | No     | Yes   |
+| Change the categories and the bylines                                                         | No     | Yes    | Yes   |
+| Edit, publish and unpublish the legal pages                                                   | No     | No     | Yes   |
 | Empty the trash, which deletes an entry for good                                              | No     | No     | Yes   |
 | Change the settings, the people of the content manager and the API tokens. Download a backup. | No     | No     | Yes   |
 
@@ -35,15 +37,14 @@ An Author can change only the entries that the Author wrote. The sample entries 
 
 Nobody can do these things:
 
-- Publish at a set time. The content manager refuses a schedule.
-- Delete a legal page, or the only landing page.
+- Delete a legal page.
 - Add, change or remove a field of a collection in the content manager. An admin does it with an API token.
 - Import a site, or move the whole site to another host.
 
 ## 3. Publish a change
 
 1. Save the entry as a draft.
-1. For a post or a page, click **Preview**. For the other entries, **Preview** opens a page that does not exist. Check them on the site after the publish.
+1. For a post or a page, click **Preview**. The other entries have no **Preview**. Check them on the site after the publish.
 1. Click **Publish**.
 
 The site shows the change at the next page load. Check the page after each publish.
@@ -57,8 +58,6 @@ A deleted entry goes to the trash. To get it back, restore it from the trash.
 Some changes take a page off the site, or change each page.
 
 - **The people page.** It is one entry. If you unpublish or delete it, `/people` shows an error page.
-- **The landing page.** It is one entry, and only an admin changes it. If an admin unpublishes it, the home page shows an error page.
-- **The menus.** The **Header** menu and the **Footer** menu show on each page. If you delete one, that part of each page shows no links.
 - **The images.** Do not delete an image that an entry uses. The entry then shows a broken image.
 - **The slugs.** Do not change the slug of a published entry. The old address then stops.
 - **The categories.** If you delete a category, its posts show Blog.
@@ -112,19 +111,16 @@ The site leaves an entry out when the entry has one of these problems:
 - A link that does not start with `https://`, `mailto:`, `/` or `#`. Change `http://` to `https://`.
 - A callout, a quote or a call to action with no text.
 - A team photo that is not on GitHub. Use the address of the GitHub profile photo.
-- A heading, a list or a quote in the pitch text of the landing page. Use plain paragraphs.
 - More than one paragraph in the foundation text of the people page.
 - A slug with a character that is not a lowercase letter, a digit or a hyphen.
 
-A post or a page that the site leaves out does not show at all. A landing page or a people page that the site refuses shows an error page in its place.
+A post or a page that the site leaves out does not show at all. A people page that the site refuses shows an error page in its place.
 
 ## 9. The other pages
 
 - **FAQ.** Each entry has a question, an answer and an order. A lower order shows first. Entries with the same order show the oldest first. To show a new entry last, give it a high order, such as 99.
 - **FAQ on the home page.** Tick **Show on the home page** to show an entry there too.
 - **FAQ sources.** A source is a title and an `https://` link.
-- **Landing page.** In the text of a step, put `**` on each side of a bold word, for example `a **monthly** contribution`.
 - **People page.** Change its words. Do not make a second entry.
 - **Community team.** Each person has a name, an order and an optional bio, profile URL, username and photo URL. The order works as in the FAQ.
 - **Pages.** A page has a kind: a normal page or a legal page. Its address is `/` and then its slug. To remove a legal page, an admin changes its kind to a normal page first.
-- **Menus.** The **Header** menu and the **Footer** menu hold the links at the top and at the bottom of each page.

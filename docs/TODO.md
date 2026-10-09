@@ -23,12 +23,6 @@ Urgent when: a person who must not open the Cloudflare dashboard needs the panel
 
 ## Check an entry before it publishes
 
-A publish can succeed in the content manager while the site refuses the entry, for example on a source link that is not `https:`. The site then leaves the entry out, and only the log of `rupeefund-web` shows the reason (`docs/DEPLOY.md` section 11.4). A refused landing page takes the home page down. Extend `publishGate` in `apps/web/src/plugin/hooks.ts`. Make it check the entry against `apps/web/src/content/schema.ts` and refuse the publish with the schema message.
+A publish can succeed in the content manager while the site refuses the entry, for example on a source link that is not `https:`. The site then leaves the entry out, and only the log of `rupeefund-web` shows the reason (`docs/DEPLOY.md` section 11.4). A refused people page takes `/people` down. Extend `publishGate` in `apps/web/src/plugin/hooks.ts`. Make it check the entry against `apps/web/src/content/schema.ts` and refuse the publish with the schema message.
 
 Urgent when: a publish takes a page off the site.
-
-## Preview the entries without an address
-
-The landing page, the FAQ, the people page and the community team have no `urlPattern` in `apps/web/seed/seed.json`. So **Preview** opens `/<collection>/<id>`, a page that does not exist. Give each one the address of the page that shows it, for example `/` for the landing page.
-
-Urgent when: an editor needs a preview before a publish.

@@ -25,7 +25,7 @@ Examples:
 
 Change the look only for a defect, for a brand rule or for a request from a maintainer. The live site is the baseline. A finding from an audit, a review or a design panel is not a request. Report it to a maintainer.
 
-- **Layout.** Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it. The components in `src/components/site/` hold the layout of each page that the content manager fills.
+- **Layout.** Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it. The components in `src/components/site/` hold the layout of each page that the content manager fills. The home page takes its words from `src/content/home.mdx` and its layout from the section components in `src/components/home/`.
 - **Page types.** Each type of page has its own layout rule. Use the rule of the type when you add a page.
   - Home: its own grid. Only the home page uses it.
   - Signup form, `/subscribe`: the form and its aside, in two columns.

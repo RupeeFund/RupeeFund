@@ -24,7 +24,7 @@ pnpm db:reset   # make the local databases and fill them with sample content and
 pnpm dev        # serve the site and the content manager
 ```
 
-Run `pnpm db:reset` before your first `pnpm dev`. Without it, the home page shows the error `Publish the landing entry`.
+Run `pnpm db:reset` before your first `pnpm dev`. Without it, the local content database is empty.
 
 The terminal shows the address of the site, `http://localhost:8787`. When you save a file, the browser reloads. If the build fails, the terminal shows the error and the site stays as it was. The line `Typegen failed: 404 Not found` at the start is expected.
 
@@ -37,7 +37,7 @@ To sign in to the content manager, open `http://localhost:8787/_emdash/api/setup
 | `pnpm preview`   | `http://localhost:8789` | The site as the live build. Its GitHub sign-in needs the secret of the GitHub App. |
 
 - When pnpm tells you to run `pnpm install`, run it.
-- `pnpm db:reset` erases your local data. Run it again for a clean start.
+- `pnpm db:reset` erases your local data. Run it again for a clean start. Stop `pnpm dev` and `pnpm preview` first, or it refuses. It cannot see `pnpm dev:portless`, so stop that yourself.
 - To run more than one checkout at a time, run `pnpm dev:portless`. It starts both apps and gives each a name in place of a port. The first run after each boot asks for your password.
 
 ### In Codespaces or a dev container

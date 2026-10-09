@@ -216,7 +216,7 @@ If you lose a download after the stamp, read `at` from the log. Then follow `doc
 
 ## 11. The content manager
 
-EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the words of the pages (`docs/EDITING.md`). A page that is an app, such as `/subscribe`, stays in code.
+EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the words of the pages (`docs/EDITING.md`). A page that is an app, such as `/subscribe`, stays in code. The words of the home page are in `src/content/home.mdx`, and the section components in `src/components/home/` hold its layout. The links of the header and the footer are in `src/components/site/constants.ts`.
 
 `apps/web/astro.config.mjs` sets up EmDash: the content database, the media bucket, the look of the admin, the outer middleware (section 8) and the site plugin `src/plugin.ts` (section 11.4).
 
@@ -226,7 +226,7 @@ Each page reads the published entries when a request comes. `src/content/load.ts
 
 An entry that fails the check does not show. A list leaves it out, and the page of that entry answers 404. The log of the site Worker then gets `The site leaves out an entry:`, with the entry and the problem.
 
-A landing page or a people page that fails the check, or a read of the database that fails, shows `src/pages/500.astro`. A menu that fails to load shows empty.
+A people page that fails the check, or a read of the database that fails, shows `src/pages/500.astro`.
 
 ### 11.2 The public addresses
 
@@ -262,12 +262,11 @@ Two parts hold the rules. When you change one, read the other.
 
 `src/plugin.ts` registers the hooks in `src/plugin/hooks.ts`:
 
-- The landing page has one entry. Only an admin edits, publishes or unpublishes it.
 - Only an admin edits, publishes or unpublishes a legal page: a page with the kind `legal`.
 - Nobody deletes a legal page. To remove one, an admin changes its kind to `page` first.
 - The content manager refuses each schedule. An entry goes live only when a person publishes it.
 
-`src/middleware.ts` refuses a write by a person below Admin to the landing page and the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each change to the model from a browser session: the collections, the fields, the relations, the byline fields and the taxonomies. Only an API token changes the model (section 11.6).
+`src/middleware.ts` refuses a write by a person below Admin to the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each change to the model from a browser session: the collections, the fields, the relations, the byline fields and the taxonomies. Only an API token changes the model (section 11.6).
 
 A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. It runs the EmDash maintenance. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A run that starts late skips the clean-up until the next day. The clean-up:
 
@@ -281,7 +280,7 @@ A scheduled backup in the EmDash settings also runs then, if an admin turns it o
 
 ### 11.5 Preview
 
-The **Preview** button of a post or a page opens the entry at its address with a `_preview` token. EmDash then shows that draft. `docs/TODO.md` holds the plan for the other collections.
+The **Preview** button of a post or a page opens the entry at its address with a `_preview` token. EmDash then shows that draft. The other collections have no preview.
 
 `toolbar: false` turns off the EmDash edit toolbar. The site shows no **Edit** button, so a signed-in person cannot change a page by accident. An editor changes the content only in the content manager.
 
