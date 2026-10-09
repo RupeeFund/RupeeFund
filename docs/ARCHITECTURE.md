@@ -266,11 +266,19 @@ Two parts hold the rules. When you change one, read the other.
 - The landing page has one entry. Only an admin edits, publishes or unpublishes it.
 - Only an admin edits, publishes or unpublishes a legal page: a page with the kind `legal`.
 - Nobody deletes a legal page. To remove one, an admin changes its kind to `page` first.
-- The content manager refuses each schedule, because the Worker has no cron trigger. An entry goes live only when a person publishes it.
+- The content manager refuses each schedule. An entry goes live only when a person publishes it. One exception: an entry that an admin imports with a publish time. The daily run publishes it, but not a landing page or a legal page.
 
 `src/middleware.ts` refuses a write by a person below Admin to the landing page and the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each schema change from a browser session. Only an API token changes the schema (section 11.6).
 
-The Worker has no cron trigger, so the EmDash cleanup does not run. Expired tokens stay in D1, and an upload that did not finish stays in R2. A scheduled backup in the EmDash settings does not run.
+A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. It runs the EmDash maintenance. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A run that starts late skips the clean-up until the next day. The clean-up:
+
+- removes expired sign-in challenges and tokens
+- removes uploads that did not finish, from D1 and R2
+- keeps the newest 10,000 rows of the 404 log
+- keeps the newest 50 revisions of an entry and deletes the older revisions for good
+- removes stale media-usage rows and old import files in R2
+
+A scheduled backup in the EmDash settings runs then too, if you turn it on. EmDash suggests a run each minute. The site runs once a day because it refuses schedules. `emdash doctor` reports that `src/worker.ts` does not export the EmDash `scheduled()` handler. This is expected.
 
 ### 11.5 Preview
 

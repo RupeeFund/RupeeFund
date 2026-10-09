@@ -40,6 +40,7 @@
       "simple": { "limit": 30, "period": 60 },
     },
   ],
+  "triggers": { "crons": ["0 0 * * *"] },
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1,
