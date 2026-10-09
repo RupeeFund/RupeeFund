@@ -116,7 +116,8 @@ function season(data: Raw): { name: unknown; year: unknown } | undefined {
     typeof data.season_year === "number"
       ? data.season_year
       : typeof published === "string"
-        ? Number(published.slice(0, 4))
+        ? Number(published.slice(0, 4)) -
+          (data.season === "Winter" && published.slice(5, 7) < "03" ? 1 : 0)
         : undefined;
   return { name: data.season, year };
 }

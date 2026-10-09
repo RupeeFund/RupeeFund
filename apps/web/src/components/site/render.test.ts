@@ -132,6 +132,13 @@ describe("the blog components", () => {
     expect(html).not.toContain("Updated");
   });
 
+  it("list three or more authors with commas and a final and", async () => {
+    const html = await render(PostArticle, {
+      post: { ...post, authors: ["Asha Rao", "Ravi Iyer", "Meera Das"] },
+    });
+    expect(html).toContain("Asha Rao, Ravi Iyer and Meera Das");
+  });
+
   it("compare the publish and update days in India time", async () => {
     const sameDay = await render(PostArticle, {
       post: {

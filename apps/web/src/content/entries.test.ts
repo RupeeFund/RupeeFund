@@ -95,6 +95,17 @@ describe("a post", () => {
     Object.assign(entry.data, { season: "Winter" });
     expect(toPost(entry).season).toEqual({ name: "Winter", year: 2026 });
   });
+
+  it("gives a winter post the year that the winter starts in, December", () => {
+    const year = (publishedAt: string, name = "Winter") => {
+      const entry = hello();
+      Object.assign(entry.data, { season: name, publishedAt });
+      return toPost(entry).season?.year;
+    };
+    expect(year("2026-12-20T09:00:00.000Z")).toBe(2026);
+    expect(year("2027-02-10T09:00:00.000Z")).toBe(2026);
+    expect(year("2027-03-01T09:00:00.000Z", "Summer")).toBe(2027);
+  });
 });
 
 describe("a list of posts", () => {

@@ -50,6 +50,13 @@ describe("seoForPath", () => {
 });
 
 describe("seoForPath with a route", () => {
+  it("gives an error page no canonical, so a missing address never names itself", () => {
+    expect(seoForPath("/no-such-page", pageRoute("/404", "Page not found")).canonical).toBeNull();
+    expect(
+      seoForPath("/blog/broken", pageRoute("/500", "Something went wrong")).canonical,
+    ).toBeNull();
+  });
+
   it("uses the given route for a page that the table does not list", () => {
     const route = {
       path: "/blog/hello",

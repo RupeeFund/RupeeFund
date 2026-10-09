@@ -105,6 +105,8 @@ const ROUTE_SEO: readonly RouteSeo[] = [
   },
 ];
 
+const ERROR_PATHS: readonly string[] = ["/404", "/500"];
+
 export function normalizePath(path: string): string {
   let normalized = path.replace(/\.html$/, "").replace(/\/index$/, "");
   if (normalized.length > 1) normalized = normalized.replace(/\/$/, "");
@@ -114,7 +116,7 @@ export function normalizePath(path: string): string {
 export function seoForPath(
   path: string,
   given?: RouteSeo,
-): Required<RouteSeo> & { readonly canonical: string } {
+): Required<RouteSeo> & { readonly canonical: string | null } {
   const normalized = normalizePath(path);
   const route = given ?? ROUTE_SEO.find((entry) => entry.path === normalized);
   if (route === undefined) {
@@ -126,7 +128,11 @@ export function seoForPath(
     ...route,
     ogTitle: route.ogTitle ?? route.title,
     ogDescription: route.ogDescription ?? route.description,
-    canonical: normalized === "/" ? SITE_URL : `${SITE_URL}${normalized}`,
+    canonical: ERROR_PATHS.includes(route.path)
+      ? null
+      : normalized === "/"
+        ? SITE_URL
+        : `${SITE_URL}${normalized}`,
   };
 }
 

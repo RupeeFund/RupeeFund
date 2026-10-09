@@ -29,4 +29,8 @@ describe("Home page (/)", () => {
   it("sets the canonical URL", () => {
     expect(html).toContain('rel="canonical" href="https://rupeefund.org"');
   });
+
+  it("dates the copyright line with the current year", () => {
+    expect(html).toContain(`© ${new Date().getFullYear()} The`);
+  });
 });
