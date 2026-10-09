@@ -57,6 +57,7 @@ describe("Home page (/)", () => {
   });
 
   it("dates the copyright line with the current year", () => {
-    expect(html).toContain(`© ${new Date().getFullYear()} The`);
+    const year = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", year: "numeric" });
+    expect(html).toContain(`© ${year.format()} The`);
   });
 });

@@ -17,6 +17,11 @@ const SOCIALS: readonly Social[] = [
   { slug: "youtube", name: "YouTube", href: "https://www.youtube.com/c/fossunited" },
   { slug: "telegram", name: "Telegram", href: "https://t.me/fossunited" },
 ];
+
+const YEAR = new Intl.DateTimeFormat("en-IN", {
+  timeZone: "Asia/Kolkata",
+  year: "numeric",
+}).format();
 ---
 
 <footer class="bg-ink text-paper [--focus:var(--color-white)] pt-16 pb-10">
@@ -86,7 +91,7 @@ const SOCIALS: readonly Social[] = [
         <a href="/refunds" class="foot-link">Refunds</a>
         <a href="/code-of-conduct" class="foot-link">Code of conduct</a>
       </div>
-      <p>© {new Date().getFullYear()} The&nbsp;Rupee&nbsp;Fund, by the FOSS United community.</p>
+      <p>© {YEAR} The&nbsp;Rupee&nbsp;Fund, by the FOSS United community.</p>
     </div>
   </div>
 </footer>
