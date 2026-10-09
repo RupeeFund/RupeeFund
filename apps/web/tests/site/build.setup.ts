@@ -12,7 +12,6 @@ import {
   ALLOWED_WRITES,
   CONTENT_MANAGER,
   DENIED,
-  EDITOR_SESSION,
   GATED_MEDIA,
   ANONYMOUS_SCHEMA_WRITE,
   MEDIA_ROUTES,
@@ -38,7 +37,7 @@ import {
 const TEST_SITEKEY = "1x00000000000000000000AA";
 const STATE = "../../.wrangler/site-test";
 const D1_FILES = join(STATE, "v3", "d1", "miniflare-D1DatabaseObject");
-const BROWSERS = [SESSION, EDITOR_SESSION];
+const BROWSERS = [SESSION];
 const AUTH_SECRET = randomBytes(32).toString("base64url");
 const identities = new Map<string, string>();
 
@@ -139,27 +138,20 @@ async function call(base: string, { as, method, path }: Call): Promise<Answer> {
   };
 }
 
-const fieldOf = (ref: string): string =>
-  JSON.parse(ref.replaceAll("&quot;", '"').replaceAll("&amp;", "&")).field ?? "(entry)";
-
-const SESSION_OF = { admin: SESSION, editor: EDITOR_SESSION } as const;
-
-async function visit(base: string, { path, as, editMode }: Visit): Promise<Seen> {
-  const cookies = [
-    ...(as === "anonymous" ? [] : signedIn(base, SESSION_OF[as])),
-    ...(editMode ? ["emdash-edit-mode=true"] : []),
-  ];
+async function visit(base: string, { path, editMode }: Visit): Promise<Seen> {
+  const cookies = [...signedIn(base, SESSION), ...(editMode ? ["emdash-edit-mode=true"] : [])];
   const res = await fetch(`${base}${path}`, {
     redirect: "manual",
-    headers: cookies.length ? { cookie: cookies.join("; ") } : {},
+    headers: { cookie: cookies.join("; ") },
   });
   const html = await res.text();
   return {
     status: res.status,
     location: res.headers.get("location"),
-    cache: res.headers.get("cache-control"),
+    setCookie: res.headers.get("set-cookie"),
+    pill: html.includes("<!-- EmDash Toolbar Bootstrap -->"),
     toolbar: html.includes('id="emdash-toolbar"'),
-    marks: [...html.matchAll(/data-emdash-ref="([^"]+)"/g)].map(([, ref]) => fieldOf(ref!)),
+    marks: html.match(/data-emdash-ref=/g)?.length ?? 0,
   };
 }
 

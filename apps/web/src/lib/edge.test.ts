@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { isDenied, requestPath, signInTarget, SITE_CSP, withHeaders } from "./edge.ts";
+import {
+  editModeReset,
+  isDenied,
+  requestPath,
+  signInTarget,
+  SITE_CSP,
+  withHeaders,
+} from "./edge.ts";
 
 describe("requestPath", () => {
   it.each([
@@ -109,6 +116,25 @@ describe("signInTarget", () => {
     ["GET", "/blog", html],
   ])("leaves %s %s (%s) to the content manager", (method, path, accept) => {
     expect(signInTarget(method, path, accept)).toBeNull();
+  });
+});
+
+describe("editModeReset", () => {
+  const url = new URL("https://rupeefund.org/faq?page=2");
+
+  it.each(["GET", "HEAD"])("sends a %s with an old edit cookie back without it", (method) => {
+    const reset = editModeReset(method, url, true);
+    expect(reset?.status).toBe(302);
+    expect(reset?.headers.get("location")).toBe("/faq?page=2");
+    expect(reset?.headers.get("set-cookie")).toBe("emdash-edit-mode=; Path=/; Max-Age=0");
+    expect(reset?.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it.each([
+    ["GET", false],
+    ["POST", true],
+  ])("leaves a %s with edit cookie %s alone", (method, editCookie) => {
+    expect(editModeReset(method, url, editCookie)).toBeNull();
   });
 });
 

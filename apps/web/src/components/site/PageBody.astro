@@ -1,23 +1,16 @@
 ---
-import type { Editable } from "../../content/entries.ts";
 import type { Page } from "../../content/schema.ts";
 import Prose from "./Prose.astro";
 
 interface Props {
-  page: Editable<Page>;
+  page: Page;
 }
 
-const { title, effectiveDate, body, edit } = Astro.props.page;
+const { title, effectiveDate, body } = Astro.props.page;
 ---
 
 <div class="reading">
-  <h1 class="page-title text-ink mb-4" {...edit?.title}>{title}</h1>
-  {
-    effectiveDate && (
-      <p class="text-sm text-ink-2 mb-6">
-        Effective date: <span {...edit?.effective_date}>{effectiveDate}</span>.
-      </p>
-    )
-  }
+  <h1 class="page-title text-ink mb-4">{title}</h1>
+  {effectiveDate && <p class="text-sm text-ink-2 mb-6">Effective date: {effectiveDate}.</p>}
   <div class="prose"><Prose blocks={body} /></div>
 </div>

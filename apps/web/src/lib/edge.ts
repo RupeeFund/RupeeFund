@@ -67,6 +67,20 @@ export function isDenied(path: string, dev: boolean, admin = false): boolean {
   return SET_UP_TREES.some((tree) => inTree(path, tree));
 }
 
+export const EDIT_MODE_COOKIE = "emdash-edit-mode";
+
+export function editModeReset(method: string, url: URL, editCookie: boolean): Response | null {
+  if (!editCookie || (method !== "GET" && method !== "HEAD")) return null;
+  return new Response(null, {
+    status: 302,
+    headers: {
+      location: `${url.pathname}${url.search}`,
+      "set-cookie": `${EDIT_MODE_COOKIE}=; Path=/; Max-Age=0`,
+      "cache-control": "no-store",
+    },
+  });
+}
+
 export function signInTarget(method: string, path: string, accept: string): string | null {
   if (method !== "GET" || !accept.includes("text/html") || !inTree(path, "/_emdash/admin"))
     return null;

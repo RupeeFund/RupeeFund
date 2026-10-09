@@ -220,7 +220,7 @@ If you lose a download after the stamp, read `at` from the log. Then follow `doc
 
 EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the landing page, the blog, the pages, the FAQ, the people page, the community team and the two menus. A page that is an app, such as `/subscribe`, stays in code.
 
-`apps/web/astro.config.mjs` sets up EmDash: the content database, the media bucket, the look of the admin, the edit toolbar (section 11.5), the outer middleware (section 8) and the site plugin `src/plugin.ts` (section 11.4).
+`apps/web/astro.config.mjs` sets up EmDash: the content database, the media bucket, the look of the admin, the outer middleware (section 8) and the site plugin `src/plugin.ts` (section 11.4).
 
 ### 11.1 How a page gets its content
 
@@ -271,13 +271,13 @@ Two parts hold the rules. When you change one, read the other.
 
 The Worker has no cron trigger, so the EmDash cleanup does not run. Expired tokens stay in D1, and an upload that did not finish stays in R2. A scheduled backup in the EmDash settings does not run.
 
-### 11.5 Preview and edit in place
+### 11.5 Preview
 
 The **Preview** button of a post or a page opens the entry at its address with a `_preview` token. EmDash then shows that draft. The other collections have no address of their own, so their **Preview** opens a page that does not exist.
 
-`toolbar: "client"` adds a small script to each page. The script shows an **Edit** button to a browser that signed in to the content manager. The button turns on the edit mode. The page then shows the drafts, and an editor changes a short field in place. In the edit mode, an answer carries `Cache-Control: private, no-store`. A visitor gets the same page with no button. EmDash sends a visitor who adds `?_edit=1` to the page without it. A visitor who sets the edit cookie gets the published page.
+`toolbar: false` turns off the EmDash edit toolbar. The site shows no **Edit** button, so a signed-in person cannot change a page by accident. An editor changes the content only in the content manager.
 
-The templates mark the fields with `entry.edit`: `PostArticle.astro`, `PageBody.astro` and `HomeContent.astro`. `src/pages/index.astro` and `src/pages/[slug].astro` remove the marks for a person below Admin on the landing page and on a legal page, because that person cannot save them.
+EmDash still shows the drafts to a signed-in person whose browser has the old edit cookie `emdash-edit-mode`. So `src/outer.ts` sends each `GET` with that cookie back to the same address, and removes the cookie.
 
 ### 11.6 The content model
 

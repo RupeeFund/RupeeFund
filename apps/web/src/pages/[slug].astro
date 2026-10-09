@@ -3,19 +3,17 @@ import NotFound from "../components/NotFound.astro";
 import PageBody from "../components/site/PageBody.astro";
 import { page } from "../content/load.ts";
 import Base from "../layouts/Base.astro";
-import { ADMIN_ROLE } from "../lib/protect.ts";
 import { pageRoute } from "../lib/seo.ts";
 
 const entry = await page(Astro.params.slug ?? "");
 if (!entry) Astro.response.status = 404;
-const editable = entry?.kind !== "legal" || (Astro.locals.user?.role ?? 0) >= ADMIN_ROLE;
 ---
 
 {
   entry ? (
     <Base route={pageRoute(`/${entry.slug}`, entry.title)}>
       <div class="wrap section-y">
-        <PageBody page={editable ? entry : { ...entry, edit: undefined }} />
+        <PageBody page={entry} />
       </div>
     </Base>
   ) : (

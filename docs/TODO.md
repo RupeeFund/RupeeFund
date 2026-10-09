@@ -32,9 +32,3 @@ Urgent when: a publish takes a page off the site.
 The landing page, the FAQ, the people page and the community team have no `urlPattern` in `apps/web/seed/seed.json`. So **Preview** opens `/<collection>/<id>`, a page that does not exist. Give each one the address of the page that shows it, for example `/` for the landing page.
 
 Urgent when: an editor needs a preview before a publish.
-
-## Keep drafts out of the feed and the sitemap
-
-In the edit mode, EmDash puts the draft text over each published entry. `/blog/rss.xml` and `/sitemap.xml` then show that draft text to the editor.
-
-Urgent when: an editor shares a feed or a sitemap from a browser in the edit mode.

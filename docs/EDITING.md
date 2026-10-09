@@ -15,22 +15,16 @@ Open [rupeefund.org/admin](https://rupeefund.org/admin) and sign in with GitHub.
 ## 2. Publish a change
 
 1. Save the entry as a draft.
-1. For a post or a page, click **Preview**. For the other entries, **Preview** opens a page that does not exist, so use the edit mode of section 3.
+1. For a post or a page, click **Preview**. For the other entries, **Preview** opens a page that does not exist. Check them on the site after the publish.
 1. Click **Publish**. The content manager does not publish at a set time, and it refuses a schedule.
 
 The site shows the change at the next page load.
 
-If the site refuses an entry, it leaves the entry out. A refused post or page does not show at all. A refused landing page or people page shows an error page in its place. So check the page after each publish. Section 6 lists what the site refuses. If you cannot find the problem, tell a maintainer.
+If the site refuses an entry, it leaves the entry out. A refused post or page does not show at all. A refused landing page or people page shows an error page in its place. So check the page after each publish. Section 5 lists what the site refuses. If you cannot find the problem, tell a maintainer.
 
 To undo a change, open the entry, restore an earlier revision and publish it.
 
-## 3. Edit on the page
-
-When you are signed in, each page of the site shows an **Edit** button. Click it to turn on the edit mode. The page then shows the drafts. Click a title or a short text, and change it in place. Click an image to select a different one. Change the body and the other fields in the content manager.
-
-An editor sees no fields to edit on the landing page and on a legal page, because only an admin can change them. Ask an admin for a change.
-
-## 4. Write a blog post
+## 3. Write a blog post
 
 | Field       | What it does                                                                                                                                         |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -40,7 +34,7 @@ An editor sees no fields to edit on the landing page and on a legal page, becaus
 | Season      | Optional. A label in the colour of the season.                                                                                                       |
 | Season year | The year of the season. If you leave it empty, the site uses the year of the publish date.                                                           |
 | Cover image | Optional. It shows on the blog list and across the top of the post. Give it alt text that tells what the image shows. Put the credit in the caption. |
-| Body        | The text of the post. Section 5 tells what it can hold.                                                                                              |
+| Body        | The text of the post. Section 4 tells what it can hold.                                                                                              |
 
 Add each author as a byline. A post with no byline shows "The Rupee Fund volunteers".
 
@@ -48,7 +42,7 @@ The post shows its publish date and its reading time. If you edit a post on a la
 
 The address of the post is `/blog/` and then its slug. Give each post a different slug. Do not change the slug after you publish, because the old address then stops.
 
-## 5. What the body can hold
+## 4. What the body can hold
 
 - Paragraphs. Make each paragraph one idea.
 - Headings. Use Heading 2 for a section, and Heading 3 to Heading 6 in a section. The title of the post is the only Heading 1, so the site shows a Heading 1 as a Heading 2.
@@ -59,7 +53,7 @@ The address of the post is `/blog/` and then its slug. Give each post a differen
 - Links.
 - A callout, a quote with the name of the person who said it, and a call to action. Type `/` in the body to add one.
 
-## 6. What the site refuses
+## 5. What the site refuses
 
 The site leaves an entry out when the entry has one of these problems:
 
@@ -72,7 +66,7 @@ The site leaves an entry out when the entry has one of these problems:
 - More than one paragraph in the foundation text of the people page.
 - A slug with a character that is not a lowercase letter, a digit or a hyphen.
 
-## 7. The other pages
+## 6. The other pages
 
 - **FAQ.** Each entry has a question, an answer and an order. A lower order shows first. Entries with the same order show the oldest first, so give a new entry a high order, such as 99, to show it last. Tick **Show on the home page** to show the entry there too. A source is a title and an `https://` link.
 - **Landing page** and **People page.** Each is one entry. Change its words. Do not make a second entry. Only an admin can change the landing page. To change it, ask an admin. In the text of a step, put `**` on each side of a bold word, for example `a **monthly** contribution`.

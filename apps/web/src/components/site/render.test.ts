@@ -1,11 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
-import { createEditable, createNoop } from "emdash";
 import { describe, expect, it } from "vitest";
-import fixture from "../../content/entries.fixture.json";
-import { toLanding } from "../../content/entries.ts";
-import { SEASONS } from "../../lib/launch.ts";
 import FaqList from "./FaqList.astro";
-import HomeContent from "./HomeContent.astro";
 import PageBody from "./PageBody.astro";
 import PostArticle from "./PostArticle.astro";
 import PostList from "./PostList.astro";
@@ -71,7 +66,7 @@ describe("the shared components", () => {
       },
     });
     expect(html).toContain("Terms");
-    expect(html).toMatch(/Effective date: <span[^>]*>1 October 2026<\/span>\./);
+    expect(html).toContain("Effective date: 1 October 2026.");
     expect(html).toContain("<p>Rule.</p>");
   });
 
@@ -181,80 +176,5 @@ describe("the blog components", () => {
 
   it("show each post's lead image in the list", async () => {
     expect(await render(PostList, { posts: [post] })).toContain('src="/media/01ABC.png"');
-  });
-});
-
-describe("the live-edit annotations", () => {
-  const post = {
-    slug: "hello",
-    title: "Hello",
-    excerpt: "First post.",
-    image: { src: "/media/01ABC.png", alt: "A red box", width: 8, height: 6 },
-    body: para("Body."),
-    publishedAt: "2026-10-02T17:40:48.365Z",
-    category: "Blog",
-    authors: [],
-  };
-  const legal = {
-    slug: "terms",
-    title: "Terms",
-    kind: "legal",
-    effectiveDate: "1 October 2026",
-    body: para("Rule."),
-  };
-  const home = {
-    home: toLanding(fixture.landing[0]!.data),
-    faq: [],
-    seasons: SEASONS,
-    tagline: "Tagline",
-    ctaLabel: "Subscribe",
-    contactAddress: "team@example.org",
-  };
-
-  const fields = (html: string) =>
-    [...html.matchAll(/data-emdash-ref="([^"]+)"/g)].map(
-      ([, ref]) => JSON.parse(ref!.replaceAll("&quot;", '"')).field ?? "(entry)",
-    );
-
-  it("mark the post, its title, its lede and its cover image", async () => {
-    const edit = createEditable("posts", "01POST", { status: "published" });
-    expect(fields(await render(PostArticle, { post: { ...post, edit } }))).toEqual([
-      "(entry)",
-      "title",
-      "excerpt",
-      "featured_image",
-    ]);
-  });
-
-  it("mark the page title and the effective date", async () => {
-    const edit = createEditable("pages", "01PAGE", { status: "published" });
-    expect(fields(await render(PageBody, { page: { ...legal, edit } }))).toEqual([
-      "title",
-      "effective_date",
-    ]);
-  });
-
-  it("mark each landing field that the home page shows as stored", async () => {
-    const edit = createEditable("landing", "01LAND", { status: "published" });
-    expect(fields(await render(HomeContent, { ...home, home: { ...home.home, edit } }))).toEqual([
-      "hero_lede",
-      "pitch_title",
-      "pitch_source_title",
-      "steps_title",
-      "steps",
-      "seasons_title",
-      "why",
-      "faq_title",
-    ]);
-  });
-
-  it("mark nothing outside edit mode", async () => {
-    const edit = createNoop();
-    const html = [
-      await render(PostArticle, { post: { ...post, edit } }),
-      await render(PageBody, { page: { ...legal, edit } }),
-      await render(HomeContent, { ...home, home: { ...home.home, edit } }),
-    ].join("");
-    expect(html).not.toContain("data-emdash-ref");
   });
 });

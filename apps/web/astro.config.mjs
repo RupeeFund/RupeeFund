@@ -46,7 +46,7 @@ export default defineConfig({
         favicon: "/favicon.svg",
         footerLabel: SITE_NAME,
       },
-      toolbar: "client",
+      toolbar: false,
       auth: {
         type: "github-team",
         entrypoint: "@rupeefund/web/auth",

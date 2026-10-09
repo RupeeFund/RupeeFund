@@ -290,7 +290,7 @@ If the site or the content manager fails, go back (section 11.4) to the time you
 
 - **Wrong words on the site.** Restore the earlier revision of the entry in the editor, and publish it. The site shows it at the next page load.
 
-- **An entry that does not show.** The site refused the entry and left it out (`docs/ARCHITECTURE.md` section 11.1). Open `rupeefund-web` in **Workers & Pages**. Go to **Observability**. Search for `The site leaves out an entry`. The line gives the entry and the problem, for example `posts/hello`. Correct the entry. Then publish it again. `docs/EDITING.md` section 6 lists what the site refuses.
+- **An entry that does not show.** The site refused the entry and left it out (`docs/ARCHITECTURE.md` section 11.1). Open `rupeefund-web` in **Workers & Pages**. Go to **Observability**. Search for `The site leaves out an entry`. The line gives the entry and the problem, for example `posts/hello`. Correct the entry. Then publish it again. `docs/EDITING.md` section 5 lists what the site refuses.
 
 - **A broken site or content manager.** Run `pnpm wrangler rollback`. If the bad version changed the content database, also restore the database to the time before the deploy:
 

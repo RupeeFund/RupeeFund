@@ -1,5 +1,4 @@
 ---
-import type { Editable } from "../../content/entries.ts";
 import type { Post } from "../../content/schema.ts";
 import { SUBSCRIBE_CTA } from "./constants.ts";
 import { dayKey, longDate } from "./dates.ts";
@@ -9,7 +8,7 @@ import Prose from "./Prose.astro";
 import { readingMinutes } from "./reading.ts";
 
 interface Props {
-  post: Editable<Post>;
+  post: Post;
   more?: Post[];
 }
 
@@ -19,13 +18,13 @@ const updated =
   post.updatedAt && dayKey(post.updatedAt) > dayKey(post.publishedAt) ? post.updatedAt : undefined;
 ---
 
-<article class="reading" {...post.edit}>
+<article class="reading">
   <p class="text-sm mb-8">
     <a href="/blog" class="inline-link">Blog</a>
   </p>
   <p class="mb-5"><PostLabel post={post} /></p>
-  <h1 class="page-title text-ink" {...post.edit?.title}>{post.title}</h1>
-  <p class="lede mt-5 text-ink-2 text-pretty" {...post.edit?.excerpt}>
+  <h1 class="page-title text-ink">{post.title}</h1>
+  <p class="lede mt-5 text-ink-2 text-pretty">
     {post.excerpt}
   </p>
   <div class="mt-6 mb-8 flex items-center gap-3 border-y border-ink/15 py-3.5">
@@ -63,7 +62,6 @@ const updated =
           width={post.image.width}
           height={post.image.height}
           class="post-lead"
-          {...post.edit?.featured_image}
         />
         {post.image.caption && (
           <figcaption class="mt-2.5 text-sm text-ink-3">{post.image.caption}</figcaption>

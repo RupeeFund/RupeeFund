@@ -96,14 +96,6 @@ describe("a single entry", () => {
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining("hello"));
   });
 
-  it("keeps the edit annotations of a post and a page", async () => {
-    const edit = { title: { "data-emdash-ref": "{}" } };
-    single.mockResolvedValueOnce(found({ ...fresh().posts[0], edit }));
-    single.mockResolvedValueOnce(found({ ...fresh().pages[0], edit }));
-    expect((await post("hello"))?.edit).toBe(edit);
-    expect((await page("code-of-conduct"))?.edit).toBe(edit);
-  });
-
   it("fails when EmDash cannot read the entry", async () => {
     single.mockResolvedValueOnce({
       entry: fresh().pages[0],
@@ -120,12 +112,6 @@ describe("a singleton", () => {
     expect(single).toHaveBeenCalledWith("landing", "landing");
     expect(collection).not.toHaveBeenCalled();
     expect(console.warn).not.toHaveBeenCalled();
-  });
-
-  it("keeps the edit annotations of the landing entry", async () => {
-    const edit = { hero_lede: { "data-emdash-ref": "{}" } };
-    single.mockResolvedValueOnce(found({ ...fresh().landing[0], edit }));
-    expect((await landingContent()).edit).toBe(edit);
   });
 
   it("uses the first published entry, and logs it, when no entry has its slug", async () => {

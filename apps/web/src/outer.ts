@@ -1,7 +1,15 @@
 import { defineMiddleware } from "astro:middleware";
 import { env } from "cloudflare:workers";
 import { SESSION_COOKIE, authRoute, identityOf, readCookie, signOutCookie } from "@rupeefund/auth";
-import { isDenied, notFound, requestPath, signInTarget, withHeaders } from "./lib/edge.ts";
+import {
+  EDIT_MODE_COOKIE,
+  editModeReset,
+  isDenied,
+  notFound,
+  requestPath,
+  signInTarget,
+  withHeaders,
+} from "./lib/edge.ts";
 import { ADMIN_ROLE } from "./lib/protect.ts";
 
 const LOGOUT = "/_emdash/api/auth/logout";
@@ -35,6 +43,9 @@ export const onRequest = defineMiddleware(async ({ url, request, session }, next
     if (target !== null) return withHeaders(path, redirect(target));
   }
   if (isDenied(path, dev, identity?.role === ADMIN_ROLE)) return withHeaders(path, notFound());
+  const editCookie = readCookie(request, EDIT_MODE_COOKIE) !== undefined;
+  const reset = editModeReset(request.method, url, editCookie);
+  if (reset !== null) return withHeaders(path, reset);
 
   const response = withHeaders(path, await next());
   if (path === LOGOUT && request.method === "POST") {
