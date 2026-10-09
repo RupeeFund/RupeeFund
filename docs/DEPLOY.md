@@ -181,7 +181,7 @@ Before the move:
        https://rupeefund.org/_emdash/api/search/enable
    done
    CLOUDFLARE_ACCOUNT_ID=<old> pnpm wrangler d1 export rupeefund-waitlist --remote --no-schema --table waitlist --output /tmp/waitlist-rows.sql
-   CLOUDFLARE_ACCOUNT_ID=<old> pnpm wrangler d1 export rupeefund-content --remote --output /tmp/content.sql
+   CLOUDFLARE_ACCOUNT_ID=<old> pnpm wrangler d1 export rupeefund-content-db --remote --output /tmp/content.sql
    ```
 
    `EMDASH_TOKEN` is an API token with the **Admin** scope (section 11.5). The loop names each collection that has `search` in `supports` in `apps/web/seed/seed.json`. Compare the two lists before you run it.
@@ -196,7 +196,7 @@ Before the move:
 
    ```sh
    CLOUDFLARE_ACCOUNT_ID=<new> pnpm wrangler d1 execute rupeefund-waitlist --remote --file /tmp/waitlist-rows.sql
-   CLOUDFLARE_ACCOUNT_ID=<new> pnpm wrangler d1 execute rupeefund-content --remote --file /tmp/content.sql
+   CLOUDFLARE_ACCOUNT_ID=<new> pnpm wrangler d1 execute rupeefund-content-db --remote --file /tmp/content.sql
    ```
 
    The content export holds the tables and the people of the content manager, so the live site needs no setup wizard.
@@ -259,7 +259,7 @@ The Worker refuses every request (`docs/ARCHITECTURE.md` section 10.1). This is 
 The live account has the resources. Make them again only for a move to a new account (section 9). Turn on R2 for the account in the dashboard, under **R2 Object Storage**. Then make the resources:
 
 ```sh
-pnpm wrangler d1 create rupeefund-content --location apac
+pnpm wrangler d1 create rupeefund-content-db --location apac
 pnpm wrangler r2 bucket create rupeefund-media --location apac
 ```
 
@@ -295,7 +295,7 @@ If the site or the content manager fails, go back (section 11.4) to the time you
 - **A broken site or content manager.** Run `pnpm wrangler rollback`. If the bad version changed the content database, also restore the database to the time before the deploy:
 
   ```sh
-  pnpm wrangler d1 time-travel restore rupeefund-content --timestamp=<time>
+  pnpm wrangler d1 time-travel restore rupeefund-content-db --timestamp=<time>
   ```
 
   Time Travel keeps 30 days on the Workers Paid plan ([Cloudflare documentation](https://developers.cloudflare.com/d1/reference/time-travel/)). The restore removes each edit after that time.

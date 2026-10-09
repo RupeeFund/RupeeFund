@@ -173,7 +173,7 @@ describe("the project ships exactly one environment", () => {
         database_name: "rupeefund-waitlist",
         migrations_dir: "../../packages/db/migrations",
       },
-      { binding: "DB", database_name: "rupeefund-content", migrations_dir: undefined },
+      { binding: "DB", database_name: "rupeefund-content-db", migrations_dir: undefined },
     ]);
   });
 });
