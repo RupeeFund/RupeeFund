@@ -4,45 +4,86 @@ The content manager at [rupeefund.org/admin](https://rupeefund.org/admin) holds 
 
 ## 1. Sign in
 
-Open [rupeefund.org/admin](https://rupeefund.org/admin) and sign in with GitHub. Your GitHub account must be in a content team of the `RupeeFund` organization. The team gives your role. To join a team or to change your role, ask an admin.
+1. Ask an admin to add your GitHub account to a content team of the `RupeeFund` organization. The team gives your role.
+1. If GitHub sends you an invitation to the organization, accept it. Until you accept it, the team does not count.
+1. Open [rupeefund.org/admin](https://rupeefund.org/admin). The site sends you to GitHub to sign in. The first time, GitHub asks you to authorize the app of The Rupee Fund. Authorize it.
 
-| Role   | What the role can do                                                           |
-| ------ | ------------------------------------------------------------------------------ |
-| Author | Write entries. Edit, publish and delete your own entries.                      |
-| Editor | Edit, publish and delete each entry, except the landing page and a legal page. |
-| Admin  | All of the above. Edit the landing page and the legal pages.                   |
+| GitHub team   | Role   |
+| ------------- | ------ |
+| `cms-authors` | Author |
+| `cms-editors` | Editor |
+| `cms-admins`  | Admin  |
 
-## 2. Publish a change
+If you are in two teams, you get the higher role. Your GitHub account must have a verified primary email address.
+
+You stay signed in for 8 hours. Then you sign in again. A change to your team takes effect at your next sign-in. To change your role, ask an admin.
+
+## 2. What each role can do
+
+| Action                                                                                        | Author | Editor | Admin |
+| --------------------------------------------------------------------------------------------- | ------ | ------ | ----- |
+| Write a new entry and upload an image                                                         | Yes    | Yes    | Yes   |
+| Edit, publish, unpublish and delete the entries that you wrote                                | Yes    | Yes    | Yes   |
+| Edit, publish, unpublish and delete the other entries, and their images                       | No     | Yes    | Yes   |
+| Change the author or the publish date of an entry                                             | No     | Yes    | Yes   |
+| Change the menus, the categories and the bylines                                              | No     | Yes    | Yes   |
+| Edit, publish and unpublish the landing page and the legal pages                              | No     | No     | Yes   |
+| Empty the trash, which deletes an entry for good                                              | No     | No     | Yes   |
+| Change the settings, the people of the content manager and the API tokens. Download a backup. | No     | No     | Yes   |
+
+An Author can change only the entries that the Author wrote. The sample entries and the entries of other people are not yours. To change one of them, ask an Editor.
+
+Nobody can do these things:
+
+- Publish at a set time. The content manager refuses a schedule.
+- Delete a legal page, or the only landing page.
+- Add, change or remove a field of a collection in the content manager. An admin does it with an API token.
+- Import a site, or move the whole site to another host.
+
+## 3. Publish a change
 
 1. Save the entry as a draft.
 1. For a post or a page, click **Preview**. For the other entries, **Preview** opens a page that does not exist. Check them on the site after the publish.
-1. Click **Publish**. The content manager does not publish at a set time, and it refuses a schedule.
+1. Click **Publish**.
 
-The site shows the change at the next page load.
+The site shows the change at the next page load. Check the page after each publish.
 
-If the site refuses an entry, it leaves the entry out. A refused post or page does not show at all. A refused landing page or people page shows an error page in its place. So check the page after each publish. Section 5 lists what the site refuses. If you cannot find the problem, tell a maintainer.
+To undo a change, open the entry, restore an earlier revision and publish it. The content manager keeps the newest 50 revisions of each entry.
 
-To undo a change, open the entry, restore an earlier revision and publish it.
+A deleted entry goes to the trash. To get it back, restore it from the trash.
 
-## 3. Write a blog post
+## 4. Take care
 
-| Field       | What it does                                                                                                                                         |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Title       | The heading of the post and the name of the browser tab.                                                                                             |
-| Excerpt     | One or two sentences under the title. The blog list, the RSS feed and search results also show it.                                                   |
-| Category    | The label above the title: Blog or Article. A post with no category shows Blog.                                                                      |
-| Season      | Optional. A label in the colour of the season.                                                                                                       |
-| Season year | The year of the season. If you leave it empty, the site uses the year of the publish date.                                                           |
-| Cover image | Optional. It shows on the blog list and across the top of the post. Give it alt text that tells what the image shows. Put the credit in the caption. |
-| Body        | The text of the post. Section 4 tells what it can hold.                                                                                              |
+Some changes take a page off the site, or change each page.
 
-Add each author as a byline. A post with no byline shows "The Rupee Fund volunteers".
+- **The people page.** It is one entry. If you unpublish or delete it, `/people` shows an error page.
+- **The landing page.** It is one entry, and only an admin changes it. If an admin unpublishes it, the home page shows an error page.
+- **The menus.** The **Header** menu and the **Footer** menu show on each page. If you delete one, that part of each page shows no links.
+- **The images.** Do not delete an image that an entry uses. The entry then shows a broken image.
+- **The slugs.** Do not change the slug of a published entry. The old address then stops.
+- **The categories.** If you delete a category, its posts show Blog.
+
+If the site leaves out an entry or shows an error page, read section 8. Then correct the entry and publish it again. If you cannot find the problem, tell a maintainer.
+
+## 5. Write a blog post
+
+| Field       | What it does                                                                                       |
+| ----------- | -------------------------------------------------------------------------------------------------- |
+| Title       | The heading of the post and the name of the browser tab.                                           |
+| Excerpt     | One or two sentences under the title. The blog list, the RSS feed and search results also show it. |
+| Category    | The label above the title: Blog or Article. A post with no category shows Blog.                    |
+| Season      | Optional. A label in the colour of the season.                                                     |
+| Season year | The year of the season. If you leave it empty, the site uses the year of the publish date.         |
+| Cover image | Optional. It shows on the blog list and across the top of the post.                                |
+| Body        | The text of the post. Section 6 tells what it can hold.                                            |
+
+Add each author as a byline. If the byline does not exist, ask an Editor to make it. A post with no byline shows "The Rupee Fund volunteers".
 
 The post shows its publish date and its reading time. If you edit a post on a later day, it also shows the date of the edit.
 
-The address of the post is `/blog/` and then its slug. Give each post a different slug. Do not change the slug after you publish, because the old address then stops.
+The address of the post is `/blog/` and then its slug. Give each post a different slug.
 
-## 4. What the body can hold
+## 6. What the body can hold
 
 - Paragraphs. Make each paragraph one idea.
 - Headings. Use Heading 2 for a section, and Heading 3 to Heading 6 in a section. The title of the post is the only Heading 1, so the site shows a Heading 1 as a Heading 2.
@@ -53,12 +94,21 @@ The address of the post is `/blog/` and then its slug. Give each post a differen
 - Links.
 - A callout, a quote with the name of the person who said it, and a call to action. Type `/` in the body to add one.
 
-## 5. What the site refuses
+## 7. Images and words
+
+- Upload each image to the media library first. Use PNG, JPEG, GIF, WebP or AVIF. Do not use SVG.
+- Give each image alt text that tells what the image shows.
+- Put the credit of an image in its caption.
+- Write in the Voice of the [brand guidelines](https://brand.rupeefund.org). Use plain words and short sentences.
+- Give a source for each figure.
+- Start each link with `https://`, `mailto:`, `/` or `#`.
+
+## 8. What the site refuses
 
 The site leaves an entry out when the entry has one of these problems:
 
 - An embed, an HTML block, a gallery or a reference. Remove the block.
-- An image that is not in the media library. Upload the image first. Use PNG, JPEG, GIF, WebP or AVIF. Do not use SVG.
+- An image that is not in the media library, or an SVG image.
 - A link that does not start with `https://`, `mailto:`, `/` or `#`. Change `http://` to `https://`.
 - A callout, a quote or a call to action with no text.
 - A team photo that is not on GitHub. Use the address of the GitHub profile photo.
@@ -66,10 +116,15 @@ The site leaves an entry out when the entry has one of these problems:
 - More than one paragraph in the foundation text of the people page.
 - A slug with a character that is not a lowercase letter, a digit or a hyphen.
 
-## 6. The other pages
+A post or a page that the site leaves out does not show at all. A landing page or a people page that the site refuses shows an error page in its place.
 
-- **FAQ.** Each entry has a question, an answer and an order. A lower order shows first. Entries with the same order show the oldest first, so give a new entry a high order, such as 99, to show it last. Tick **Show on the home page** to show the entry there too. A source is a title and an `https://` link.
-- **Landing page** and **People page.** Each is one entry. Change its words. Do not make a second entry. Only an admin can change the landing page. To change it, ask an admin. In the text of a step, put `**` on each side of a bold word, for example `a **monthly** contribution`.
+## 9. The other pages
+
+- **FAQ.** Each entry has a question, an answer and an order. A lower order shows first. Entries with the same order show the oldest first. To show a new entry last, give it a high order, such as 99.
+- **FAQ on the home page.** Tick **Show on the home page** to show an entry there too.
+- **FAQ sources.** A source is a title and an `https://` link.
+- **Landing page.** In the text of a step, put `**` on each side of a bold word, for example `a **monthly** contribution`.
+- **People page.** Change its words. Do not make a second entry.
 - **Community team.** Each person has a name, an order and an optional bio, profile URL, username and photo URL. The order works as in the FAQ.
-- **Pages.** A page has a kind: a normal page or a legal page. Its address is `/` and then its slug. Only an admin can edit, publish or unpublish a legal page. Nobody can delete a legal page. To change a legal page, edit it. Then publish it.
-- **Menus.** The **Header** menu and the **Footer** menu hold the links at the top and at the bottom of each page. Change the links there.
+- **Pages.** A page has a kind: a normal page or a legal page. Its address is `/` and then its slug. To remove a legal page, an admin changes its kind to a normal page first.
+- **Menus.** The **Header** menu and the **Footer** menu hold the links at the top and at the bottom of each page.
