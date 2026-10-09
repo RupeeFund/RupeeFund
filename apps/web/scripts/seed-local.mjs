@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
+import { portsFor, portsInUse } from "./local-servers.mjs";
 
 const STATE = resolve(process.argv[2] ?? "../../.wrangler/state");
 const FIXTURES = "tests/fixtures/content";
@@ -27,6 +28,14 @@ function run(bin, args) {
 
 const databases = () =>
   readdirSync(D1_FILES).filter((file) => file.endsWith(".sqlite") && file !== "metadata.sqlite");
+
+const busy = await portsInUse(portsFor(STATE));
+if (busy.length > 0) {
+  process.stderr.write(
+    `A local server uses ${STATE} on port ${busy.join(" and ")}. Stop it, then run this again. Nothing changed.\n`,
+  );
+  process.exit(1);
+}
 
 for (const store of ["d1", "r2"])
   rmSync(join(STATE, "v3", store), { recursive: true, force: true });
