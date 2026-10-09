@@ -2,7 +2,7 @@ import { getEmDashCollection, getEmDashEntry } from "emdash";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fixture from "./entries.fixture.json";
 import { ContentError } from "./entries.ts";
-import { landingContent, page, pages, post, posts } from "./load.ts";
+import { page, pages, peoplePageContent, post, posts } from "./load.ts";
 
 vi.mock("emdash", () => ({
   getEmDashCollection: vi.fn(),
@@ -99,26 +99,26 @@ describe("a single entry", () => {
 
 describe("a singleton", () => {
   it("reads the entry with its slug", async () => {
-    single.mockResolvedValueOnce(found(fresh().landing[0]));
-    expect((await landingContent()).heroLede).toContain("UPI");
-    expect(single).toHaveBeenCalledWith("landing", "landing");
+    single.mockResolvedValueOnce(found(fresh().people_page[0]));
+    expect((await peoplePageContent()).teamTitle).toBe("Community team");
+    expect(single).toHaveBeenCalledWith("people_page", "people");
     expect(collection).not.toHaveBeenCalled();
     expect(console.warn).not.toHaveBeenCalled();
   });
 
   it("uses the first published entry, and logs it, when no entry has its slug", async () => {
-    const [home] = fresh().landing;
-    const other = { ...structuredClone(home!), id: "other", slug: "other" };
-    other.data.hero_lede = "The second entry.";
+    const [team] = fresh().people_page;
+    const other = { ...structuredClone(team!), id: "other", slug: "other" };
+    other.data.team_title = "The second entry.";
     single.mockResolvedValueOnce(found(null));
-    collection.mockResolvedValueOnce(batch([home, other]));
-    expect((await landingContent()).heroLede).toContain("UPI");
-    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("The site shows home."));
+    collection.mockResolvedValueOnce(batch([team, other]));
+    expect((await peoplePageContent()).teamTitle).toBe("Community team");
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("The site shows people."));
   });
 
   it("fails when nothing is published", async () => {
     single.mockResolvedValueOnce(found(null));
     collection.mockResolvedValueOnce(batch([]));
-    await expect(landingContent()).rejects.toThrow(ContentError);
+    await expect(peoplePageContent()).rejects.toThrow(ContentError);
   });
 });

@@ -22,7 +22,6 @@ async function refusesEntry(
   collection: string,
   entry: string | null,
 ): Promise<boolean> {
-  if (collection === "landing") return true;
   if (collection !== "pages" || entry === null) return false;
   return isLegalPage(query, entry);
 }

@@ -2,7 +2,6 @@ import { getEmDashCollection, getEmDashEntry } from "emdash";
 import {
   ContentError,
   toFaq,
-  toLanding,
   toPage,
   toPages,
   toPeople,
@@ -15,14 +14,12 @@ import {
 import {
   SLUG,
   type FaqEntry,
-  type Landing,
   type Page,
   type PeoplePage,
   type Person,
   type Post,
 } from "./schema.ts";
 
-export const LANDING_SLUG = "landing";
 export const PEOPLE_PAGE_SLUG = "people";
 
 const asEntry = (entry: { id: string; data: unknown }): Entry => ({
@@ -80,9 +77,6 @@ export const post = async (slug: string): Promise<Post | null> =>
 
 export const page = async (slug: string): Promise<Page | null> =>
   checked(await one("pages", slug), toPage);
-
-export const landingContent = async (): Promise<Landing> =>
-  toLanding((await required("landing", LANDING_SLUG)).data);
 
 export const peoplePageContent = async (): Promise<PeoplePage> =>
   toPeoplePage((await required("people_page", PEOPLE_PAGE_SLUG)).data);

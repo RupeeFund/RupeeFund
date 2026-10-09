@@ -13,7 +13,6 @@ export interface Store {
     collection: string,
     id: string,
   ): Promise<{ data: Record<string, unknown>; draft?: Record<string, unknown> } | null>;
-  count(collection: string): Promise<number>;
 }
 
 type Actor = ContentHookEvent["actor"];
@@ -33,28 +32,10 @@ async function storedIsLegal(store: Store, id: unknown): Promise<boolean> {
   }
 }
 
-async function landingCount(store: Store): Promise<number> {
-  try {
-    return await store.count("landing");
-  } catch {
-    return Number.POSITIVE_INFINITY;
-  }
-}
-
 export async function saveGate(
   event: Pick<ContentHookEvent, "collection" | "content" | "isNew" | "id" | "actor">,
   store: Store,
 ): Promise<void> {
-  if (event.collection === "landing") {
-    if (!isAdmin(event.actor))
-      throw new ContentSaveRejectedError(
-        "Only an admin can edit the landing page. Ask an admin for the change.",
-      );
-    if (event.isNew && (await landingCount(store)) > 0) {
-      throw new ContentSaveRejectedError("The landing page has one entry. Edit that entry.");
-    }
-    return;
-  }
   if (isAdmin(event.actor)) return;
   const legal =
     event.collection === "pages" &&
@@ -69,14 +50,10 @@ export async function publishGate(
   event: Pick<ContentPolicyEvent, "collection" | "content" | "origin" | "actor">,
   store: Store,
 ): Promise<ContentPolicyDecision> {
-  if (event.collection === "landing" && isAdmin(event.actor) && (await landingCount(store)) > 1) {
-    return { cancel: true, reason: "The landing page has one entry. Delete the copy first." };
-  }
   if (isAdmin(event.actor)) return;
   const guarded =
-    event.collection === "landing" ||
-    (event.collection === "pages" &&
-      (isLegal(event.content.data) || (await storedIsLegal(store, event.content.id))));
+    event.collection === "pages" &&
+    (isLegal(event.content.data) || (await storedIsLegal(store, event.content.id)));
   if (!guarded) return;
   return {
     cancel: true,
@@ -88,10 +65,6 @@ export async function deleteGate(
   event: Pick<ContentDeleteEvent, "collection" | "id">,
   store: Store,
 ): Promise<false | undefined> {
-  if (event.collection === "landing") {
-    const landings = await landingCount(store);
-    return Number.isFinite(landings) && landings > 1 ? undefined : false;
-  }
   if (event.collection === "pages" && (await storedIsLegal(store, event.id))) return false;
   return undefined;
 }

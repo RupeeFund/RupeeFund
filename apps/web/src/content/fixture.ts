@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { faqEntry, landing, page, peoplePage, person, post } from "./schema.ts";
+import type { faqEntry, page, peoplePage, person, post } from "./schema.ts";
 
 export const para = (text: string) => [
   {
@@ -26,19 +26,6 @@ export const validFaq = (): z.input<typeof faqEntry> => ({
   order: 1,
   home: true,
   sources: [{ title: "FOSS United grants", url: "https://fossunited.org/grants" }],
-});
-
-export const validLanding = (): z.input<typeof landing> => ({
-  heroLede: "Lede.",
-  pitchTitle: "Pitch",
-  pitchBody: para("Pitch body."),
-  pitchSourceTitle: "Source",
-  pitchSourceUrl: "https://github.blog/",
-  stepsTitle: "How it works",
-  steps: [{ title: "Subscribe", body: para("Step.") }],
-  seasonsTitle: "Funding seasons",
-  why: [{ title: "Nurture", body: "Why." }],
-  faqTitle: "Frequently asked questions",
 });
 
 export const validPeoplePage = (): z.input<typeof peoplePage> => ({

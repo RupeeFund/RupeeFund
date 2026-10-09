@@ -1,0 +1,50 @@
+---
+import { SEASONS } from "../../lib/launch.ts";
+
+interface Props {
+  title: string;
+  seasonsTitle: string;
+}
+
+const { title, seasonsTitle } = Astro.props;
+---
+
+<section class="wrap section-y bg-paper">
+  <div class="grid gap-16 lg:grid-cols-2">
+    <div>
+      <h2 class="section-title text-ink">{title}</h2>
+      <ol class="flex flex-col gap-8">
+        <slot />
+      </ol>
+    </div>
+
+    <div class="flex flex-col">
+      <h2 class="section-title text-ink">{seasonsTitle}</h2>
+      <ul>
+        {
+          SEASONS.map((s) => (
+            <li class="flex items-center gap-4 border-t border-ink/15 py-4">
+              <img
+                src={`/seasons/${s.spriteSlug}.svg`}
+                alt=""
+                width="40"
+                height="40"
+                class="h-10 w-10 shrink-0"
+              />
+              <div class="min-w-0 flex-1">
+                <h3 class="text-lg text-ink">{s.name}</h3>
+                <p class="text-sm text-ink-2">{s.months}</p>
+              </div>
+              <span
+                class="eyebrow shrink-0 rounded-md px-2 py-0.5 text-white"
+                style={`background-color: ${s.accent}`}
+              >
+                {s.duration}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

@@ -1,20 +1,15 @@
 ---
-import HomeContent from "../components/site/HomeContent.astro";
-import { faq, landingContent } from "../content/load.ts";
+import Hero from "../components/home/Hero.astro";
+import Pitch from "../components/home/Pitch.astro";
+import Questions from "../components/home/Questions.astro";
+import Reason from "../components/home/Reason.astro";
+import Reasons from "../components/home/Reasons.astro";
+import Step from "../components/home/Step.astro";
+import Steps from "../components/home/Steps.astro";
+import { Content } from "../content/home.mdx";
 import Base from "../layouts/Base.astro";
-import { REMOVAL_ADDRESS, SEASONS, SUBSCRIBE_CTA } from "../lib/launch.ts";
-import { TAGLINE } from "../lib/seo.ts";
-
-const [home, questions] = await Promise.all([landingContent(), faq()]);
 ---
 
 <Base>
-  <HomeContent
-    home={home}
-    faq={questions}
-    seasons={SEASONS}
-    tagline={TAGLINE}
-    ctaLabel={SUBSCRIBE_CTA}
-    contactAddress={REMOVAL_ADDRESS}
-  />
+  <Content components={{ Hero, Pitch, Steps, Step, Reasons, Reason, Questions }} />
 </Base>

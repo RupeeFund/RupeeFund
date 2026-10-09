@@ -121,8 +121,6 @@ const paragraph = textBlock.refine((block) => block.style === "normal" && !block
   message: "Use a plain paragraph here: no heading, list or quote",
 });
 
-const paragraphs = z.array(paragraph).min(1);
-
 const oneParagraph = z.array(paragraph).length(1, "Use one paragraph here");
 
 const text = z.string().trim().min(1);
@@ -185,19 +183,6 @@ export const faqEntry = z.object({
   sources: z.array(z.object({ title: text, url: href })),
 });
 
-export const landing = z.object({
-  heroLede: text,
-  pitchTitle: text,
-  pitchBody: paragraphs,
-  pitchSourceTitle: text,
-  pitchSourceUrl: href,
-  stepsTitle: text,
-  steps: z.array(z.object({ title: text, body: oneParagraph })).min(1),
-  seasonsTitle: text,
-  why: z.array(z.object({ title: text, body: text })).min(1),
-  faqTitle: text,
-});
-
 export const peoplePage = z.object({
   teamTitle: text,
   teamIntro: text,
@@ -227,7 +212,6 @@ export const page = z.object({
 
 export type Post = z.output<typeof post>;
 export type FaqEntry = z.output<typeof faqEntry>;
-export type Landing = z.output<typeof landing>;
 export type PeoplePage = z.output<typeof peoplePage>;
 export type Person = z.output<typeof person>;
 export type Page = z.output<typeof page>;

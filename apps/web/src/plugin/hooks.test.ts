@@ -10,11 +10,9 @@ function store(
   entries: Record<string, Record<string, unknown>> = {},
   {
     failing = false,
-    landings = 0,
     drafts = {},
   }: {
     failing?: boolean;
-    landings?: number;
     drafts?: Record<string, Record<string, unknown>>;
   } = {},
 ): Store {
@@ -24,11 +22,6 @@ function store(
       if (failing) throw new Error("the database is unavailable");
       const data = entries[id];
       return data === undefined ? null : { data, draft: drafts[id] };
-    },
-    async count(collection) {
-      expect(collection).toBe("landing");
-      if (failing) throw new Error("the database is unavailable");
-      return landings;
     },
   };
 }
@@ -40,32 +33,6 @@ describe("the save gate", () => {
   it("lets an author save a post", async () => {
     await expect(
       saveGate({ collection: "posts", content: {}, isNew: true, actor: author }, store()),
-    ).resolves.toBeUndefined();
-  });
-
-  it("refuses an edit of the landing page by an editor", async () => {
-    await expect(
-      saveGate(
-        { collection: "landing", content: {}, isNew: false, id: "l", actor: editor },
-        store(),
-      ),
-    ).rejects.toThrow(
-      rejected("Only an admin can edit the landing page. Ask an admin for the change."),
-    );
-  });
-
-  it("refuses a second landing page, even for an admin", async () => {
-    await expect(
-      saveGate(
-        { collection: "landing", content: {}, isNew: true, actor: admin },
-        store({}, { landings: 1 }),
-      ),
-    ).rejects.toThrow(rejected("The landing page has one entry. Edit that entry."));
-  });
-
-  it("lets an admin create the first landing page", async () => {
-    await expect(
-      saveGate({ collection: "landing", content: {}, isNew: true, actor: admin }, store()),
     ).resolves.toBeUndefined();
   });
 
@@ -172,44 +139,17 @@ describe("the publish gate", () => {
     ).toMatchObject({ cancel: true });
   });
 
-  it("refuses an editor who publishes the landing page", async () => {
-    expect(
-      await publishGate(
-        { collection: "landing", content: { id: "l", data: {} }, origin: api, actor: editor },
-        store({}, { landings: 1 }),
-      ),
-    ).toMatchObject({ cancel: true });
-  });
-
-  it("refuses to publish a copy of the landing page, even for an admin", async () => {
-    expect(
-      await publishGate(
-        { collection: "landing", content: { id: "l2", data: {} }, origin: api, actor: admin },
-        store({}, { landings: 2 }),
-      ),
-    ).toEqual({
-      cancel: true,
-      reason: "The landing page has one entry. Delete the copy first.",
-    });
-  });
-
   it("refuses a legal action with no actor", async () => {
     expect(
       await publishGate({ collection: "pages", content: legal, origin: api }, store()),
     ).toMatchObject({ cancel: true });
   });
 
-  it("lets an admin publish a legal page and the one landing page", async () => {
+  it("lets an admin publish a legal page", async () => {
     expect(
       await publishGate(
         { collection: "pages", content: legal, origin: api, actor: admin },
         store({ p: { kind: "legal" } }),
-      ),
-    ).toBeUndefined();
-    expect(
-      await publishGate(
-        { collection: "landing", content: { id: "l", data: {} }, origin: api, actor: admin },
-        store({}, { landings: 1 }),
       ),
     ).toBeUndefined();
   });
@@ -242,24 +182,6 @@ describe("the delete gate", () => {
         store({ p: { kind: "page" } }, { drafts: { p: { kind: "legal" } } }),
       ),
     ).toBe(false);
-  });
-
-  it("keeps the one landing page", async () => {
-    expect(await deleteGate({ collection: "landing", id: "l" }, store({}, { landings: 1 }))).toBe(
-      false,
-    );
-  });
-
-  it("keeps a landing page when the count cannot be read", async () => {
-    expect(await deleteGate({ collection: "landing", id: "l" }, store({}, { failing: true }))).toBe(
-      false,
-    );
-  });
-
-  it("lets a copy of the landing page go", async () => {
-    expect(await deleteGate({ collection: "landing", id: "l2" }, store({}, { landings: 2 }))).toBe(
-      undefined,
-    );
   });
 
   it("keeps a page that cannot be read", async () => {

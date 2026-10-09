@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
+import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 import { d1, r2 } from "@emdash-cms/cloudflare";
@@ -34,6 +35,7 @@ export default defineConfig({
   }),
   integrations: [
     ogCard,
+    mdx(),
     react(),
     emdash({
       database: d1({ binding: "DB" }),

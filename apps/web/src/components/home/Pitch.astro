@@ -1,0 +1,24 @@
+---
+interface Props {
+  title: string;
+  sourceTitle: string;
+  sourceUrl: string;
+}
+
+const { title, sourceTitle, sourceUrl } = Astro.props;
+---
+
+<section class="wrap section-y grid items-start bg-brand text-ink lg:grid-cols-2 lg:gap-16">
+  <h2 class="section-title lg:mb-0">{title}</h2>
+  <div class="max-w-[36rem]">
+    <div class="lede [&>p+p]:mt-4">
+      <slot />
+    </div>
+    <p class="mt-4 text-sm">
+      Source:{" "}
+      <a href={sourceUrl} target="_blank" rel="noopener" class="inline-link inline-link-ink"
+        >{sourceTitle}</a
+      >
+    </p>
+  </div>
+</section>

@@ -16,7 +16,6 @@ function store(ctx: PluginContext): Store {
       if (draft === null) throw new Error(`draft ${item.draftRevisionId} cannot be read`);
       return { data: item.data, draft: draft.data };
     },
-    count: async (collection) => (await content.list(collection, { limit: 2 })).items.length,
   };
 }
 

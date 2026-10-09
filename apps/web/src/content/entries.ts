@@ -1,14 +1,12 @@
 import type { z } from "zod";
 import {
   faqEntry,
-  landing,
   page,
   peoplePage,
   person,
   post,
   type FaqEntry,
   type Image,
-  type Landing,
   type Page,
   type PeoplePage,
   type Person,
@@ -73,23 +71,6 @@ function portableText(value: unknown, where: string): unknown {
     const asset = isRecord(block.asset) ? block.asset : {};
     return { _type: "image", ...toImage(block, asset, where) };
   });
-}
-
-const BOLD_RUN = /\*\*(.+?)\*\*/gs;
-
-const span = (text: string, marks: string[]) => ({ _type: "span", text, marks });
-
-function paragraphFrom(text: unknown): unknown {
-  if (typeof text !== "string") return text;
-  const children: ReturnType<typeof span>[] = [];
-  let at = 0;
-  for (const run of text.matchAll(BOLD_RUN)) {
-    if (run.index > at) children.push(span(text.slice(at, run.index), []));
-    children.push(span(run[1]!, ["strong"]));
-    at = run.index + run[0].length;
-  }
-  if (at < text.length || children.length === 0) children.push(span(text.slice(at), []));
-  return [{ _type: "block", style: "normal", markDefs: [], children }];
 }
 
 const isoDate = (value: unknown) => (value instanceof Date ? value.toISOString() : value);
@@ -195,30 +176,6 @@ function toFaqEntry({ slug, data }: Entry): FaqEntry {
       sources: data.sources ?? [],
     },
     where,
-  );
-}
-
-export function toLanding(data: Raw): Landing {
-  return parsed(
-    landing,
-    {
-      heroLede: data.hero_lede,
-      pitchTitle: data.pitch_title,
-      pitchBody: portableText(data.pitch_body, "landing"),
-      pitchSourceTitle: data.pitch_source_title,
-      pitchSourceUrl: data.pitch_source_url,
-      stepsTitle: data.steps_title,
-      steps: Array.isArray(data.steps)
-        ? data.steps.map((step: unknown) => {
-            const fields = isRecord(step) ? step : {};
-            return { title: fields.title, body: paragraphFrom(fields.body) };
-          })
-        : data.steps,
-      seasonsTitle: data.seasons_title,
-      why: data.why,
-      faqTitle: data.faq_title,
-    },
-    "landing",
   );
 }
 

@@ -1,0 +1,17 @@
+---
+import FaqList from "../site/FaqList.astro";
+import { faq } from "../../content/load.ts";
+import { REMOVAL_ADDRESS } from "../../lib/launch.ts";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+const questions = await faq();
+---
+
+<section class="wrap section-y bg-paper">
+  <h2 class="section-title text-ink">{title}</h2>
+  <FaqList faq={questions} homeOnly contactAddress={REMOVAL_ADDRESS} />
+</section>

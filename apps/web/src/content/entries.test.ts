@@ -3,7 +3,6 @@ import fixture from "./entries.fixture.json";
 import {
   ContentError,
   toFaq,
-  toLanding,
   toPage,
   toPeople,
   toPeoplePage,
@@ -173,39 +172,8 @@ describe("the FAQ and the team", () => {
 });
 
 describe("a single entry", () => {
-  it("maps the landing page and the people page", () => {
-    const input = entries();
-    expect(toLanding(input.landing[0]!.data).steps.length).toBeGreaterThan(0);
-    expect(toPeoplePage(input.people_page[0]!.data).teamTitle).toBeTruthy();
-  });
-
-  it("reads a step body as text, with two stars around each bold run", () => {
-    const data = entries().landing[0]!.data;
-    data.steps = [{ title: "Subscribe", body: "Set up a **monthly** gift, from ₹15." }];
-    expect(toLanding(data).steps[0]!.body).toEqual([
-      {
-        _type: "block",
-        style: "normal",
-        markDefs: [],
-        children: [
-          { _type: "span", text: "Set up a ", marks: [] },
-          { _type: "span", text: "monthly", marks: ["strong"] },
-          { _type: "span", text: " gift, from ₹15.", marks: [] },
-        ],
-      },
-    ]);
-  });
-
-  it("shows two stars as they are when nothing closes them", () => {
-    const data = entries().landing[0]!.data;
-    data.steps = [{ title: "Subscribe", body: "Gift **2x" }];
-    expect(toLanding(data).steps[0]!.body[0]!.children).toEqual([
-      { _type: "span", text: "Gift **2x", marks: [] },
-    ]);
-  });
-
-  it("refuses a landing page the site cannot show", () => {
-    expect(() => toLanding({})).toThrow(ContentError);
+  it("maps the people page", () => {
+    expect(toPeoplePage(entries().people_page[0]!.data).teamTitle).toBeTruthy();
   });
 
   it("maps a legal page with its effective date", () => {

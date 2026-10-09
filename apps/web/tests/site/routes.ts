@@ -106,7 +106,6 @@ const SCHEMA_WRITE = "/_emdash/api/schema/collections";
 export const REFUSED_WRITES: readonly Call[] = [
   { as: "editor", method: "PUT", path: "/_emdash/api/content/pages/terms" },
   { as: "editor", method: "POST", path: "/_emdash/api/content/pages/terms/duplicate" },
-  { as: "editor", method: "PUT", path: "/_emdash/api/content/landing/landing" },
 ];
 
 export const ALLOWED_WRITES: readonly Call[] = [
@@ -177,7 +176,7 @@ export interface Seen {
 export const LEGAL_PAGE = PAGES.find(({ kind }) => kind === "legal")!;
 
 export const VISITS = {
-  "an Admin on the landing page": { path: "/", editMode: false },
+  "an Admin on the home page": { path: "/", editMode: false },
   "an Admin on a legal page": { path: `/${LEGAL_PAGE.slug}`, editMode: false },
   "an Admin's edit link": { path: "/?_edit=1", editMode: false },
   "an Admin with an old edit cookie": { path: "/", editMode: true },

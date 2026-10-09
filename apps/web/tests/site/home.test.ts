@@ -22,6 +22,32 @@ describe("Home page (/)", () => {
     expect(band).toMatch(/<a [^>]*href="https:\/\/github\.blog\/[^"]*octoverse[^"]*"/);
   });
 
+  it("shows the lede, the four steps, the three reasons and the FAQ title", () => {
+    const main = html.split("<main")[1] ?? "";
+    expect(main).toContain("pools your monthly contributions over UPI");
+    expect([...main.matchAll(/class="step-number">(\d)</g)].map((m) => m[1])).toEqual([
+      "1",
+      "2",
+      "3",
+      "4",
+    ]);
+    expect([...main.matchAll(/class="step-title">([^<]*)</g)].map((m) => m[1])).toEqual([
+      "Subscribe",
+      "Pool funds",
+      "Vote and nominate",
+      "Disburse",
+    ]);
+    expect(main).toMatch(/class="step-body"[^>]*>[\s\S]*?<strong>monthly<\/strong>/);
+    for (const reason of [
+      "Nurture new projects",
+      "Encourage growing projects",
+      "Sustain well-established projects",
+    ]) {
+      expect(main).toContain(`>${reason}</h3>`);
+    }
+    expect(main).toContain(">Frequently asked questions</h2>");
+  });
+
   it("keeps the stressed words of each step in the ink colour", () => {
     expect(styles()).toMatch(/\.step-body strong ?\{[^}]*color:/);
   });

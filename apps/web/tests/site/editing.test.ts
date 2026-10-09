@@ -6,7 +6,7 @@ describe("live pages offer no editing", () => {
     expect(read("index.html")).not.toContain("<!-- EmDash Toolbar Bootstrap -->");
   });
 
-  it.each(["an Admin on the landing page", "an Admin on a legal page", "an Admin's edit link"])(
+  it.each(["an Admin on the home page", "an Admin on a legal page", "an Admin's edit link"])(
     "gives %s no Edit pill, no toolbar and no field marks",
     (visit) => {
       expect(visits()[visit]).toMatchObject({ status: 200, pill: false, toolbar: false, marks: 0 });

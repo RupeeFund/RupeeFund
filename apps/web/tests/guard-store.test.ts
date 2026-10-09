@@ -133,12 +133,12 @@ describe("usesGuardedMedia", () => {
     );
 
   beforeAll(() => {
-    media("m-landing", "01M42LAND0000000000000000.jpg");
+    media("m-legal", "01M42LEGP0000000000000000.jpg");
     media("m-legal-draft", "01M42LEGL0000000000000000.jpg");
     media("m-post", "01M42POST0000000000000000.jpg");
     run(
-      "UPDATE ec_landing SET pitch_body = ?",
-      '[{"src":"/_emdash/api/media/file/01M42LAND0000000000000000.jpg"}]',
+      "UPDATE ec_pages SET content = ? WHERE slug = 'privacy'",
+      '[{"src":"/_emdash/api/media/file/01M42LEGP0000000000000000.jpg"}]',
     );
     run(
       "UPDATE revisions SET data = ? WHERE id = 'rev-legal'",
@@ -146,8 +146,8 @@ describe("usesGuardedMedia", () => {
     );
   });
 
-  it("finds an image that the landing page uses", async () => {
-    expect(await usesGuardedMedia(query, "m-landing")).toBe(true);
+  it("finds an image that a legal page uses", async () => {
+    expect(await usesGuardedMedia(query, "m-legal")).toBe(true);
   });
 
   it("finds an image that only the draft of a legal page uses", async () => {

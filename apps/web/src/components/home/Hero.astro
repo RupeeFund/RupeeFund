@@ -1,0 +1,29 @@
+---
+import Icon from "../site/Icon.astro";
+import { SUBSCRIBE_CTA } from "../../lib/launch.ts";
+import { TAGLINE } from "../../lib/seo.ts";
+---
+
+<section class="wrap pt-6 pb-[clamp(3rem,8vh,5rem)] sm:pt-[clamp(2.5rem,8vh,5rem)]">
+  <div class="grid items-start gap-5 lg:grid-cols-2 lg:grid-rows-[auto_auto_1fr] lg:gap-x-16">
+    <h1 class="display text-ink lg:col-start-2 lg:row-start-1">The&nbsp;Rupee&nbsp;Fund</h1>
+    <p
+      class="section-title heading mb-0 text-ink lg:col-start-1 lg:row-span-3 lg:row-start-1"
+      data-tagline
+    >
+      {TAGLINE}
+    </p>
+    <div class="lede max-w-[36rem] text-ink-2 lg:col-start-2 lg:row-start-2">
+      <slot />
+    </div>
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-3 sm:mt-3 lg:col-start-2 lg:row-start-3">
+      <a href="/subscribe" class="btn btn-primary btn-lg" data-hero-cta>
+        <Icon name="bell" size={18} />
+        {SUBSCRIBE_CTA}
+      </a>
+      <a href="/faq" class="nav-link gap-1.5 text-sm font-semibold">
+        Read FAQs <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>

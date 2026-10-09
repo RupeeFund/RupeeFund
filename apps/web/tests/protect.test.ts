@@ -33,14 +33,15 @@ beforeAll(() => {
     `INSERT INTO media (id, filename, mime_type, storage_key)
      VALUES ('m-land', 'a.jpg', 'image/jpeg', '01M42LAND0000000000000000.jpg')`,
   );
-  db.run("UPDATE ec_landing SET pitch_body = '[\"01M42LAND0000000000000000.jpg\"]'");
+  db.run(
+    "UPDATE ec_pages SET content = '[\"01M42LAND0000000000000000.jpg\"]' WHERE slug = 'privacy'",
+  );
 }, 60_000);
 
 afterAll(() => db.close());
 
 describe("refusesWrite", () => {
   it.each([
-    ["PUT", "/_emdash/api/content/landing/landing"],
     ["PUT", "/_emdash/api/content/pages/terms"],
     ["POST", "/_emdash/api/content/pages/terms/restore"],
     ["POST", "/_emdash/api/revisions/rev-terms/restore"],

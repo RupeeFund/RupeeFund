@@ -1,0 +1,18 @@
+---
+interface Props {
+  n: number;
+  title: string;
+}
+
+const { n, title } = Astro.props;
+---
+
+<li class="step">
+  <div class="step-badge">
+    <span class="step-number">{n}</span>
+  </div>
+  <div class="pt-0.5">
+    <h3 class="step-title">{title}</h3>
+    <div class="step-body"><slot /></div>
+  </div>
+</li>
