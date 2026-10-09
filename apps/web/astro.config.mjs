@@ -38,7 +38,7 @@ export default defineConfig({
     emdash({
       database: d1({ binding: "DB" }),
       storage: r2({ binding: "MEDIA" }),
-      siteUrl: SITE_URL,
+      siteUrl: process.argv.includes("dev") ? undefined : SITE_URL,
       admin: {
         siteName: SITE_NAME,
         logo: "/logo.svg",
