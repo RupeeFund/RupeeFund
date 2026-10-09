@@ -346,4 +346,4 @@ The content manager ran in the Worker `rupeefund-cms` at `cms.rupeefund.org` bef
 - A proxied `AAAA` record `cms` with the address `100::`. No server has that address. Cloudflare answers first.
 - A Redirect Rule: when the hostname is `cms.rupeefund.org`, a 301 to `https://rupeefund.org/admin`.
 
-`pnpm live:check` checks the 301. Thirty days after the move, delete the `rupeefund-cms` Worker and its WAF rule `cms: block paths outside the content manager routes`. Keep the DNS record and the Redirect Rule.
+`pnpm live:check` checks the 301. Keep the DNS record and the Redirect Rule.
