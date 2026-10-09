@@ -77,7 +77,7 @@ The build of `rupeefund-web` and `rupeefund-admin` refuses a commit with a migra
 
 **Make each migration additive.** During a promote two Worker versions read the one live database. Add a column with a default or with NULL permitted. A change that removes a column needs two promotes: one that stops all reads of the column, and a later one that drops it.
 
-**`0005_signup_data.sql` is the one exception.** It rebuilds the `waitlist` table. It went live on 2026-10-01.
+**`0005_signup_data.sql` is the one exception.** It rebuilds the `waitlist` table.
 
 Never edit a migration that has run. Never reuse a file name. Wrangler matches a migration by file name only. A changed file that has run does nothing. A reused file name runs nothing and reports no error. `packages/db/tests/replay.test.ts` refuses the retired names. `wrangler d1 migrations list` proves only that the names agree. To check the schema, query the tables:
 
@@ -109,7 +109,7 @@ For `pnpm preview`, put the two in `apps/web/.env`. Make a new `AUTH_SECRET` wit
 
 A `--remote` command needs the Cloudflare account. Put `CLOUDFLARE_ACCOUNT_ID` in `apps/web/.env`. Wrangler reads that file itself. Without it, wrangler asks which account to use. Do not put the account in `wrangler.jsonc`.
 
-`pnpm dev` and `pnpm preview` carry the always-pass Turnstile test values and `PUBLIC_ALLOW_TEST_SITEKEY=true` themselves. Do not put a Turnstile value in `.env`. If an old `pnpm bootstrap` made `apps/web/.env`, delete its Turnstile lines. Never set that opt-in in the Workers Builds settings. A deployed build with the test sitekey refuses every signup, so `pnpm run build` exits 1 when it finds one.
+`pnpm dev` and `pnpm preview` carry the always-pass Turnstile test values and `PUBLIC_ALLOW_TEST_SITEKEY=true` themselves. Do not put a Turnstile value in `.env`. Never set that opt-in in the Workers Builds settings. A deployed build with the test sitekey refuses every signup, so `pnpm run build` exits 1 when it finds one.
 
 ## 6. How to verify a deployment
 
@@ -119,7 +119,7 @@ Purge the zone cache first. Then:
 pnpm live:check
 ```
 
-It checks the site, the content manager, the admin Worker and the old content manager address. It prints one `PASS` or `FAIL` line for each check, and exits 1 on a failure. `apps/web/scripts/live-check.mts` lists the checks.
+It checks the site, the content manager and the admin Worker. It prints one `PASS` or `FAIL` line for each check, and exits 1 on a failure. `apps/web/scripts/live-check.mts` lists the checks.
 
 Then complete the form one time, and read the row:
 
@@ -177,7 +177,7 @@ Before the move:
 
 1. Turn off DNSSEC on the old zone. Wait until `dig +short DS rupeefund.org @a0.org.afilias-nst.info` returns nothing.
 
-1. Add `rupeefund.org` as a zone in the new account. Copy the DNS records, the redirect rules, the WAF custom rules, Always Use HTTPS and Bot Fight Mode from the old zone. Do not add an apex record. The custom domain makes it.
+1. Add `rupeefund.org` as a zone in the new account. Copy the DNS records, the redirect rules, the WAF custom rules, the rate-limit rule, Always Use HTTPS and Bot Fight Mode from the old zone. Do not add an apex record. The custom domain makes it.
 
 1. Tell the editors to stop all edits until the move ends.
 
@@ -257,11 +257,11 @@ Then sign in with a browser and read the dashboard. A `{"error":"forbidden"}` pa
 
 ### 10.4 If you ever remove Access
 
-The Worker refuses every request (`docs/ARCHITECTURE.md` section 10.1). This is intentional. A panel that stops is safer than a panel that opens to the public.
+The Worker refuses every request (`docs/ARCHITECTURE.md` section 10.1). A panel that stops is safer than a panel that opens to the public.
 
 ## 11. The content manager
 
-`docs/ARCHITECTURE.md` section 11 tells how the parts work together. The content manager is at `https://rupeefund.org/_emdash/admin`. `https://rupeefund.org/admin` sends a person there.
+`docs/ARCHITECTURE.md` section 11 tells how the parts work together. The content manager is at `https://rupeefund.org/_emdash/admin`.
 
 ### 11.1 Make the resources
 
@@ -286,7 +286,7 @@ The GitHub App `the-rupee-fund-cms` of the organization runs the sign-in. It nee
 
 ### 11.3 Update EmDash
 
-EmDash changes its database on the first request after the deploy. Renovate opens one pull request for all EmDash packages and does not merge it.
+Renovate opens one pull request for all EmDash packages and does not merge it, because EmDash changes its database on the first request after the deploy.
 
 1. Read the release notes of each version in the pull request.
 1. Merge the pull request. Write down the time.
@@ -299,7 +299,7 @@ If the site or the content manager fails, go back (section 11.4) to the time you
 
 - **Wrong words on the site.** Restore the earlier revision of the entry in the editor, and publish it. The site shows it at the next page load.
 
-- **An entry that does not show.** The site refused the entry and left it out (`docs/ARCHITECTURE.md` section 11.1). Open `rupeefund-web` in **Workers & Pages**. Go to **Observability**. Search for `The site leaves out an entry`. The line gives the entry and the problem, for example `posts/hello`. Correct the entry. Then publish it again. `docs/EDITING.md` section 5 lists what the site refuses.
+- **An entry that does not show.** The site refused the entry and left it out (`docs/ARCHITECTURE.md` section 11.1). Open `rupeefund-web` in **Workers & Pages**. Go to **Observability**. Search for `The site leaves out an entry`. The line gives the entry and the problem, for example `posts/hello`. Correct the entry. Then publish it again. `docs/EDITING.md` section 8 lists what the site refuses.
 
 - **A broken site or content manager.** Run `pnpm wrangler rollback`. If the bad version changed the content database, also restore the database to the time before the deploy:
 
@@ -356,12 +356,3 @@ A rate-limit rule on the zone limits one address to 100 requests in 10 seconds. 
    ```txt
    (not starts_with(http.request.uri.path, "/_astro/"))
    ```
-
-### 11.7 The old address
-
-The content manager ran in the Worker `rupeefund-cms` at `cms.rupeefund.org` before it moved into `rupeefund-web`. The zone sends that address to `https://rupeefund.org/admin` with two parts:
-
-- A proxied `AAAA` record `cms` with the address `100::`. No server has that address. Cloudflare answers first.
-- A Redirect Rule: when the hostname is `cms.rupeefund.org`, a 301 to `https://rupeefund.org/admin`.
-
-`pnpm live:check` checks the 301. Keep the DNS record and the Redirect Rule.
