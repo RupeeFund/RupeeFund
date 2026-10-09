@@ -48,6 +48,14 @@ function healthy(): Record<string, Route> {
     [`${SITE}/_image?href=/_emdash/api/media/file/x.png`]: notFound,
     [`${SITE}/media/x.png`]: notFound,
     [`${SITE}/wp-login.php`]: () => new Response("Forbidden", { status: 403 }),
+    [`${SITE}/_emdash/api/mcp`]: () =>
+      Response.json(
+        { error: { code: "INVALID_TOKEN" } },
+        {
+          status: 401,
+          headers: { "www-authenticate": 'Bearer resource_metadata="https://site.test/x"' },
+        },
+      ),
     [`${ADMIN}/`]: toAccess,
     [`${ADMIN}/api/summary`]: toAccess,
     [`${CMS}/`]: () => new Response(null, { status: 301, headers: { location: `${SITE}/admin` } }),
@@ -160,6 +168,24 @@ describe("the live check", () => {
   it("fails when a scanner path reaches the Worker", async () => {
     const routes = { ...healthy(), [`${SITE}/wp-login.php`]: notFound };
     expect(await failed(routes)).toEqual(["site blocks the scanners"]);
+  });
+
+  it("fails when the MCP address answers an unknown token", async () => {
+    const open: Route = () => Response.json({ result: { tools: [] } });
+    expect(await failed({ ...healthy(), [`${SITE}/_emdash/api/mcp`]: open })).toEqual([
+      "content manager refuses an unknown MCP token",
+    ]);
+  });
+
+  it("fails when the site refuses the call before EmDash, or nothing answers", async () => {
+    const refused: Route = () =>
+      Response.json({ error: { code: "NOT_SIGNED_IN" } }, { status: 401 });
+    const missing: Route = () => new Response("Not found", { status: 404 });
+    for (const route of [refused, missing]) {
+      expect(await failed({ ...healthy(), [`${SITE}/_emdash/api/mcp`]: route })).toEqual([
+        "content manager refuses an unknown MCP token",
+      ]);
+    }
   });
 
   it("fails both admin lines when the Worker refuses alone, with no Access", async () => {

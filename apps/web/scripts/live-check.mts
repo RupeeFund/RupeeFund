@@ -138,6 +138,23 @@ function probes(site: string, admin: string, cms: string): [string, Probe][] {
         ),
     ],
     [
+      "content manager refuses an unknown MCP token",
+      async (fetch) => {
+        const res = await fetch(`${site}/_emdash/api/mcp`, {
+          ...MANUAL,
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            authorization: "Bearer ec_pat_live-check-unknown-token",
+          },
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+        });
+        const fromEmDash = res.headers.get("www-authenticate")?.includes("resource_metadata=");
+        if (res.status === 401 && fromEmDash) return null;
+        return `answered ${res.status}, not 401 from EmDash`;
+      },
+    ],
+    [
       "site blocks the scanners",
       async (fetch) => {
         const { status } = await fetch(`${site}/wp-login.php`, MANUAL);

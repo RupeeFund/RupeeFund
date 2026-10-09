@@ -23,7 +23,9 @@ import {
   SESSION,
   SESSION_SCHEMA_WRITE,
   SIGNED_IN_READS,
+  SESSION_MCP,
   SIGNED_IN_SEARCH,
+  TOKEN_MCP,
   TOKEN_ON_PUBLIC_ROUTE,
   TOKENS,
   TOKEN_SCHEMA_WRITE,
@@ -34,6 +36,8 @@ import {
   type Call,
   type Seen,
   type Visit,
+  FORGED_MCP,
+  FORGED_TOKEN,
 } from "./routes.ts";
 
 const TEST_SITEKEY = "1x00000000000000000000AA";
@@ -116,18 +120,23 @@ const signedIn = (base: string, { user, id }: (typeof BROWSERS)[number]): string
 ];
 
 function headersFor(base: string, as: Call["as"]): Record<string, string> {
-  const json = { "content-type": "application/json", "x-emdash-request": "1" };
+  const json = {
+    "content-type": "application/json",
+    accept: "application/json, text/event-stream",
+    "x-emdash-request": "1",
+  };
   if (as === "anonymous") return json;
   if (as === "session") return { ...json, cookie: signedIn(base, SESSION).join("; ") };
+  if (as === "forged") return { ...json, authorization: `Bearer ${FORGED_TOKEN}` };
   return { ...json, authorization: `Bearer ${TOKENS[as].token}` };
 }
 
-async function call(base: string, { as, method, path }: Call): Promise<Answer> {
+async function call(base: string, { as, method, path, body }: Call): Promise<Answer> {
   const res = await fetch(`${base}${path}`, {
     method,
     redirect: "manual",
     headers: headersFor(base, as),
-    body: method === "GET" ? undefined : "{}",
+    body: method === "GET" ? undefined : JSON.stringify(body ?? {}),
   });
   return {
     status: res.status,
@@ -197,6 +206,9 @@ async function render(base: string): Promise<void> {
     TOKEN_SCHEMA_WRITE,
     SIGNED_IN_SEARCH,
     TOKEN_ON_PUBLIC_ROUTE,
+    TOKEN_MCP,
+    SESSION_MCP,
+    FORGED_MCP,
     ...ANONYMOUS_CALLS,
   ];
   for (const one of calls) answers[callName(one)] = await call(base, one);

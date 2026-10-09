@@ -88,12 +88,15 @@ export const TOKENS = {
   },
 } as const;
 
+export const FORGED_TOKEN = throwaway();
+
 export const SESSION = { user: "site-test-browser", role: 50, id: randomUUID() } as const;
 
 export interface Call {
-  as: keyof typeof TOKENS | "session" | "anonymous";
+  as: keyof typeof TOKENS | "session" | "anonymous" | "forged";
   method: string;
   path: string;
+  body?: unknown;
 }
 
 export const callName = ({ as, method, path }: Call): string => `${as} ${method} ${path}`;
@@ -115,6 +118,16 @@ export const SESSION_SCHEMA_WRITE: Call = { as: "session", method: "POST", path:
 
 export const TOKEN_SCHEMA_WRITE: Call = { as: "admin", method: "POST", path: SCHEMA_WRITE };
 
+const MCP = "/_emdash/api/mcp";
+
+const LIST_TOOLS = { jsonrpc: "2.0", id: 1, method: "tools/list" };
+
+export const TOKEN_MCP: Call = { as: "admin", method: "POST", path: MCP, body: LIST_TOOLS };
+
+export const SESSION_MCP: Call = { as: "session", method: "POST", path: MCP, body: LIST_TOOLS };
+
+export const FORGED_MCP: Call = { as: "forged", method: "POST", path: MCP, body: LIST_TOOLS };
+
 export const ANONYMOUS_CALLS: readonly Call[] = [
   { as: "anonymous", method: "POST", path: SCHEMA_WRITE },
   { as: "anonymous", method: "GET", path: "/_emdash/api/auth/oauth/github" },
@@ -125,6 +138,7 @@ export const ANONYMOUS_CALLS: readonly Call[] = [
   { as: "anonymous", method: "GET", path: "/_emdash/api/search/suggest?q=fu" },
   { as: "anonymous", method: "GET", path: "/_emdash/api/dashboard" },
   { as: "anonymous", method: "GET", path: "/_emdash/admin" },
+  { as: "anonymous", method: "POST", path: MCP },
 ];
 
 export const TOKEN_ON_PUBLIC_ROUTE: Call = {

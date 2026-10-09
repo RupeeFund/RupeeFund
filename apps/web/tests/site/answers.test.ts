@@ -4,6 +4,7 @@ import {
   ALLOWED_WRITES,
   ANONYMOUS_CALLS,
   CONTENT_MANAGER,
+  FORGED_MCP,
   DENIED,
   GATED_MEDIA,
   MEDIA_ROUTES,
@@ -13,7 +14,9 @@ import {
   ROUTES,
   SESSION_SCHEMA_WRITE,
   SIGNED_IN_READS,
+  SESSION_MCP,
   SIGNED_IN_SEARCH,
+  TOKEN_MCP,
   TOKEN_ON_PUBLIC_ROUTE,
   TOKEN_SCHEMA_WRITE,
   callName,
@@ -101,6 +104,27 @@ describe("the content guard", () => {
 
   it("gives a signed-in person the content manager search", () => {
     expect(answers()[callName(SIGNED_IN_SEARCH)]?.status).toBe(200);
+  });
+
+  it("lists the MCP tools for an API token", () => {
+    expect(answers()[callName(TOKEN_MCP)]).toMatchObject({
+      status: 200,
+      body: expect.stringContaining('"tools"'),
+    });
+  });
+
+  it("refuses the MCP server to a signed-in browser with no API token", () => {
+    expect(answers()[callName(SESSION_MCP)]).toMatchObject({
+      status: 401,
+      body: expect.stringContaining("NOT_AUTHENTICATED"),
+    });
+  });
+
+  it("refuses the MCP server to a token that EmDash does not know", () => {
+    expect(answers()[callName(FORGED_MCP)]).toMatchObject({
+      status: 401,
+      body: expect.stringContaining("INVALID_TOKEN"),
+    });
   });
 
   it("passes a schema change from an API token on to the content manager", () => {
