@@ -1,12 +1,9 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { DUMMY_SITEKEYS } from "../../scripts/turnstile-dummy-keys.mjs";
 import { TEST_SITEKEY } from "./helpers.ts";
 
-const CARRIERS = [
-  "src/lib/turnstile.ts",
-  "scripts/turnstile-dummy-keys.mjs",
-  "tests/site/build.setup.ts",
-] as const;
+const CARRIERS = ["scripts/turnstile-dummy-keys.mjs", "tests/site/build.setup.ts"] as const;
 
 function read(path: string): string {
   return readFileSync(path, "utf8");
@@ -18,6 +15,19 @@ describe("the test sitekey literal", () => {
       expect(read(path)).toContain(`"${TEST_SITEKEY}"`);
     });
   }
+});
+
+describe("the site code that the Worker bundles", () => {
+  const shipped = readdirSync("src", { recursive: true, encoding: "utf8" }).filter(
+    (path) => /\.(ts|astro|mjs)$/.test(path) && !path.endsWith(".test.ts"),
+  );
+
+  it("carries no dummy sitekey, because the dist guard refuses a Worker that does", () => {
+    const carriers = shipped.filter((path) =>
+      DUMMY_SITEKEYS.some((key) => read(`src/${path}`).includes(key)),
+    );
+    expect(carriers).toEqual([]);
+  });
 });
 
 describe("every build path that uses the test sitekey opts in explicitly", () => {
