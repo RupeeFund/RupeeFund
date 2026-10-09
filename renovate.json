@@ -23,7 +23,7 @@
       "automerge": true
     },
     {
-      "description": "EmDash migrates the content database on the first request after a deploy. Ship each bump on purpose, after the export in docs/DEPLOY.md.",
+      "description": "EmDash migrates the content database on the first request after a deploy. Ship each bump on purpose, with the steps in docs/DEPLOY.md section 11.3.",
       "groupName": "EmDash",
       "matchPackageNames": ["emdash", "@emdash-cms/**"],
       "automerge": false
