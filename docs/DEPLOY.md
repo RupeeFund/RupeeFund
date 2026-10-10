@@ -278,9 +278,9 @@ A new content database needs the setup wizard. After the deploy, sign in as a me
 
 ### 11.2 Add a person
 
-Add the person to one team of the `RupeeFund` GitHub organization: `cms-authors`, `cms-editors` or `cms-admins`. Send them a link to `docs/EDITING.md`. EmDash makes the account at the first sign-in.
+Add the person to one content team of the `RupeeFund` GitHub organization (`docs/EDITING.md` section 1). Send them a link to `docs/EDITING.md`. EmDash makes the account at the first sign-in.
 
-To remove a person, remove them from the team. The removal takes effect at the latest after 8 hours. To lock the person out at once, also disable the account in **Users**.
+To remove a person, remove them from the team. The removal takes effect at the latest when the session ends (`docs/ARCHITECTURE.md` section 11.3). To lock the person out at once, also disable the account in **Users**.
 
 The GitHub App `the-rupee-fund-cms` of the organization runs the sign-in. It needs two permissions, **Members** (read) and **Email addresses** (read), and two callback addresses, `https://rupeefund.org/auth/callback` and `http://localhost:8789/auth/callback`. It must be installed on the `RupeeFund` organization, or it cannot read the teams. Its client ID is `GITHUB_CLIENT_ID` in `apps/web/wrangler.jsonc`. To make a new client secret, open the settings of the app and click **Generate a new client secret**. Then set it (section 5).
 
@@ -356,3 +356,31 @@ A rate-limit rule on the zone limits one address to 100 requests in 10 seconds. 
    ```txt
    (not starts_with(http.request.uri.path, "/_astro/"))
    ```
+
+## 12. How to open the fund
+
+The site says that the fund takes no payment yet. On the day the fund takes money, change each place below. Then promote (section 3).
+
+In the code:
+
+- `apps/web/src/pages/subscribe.astro`: the intro (**Nothing to pay today**) and the consent line (**By signing up, you agree**).
+- `apps/web/src/pages/waitlist-confirmed.astro`: **No payment yet**.
+- `apps/web/src/components/site/SignupCard.astro`: the heading **Hear when the fund opens** and **Nothing to pay today**.
+- `apps/web/src/lib/seo.ts`: the two descriptions of `/refunds` (**This site takes no payments yet**).
+
+In the content manager (section 11), then the same words in `apps/web/seed/seed.json` and `apps/web/src/content/entries.fixture.json`:
+
+- **Pages** › `privacy`: the paragraph with **We take no payment. We hold no payment details.**
+- **Pages** › `terms`: the sections **Before the fund opens** and **Before contributions open**.
+- **Pages** › `refunds`: the section **Before the fund opens**, and **follow the rules that we publish before contributions open**. Publish the refund contact, the claim period and the steps to cancel a recurring payment.
+- **FAQ** › `who-runs`: **When contributions open**.
+- **FAQ** › `start-date`: **There is nothing to pay now** and **as soon as contributions open**.
+- **FAQ** › `your-data`: **We do not need any payment details today**.
+
+In the docs: `docs/ARCHITECTURE.md` (**It takes no payment**, **It stores no payment instrument**) and `AGENTS.md`.
+
+Some tests check the words of today. Change them with the words:
+
+- `apps/web/tests/site/home.test.ts` and `apps/web/src/components/site/render.test.ts`: **Hear when the fund opens**.
+- `apps/web/tests/site/subscribe.test.ts`: **takes no payment**.
+- `apps/web/tests/site/csp.test.ts`: **names no payment origin**.

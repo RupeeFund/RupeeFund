@@ -25,7 +25,7 @@ Examples:
 
 Change the look only for a defect, for a brand rule or for a request from a maintainer. The live site is the baseline. A finding from an audit, a review or a design panel is not a request. Report it to a maintainer.
 
-- **Layout.** Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it. The components in `src/components/site/` and `src/components/people/` hold the layout of each page that the content manager fills. The home page and the people page take their words from `src/content/home.mdx` and `src/content/people.mdx`, and their layout from the section components in `src/components/home/` and `src/components/people/`.
+- **Layout.** Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it. The components in `src/components/site/` and `src/components/people/` hold the layout of each page that the content manager fills. The section components in `src/components/home/` and `src/components/people/` hold the layout of the home page and the people page. `docs/ARCHITECTURE.md` section 11 tells where their words are. The home sections, in page order, are `Hero`, `Pitch`, `Steps` with `Step`, `Reasons` with `Reason`, `Groups` with `Group`, and `Questions`. The people sections, in page order, are `Team`, `Join` and `Foundation`.
 - **Page types.** Each type of page has its own layout rule. Use the rule of the type when you add a page.
   - Home: its own grid. Only the home page uses it.
   - Signup form, `/subscribe`: the form and its aside, in two columns.
@@ -47,7 +47,7 @@ Change the look only for a defect, for a brand rule or for a request from a main
 - **Admin panel.** `apps/admin/src/admin.css` adds the styles that only the admin panel uses: the sidebar, the tables, the status marks and the chart. Take each colour from a brand token. Do not write a colour value.
 - **Season accents.** `SEASONS` in `src/components/site/constants.ts` holds them. `src/lib/launch.test.ts` keeps white text on each accent at 4.5:1.
 - **Pixel art.** The season sprites are in `apps/web/public/seasons/`, and the growth sprites (seedling, sapling, mature tree) are in `apps/web/public/growth/`. The season cards show a sprite at 48 px. The growth cards show a sprite at 4 times its grid.
-- **Brand files.** `pnpm brand:sync` writes them. Do not edit them by hand. `apps/web/scripts/brand-sync.mts` lists them.
+- **Brand files.** `pnpm brand:sync` writes them. `apps/web/scripts/brand-sync.mts` lists them. `docs/ARCHITECTURE.md` section 9 gives the rules.
 - **Visual check.** Check each visual change in a browser at 360 × 640 and at 1440 × 900. Check it with and without reduced motion.
 
 ## Pages
@@ -60,7 +60,7 @@ Write the words on the site in the Voice of the brand guidelines. Do not use ASD
 
 A FAQ answer can hold several paragraphs, bold and italics. `.faq-answer` in `packages/ui/src/styles.css` spaces the paragraphs and sets bold text in ink. The site loads the italic Inter for `em`.
 
-The content manager holds the words of the pages (`docs/EDITING.md`). Change them at `rupeefund.org/admin`, not in the code. The home page and the people page are the exceptions: their words are in `src/content/`. The test of the seed content fails on a figure in an FAQ answer without a source. The live site does not check it.
+The content manager holds the words of the pages (`docs/EDITING.md`). Change them at `rupeefund.org/admin`, not in the code. `docs/ARCHITECTURE.md` section 11 names the exceptions. The test of the seed content fails on a figure in an FAQ answer without a source. The live site does not check it.
 
 ## Link preview cards
 

@@ -98,6 +98,7 @@ Every Cloudflare resource of this repository follows these rules. A fork deploys
 
 - A page of the site gets the content security policy of the site and refuses a frame.
 - An answer under `/_emdash/` does not get the policy of the site. It gets `x-robots-tag: noindex, nofollow`, so search engines do not list the content manager.
+- In production, EmDash sets its own policy on each answer that it makes under `/_emdash/`. That policy refuses a frame, and it permits inline scripts and images from each `https:` host. The 302, 401 and 404 answers from `src/outer.ts` get no policy. They hold only text or JSON.
 
 The policy permits inline scripts for two reasons. The build emits inline module scripts. Bot Fight Mode on the zone injects one inline script. The policy also permits `static.cloudflareinsights.com` because Web Analytics on the zone injects its beacon.
 
@@ -210,13 +211,13 @@ The page frame and the sidebar links work without JavaScript. The sidebar toggle
 
 The Worker logs `export` with the reader, the stamp time `at` and the count, before it builds the file. It logs `export_denied` for each refusal. It then drops the cached `/api/summary` in its own data centre. Another data centre can serve the old count for up to 60 seconds. An empty batch answers `204`.
 
-The dashboard reads the count again, past the browser cache. It shows the count in a confirmation dialog. The file carries full addresses. If the file fails to save after the stamp, the page says so and names the batch time `at`.
+The dashboard reads the count again, past the browser cache. It shows the count in a confirmation dialog. The file carries full addresses. If the file fails to save after the stamp, the page says so and names the batch time `at`. If the request fails with no answer or with a server error, the page says that the export may have run.
 
 If you lose a download after the stamp, read `at` from the log. Then follow `docs/DEPLOY.md` section 8.
 
 ## 11. The content manager
 
-EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the words of the pages (`docs/EDITING.md`). A page that is an app, such as `/subscribe`, stays in code. The words of the home page are in `src/content/home.mdx`, and the section components in `src/components/home/` hold its layout. The words of the people page are in `src/content/people.mdx`, and the components in `src/components/people/` hold its layout. The community team stays in the content manager. The links of the header and the footer are in `src/components/site/constants.ts`.
+EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the words of the pages (`docs/EDITING.md`). A page that is an app, such as `/subscribe`, stays in code. The words of the home page are in `src/content/home.mdx`, and the words of the people page are in `src/content/people.mdx`. `docs/DESIGN.md` names the components that hold their layout. The community team stays in the content manager. The links of the header and the footer are in `src/components/site/constants.ts`.
 
 `apps/web/astro.config.mjs` sets up EmDash: the content database, the media bucket, the look of the admin, the outer middleware (section 8) and the site plugin `src/plugin.ts` (section 11.4).
 
@@ -237,22 +238,16 @@ A read of the database that fails shows `src/pages/500.astro`.
 - `src/outer.ts` answers 401 to a call to `/_emdash/api/*` with no GitHub sign-in, before EmDash starts. So a visitor cannot use the search, the comments or the other sign-in methods of EmDash, and cannot make EmDash write to the database.
 - An API token opens only the routes where EmDash checks the token. The list in `src/lib/edge.ts` follows the public routes of EmDash.
 - Two EmDash routes stay open to all: the published files under `/_emdash/api/media/file/` and **Log out**.
-- A request for a page under `/_emdash/admin` with no sign-in goes to `/auth/login`. The EmDash login page goes to `/`. Each other call with no sign-in gets 401.
+- A request for a page under `/_emdash/admin` with no sign-in goes to `/auth/login`. After the sign-in, the browser goes back to that page. The EmDash login page goes to `/`. Each other call with no sign-in gets 401.
 - Two WAF rules on the zone block common scanner paths and limit the requests of each address, before they start the Worker (`docs/DEPLOY.md` section 11.6).
 
 ### 11.3 Who gets in
 
-People sign in with GitHub. `src/outer.ts` serves `/auth/login` and `/auth/callback` with the code in `packages/auth`. The callback reads the teams of the person in the `RupeeFund` organization:
+People sign in with GitHub. `src/outer.ts` serves `/auth/login` and `/auth/callback` with the code in `packages/auth`. The callback reads the teams of the person in the `RupeeFund` organization. `packages/auth/src/github.ts` maps each team to a role, and `docs/EDITING.md` section 1 lists them for editors.
 
-| GitHub team   | Role        |
-| ------------- | ----------- |
-| `cms-admins`  | Admin (50)  |
-| `cms-editors` | Editor (40) |
-| `cms-authors` | Author (30) |
+A person in no team does not get in, and EmDash makes no account. `docs/EDITING.md` section 1 gives the other sign-in rules: the role of a person in two teams, the email, and the session length.
 
-A person in two teams gets the higher role. A person in no team, or with no verified primary email, does not get in, and EmDash makes no account.
-
-The callback sets a signed cookie for 8 hours. On each request, `src/auth/emdash.ts` gives EmDash the person in that cookie, and EmDash sets the role from it. So a team change takes effect at the next sign-in (`docs/DEPLOY.md` section 11.2).
+The callback sets a signed cookie for the session (`IDENTITY_SECONDS` in `packages/auth/src/routes.ts`). On each request, `src/auth/emdash.ts` gives EmDash the person in that cookie, and EmDash sets the role from it. So a team change takes effect at the next sign-in (`docs/DEPLOY.md` section 11.2).
 
 The sessions stay in the content database (`src/auth/session-store.ts`), because EmDash writes the session on each request and KV takes one write per second to a key. `src/outer.ts` ends the session when the signed cookie is missing or not valid. **Log out** in the content manager clears both.
 
@@ -266,14 +261,14 @@ Two parts hold the rules. When you change one, read the other.
 - Nobody deletes a legal page. To remove one, an admin changes its kind to `page` first.
 - The content manager refuses each schedule. An entry goes live only when a person publishes it.
 
-`src/middleware.ts` refuses a write by a person below Admin to the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each change to the model from a browser session: the collections, the fields, the relations, the byline fields and the taxonomies. Only an API token changes the model (section 11.6).
+`src/middleware.ts` refuses a write by a person below Admin to the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each change to the model from a browser session: the collections, the fields, the relations, the byline fields and the taxonomies. Only an API token changes the model (section 11.6). The middleware refuses the delete of a legal page from each person, and tells them to change the kind first. When the database does not answer, the middleware refuses the write with a 503.
 
 A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. It runs the EmDash maintenance. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A run that starts late skips the clean-up until the next day. The clean-up:
 
 - removes expired sign-in challenges and tokens
 - removes uploads that did not finish, from D1 and R2
 - keeps the newest 10,000 rows of the 404 log
-- keeps the newest 50 revisions of an entry and deletes the older revisions for good
+- keeps the newest revisions of an entry and deletes the older revisions for good (`docs/EDITING.md` section 3 gives how many)
 - removes stale media-usage rows and old transfer files in R2
 
 A scheduled backup in the EmDash settings also runs then, if an admin turns it on. One run each day is enough, because the site refuses schedules.
