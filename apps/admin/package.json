@@ -18,7 +18,7 @@
     "@fontsource-variable/inter": "catalog:",
     "@rupeefund/db": "workspace:*",
     "@rupeefund/ui": "workspace:*",
-    "@tailwindcss/cli": "^4.3.3",
+    "@tailwindcss/cli": "catalog:",
     "@types/node": "catalog:",
     "jsdom": "catalog:",
     "tailwindcss": "catalog:",

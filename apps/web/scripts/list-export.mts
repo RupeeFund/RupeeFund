@@ -1,4 +1,6 @@
 import { execFileSync } from "node:child_process";
+import { realpathSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 import {
   BATCH,
   claimPending,
@@ -59,4 +61,5 @@ function main() {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) main();
+if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href)
+  main();

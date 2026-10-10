@@ -3,12 +3,12 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["PUBLIC_*", "TURNSTILE_*"],
-      "inputs": ["$TURBO_DEFAULT$", ".env"],
+      "env": ["PUBLIC_*", "TURNSTILE_*", "WORKERS_CI"],
+      "inputs": ["$TURBO_DEFAULT$", ".env", "!tests/**", "!playwright.config.ts", "!vitest*.ts"],
       "outputs": ["dist/**"],
     },
     "typecheck": {
-      "outputs": [],
+      "outputs": ["worker-configuration.d.ts"],
     },
     "test": {
       "inputs": [

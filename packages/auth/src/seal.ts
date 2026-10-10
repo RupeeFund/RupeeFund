@@ -1,7 +1,7 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-async function hmacKey(secret: string): Promise<CryptoKey> {
+async function hmacKey(secret: string) {
   if (!secret) throw new Error("The signing secret is empty");
   return crypto.subtle.importKey(
     "raw",

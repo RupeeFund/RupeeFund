@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { routes } from "../routes.ts";
 
 test("the skip link targets main content and is focusable", async ({ page }) => {
   await page.goto("/");
@@ -67,3 +69,20 @@ test("forced colors keep the new-tab arrow, the card edge and the step line", as
     .evaluate((step) => getComputedStyle(step, "::before").backgroundColor);
   expect(line).toBe(await page.evaluate(() => getComputedStyle(document.body).color));
 });
+
+const WCAG_22_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
+
+for (const width of [360, 1440]) {
+  test(`each page passes the WCAG 2.2 AA axe rules at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    for (const route of routes) {
+      await page.goto(route);
+      const { violations } = await new AxeBuilder({ page }).withTags(WCAG_22_AA).analyze();
+      expect(
+        violations.map(({ id, nodes }) => `${id}: ${nodes.map((node) => node.target).join(", ")}`),
+        route,
+      ).toEqual([]);
+    }
+  });
+}

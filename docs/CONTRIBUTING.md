@@ -65,7 +65,7 @@ pnpm check       # types, lint and tests
 pnpm test:e2e    # browser tests
 ```
 
-CI runs these checks on each pull request. It also runs `pnpm audit --prod`, the production build and a word check. `.github/workflows/ci.yml` lists the steps.
+CI runs these checks on each pull request. It also runs `pnpm audit --prod`, the production build, a word check and the Lighthouse budgets. To run the budgets on your computer, use `pnpm --filter @rupeefund/web test:lighthouse`. `.github/workflows/ci.yml` lists the steps.
 
 ## Read next
 

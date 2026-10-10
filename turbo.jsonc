@@ -4,7 +4,7 @@
   "agentGuidance": false,
   "cacheDir": ".turbo/cache",
   "globalDependencies": ["tsconfig.base.json"],
-  "globalPassThroughEnv": ["CI", "CLOUDFLARE_*", "WRANGLER_*", "WORKERS_CI*"],
+  "globalPassThroughEnv": ["CI", "CLOUDFLARE_*", "DEBUG", "PWDEBUG", "WRANGLER_*", "WORKERS_CI*"],
   "tasks": {
     "transit": { "dependsOn": ["^transit"] },
     "build": {

@@ -24,7 +24,7 @@
     "lint:fix": "oxlint --fix",
     "format": "oxfmt --ignore-path .gitignore && prettier --write .",
     "format:check": "oxfmt --ignore-path .gitignore --check && prettier --check .",
-    "check": "turbo run typecheck test && pnpm run lint",
+    "check": "pnpm run lint && turbo run typecheck test",
     "brand:sync": "pnpm --filter @rupeefund/web run brand:sync",
     "db:reset": "pnpm --filter @rupeefund/web run db:reset && pnpm --filter @rupeefund/admin run seed",
     "db:migrate": "pnpm --filter @rupeefund/web run db:migrate",

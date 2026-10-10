@@ -2,18 +2,8 @@
 // The evaluate callbacks read layout in the browser. The DOM lib stays scoped
 // to the files that need it rather than widening tsconfig.node.json.
 import { expect, test } from "@playwright/test";
-import { readdirSync } from "node:fs";
-import { PAGES, POST_SLUGS } from "../../fixtures/content.ts";
+import { pages, posts, routes } from "../routes.ts";
 
-const posts = POST_SLUGS.map((slug) => `/blog/${slug}`);
-const pages = PAGES.map(({ slug }) => `/${slug}`);
-const routes = [
-  ...readdirSync("src/pages")
-    .filter((file) => file.endsWith(".astro") && !file.startsWith("["))
-    .map((file) => (file === "index.astro" ? "/" : `/${file.slice(0, -6)}`)),
-  ...pages,
-  ...posts,
-];
 const READING = [...pages, "/blog", ...posts];
 const FRAMED = routes.filter((route) => !READING.includes(route));
 
