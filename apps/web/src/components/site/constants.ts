@@ -2,7 +2,7 @@ export const SUBSCRIBE_CTA = "I am interested";
 
 export const REMOVAL_ADDRESS = "rupeefund@fossunited.org";
 
-export const TAGLINE = "Not charity — membership in a commons";
+export const TAGLINE = "Lots of us, a little each month, for great projects from India";
 
 export interface NavLink {
   label: string;

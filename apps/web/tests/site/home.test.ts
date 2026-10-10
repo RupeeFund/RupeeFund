@@ -9,13 +9,13 @@ describe("Home page (/)", () => {
     expect(main.match(/<h1[^>]*>([^<]*)<\/h1>/)?.[1]).toBe("The&nbsp;Rupee&nbsp;Fund");
     expect(main.indexOf("<h1")).toBeLessThan(main.indexOf("data-tagline"));
     expect(/data-tagline[^>]*>\s*([^<]*?)\s*</.exec(main)?.[1]).toBe(
-      "Not charity — membership in a commons",
+      "Lots of us, a little each month, for great projects from India",
     );
   });
 
   it("cites a source for the developer figure in the band", () => {
     const band =
-      /<h2[^>]*>Lots of us, a little each month, for great projects from India<\/h2>([\s\S]*?)<\/section>/.exec(
+      /<h2[^>]*>From silicon to software, every project needs support<\/h2>([\s\S]*?)<\/section>/.exec(
         html,
       )?.[1] ?? "";
     expect(band).toMatch(/2(&nbsp;|\u00a0)crore developers/);
@@ -45,6 +45,7 @@ describe("Home page (/)", () => {
     ]) {
       expect(main).toContain(`>${reason}</h3>`);
     }
+    expect(main).toContain(">What you help fund</h2>");
     expect(main).toContain(">Frequently asked questions</h2>");
   });
 

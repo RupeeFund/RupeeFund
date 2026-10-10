@@ -1,5 +1,13 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
 <section aria-labelledby="why-title" class="wrap section-y bg-white">
-  <h2 id="why-title" class="sr-only">Why contribute</h2>
+  <h2 id="why-title" class="section-title text-ink">{title}</h2>
   <div class="grid gap-10 lg:grid-cols-3 lg:gap-16">
     <slot />
   </div>

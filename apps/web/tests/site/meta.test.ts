@@ -109,7 +109,7 @@ describe("head metadata", () => {
           '<meta property="og:image:width" content="1200">' +
           '<meta property="og:image:height" content="630">' +
           '<meta property="og:image:alt" content="The logo of The Rupee Fund. ' +
-          "Not charity — membership in a commons. " +
+          "Lots of us, a little each month, for great projects from India. " +
           'A community initiative from FOSS United.">',
       );
     }
