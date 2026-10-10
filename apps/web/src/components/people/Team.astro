@@ -17,6 +17,16 @@ const initials = (name: string) =>
     .join("")
     .slice(0, 2);
 
+const PHOTO_WIDTH = 200;
+
+const sized = (url: string) => {
+  const photo = new URL(url);
+  const param = photo.hostname === "github.com" ? "size" : "s";
+  photo.searchParams.delete(param === "size" ? "s" : "size");
+  photo.searchParams.set(param, String(PHOTO_WIDTH * 2));
+  return photo.href;
+};
+
 const handle = (member: Person) =>
   member.username ? `@${member.username}` : "FOSS United profile";
 ---
@@ -30,25 +40,25 @@ const handle = (member: Person) =>
         <article class="card flex flex-col items-start gap-4 sm:flex-row">
           {member.photoUrl ? (
             <img
-              src={member.photoUrl}
+              src={sized(member.photoUrl)}
               alt=""
-              width="64"
-              height="64"
+              width={PHOTO_WIDTH}
+              height={PHOTO_WIDTH}
               loading="lazy"
               decoding="async"
-              class="h-16 w-16 shrink-0 rounded-full bg-brand-50 object-cover
+              class="aspect-square w-1/3 max-w-50 shrink-0 rounded-full bg-brand-50 object-cover
                 outline -outline-offset-1 outline-black/10"
             />
           ) : (
             <div
-              class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-50
-                text-lg font-semibold text-brand-fg"
+              class="flex aspect-square w-1/3 max-w-50 shrink-0 items-center justify-center rounded-full
+                bg-brand-50 text-4xl font-semibold text-brand-fg"
               aria-hidden="true"
             >
               {initials(member.name)}
             </div>
           )}
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1">
             <h3 class="text-lg text-ink mb-1">{member.name}</h3>
             {member.profileUrl ? (
               <a
