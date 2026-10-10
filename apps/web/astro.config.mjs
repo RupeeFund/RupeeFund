@@ -9,6 +9,8 @@ import { fileURLToPath } from "node:url";
 import { writeSiteCard } from "./src/build/og.ts";
 import { SITE_NAME, SITE_URL } from "./src/lib/seo.ts";
 
+const dev = process.argv.includes("dev");
+
 const ogCard = {
   name: "og-card",
   hooks: {
@@ -40,7 +42,7 @@ export default defineConfig({
     emdash({
       database: d1({ binding: "DB" }),
       storage: r2({ binding: "MEDIA" }),
-      siteUrl: process.argv.includes("dev") ? undefined : SITE_URL,
+      siteUrl: dev ? undefined : SITE_URL,
       admin: {
         siteName: SITE_NAME,
         logo: "/logo.svg",
@@ -67,6 +69,7 @@ export default defineConfig({
   server: { port: Number(process.env.PORT ?? 8787) },
   devToolbar: { enabled: false },
   vite: {
+    cacheDir: dev ? undefined : "node_modules/.vite-build",
     plugins: [tailwindcss()],
   },
 });
