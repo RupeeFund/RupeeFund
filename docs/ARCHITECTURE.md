@@ -216,17 +216,17 @@ If you lose a download after the stamp, read `at` from the log. Then follow `doc
 
 ## 11. The content manager
 
-EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the words of the pages (`docs/EDITING.md`). A page that is an app, such as `/subscribe`, stays in code. The words of the home page are in `src/content/home.mdx`, and the section components in `src/components/home/` hold its layout. The links of the header and the footer are in `src/components/site/constants.ts`.
+EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin`. It holds the words of the pages (`docs/EDITING.md`). A page that is an app, such as `/subscribe`, stays in code. The words of the home page are in `src/content/home.mdx`, and the section components in `src/components/home/` hold its layout. The words of the people page are in `src/content/people.mdx`, and the components in `src/components/people/` hold its layout. The community team stays in the content manager. The links of the header and the footer are in `src/components/site/constants.ts`.
 
 `apps/web/astro.config.mjs` sets up EmDash: the content database, the media bucket, the look of the admin, the outer middleware (section 8) and the site plugin `src/plugin.ts` (section 11.4).
 
 ### 11.1 How a page gets its content
 
-Each page reads the published entries when a request comes. `src/content/load.ts` reads them through EmDash. `src/content/entries.ts` checks each entry against `src/content/schema.ts` and gives it to the components in `src/components/site/`. The site has no content build and no content cache, so the next page load shows a publish.
+Each page reads the published entries when a request comes. `src/content/load.ts` reads them through EmDash. `src/content/entries.ts` checks each entry against `src/content/schema.ts` and gives it to the components in `src/components/site/` and `src/components/people/`. The site has no content build and no content cache, so the next page load shows a publish.
 
 An entry that fails the check does not show. A list leaves it out, and the page of that entry answers 404. The log of the site Worker then gets `The site leaves out an entry:`, with the entry and the problem.
 
-A people page that fails the check, or a read of the database that fails, shows `src/pages/500.astro`.
+A read of the database that fails shows `src/pages/500.astro`.
 
 ### 11.2 The public addresses
 
@@ -293,7 +293,7 @@ Each collection has typed fields. The layout stays in code, so an editor changes
 - `apps/web/seed/seed.json`, the model of a new database
 - the live database, with an API token (`docs/DEPLOY.md` section 11.5)
 - `src/content/schema.ts` and the map in `src/content/entries.ts`
-- the component in `src/components/site/`
+- the component in `src/components/site/`, or `src/components/people/` for the community team
 
 The seed applies only to a new database, such as the local one that `pnpm db:reset` makes.
 

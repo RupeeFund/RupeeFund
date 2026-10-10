@@ -2,13 +2,11 @@ import type { z } from "zod";
 import {
   faqEntry,
   page,
-  peoplePage,
   person,
   post,
   type FaqEntry,
   type Image,
   type Page,
-  type PeoplePage,
   type Person,
   type Post,
 } from "./schema.ts";
@@ -176,21 +174,6 @@ function toFaqEntry({ slug, data }: Entry): FaqEntry {
       sources: data.sources ?? [],
     },
     where,
-  );
-}
-
-export function toPeoplePage(data: Raw): PeoplePage {
-  return parsed(
-    peoplePage,
-    {
-      teamTitle: data.team_title,
-      teamIntro: data.team_intro,
-      joinTitle: data.join_title,
-      joinBody: data.join_body,
-      foundationTitle: data.foundation_title,
-      foundationBody: portableText(data.foundation_body, "people page"),
-    },
-    "people page",
   );
 }
 

@@ -117,12 +117,6 @@ const refused = z
   .object({ _type: z.enum(["iframe", "htmlBlock"]) })
   .refine(() => false, "The site does not show embeds or raw HTML. Remove the block.");
 
-const paragraph = textBlock.refine((block) => block.style === "normal" && !block.listItem, {
-  message: "Use a plain paragraph here: no heading, list or quote",
-});
-
-const oneParagraph = z.array(paragraph).length(1, "Use one paragraph here");
-
 const text = z.string().trim().min(1);
 
 const callout = z.object({
@@ -183,15 +177,6 @@ export const faqEntry = z.object({
   sources: z.array(z.object({ title: text, url: href })),
 });
 
-export const peoplePage = z.object({
-  teamTitle: text,
-  teamIntro: text,
-  joinTitle: text,
-  joinBody: text,
-  foundationTitle: text,
-  foundationBody: oneParagraph,
-});
-
 export const person = z.object({
   slug,
   name: text,
@@ -212,7 +197,6 @@ export const page = z.object({
 
 export type Post = z.output<typeof post>;
 export type FaqEntry = z.output<typeof faqEntry>;
-export type PeoplePage = z.output<typeof peoplePage>;
 export type Person = z.output<typeof person>;
 export type Page = z.output<typeof page>;
 export type PortableText = z.input<typeof portableText>;

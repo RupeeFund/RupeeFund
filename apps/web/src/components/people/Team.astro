@@ -1,14 +1,14 @@
 ---
-import { toInlineHtml } from "../../content/html.ts";
-import type { PeoplePage, Person } from "../../content/schema.ts";
+import type { Person } from "../../content/schema.ts";
+import { people } from "../../content/load.ts";
 
 interface Props {
-  page: PeoplePage;
-  people: Person[];
-  joinMail: string;
+  title: string;
+  intro: string;
 }
 
-const { page, people, joinMail } = Astro.props;
+const { title, intro } = Astro.props;
+const members = await people();
 
 const initials = (name: string) =>
   name
@@ -22,11 +22,11 @@ const handle = (member: Person) =>
 ---
 
 <section aria-labelledby="community-team" class="mb-14">
-  <h2 id="community-team" class="text-2xl text-ink mb-3">{page.teamTitle}</h2>
-  <p class="text-sm text-ink-2 text-pretty mb-6">{page.teamIntro}</p>
+  <h2 id="community-team" class="text-2xl text-ink mb-3">{title}</h2>
+  <p class="text-sm text-ink-2 text-pretty mb-6">{intro}</p>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
     {
-      people.map((member) => (
+      members.map((member) => (
         <article class="card flex flex-col items-start gap-4 sm:flex-row">
           {member.photoUrl ? (
             <img
@@ -68,33 +68,6 @@ const handle = (member: Person) =>
         </article>
       ))
     }
-    <aside
-      aria-labelledby="join-the-team"
-      class="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-ink/15 p-6
-      sm:flex-row sm:p-8"
-    >
-      <div
-        class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-ink/8 text-2xl
-        text-ink-3"
-        aria-hidden="true"
-      >
-        ?
-      </div>
-      <div class="min-w-0">
-        <h3 id="join-the-team" class="text-lg text-ink-3 mb-1">{page.joinTitle}</h3>
-        <span class="text-sm text-ink-3">@yourname</span>
-        <p class="mt-3 text-sm text-ink-3 text-pretty">{page.joinBody}</p>
-        <p class="mt-3 text-sm">
-          <a href={joinMail} class="inline-link"> Get in touch </a>
-        </p>
-      </div>
-    </aside>
-  </div>
-</section>
-
-<section aria-labelledby="foss-united-staff">
-  <div>
-    <h2 id="foss-united-staff" class="text-2xl text-ink mb-3">{page.foundationTitle}</h2>
-    <p class="text-sm text-ink-2 text-pretty" set:html={toInlineHtml(page.foundationBody)} />
+    <slot />
   </div>
 </section>

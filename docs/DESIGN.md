@@ -25,7 +25,7 @@ Examples:
 
 Change the look only for a defect, for a brand rule or for a request from a maintainer. The live site is the baseline. A finding from an audit, a review or a design panel is not a request. Report it to a maintainer.
 
-- **Layout.** Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it. The components in `src/components/site/` hold the layout of each page that the content manager fills. The home page takes its words from `src/content/home.mdx` and its layout from the section components in `src/components/home/`.
+- **Layout.** Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it. The components in `src/components/site/` and `src/components/people/` hold the layout of each page that the content manager fills. The home page and the people page take their words from `src/content/home.mdx` and `src/content/people.mdx`, and their layout from the section components in `src/components/home/` and `src/components/people/`.
 - **Page types.** Each type of page has its own layout rule. Use the rule of the type when you add a page.
   - Home: its own grid. Only the home page uses it.
   - Signup form, `/subscribe`: the form and its aside, in two columns.
@@ -59,7 +59,7 @@ Write the words on the site in the Voice of the brand guidelines. Do not use ASD
 
 A FAQ answer can hold several paragraphs, bold and italics. `.faq-answer` in `packages/ui/src/styles.css` spaces the paragraphs and sets bold text in ink. The site loads the italic Inter for `em`.
 
-The content manager holds the words of the pages (`docs/EDITING.md`). Change them at `rupeefund.org/admin`, not in the code. The test of the seed content fails on a figure in an FAQ answer without a source. The live site does not check it.
+The content manager holds the words of the pages (`docs/EDITING.md`). Change them at `rupeefund.org/admin`, not in the code. The home page and the people page are the exceptions: their words are in `src/content/`. The test of the seed content fails on a figure in an FAQ answer without a source. The live site does not check it.
 
 ## Link preview cards
 

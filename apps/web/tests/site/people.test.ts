@@ -25,8 +25,23 @@ describe("People page (/people)", () => {
     expect(html).toMatch(/href="mailto:[^"]*subject=Joining/);
   });
 
-  it("links to the Foundation team", () => {
-    expect(html).toContain('href="https://fossunited.org/team"');
+  it("links to the Foundation team in a new tab", () => {
+    expect(html).toMatch(
+      /<a href="https:\/\/fossunited\.org\/team" target="_blank" rel="noopener noreferrer" class="inline-link">FOSS United team<\/a>/,
+    );
+  });
+
+  it("shows the team, join and Foundation words", () => {
+    for (const words of [
+      ">Community team</h2>",
+      "Meet the volunteers from the FOSS United community who run",
+      ">You, or someone you know?</h3>",
+      "Bring ideas, skills, and a little time to the community team",
+      ">FOSS United Foundation</h2>",
+      "is the fiscal host of",
+    ]) {
+      expect(html).toContain(words);
+    }
   });
 
   it("names the page People in its title and heading, at its canonical URL", () => {

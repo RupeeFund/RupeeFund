@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { faqEntry, isSafeHref, page, peoplePage, person, post } from "./schema.ts";
-import { validFaq, validPage, validPeoplePage, validPerson, validPost } from "./fixture.ts";
+import { faqEntry, isSafeHref, page, person, post } from "./schema.ts";
+import { validFaq, validPage, validPerson, validPost } from "./fixture.ts";
 
 describe("a safe link", () => {
   it.each(["https://fossunited.org", "mailto:rupeefund@fossunited.org", "/privacy", "#top"])(
@@ -28,31 +28,12 @@ describe("the entry schemas", () => {
   it("accept a complete entry of each collection", () => {
     expect(post.safeParse(validPost()).success).toBe(true);
     expect(faqEntry.safeParse(validFaq()).success).toBe(true);
-    expect(peoplePage.safeParse(validPeoplePage()).success).toBe(true);
     expect(person.safeParse(validPerson()).success).toBe(true);
     expect(page.safeParse(validPage()).success).toBe(true);
   });
 
   it("refuses a title that holds only spaces", () => {
     expect(post.safeParse({ ...validPost(), title: "   " }).success).toBe(false);
-  });
-
-  it("refuses a heading or a list where the page expects a plain paragraph", () => {
-    const team = validPeoplePage();
-    const [block] = team.foundationBody;
-    expect(
-      peoplePage.safeParse({ ...team, foundationBody: [{ ...block!, style: "h2" }] }).success,
-    ).toBe(false);
-    expect(
-      peoplePage.safeParse({ ...team, foundationBody: [{ ...block!, listItem: "bullet" }] })
-        .success,
-    ).toBe(false);
-  });
-
-  it("refuses two paragraphs in the foundation text, because the page shows one", () => {
-    const team = validPeoplePage();
-    const body = [...team.foundationBody, ...team.foundationBody];
-    expect(peoplePage.safeParse({ ...team, foundationBody: body }).success).toBe(false);
   });
 
   it("refuses a team photo address that is not a URL, with a schema message", () => {

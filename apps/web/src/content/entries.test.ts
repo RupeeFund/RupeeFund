@@ -1,15 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import fixture from "./entries.fixture.json";
-import {
-  ContentError,
-  toFaq,
-  toPage,
-  toPeople,
-  toPeoplePage,
-  toPost,
-  toPosts,
-  type Entry,
-} from "./entries.ts";
+import { ContentError, toFaq, toPage, toPeople, toPost, toPosts, type Entry } from "./entries.ts";
 
 type Collections = Record<keyof typeof fixture, Entry[]>;
 
@@ -172,10 +163,6 @@ describe("the FAQ and the team", () => {
 });
 
 describe("a single entry", () => {
-  it("maps the people page", () => {
-    expect(toPeoplePage(entries().people_page[0]!.data).teamTitle).toBeTruthy();
-  });
-
   it("maps a legal page with its effective date", () => {
     const terms = entries().pages.find((entry) => entry.slug === "terms")!;
     expect(toPage(terms)).toMatchObject({ slug: "terms", kind: "legal" });

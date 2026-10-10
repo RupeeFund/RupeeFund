@@ -1,8 +1,7 @@
 import { getEmDashCollection, getEmDashEntry } from "emdash";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fixture from "./entries.fixture.json";
-import { ContentError } from "./entries.ts";
-import { page, pages, peoplePageContent, post, posts } from "./load.ts";
+import { page, pages, post, posts } from "./load.ts";
 
 vi.mock("emdash", () => ({
   getEmDashCollection: vi.fn(),
@@ -94,31 +93,5 @@ describe("a single entry", () => {
       error: new Error("D1 is down"),
     } as unknown as Found);
     await expect(page("terms")).rejects.toThrow("D1 is down");
-  });
-});
-
-describe("a singleton", () => {
-  it("reads the entry with its slug", async () => {
-    single.mockResolvedValueOnce(found(fresh().people_page[0]));
-    expect((await peoplePageContent()).teamTitle).toBe("Community team");
-    expect(single).toHaveBeenCalledWith("people_page", "people");
-    expect(collection).not.toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
-  });
-
-  it("uses the first published entry, and logs it, when no entry has its slug", async () => {
-    const [team] = fresh().people_page;
-    const other = { ...structuredClone(team!), id: "other", slug: "other" };
-    other.data.team_title = "The second entry.";
-    single.mockResolvedValueOnce(found(null));
-    collection.mockResolvedValueOnce(batch([team, other]));
-    expect((await peoplePageContent()).teamTitle).toBe("Community team");
-    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("The site shows people."));
-  });
-
-  it("fails when nothing is published", async () => {
-    single.mockResolvedValueOnce(found(null));
-    collection.mockResolvedValueOnce(batch([]));
-    await expect(peoplePageContent()).rejects.toThrow(ContentError);
   });
 });

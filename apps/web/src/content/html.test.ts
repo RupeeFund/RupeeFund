@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { toHtml, toInlineHtml } from "./html.ts";
+import { toHtml } from "./html.ts";
 import type { PortableText } from "./schema.ts";
 
 const linked = (href: string): PortableText => [
@@ -185,13 +185,5 @@ describe("the post building blocks", () => {
 
   it("drops a call to action whose link it does not trust", () => {
     expect(toHtml([{ _type: "cta", label: "Click", url: "javascript:alert(1)" }])).toBe("");
-  });
-});
-
-describe("the inline renderer", () => {
-  it("renders one paragraph without its paragraph tag, for a styled parent", () => {
-    expect(toInlineHtml(linked("/privacy"))).toBe(
-      'Read <a href="/privacy" class="inline-link"><strong>this</strong></a>',
-    );
   });
 });

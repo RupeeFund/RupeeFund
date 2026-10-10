@@ -1,26 +1,6 @@
 import { getEmDashCollection, getEmDashEntry } from "emdash";
-import {
-  ContentError,
-  toFaq,
-  toPage,
-  toPages,
-  toPeople,
-  toPeoplePage,
-  toPost,
-  toPosts,
-  valid,
-  type Entry,
-} from "./entries.ts";
-import {
-  SLUG,
-  type FaqEntry,
-  type Page,
-  type PeoplePage,
-  type Person,
-  type Post,
-} from "./schema.ts";
-
-export const PEOPLE_PAGE_SLUG = "people";
+import { toFaq, toPage, toPages, toPeople, toPost, toPosts, valid, type Entry } from "./entries.ts";
+import { SLUG, type FaqEntry, type Page, type Person, type Post } from "./schema.ts";
 
 const asEntry = (entry: { id: string; data: unknown }): Entry => ({
   slug: entry.id,
@@ -55,15 +35,6 @@ async function one(collection: string, slug: string): Promise<Entry | null> {
   return entry ? asEntry(entry) : null;
 }
 
-async function required(collection: string, slug: string): Promise<Entry> {
-  const entry = await one(collection, slug);
-  if (entry) return entry;
-  const [first] = await published(collection);
-  if (!first) throw new ContentError(`Publish the ${collection} entry`);
-  console.warn(`No ${collection} entry has the slug ${slug}. The site shows ${first.slug}.`);
-  return first;
-}
-
 export const posts = async (): Promise<Post[]> => toPosts(await published("posts"));
 
 export const faq = async (): Promise<FaqEntry[]> => toFaq(await published("faq"));
@@ -77,6 +48,3 @@ export const post = async (slug: string): Promise<Post | null> =>
 
 export const page = async (slug: string): Promise<Page | null> =>
   checked(await one("pages", slug), toPage);
-
-export const peoplePageContent = async (): Promise<PeoplePage> =>
-  toPeoplePage((await required("people_page", PEOPLE_PAGE_SLUG)).data);

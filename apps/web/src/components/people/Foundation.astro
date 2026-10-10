@@ -1,0 +1,12 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<section aria-labelledby="foss-united-staff">
+  <h2 id="foss-united-staff" class="text-2xl text-ink mb-3">{title}</h2>
+  <div class="text-sm text-ink-2 text-pretty"><slot /></div>
+</section>

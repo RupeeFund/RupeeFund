@@ -123,9 +123,3 @@ export function toHtml(blocks: PortableText): string {
     },
   );
 }
-
-export function toInlineHtml(blocks: PortableText): string {
-  const html = toHtml(blocks);
-  const single = blocks.length === 1 && html.startsWith("<p>") && html.endsWith("</p>");
-  return single ? html.slice("<p>".length, -"</p>".length) : html;
-}

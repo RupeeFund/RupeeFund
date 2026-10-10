@@ -234,59 +234,6 @@
     }
   ],
 
-  "people_page": [
-    {
-      "id": "people",
-      "slug": "people",
-      "status": "published",
-      "data": {
-        "id": "01M3YV7ZQCZ9KXN5T95JV8FQ2G",
-        "slug": "people",
-        "status": "published",
-        "publishedAt": "2026-10-02T17:40:26.988Z",
-        "title": "People",
-        "team_title": "Community team",
-        "team_intro": "Meet the volunteers from the FOSS United community who run The Rupee Fund and maintain this website.",
-        "join_title": "You, or someone you know?",
-        "join_body": "Bring ideas, skills, and a little time to the community team, or introduce someone who will.",
-        "foundation_title": "FOSS United Foundation",
-        "foundation_body": [
-          {
-            "_type": "block",
-            "_key": "km",
-            "style": "normal",
-            "markDefs": [
-              {
-                "_key": "ko",
-                "_type": "link",
-                "href": "https://fossunited.org/team"
-              }
-            ],
-            "children": [
-              {
-                "_type": "span",
-                "_key": "kn",
-                "text": "The FOSS United Foundation is the fiscal host of The Rupee Fund and supports the wider FOSS United community. Meet the ",
-                "marks": []
-              },
-              {
-                "_type": "span",
-                "_key": "kp",
-                "text": "FOSS United team",
-                "marks": ["ko"]
-              },
-              {
-                "_type": "span",
-                "_key": "kq",
-                "text": ".",
-                "marks": []
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ],
   "people": [
     {
       "id": "khitab",

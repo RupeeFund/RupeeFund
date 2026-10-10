@@ -1,8 +1,8 @@
 # Edit the site
 
-The content manager at [rupeefund.org/admin](https://rupeefund.org/admin) holds the blog, the pages, the FAQ, the people page and the community team. The layout of each page stays the same. You change the words, not the structure.
+The content manager at [rupeefund.org/admin](https://rupeefund.org/admin) holds the blog, the pages, the FAQ and the community team. The layout of each page stays the same. You change the words, not the structure.
 
-The words of the home page and the links at the top and at the bottom of each page are not in the content manager. To change them, ask a maintainer.
+The words of the home page and the people page, and the links at the top and at the bottom of each page, are not in the content manager. To change them, ask a maintainer.
 
 ## 1. Sign in
 
@@ -57,7 +57,6 @@ A deleted entry goes to the trash. To get it back, restore it from the trash.
 
 Some changes take a page off the site, or change each page.
 
-- **The people page.** It is one entry. If you unpublish or delete it, `/people` shows an error page.
 - **The images.** Do not delete an image that an entry uses. The entry then shows a broken image.
 - **The slugs.** Do not change the slug of a published entry. The old address then stops.
 - **The categories.** If you delete a category, its posts show Blog.
@@ -111,16 +110,14 @@ The site leaves an entry out when the entry has one of these problems:
 - A link that does not start with `https://`, `mailto:`, `/` or `#`. Change `http://` to `https://`.
 - A callout, a quote or a call to action with no text.
 - A team photo that is not on GitHub. Use the address of the GitHub profile photo.
-- More than one paragraph in the foundation text of the people page.
 - A slug with a character that is not a lowercase letter, a digit or a hyphen.
 
-A post or a page that the site leaves out does not show at all. A people page that the site refuses shows an error page in its place.
+A post or a page that the site leaves out does not show at all.
 
 ## 9. The other pages
 
 - **FAQ.** Each entry has a question, an answer and an order. A lower order shows first. Entries with the same order show the oldest first. To show a new entry last, give it a high order, such as 99.
 - **FAQ on the home page.** Tick **Show on the home page** to show an entry there too.
 - **FAQ sources.** A source is a title and an `https://` link.
-- **People page.** Change its words. Do not make a second entry.
 - **Community team.** Each person has a name, an order and an optional bio, profile URL, username and photo URL. The order works as in the FAQ.
 - **Pages.** A page has a kind: a normal page or a legal page. Its address is `/` and then its slug. To remove a legal page, an admin changes its kind to a normal page first.
