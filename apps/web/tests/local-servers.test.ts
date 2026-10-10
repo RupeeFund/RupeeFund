@@ -90,13 +90,23 @@ const loopbackV6 = await new Promise<boolean>((done) => {
     .listen(0, "::1", () => probe.close(() => done(true)));
 });
 
-const lsofSeesListeners = await new Promise<boolean>((done) => {
-  const probe = createServer().listen(0, "127.0.0.1", () => {
-    const { port } = probe.address() as { port: number };
-    execFile("lsof", ["-nP", `-iTCP:${port}`, "-sTCP:LISTEN", "-t"], (error, stdout) =>
-      probe.close(() => done(!error && stdout.split("\n").includes(String(process.pid)))),
-    );
+const lsofOut = (args: string[]) =>
+  new Promise<string>((done) => {
+    execFile("lsof", args, { timeout: 5_000 }, (error, stdout) => done(error ? "" : stdout));
   });
+
+const lsofSeesListeners = await new Promise<boolean>((done) => {
+  const probe = createServer()
+    .once("error", () => done(false))
+    .listen(0, "127.0.0.1", async () => {
+      const { port } = probe.address() as { port: number };
+      const pid = String(process.pid);
+      const pids = await lsofOut(["-nP", `-iTCP:${port}`, "-sTCP:LISTEN", "-t"]);
+      const cwd = await lsofOut(["-a", "-p", pid, "-d", "cwd", "-Fn"]);
+      probe.close(() =>
+        done(pids.split("\n").includes(pid) && cwd.split("\n").some((l) => l.startsWith("n"))),
+      );
+    });
 });
 
 describe("listenerCwds", () => {

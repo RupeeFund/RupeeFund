@@ -40,7 +40,7 @@ export async function portsInUse(ports) {
 
 const lsof = (args) =>
   new Promise((done) => {
-    execFile("lsof", args, (error, stdout) => done(error ? "" : stdout));
+    execFile("lsof", args, { timeout: 5_000 }, (error, stdout) => done(error ? "" : stdout));
   });
 
 const cwdOf = async (pid) => {
