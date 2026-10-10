@@ -5,6 +5,7 @@ import "../site.css";
 import colors from "@rupeefund/ui/colors.json";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import { blogOpen } from "../content/load.ts";
 import {
   seoForPath,
   OG_IMAGE,
@@ -16,7 +17,6 @@ import {
   SITE_URL,
   INITIATIVE,
   RSS_URL,
-  isListed,
   type RouteSeo,
 } from "../lib/seo.ts";
 
@@ -25,6 +25,7 @@ interface Props {
 }
 
 const seo = seoForPath(Astro.url.pathname, Astro.props.route);
+const blog = await blogOpen();
 
 const orgLd = {
   "@context": "https://schema.org",
@@ -55,11 +56,7 @@ const websiteLd = {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    {
-      isListed("/blog") && (
-        <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={RSS_URL} />
-      )
-    }
+    {blog && <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={RSS_URL} />}
     {seo.canonical && <link rel="canonical" href={seo.canonical} />}
     <title>{seo.title}</title>
     <meta name="description" content={seo.description} />
@@ -89,10 +86,10 @@ const websiteLd = {
     >
       Skip to content
     </a>
-    <Header />
+    <Header blog={blog} />
     <main id="main" tabindex="-1" class="flex flex-1 flex-col screen-enter">
       <slot />
     </main>
-    <Footer />
+    <Footer blog={blog} />
   </body>
 </html>

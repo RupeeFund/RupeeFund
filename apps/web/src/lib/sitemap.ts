@@ -5,9 +5,11 @@ export const FIXED_PATHS: readonly string[] = [
   "/subscribe",
   "/faq",
   "/people",
-  "/blog",
   "/waitlist-confirmed",
 ];
+
+export const blogPaths = (slugs: readonly string[]): string[] =>
+  slugs.length > 0 ? ["/blog", ...slugs.map((slug) => `/blog/${slug}`)] : [];
 
 export function sitemapXml(paths: readonly string[]): string {
   const urls = paths

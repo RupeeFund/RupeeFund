@@ -2,12 +2,6 @@
 
 This list holds the work that we know about and did not do yet. Each item tells what to do, why, and the condition that makes it urgent. Remove an item when its work merges.
 
-## Show the blog
-
-The site builds the blog but hides it. The `/blog` entry in `apps/web/src/lib/seo.ts` has `indexable: false`. So each blog page has `noindex`, and the sitemap and the feed links leave out the blog. To show the blog, set `indexable: true` on that entry, update the tests in `apps/web/tests/site/`, and add a Blog link to the **Footer** menu in the content manager.
-
-Urgent when: the blog has a few posts.
-
 ## GitHub sign-in for the admin panel
 
 The admin panel admits the members of the Cloudflare account (`docs/DEPLOY.md` section 10). So each person who reads the list also gets a role in the Cloudflare dashboard. One GitHub team must admit the panel users in its place.

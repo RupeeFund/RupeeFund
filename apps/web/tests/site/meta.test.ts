@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { POST_SLUGS } from "../fixtures/content.ts";
 import { answers, PAGES, read } from "./dist.ts";
 
 describe("sitemap", () => {
@@ -8,15 +9,17 @@ describe("sitemap", () => {
 
   it("excludes every route the sitemap filter names", () => {
     const xml = read("sitemap.xml");
-    for (const slug of ["404", "waitlist-confirmed", "blog"]) {
+    for (const slug of ["404", "waitlist-confirmed"]) {
       expect(xml).not.toContain(`rupeefund.org/${slug}`);
     }
   });
 
   it("lists the public pages", () => {
     const xml = read("sitemap.xml");
-    expect(xml.match(/<loc>/g)).toHaveLength(8);
+    expect(xml.match(/<loc>/g)).toHaveLength(9 + POST_SLUGS.length);
     for (const path of [
+      "/blog",
+      ...POST_SLUGS.map((slug) => `/blog/${slug}`),
       "/privacy",
       "/refunds",
       "/subscribe",

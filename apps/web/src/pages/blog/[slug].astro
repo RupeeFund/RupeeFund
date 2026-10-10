@@ -3,7 +3,7 @@ import NotFound from "../../components/NotFound.astro";
 import PostArticle from "../../components/site/PostArticle.astro";
 import { post, posts } from "../../content/load.ts";
 import Base from "../../layouts/Base.astro";
-import { isListed, SITE_NAME } from "../../lib/seo.ts";
+import { SITE_NAME } from "../../lib/seo.ts";
 
 const entry = await post(Astro.params.slug ?? "");
 if (!entry) Astro.response.status = 404;
@@ -12,7 +12,7 @@ const route = entry && {
   path: `/blog/${entry.slug}`,
   title: `${entry.title} — ${SITE_NAME}`,
   description: entry.excerpt,
-  indexable: isListed("/blog"),
+  indexable: true,
 };
 ---
 

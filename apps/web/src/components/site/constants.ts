@@ -12,14 +12,19 @@ export interface NavLink {
 export const HEADER_LINKS: readonly NavLink[] = [
   { label: "FAQ", href: "/faq" },
   { label: "People", href: "/people" },
+  { label: "Blog", href: "/blog" },
 ];
 
 export const FOOTER_LINKS: readonly NavLink[] = [
   { label: "People", href: "/people" },
+  { label: "Blog", href: "/blog" },
   { label: "About FOSS United", href: "https://fossunited.org/team" },
   { label: "Community forum", href: "https://forum.fossunited.org" },
   { label: "Source on GitHub", href: "https://github.com/RupeeFund/RupeeFund" },
 ];
+
+export const linksFor = (links: readonly NavLink[], blog: boolean): readonly NavLink[] =>
+  blog ? links : links.filter(({ href }) => href !== "/blog");
 
 export interface Season {
   spriteSlug: string;

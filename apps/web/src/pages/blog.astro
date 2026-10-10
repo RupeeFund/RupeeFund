@@ -2,10 +2,13 @@
 import PostList from "../components/site/PostList.astro";
 import { posts } from "../content/load.ts";
 import Base from "../layouts/Base.astro";
+import { seoForPath } from "../lib/seo.ts";
+
+const list = await posts();
 ---
 
-<Base>
+<Base route={{ ...seoForPath("/blog"), indexable: list.length > 0 }}>
   <div class="wrap section-y">
-    <PostList posts={await posts()} />
+    <PostList posts={list} />
   </div>
 </Base>

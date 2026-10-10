@@ -1,7 +1,7 @@
 import { getEmDashCollection, getEmDashEntry } from "emdash";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fixture from "./entries.fixture.json";
-import { page, pages, post, posts } from "./load.ts";
+import { blogOpen, page, pages, post, posts } from "./load.ts";
 
 vi.mock("emdash", () => ({
   getEmDashCollection: vi.fn(),
@@ -56,6 +56,30 @@ describe("a published list", () => {
       error: new Error("D1 is down"),
     } as unknown as Batch);
     await expect(posts()).rejects.toThrow("D1 is down");
+  });
+});
+
+describe("the blog", () => {
+  it("is open when one post is published", async () => {
+    collection.mockResolvedValueOnce(batch(fresh().posts.slice(0, 1), "next"));
+    expect(await blogOpen()).toBe(true);
+    expect(collection).toHaveBeenCalledWith("posts", { status: "published", limit: 1 });
+  });
+
+  it("is closed when no post is published", async () => {
+    collection.mockResolvedValueOnce(batch([]));
+    expect(await blogOpen()).toBe(false);
+  });
+
+  it("is closed, and logged, when EmDash cannot read the posts", async () => {
+    collection.mockResolvedValueOnce({
+      entries: [],
+      error: new Error("D1 is down"),
+    } as unknown as Batch);
+    expect(await blogOpen()).toBe(false);
+    collection.mockRejectedValueOnce(new Error("D1 is gone"));
+    expect(await blogOpen()).toBe(false);
+    expect(console.error).toHaveBeenCalledTimes(2);
   });
 });
 

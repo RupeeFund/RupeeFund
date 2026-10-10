@@ -81,6 +81,8 @@ The post shows its publish date and its reading time. If you edit a post on a la
 
 The address of the post is `/blog/` and then its slug. Give each post a different slug.
 
+The blog shows on the site when one post or more is published. Then the header and the footer link to it, and search engines can list it. With no published post, the site hides these links.
+
 ## 6. What the body can hold
 
 - Paragraphs. Make each paragraph one idea.

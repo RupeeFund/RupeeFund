@@ -83,13 +83,16 @@ describe("the blog", () => {
     expect(feed).toContain("<title>How to write a post for this blog</title>");
   });
 
-  it("keeps the blog out of the footer, the feed links and the search index until launch", () => {
+  it("opens the blog in the header, the footer, the feed links and the search index", () => {
     const home = read("index.html");
-    expect(home).not.toContain('type="application/rss+xml"');
-    expect(read("blog.html")).toContain('<meta name="robots" content="noindex">');
-    expect(read("blog/how-open-source-gets-funded-today.html")).toContain(
-      '<meta name="robots" content="noindex">',
+    expect(home).toContain('type="application/rss+xml"');
+    expect(read("blog.html")).not.toContain('<meta name="robots"');
+    expect(read("blog/how-open-source-gets-funded-today.html")).not.toContain(
+      '<meta name="robots"',
     );
-    expect(home.slice(home.indexOf("<footer"))).not.toContain('href="/blog"');
+    expect(home.slice(home.indexOf("<header"), home.indexOf("</header>"))).toContain(
+      'href="/blog"',
+    );
+    expect(home.slice(home.indexOf("<footer"))).toContain('href="/blog"');
   });
 });

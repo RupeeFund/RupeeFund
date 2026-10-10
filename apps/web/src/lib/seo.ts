@@ -83,7 +83,7 @@ const ROUTE_SEO: readonly RouteSeo[] = [
     path: "/blog",
     title: "Blog — The Rupee Fund",
     description: `News and updates from The Rupee Fund. ${INITIATIVE}.`,
-    indexable: false,
+    indexable: true,
   },
   {
     path: "/waitlist-confirmed",

@@ -1,8 +1,12 @@
 ---
 import SocialIcon from "./SocialIcon.astro";
 import { REMOVAL_ADDRESS } from "../lib/launch.ts";
-import { FOOTER_LINKS } from "./site/constants.ts";
+import { FOOTER_LINKS, linksFor } from "./site/constants.ts";
 import type { SocialIconName } from "./SocialIcon.astro";
+
+interface Props {
+  blog: boolean;
+}
 
 interface Social {
   slug: SocialIconName;
@@ -45,7 +49,7 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
     </div>
     <ul class="flex flex-wrap justify-center gap-x-2 text-sm">
       {
-        FOOTER_LINKS.map(({ href, label }) => {
+        linksFor(FOOTER_LINKS, Astro.props.blog).map(({ href, label }) => {
           const external = href.startsWith("https://");
           return (
             <li>

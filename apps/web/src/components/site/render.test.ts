@@ -1,5 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
+import Footer from "../Footer.astro";
+import Header from "../Header.astro";
 import FaqList from "./FaqList.astro";
 import PageBody from "./PageBody.astro";
 import PostArticle from "./PostArticle.astro";
@@ -183,5 +185,12 @@ describe("the blog components", () => {
 
   it("show each post's lead image in the list", async () => {
     expect(await render(PostList, { posts: [post] })).toContain('src="/media/01ABC.png"');
+  });
+});
+
+describe("the navigation", () => {
+  it.each([Header, Footer])("links the blog only when it is open", async (component) => {
+    expect(await render(component, { blog: true })).toContain('href="/blog"');
+    expect(await render(component, { blog: false })).not.toContain('href="/blog"');
   });
 });
