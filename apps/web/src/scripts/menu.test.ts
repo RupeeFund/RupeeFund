@@ -49,4 +49,29 @@ describe("closeMenuOnExit", () => {
 
     expect(menu.open).toBe(true);
   });
+
+  it("keeps the menu open when focus leaves for no control, as a tap on the panel does", () => {
+    const { menu, link } = setup();
+    link.focus();
+
+    link.dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget: null }));
+
+    expect(menu.open).toBe(true);
+  });
+
+  it("closes the menu on a click outside it", () => {
+    const { menu } = setup();
+
+    document.body.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+    expect(menu.open).toBe(false);
+  });
+
+  it("keeps the menu open on a click inside it", () => {
+    const { menu } = setup();
+
+    menu.querySelector("nav")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+    expect(menu.open).toBe(true);
+  });
 });

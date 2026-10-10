@@ -65,7 +65,7 @@ describe("the blog", () => {
       /<ol><li>Draft the post<ol><li>Write the outline<ol><li>List the headings/,
     );
     expect(post).toContain('<th scope="col">Element</th>');
-    expect(post).toContain('<pre data-language="md"><code>');
+    expect(post).toContain('<pre tabindex="0" data-language="md"><code>');
     expect(post).toContain("<figcaption>Every post starts as plain text.");
     expect(post).toContain('<a href="#main" class="inline-link">');
     expect(post).toContain(

@@ -246,3 +246,28 @@ test.describe("a short page ends at the footer, not a screen past it", () => {
     });
   }
 });
+
+test("each post image keeps its shape before the file loads", async ({ page }) => {
+  await page.route(/\.(avif|webp|png|jpe?g)(\?|$)|\/_image\?|\/media\//, () => {});
+  let images = 0;
+  for (const viewport of [
+    { width: 360, height: 900 },
+    { width: 1440, height: 500 },
+  ]) {
+    await page.setViewportSize(viewport);
+    for (const post of posts) {
+      await page.goto(post, { waitUntil: "domcontentloaded" });
+      for (const image of await page.locator(".prose img").all()) {
+        images += 1;
+        const { width, height } = (await image.boundingBox())!;
+        const natural = Number(await image.getAttribute("width"));
+        const ratio = natural / Number(await image.getAttribute("height"));
+        expect(height, post).toBeGreaterThan(0);
+        expect(width, post).toBeLessThanOrEqual(natural);
+        expect(height, post).toBeLessThanOrEqual(viewport.height * 0.8 + 1);
+        expect(width / height, post).toBeCloseTo(ratio, 1);
+      }
+    }
+  }
+  expect(images).toBeGreaterThan(0);
+});

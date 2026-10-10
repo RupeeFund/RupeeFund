@@ -23,3 +23,21 @@ test("Tab right after Enter on the phone menu lands on its first link", async ({
 
   await expect(page.locator('nav[aria-label="Mobile"] a').first()).toBeFocused();
 });
+
+test("a tap on the open phone menu's empty space keeps the menu open", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 640 });
+  await page.goto("/");
+  await page.locator("[data-menu] summary").click();
+  const panel = await page.locator('nav[aria-label="Mobile"]').boundingBox();
+  await page.mouse.click(panel!.x + panel!.width - 8, panel!.y + 4);
+  await expect(page.locator("[data-menu]")).toHaveAttribute("open");
+});
+
+test("a tap outside the open phone menu closes it", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 640 });
+  await page.goto("/");
+  await page.locator("[data-menu] summary").click();
+  await page.mouse.click(180, 600);
+  await expect(page.locator("[data-menu]")).not.toHaveAttribute("open");
+  await expect(page).toHaveURL("/");
+});

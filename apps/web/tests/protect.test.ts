@@ -1,7 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { seedContentDb, type ContentDb } from "./fixtures/content-db.ts";
+import { TEAM_ROLES } from "@rupeefund/auth";
+import { ADMIN_ROLE } from "../src/lib/guard.ts";
 import type { Query } from "../src/lib/guard-store.ts";
-import { isPublic, refusesWrite, sessionUserId } from "../src/lib/protect.ts";
+import { deletesLegalPage, isPublic, refusesWrite, sessionUserId } from "../src/lib/protect.ts";
 
 let db: ContentDb;
 
@@ -39,6 +41,10 @@ beforeAll(() => {
 }, 60_000);
 
 afterAll(() => db.close());
+
+it("gives the admin role to the GitHub admin team", () => {
+  expect(TEAM_ROLES["cms-admins"]).toBe(ADMIN_ROLE);
+});
 
 describe("refusesWrite", () => {
   it.each([
@@ -78,20 +84,47 @@ describe("refusesWrite", () => {
     expect(await refusesWrite(query, "DELETE", path, noTerm)).toBe(true);
   });
 
-  it("refuses when the content database fails", async () => {
-    expect(await refusesWrite(broken, "PUT", "/_emdash/api/content/pages/terms", noTerm)).toBe(
-      true,
-    );
+  it("fails when the content database fails", async () => {
+    const write = refusesWrite(broken, "PUT", "/_emdash/api/content/pages/terms", noTerm);
+    await expect(write).rejects.toThrow("D1_ERROR");
+  });
+});
+
+describe("deletesLegalPage", () => {
+  it("finds the delete of a legal page", async () => {
+    expect(await deletesLegalPage(query, "DELETE", "/_emdash/api/content/pages/terms")).toBe(true);
+  });
+
+  it.each([
+    ["PUT", "/_emdash/api/content/pages/terms"],
+    ["DELETE", "/_emdash/api/content/pages/code-of-conduct"],
+    ["DELETE", "/_emdash/api/content/posts/hello"],
+    ["DELETE", "/_emdash/api/content/pages/terms/lock"],
+  ])("ignores %s %s", async (method, path) => {
+    expect(await deletesLegalPage(query, method, path)).toBe(false);
   });
 });
 
 describe("isPublic", () => {
+  const stored = async (): Promise<boolean> => true;
+
   it("knows a published image", async () => {
-    expect(await isPublic(query, "01M42CODE00000000000000000.jpg")).toBe(true);
+    expect(await isPublic(query, "01M42CODE00000000000000000.jpg", stored)).toBe(true);
   });
 
   it("hides every image when the content database fails", async () => {
-    expect(await isPublic(broken, "01M42CODE00000000000000000.jpg")).toBe(false);
+    expect(await isPublic(broken, "01M42CODE00000000000000000.jpg", stored)).toBe(false);
+  });
+
+  it("skips the content database for a file the bucket does not hold", async () => {
+    const missing = async (): Promise<boolean> => false;
+    let reads = 0;
+    const counted: Query = async (sql, params) => {
+      reads += 1;
+      return query(sql, params);
+    };
+    expect(await isPublic(counted, "01M42NONE00000000000000000.jpg", missing)).toBe(false);
+    expect(reads).toBe(0);
   });
 });
 

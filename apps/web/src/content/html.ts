@@ -43,9 +43,14 @@ const components: PortableTextComponents = {
   },
   types: {
     image: ({ value }) => {
+      const { width, height } = value;
+      const sized = typeof width === "number" && typeof height === "number" && width * height > 0;
       const size = [
-        typeof value.width === "number" ? ` width="${value.width}"` : "",
-        typeof value.height === "number" ? ` height="${value.height}"` : "",
+        typeof width === "number" ? ` width="${width}"` : "",
+        typeof height === "number" ? ` height="${height}"` : "",
+        sized
+          ? ` style="--ratio: ${Number((width / height).toFixed(4))}; --width: ${width}px"`
+          : "",
       ].join("");
       const source = `src="${attr(value.src)}" alt="${attr(value.alt)}"`;
       const img = `<img ${source}${size} loading="lazy" decoding="async">`;
@@ -57,7 +62,8 @@ const components: PortableTextComponents = {
         typeof value.language === "string" && value.language
           ? ` data-language="${attr(value.language)}"`
           : "";
-      return `<pre${language}><code>${escapeCode(String(value.code ?? ""))}</code></pre>`;
+      const code = escapeCode(String(value.code ?? ""));
+      return `<pre tabindex="0"${language}><code>${code}</code></pre>`;
     },
     break: () => "<hr>",
     table: ({ value }) => renderTable(value as Table),

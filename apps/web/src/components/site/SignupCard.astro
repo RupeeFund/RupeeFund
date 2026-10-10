@@ -9,7 +9,10 @@ interface Props {
 
 <aside
   aria-labelledby="signup-title"
-  class:list={["rounded-2xl bg-brand p-6 text-ink sm:p-8", Astro.props.class]}
+  class:list={[
+    "rounded-2xl bg-brand p-6 text-ink [--focus:var(--color-ink)] sm:p-8",
+    Astro.props.class,
+  ]}
 >
   <h2 id="signup-title" class="text-xl mb-2">Hear when the fund opens</h2>
   <p class="text-sm mb-6 text-pretty">

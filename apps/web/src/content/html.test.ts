@@ -57,11 +57,20 @@ describe("the Portable Text renderer", () => {
     expect(toHtml([item("One"), item("Two")])).toBe("<ul><li>One</li><li>Two</li></ul>");
   });
 
+  it("leaves the size of an image with no width to the browser", () => {
+    expect(
+      toHtml([{ _type: "image", src: "/media/01ABC.png", alt: "", width: 0, height: 6 }]),
+    ).toBe(
+      '<img src="/media/01ABC.png" alt="" width="0" height="6" loading="lazy" decoding="async">',
+    );
+  });
+
   it("renders an image from the site's own media path", () => {
     expect(
       toHtml([{ _type: "image", src: "/media/01ABC.png", alt: "A red box", width: 8, height: 6 }]),
     ).toBe(
       '<img src="/media/01ABC.png" alt="A red box" width="8" height="6"' +
+        ' style="--ratio: 1.3333; --width: 8px"' +
         ' loading="lazy" decoding="async">',
     );
   });
@@ -127,13 +136,13 @@ describe("the editor blocks", () => {
 
   it("renders a code block as escaped text with its language", () => {
     expect(toHtml([{ _type: "code", language: "html", code: "<b>x</b>" }])).toBe(
-      '<pre data-language="html"><code>&lt;b&gt;x&lt;/b&gt;</code></pre>',
+      '<pre tabindex="0" data-language="html"><code>&lt;b&gt;x&lt;/b&gt;</code></pre>',
     );
   });
 
   it("keeps the indent of code as plain spaces", () => {
     expect(toHtml([{ _type: "code", code: "if x:\n    y = 1" }])).toBe(
-      "<pre><code>if x:\n    y = 1</code></pre>",
+      '<pre tabindex="0"><code>if x:\n    y = 1</code></pre>',
     );
   });
 

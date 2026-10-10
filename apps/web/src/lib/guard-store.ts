@@ -1,4 +1,4 @@
-import { GUARDED_COLLECTIONS } from "./guard.ts";
+import { GUARDED_COLLECTIONS, LEGAL_COLLECTION } from "./guard.ts";
 
 export type Query = (sql: string, params: unknown[]) => Promise<Record<string, unknown>[]>;
 
@@ -97,7 +97,7 @@ export async function usesGuardedMedia(query: Query, media: string): Promise<boo
       `SELECT 1 FROM "ec_${collection}" e
        LEFT JOIN revisions r ON r.id = e.draft_revision_id
        WHERE (${holds(columns)} OR ${contains("r.data")})
-       ${collection === "pages" ? `AND ${LEGAL}` : ""}`,
+       ${collection === LEGAL_COLLECTION ? `AND ${LEGAL}` : ""}`,
   );
   return anyOf(query, selects, [String(item.storage_key), media]);
 }

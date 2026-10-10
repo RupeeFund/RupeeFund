@@ -13,7 +13,7 @@ import {
   signInTarget,
   withHeaders,
 } from "./lib/edge.ts";
-import { ADMIN_ROLE } from "./lib/protect.ts";
+import { ADMIN_ROLE } from "./lib/guard.ts";
 
 const redirect = (location: string): Response =>
   new Response(null, { status: 302, headers: { location, "cache-control": "no-store" } });
@@ -41,7 +41,7 @@ export const onRequest = defineMiddleware(async ({ url, request, session }, next
   const accept = request.headers.get("accept") ?? "";
   if (!dev && identity === null) {
     if (readCookie(request, SESSION_COOKIE) !== undefined) session?.destroy();
-    const target = signInTarget(request.method, path, accept);
+    const target = signInTarget(request.method, path, accept, `${url.pathname}${url.search}`);
     if (target !== null) return withHeaders(path, redirect(target));
   }
   if (isDenied(path, dev, identity?.role === ADMIN_ROLE)) return withHeaders(path, notFound());

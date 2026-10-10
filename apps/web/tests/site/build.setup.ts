@@ -12,6 +12,7 @@ import {
   ALLOWED_WRITES,
   CONTENT_MANAGER,
   DENIED,
+  LEGAL_DELETES,
   GATED_MEDIA,
   ANONYMOUS_CALLS,
   MEDIA_ROUTES,
@@ -201,6 +202,7 @@ async function render(base: string): Promise<void> {
   const calls = [
     ...REFUSED_WRITES,
     ...ALLOWED_WRITES,
+    ...LEGAL_DELETES,
     ...SIGNED_IN_READS,
     SESSION_SCHEMA_WRITE,
     TOKEN_SCHEMA_WRITE,

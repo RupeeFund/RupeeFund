@@ -18,7 +18,7 @@ const TURNSTILE_SITEKEY = getSitekey();
 <Base>
   <div class="wrap section-y grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-16">
     <div class="lg:sticky lg:top-28">
-      <h1 class="page-title text-ink mb-4">{SUBSCRIBE_HEADING}</h1>
+      <h1 id="subscribe-title" class="page-title text-ink mb-4">{SUBSCRIBE_HEADING}</h1>
       <p class="max-w-xl text-sm text-ink-2 text-pretty">
         <strong class="text-ink">Nothing to pay today.</strong> Tell us roughly how much you would like
         to give each month. It is not a commitment; it only helps us plan. We will email you when the
@@ -39,7 +39,7 @@ const TURNSTILE_SITEKEY = getSitekey();
           > and we’ll add you by hand.
         </p>
       </noscript>
-      <form id="waitlist-form" class="space-y-4" method="post">
+      <form id="waitlist-form" aria-labelledby="subscribe-title" class="space-y-4" method="post">
         <div>
           <label for="waitlist-name" class="field-label">Full name</label>
           <input

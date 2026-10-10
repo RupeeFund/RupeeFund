@@ -65,8 +65,8 @@ const handle = (member: Person) =>
                 href={member.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-link text-sm"
-                aria-label={`${handle(member)} — ${member.name}`}
+                class="inline-link bg-origin-content py-1 text-sm"
+                aria-label={`${handle(member)} — ${member.name} (opens in a new tab)`}
               >
                 {handle(member)}
               </a>

@@ -201,6 +201,22 @@ describe("submitWaitlist", () => {
     expect((document.getElementById("waitlist-submit") as HTMLButtonElement).disabled).toBe(false);
   });
 
+  it("gives focus back to the submit button after a failed attempt", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(okJson({ ok: false }, 400));
+    const form = document.getElementById("waitlist-form") as HTMLFormElement;
+    const submit = document.getElementById("waitlist-submit") as HTMLButtonElement;
+    submit.focus();
+
+    const done = submitWaitlist(form, { fetchImpl, navigate });
+    const elsewhere = document.body.appendChild(document.createElement("input"));
+    elsewhere.focus();
+    elsewhere.remove();
+    expect(document.activeElement).toBe(document.body);
+    await done;
+
+    expect(document.activeElement).toBe(submit);
+  });
+
   it("asks Cloudflare for a new token after the server rejects the request", async () => {
     const resets: string[] = [];
     (window as unknown as { turnstile: { reset(c?: string): void } }).turnstile = {

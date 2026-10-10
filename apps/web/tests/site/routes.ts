@@ -113,6 +113,11 @@ export const ALLOWED_WRITES: readonly Call[] = [
   { as: "editor", method: "PUT", path: `/_emdash/api/content/posts/${POST_SLUGS[0]}` },
 ];
 
+export const LEGAL_DELETES: readonly Call[] = [
+  { as: "editor", method: "DELETE", path: "/_emdash/api/content/pages/terms" },
+  { as: "admin", method: "DELETE", path: "/_emdash/api/content/pages/terms" },
+];
+
 export const SESSION_SCHEMA_WRITE: Call = { as: "session", method: "POST", path: SCHEMA_WRITE };
 
 export const TOKEN_SCHEMA_WRITE: Call = { as: "admin", method: "POST", path: SCHEMA_WRITE };

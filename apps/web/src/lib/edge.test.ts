@@ -104,12 +104,16 @@ describe("isDenied", () => {
 describe("signInTarget", () => {
   const html = "text/html,application/xhtml+xml";
 
-  it.each(["/_emdash/admin", "/_emdash/admin/content/posts"])(
-    "sends a visitor who opens %s to the GitHub sign-in",
-    (path) => {
-      expect(signInTarget("GET", path, html)).toBe("/auth/login");
-    },
-  );
+  it("sends a visitor who opens the content manager to the GitHub sign-in", () => {
+    expect(signInTarget("GET", "/_emdash/admin", html)).toBe("/auth/login");
+  });
+
+  it("sends a visitor who opens a deep page to the sign-in, and back to the page after it", () => {
+    const page = "/_emdash/admin/content/pages/a%3Fb?locale=en";
+    expect(signInTarget("GET", "/_emdash/admin/content/pages/a?b", html, page)).toBe(
+      `/auth/login?next=${encodeURIComponent(page)}`,
+    );
+  });
 
   it("sends a visitor who just signed out home, not back through GitHub", () => {
     expect(signInTarget("GET", "/_emdash/admin/login", html)).toBe("/");
@@ -135,6 +139,11 @@ describe("editModeReset", () => {
     expect(reset?.headers.get("location")).toBe("/faq?page=2");
     expect(reset?.headers.get("set-cookie")).toBe("emdash-edit-mode=; Path=/; Max-Age=0");
     expect(reset?.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("keeps the redirect on this site when the path starts with two slashes", () => {
+    const reset = editModeReset("GET", new URL("https://rupeefund.org//evil.example/x?a=1"), true);
+    expect(reset?.headers.get("location")).toBe("/evil.example/x?a=1");
   });
 
   it.each([

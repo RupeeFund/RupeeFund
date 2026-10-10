@@ -6,7 +6,11 @@ export function closeMenuOnExit(menu: HTMLDetailsElement): void {
   });
   menu.addEventListener("focusout", (event) => {
     const next = event.relatedTarget;
-    if (next instanceof Node && menu.contains(next)) return;
+    if (!(next instanceof Node) || menu.contains(next)) return;
+    menu.open = false;
+  });
+  menu.ownerDocument.addEventListener("click", (event) => {
+    if (!menu.open || !(event.target instanceof Node) || menu.contains(event.target)) return;
     menu.open = false;
   });
 }

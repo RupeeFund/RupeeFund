@@ -68,7 +68,7 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
     </ul>
     <div class="grid justify-items-center gap-1">
       <p class="text-lg font-semibold">
-        <a href={`mailto:${REMOVAL_ADDRESS}`} class="foot-link"
+        <a href={`mailto:${REMOVAL_ADDRESS}`} aria-label={REMOVAL_ADDRESS} class="foot-link"
           >{REMOVAL_ADDRESS.split("@")[0]}<wbr />@{REMOVAL_ADDRESS.split("@")[1]}</a
         >
       </p>

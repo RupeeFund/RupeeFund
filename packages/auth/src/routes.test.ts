@@ -36,8 +36,8 @@ function member(role: number): typeof fetch {
   };
 }
 
-async function startSignIn(): Promise<{ state: string; cookie: string }> {
-  const response = await authRoute(new Request(`${ORIGIN}/auth/login`), CONFIG);
+async function startSignIn(query = ""): Promise<{ state: string; cookie: string }> {
+  const response = await authRoute(new Request(`${ORIGIN}/auth/login${query}`), CONFIG);
   const location = new URL(response?.headers.get("location") ?? "");
   return {
     state: location.searchParams.get("state") ?? "",
@@ -88,6 +88,32 @@ describe("authRoute", () => {
     });
   });
 
+  it("returns a team member to the content manager page that sent them to sign in", async () => {
+    const page = "/_emdash/admin/content/posts?locale=en";
+    const { state, cookie } = await startSignIn(`?next=${encodeURIComponent(page)}`);
+    const response = await callback(`code=c&state=${state}`, cookie, member(50));
+    expect(response?.headers.get("location")).toBe(page);
+  });
+
+  it("drops a line break from the return address and still signs the member in", async () => {
+    const { state, cookie } = await startSignIn("?next=%2F_emdash%2Fadmin%2F%0Amedia");
+    const response = await callback(`code=c&state=${state}`, cookie, member(50));
+    expect(response?.headers.get("location")).toBe("/_emdash/admin/media");
+  });
+
+  it.each([
+    "//evil.example",
+    "https://evil.example/_emdash/admin",
+    "/blog",
+    "/_emdash/adminx",
+    "/_emdash/admin/../../blog",
+    "http://[",
+  ])("sends a team member to the content manager home, not to %s", async (next) => {
+    const { state, cookie } = await startSignIn(`?next=${encodeURIComponent(next)}`);
+    const response = await callback(`code=c&state=${state}`, cookie, member(50));
+    expect(response?.headers.get("location")).toBe("/_emdash/admin");
+  });
+
   it("refuses a GitHub user in none of the teams and sets no identity", async () => {
     const { state, cookie } = await startSignIn();
     const response = await callback(`code=c&state=${state}`, cookie, member(0));
@@ -102,6 +128,14 @@ describe("authRoute", () => {
     const { state, cookie } = await startSignIn();
     const response = await callback(query(state), cookie, member(50));
     expect(response?.status).toBe(400);
+  });
+
+  it("tells a person who cancelled at GitHub how to sign in again", async () => {
+    const { state, cookie } = await startSignIn();
+    const response = await callback(`error=access_denied&state=${state}`, cookie, member(50));
+    expect(await response?.text()).toBe(
+      "You cancelled the sign-in at GitHub. Sign in again from /auth/login.",
+    );
   });
 
   it("refuses a callback without the sign-in cookie", async () => {

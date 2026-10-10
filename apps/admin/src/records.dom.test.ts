@@ -613,6 +613,26 @@ describe("the export", () => {
     expect(saved).toEqual([]);
   });
 
+  it.each([
+    [
+      "the connection drops",
+      () => {
+        throw new TypeError("Failed to fetch");
+      },
+    ],
+    ["the server fails", () => new Response(null, { status: 500 })],
+  ])("warns that the export may have run when %s", async (_, answer) => {
+    exportAnswer = answer;
+    await openExport();
+    document.querySelector<HTMLButtonElement>("#export-confirm")?.click();
+    await vi.waitFor(() =>
+      expect(document.querySelector("#export-error")?.textContent).toContain("may have run"),
+    );
+    expect(document.querySelector("#export-error")?.textContent).not.toContain(
+      "Nothing was exported",
+    );
+  });
+
   it("says the people were marked when the file fails after the stamp", async () => {
     exportAnswer = () =>
       new Response(

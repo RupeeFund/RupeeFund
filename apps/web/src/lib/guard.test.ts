@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { isMediaAsset, isMediaFile, locksSchema, mediaKey, writeTarget } from "./guard.ts";
+import {
+  deletedEntry,
+  isMediaAsset,
+  isMediaFile,
+  locksSchema,
+  mediaKey,
+  writeTarget,
+} from "./guard.ts";
 
 describe("locksSchema", () => {
   it.each(["POST", "PUT", "PATCH", "DELETE"])("refuses a %s from a browser session", (method) => {
@@ -133,5 +140,22 @@ describe("isMediaAsset", () => {
   it("knows the signed-in download route", () => {
     expect(isMediaAsset("/_emdash/api/media/asset/01MED/a.jpg")).toBe(true);
     expect(isMediaAsset("/_emdash/api/media/file/a.jpg")).toBe(false);
+  });
+});
+
+describe("deletedEntry", () => {
+  it.each([
+    ["/_emdash/api/content/pages/terms", "terms"],
+    ["/_emdash/api/content/pages/01ABC/permanent", "01ABC"],
+  ])("finds the entry that DELETE %s removes", (path, entry) => {
+    expect(deletedEntry("DELETE", path)).toEqual({ collection: "pages", entry });
+  });
+
+  it.each([
+    ["DELETE", "/_emdash/api/content/pages/terms/lock"],
+    ["DELETE", "/_emdash/api/content/pages/terms/schedule"],
+    ["PUT", "/_emdash/api/content/pages/terms"],
+  ])("finds no removed entry for %s %s", (method, path) => {
+    expect(deletedEntry(method, path)).toBeNull();
   });
 });

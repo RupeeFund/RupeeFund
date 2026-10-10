@@ -1,4 +1,4 @@
-import { writeTarget } from "./guard.ts";
+import { deletedEntry, LEGAL_COLLECTION, writeTarget } from "./guard.ts";
 import {
   isLegalPage,
   isPublishedMedia,
@@ -8,8 +8,6 @@ import {
   usesGuardedMedia,
   type Query,
 } from "./guard-store.ts";
-
-export const ADMIN_ROLE = 50;
 
 export const SESSION_TIMEOUT_MS = 3_000;
 
@@ -22,7 +20,7 @@ async function refusesEntry(
   collection: string,
   entry: string | null,
 ): Promise<boolean> {
-  if (collection !== "pages" || entry === null) return false;
+  if (collection !== LEGAL_COLLECTION || entry === null) return false;
   return isLegalPage(query, entry);
 }
 
@@ -34,33 +32,42 @@ export async function refusesWrite(
 ): Promise<boolean> {
   const target = writeTarget(method, path);
   if (target === null) return false;
-  try {
-    switch (target.kind) {
-      case "entry":
-        return await refusesEntry(query, target.collection, target.entry);
-      case "revision": {
-        const owner = await revisionTarget(query, target.revision);
-        if (owner === null) return false;
-        if (owner.collection === "pages" && owner.legal) return true;
-        return await refusesEntry(query, owner.collection, owner.entry);
-      }
-      case "media":
-        return await usesGuardedMedia(query, target.media);
-      case "taxonomy":
-        return await taxonomyCoversGuarded(query, target.taxonomy);
-      case "terms": {
-        const term = await termOf();
-        return term !== null && (await termCoversGuarded(query, term));
-      }
+  switch (target.kind) {
+    case "entry":
+      return refusesEntry(query, target.collection, target.entry);
+    case "revision": {
+      const owner = await revisionTarget(query, target.revision);
+      if (owner === null) return false;
+      if (owner.collection === LEGAL_COLLECTION && owner.legal) return true;
+      return refusesEntry(query, owner.collection, owner.entry);
     }
-  } catch {
-    return true;
+    case "media":
+      return usesGuardedMedia(query, target.media);
+    case "taxonomy":
+      return taxonomyCoversGuarded(query, target.taxonomy);
+    case "terms": {
+      const term = await termOf();
+      return term !== null && (await termCoversGuarded(query, term));
+    }
   }
 }
 
-export async function isPublic(query: Query, key: string): Promise<boolean> {
+export async function deletesLegalPage(
+  query: Query,
+  method: string,
+  path: string,
+): Promise<boolean> {
+  const target = deletedEntry(method, path);
+  return target !== null && refusesEntry(query, target.collection, target.entry);
+}
+
+export async function isPublic(
+  query: Query,
+  key: string,
+  stored: (key: string) => Promise<boolean>,
+): Promise<boolean> {
   try {
-    return await isPublishedMedia(query, key);
+    return (await stored(key)) && (await isPublishedMedia(query, key));
   } catch {
     return false;
   }

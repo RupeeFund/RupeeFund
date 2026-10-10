@@ -90,6 +90,7 @@ export async function submitWaitlist(
     if (submit) {
       submit.disabled = false;
       submit.textContent = idleLabel;
+      if (doc.activeElement === doc.body) submit.focus();
     }
   }
 }

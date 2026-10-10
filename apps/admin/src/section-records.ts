@@ -240,7 +240,12 @@ async function runExport() {
       throw Object.assign(new Error("/api/export answered " + res.status), { status: res.status });
     }
   } catch (err) {
-    byId("export-error").textContent = "Nothing was exported. " + trouble(err);
+    const status = err instanceof Error ? err.status : undefined;
+    byId("export-error").textContent =
+      typeof status === "number" && status < 500
+        ? "Nothing was exported. " + trouble(err)
+        : "The export may have run. Before you try again, look for an export entry in the log " +
+          "(docs/DEPLOY.md section 8).";
     byId("export-error").hidden = false;
     console.error(err);
     confirm.disabled = false;

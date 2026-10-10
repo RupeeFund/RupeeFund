@@ -77,17 +77,24 @@ export function editModeReset(method: string, url: URL, editCookie: boolean): Re
   return new Response(null, {
     status: 302,
     headers: {
-      location: `${url.pathname}${url.search}`,
+      location: `/${url.pathname.replace(/^\/+/, "")}${url.search}`,
       "set-cookie": `${EDIT_MODE_COOKIE}=; Path=/; Max-Age=0`,
       "cache-control": "no-store",
     },
   });
 }
 
-export function signInTarget(method: string, path: string, accept: string): string | null {
+export function signInTarget(
+  method: string,
+  path: string,
+  accept: string,
+  page = path,
+): string | null {
   if (method !== "GET" || !accept.includes("text/html") || !inTree(path, "/_emdash/admin"))
     return null;
-  return inTree(path, "/_emdash/admin/login") ? "/" : "/auth/login";
+  if (inTree(path, "/_emdash/admin/login")) return "/";
+  if (page === "/_emdash/admin") return "/auth/login";
+  return `/auth/login?next=${encodeURIComponent(page)}`;
 }
 
 export const LOGOUT = "/_emdash/api/auth/logout";
@@ -151,6 +158,12 @@ export const forbidden = (message: string): Response =>
   Response.json(
     { success: false, error: { code: "FORBIDDEN", message } },
     { status: 403, headers: { "cache-control": "private, no-store" } },
+  );
+
+export const unavailable = (message: string): Response =>
+  Response.json(
+    { success: false, error: { code: "UNAVAILABLE", message } },
+    { status: 503, headers: { "cache-control": "private, no-store" } },
   );
 
 export function privately(response: Response): Response {

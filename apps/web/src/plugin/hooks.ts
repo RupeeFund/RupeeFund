@@ -5,8 +5,7 @@ import {
   type ContentPolicyDecision,
   type ContentPolicyEvent,
 } from "emdash";
-
-const ADMIN_ROLE = 50;
+import { ADMIN_ROLE, LEGAL_COLLECTION } from "../lib/guard.ts";
 
 export interface Store {
   get(
@@ -25,7 +24,7 @@ const isLegal = (data: unknown): boolean =>
 async function storedIsLegal(store: Store, id: unknown): Promise<boolean> {
   if (typeof id !== "string") return true;
   try {
-    const entry = await store.get("pages", id);
+    const entry = await store.get(LEGAL_COLLECTION, id);
     return entry === null || isLegal(entry.data) || isLegal(entry.draft);
   } catch {
     return true;
@@ -38,7 +37,7 @@ export async function saveGate(
 ): Promise<void> {
   if (isAdmin(event.actor)) return;
   const legal =
-    event.collection === "pages" &&
+    event.collection === LEGAL_COLLECTION &&
     (isLegal(event.content) || (!event.isNew && (await storedIsLegal(store, event.id))));
   if (legal)
     throw new ContentSaveRejectedError(
@@ -52,7 +51,7 @@ export async function publishGate(
 ): Promise<ContentPolicyDecision> {
   if (isAdmin(event.actor)) return;
   const guarded =
-    event.collection === "pages" &&
+    event.collection === LEGAL_COLLECTION &&
     (isLegal(event.content.data) || (await storedIsLegal(store, event.content.id)));
   if (!guarded) return;
   return {
@@ -65,7 +64,7 @@ export async function deleteGate(
   event: Pick<ContentDeleteEvent, "collection" | "id">,
   store: Store,
 ): Promise<false | undefined> {
-  if (event.collection === "pages" && (await storedIsLegal(store, event.id))) return false;
+  if (event.collection === LEGAL_COLLECTION && (await storedIsLegal(store, event.id))) return false;
   return undefined;
 }
 

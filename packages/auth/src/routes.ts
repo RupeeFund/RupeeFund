@@ -84,10 +84,27 @@ export async function identityOf(
 export const signOutCookie = (origin: string): string =>
   cookie(origin, cookieNames(origin).identity, "", 0);
 
-async function login(config: AuthConfig): Promise<Response> {
+const ADMIN_HOME = "/_emdash/admin";
+
+function adminPage(next: unknown, origin: string): string {
+  if (typeof next !== "string") return ADMIN_HOME;
+  let url: URL;
+  try {
+    url = new URL(next, origin);
+  } catch {
+    return ADMIN_HOME;
+  }
+  if (url.origin !== new URL(origin).origin) return ADMIN_HOME;
+  return /^\/_emdash\/admin(?:\/|$)/.test(url.pathname)
+    ? `${url.pathname}${url.search}`
+    : ADMIN_HOME;
+}
+
+async function login(request: Request, config: AuthConfig): Promise<Response> {
   const state = randomToken();
   const verifier = randomToken();
-  const sealed = await seal({ state, verifier }, config.secret, SIGNIN_SECONDS);
+  const next = adminPage(new URL(request.url).searchParams.get("next"), config.origin);
+  const sealed = await seal({ state, verifier, next }, config.secret, SIGNIN_SECONDS);
   const target = authorizeUrl(config.app, callbackUrl(config), state, await challengeOf(verifier));
   const name = cookieNames(config.origin).signin;
   return redirect(target, [cookie(config.origin, name, sealed, SIGNIN_SECONDS)]);
@@ -103,9 +120,12 @@ async function callback(
   const names = cookieNames(config.origin);
   const clear = [cookie(config.origin, names.signin, "", 0)];
   const query = new URL(request.url).searchParams;
+  if (query.get("error") === "access_denied") {
+    return text(400, "You cancelled the sign-in at GitHub. Sign in again from /auth/login.", clear);
+  }
   const code = query.get("code");
   const started = await open(readCookie(request, names.signin), config.secret);
-  const { state, verifier } = started ?? {};
+  const { state, verifier, next } = started ?? {};
   if (
     code === null ||
     typeof state !== "string" ||
@@ -118,7 +138,7 @@ async function callback(
     const result = await signIn(code, verifier, callbackUrl(config), config.app, fetcher);
     if (!result.ok) return text(403, REFUSED[result.reason], clear);
     const identity = await seal(result.member, config.secret, IDENTITY_SECONDS);
-    return redirect("/_emdash/admin", [
+    return redirect(adminPage(next, config.origin), [
       ...clear,
       cookie(config.origin, names.identity, identity, IDENTITY_SECONDS),
     ]);
@@ -135,7 +155,7 @@ export async function authRoute(
 ): Promise<Response | null> {
   switch (new URL(request.url).pathname) {
     case "/auth/login":
-      return login(config);
+      return login(request, config);
     case "/auth/callback":
       return callback(request, config, fetcher);
     default:

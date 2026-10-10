@@ -7,6 +7,7 @@ import {
   FORGED_MCP,
   DENIED,
   GATED_MEDIA,
+  LEGAL_DELETES,
   MEDIA_ROUTES,
   MISSING,
   REFUSED_WRITES,
@@ -82,6 +83,13 @@ describe("the content guard", () => {
 
   it.each(ALLOWED_WRITES.map(callName))("passes %s on to the content manager", (name) => {
     expect(answers()[name]?.status).toBe(200);
+  });
+
+  it.each(LEGAL_DELETES.map(callName))("refuses %s and names the way out", (name) => {
+    expect(answers()[name]).toMatchObject({
+      status: 403,
+      body: expect.stringContaining("Nobody deletes a legal page. Change its kind to page first."),
+    });
   });
 
   it("refuses a schema change from an Admin's browser session", () => {

@@ -97,6 +97,7 @@
       mask-position: right center;
       mask-size: var(--arrow-size) var(--arrow-size);
       mask-repeat: no-repeat;
+      forced-color-adjust: none;
     }
   }
 }
@@ -107,6 +108,7 @@
   .card {
     @apply bg-white rounded-2xl p-6 sm:p-8;
     @apply shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ink)_10%,transparent)];
+    @apply forced-colors:border forced-colors:border-[CanvasText];
   }
 
   .field {
@@ -230,6 +232,7 @@
 
   .step:not(:last-child)::before {
     @apply absolute left-4 top-8 -bottom-8 w-px -translate-x-1/2 bg-ink/15 content-[''];
+    @apply forced-colors:bg-[CanvasText];
   }
 
   .step-badge {
@@ -347,7 +350,8 @@
   }
 
   .prose img {
-    @apply mx-auto h-auto max-h-[80svh] w-auto max-w-full rounded-xl;
+    @apply mx-auto h-auto max-h-[80svh] max-w-full rounded-xl;
+    width: min(100%, var(--width), 80svh * var(--ratio));
   }
 
   .prose figcaption {

@@ -5,7 +5,11 @@ export type WriteTarget =
   | { kind: "terms" }
   | { kind: "taxonomy"; taxonomy: string };
 
-export const GUARDED_COLLECTIONS = ["pages"] as const;
+export const ADMIN_ROLE = 50;
+
+export const LEGAL_COLLECTION = "pages";
+
+export const GUARDED_COLLECTIONS = [LEGAL_COLLECTION] as const;
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
@@ -20,6 +24,8 @@ const SCHEMA_TREES = [
 const TAXONOMY_DEFINITION = /^\/_emdash\/api\/taxonomies(?:\/(?!bulk-tag$)[^/]+)?$/;
 
 const CONTENT = /^\/_emdash\/api\/(?:visual-editing\/)?content\/([^/]+)(?:\/([^/]+))?(?:\/.*)?$/;
+
+const ENTRY_DELETE = /^\/_emdash\/api\/content\/([^/]+)\/([^/]+)(?:\/permanent)?$/;
 
 const REVISION_RESTORE = /^\/_emdash\/api\/revisions\/([^/]+)\/restore$/;
 
@@ -67,6 +73,15 @@ export function writeTarget(method: string, path: string): WriteTarget | null {
   const collection = content?.[1];
   if (!collection || !GUARDED.has(collection)) return null;
   return { kind: "entry", collection, entry: content[2] ?? null };
+}
+
+export function deletedEntry(
+  method: string,
+  path: string,
+): { collection: string; entry: string } | null {
+  if (method !== "DELETE") return null;
+  const [, collection, entry] = ENTRY_DELETE.exec(path) ?? [];
+  return collection && entry ? { collection, entry } : null;
 }
 
 export const mediaKey = (path: string): string | null => MEDIA_FILE.exec(path)?.[1] ?? null;
