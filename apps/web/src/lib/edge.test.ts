@@ -93,6 +93,12 @@ describe("isDenied", () => {
     expect(isDenied("/_emdash/admin/setup", true)).toBe(false);
     expect(isDenied("/_emdash/api/oauth/register", true)).toBe(true);
   });
+
+  it("allows typegen under astro dev, where EmDash writes emdash-env.d.ts", () => {
+    expect(isDenied("/_emdash/api/typegen", true)).toBe(false);
+    expect(isDenied("/_emdash/api/typegen", false)).toBe(true);
+    expect(isDenied("/_emdash/api/typegen", false, true)).toBe(true);
+  });
 });
 
 describe("signInTarget", () => {

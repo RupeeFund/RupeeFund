@@ -38,10 +38,11 @@ const ADMIN_SET_UP = new Set([
 
 const DENIED_PATHS = new Set([
   "/_emdash/api/snapshot",
-  "/_emdash/api/typegen",
   "/_emdash/api/site/domain-proof",
   "/_emdash/api/health",
 ]);
+
+const DEV_ONLY_PATHS = new Set(["/_emdash/api/typegen"]);
 
 const DENIED_PATTERNS = [/^\/\.well-known\/oauth-/, /^\/sitemap-[^/]+\.xml$/];
 
@@ -63,7 +64,9 @@ export function isDenied(path: string, dev: boolean, admin = false): boolean {
   if (DENIED_PATHS.has(path)) return true;
   if (DENIED_PATTERNS.some((pattern) => pattern.test(path))) return true;
   if (DENIED_TREES.some((tree) => inTree(path, tree))) return true;
-  if (dev || (admin && ADMIN_SET_UP.has(path))) return false;
+  if (dev) return false;
+  if (DEV_ONLY_PATHS.has(path)) return true;
+  if (admin && ADMIN_SET_UP.has(path)) return false;
   return SET_UP_TREES.some((tree) => inTree(path, tree));
 }
 

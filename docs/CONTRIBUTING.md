@@ -26,7 +26,7 @@ pnpm dev        # serve the site and the content manager
 
 Run `pnpm db:reset` before your first `pnpm dev`. Without it, the local content database is empty.
 
-The terminal shows the address of the site, `http://localhost:8787`. When you save a file, the browser reloads. If the build fails, the terminal shows the error and the site stays as it was. The line `Typegen failed: 404 Not found` at the start is expected.
+The terminal shows the address of the site, `http://localhost:8787`. When you save a file, the browser reloads. If the build fails, the terminal shows the error and the site stays as it was.
 
 To sign in to the content manager, open `http://localhost:8787/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`. This page signs you in as an admin. You need no GitHub account and no key. The site shows each publish at the next page load.
 
