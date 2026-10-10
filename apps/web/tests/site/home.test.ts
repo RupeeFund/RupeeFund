@@ -45,7 +45,7 @@ describe("Home page (/)", () => {
     ]) {
       expect(main).toContain(`>${reason}</h3>`);
     }
-    expect(main).toContain(">What you help fund</h2>");
+    expect(main).toContain(">Why join us</h2>");
     expect(main).toContain(">Frequently asked questions</h2>");
   });
 
