@@ -37,7 +37,7 @@ To sign in to the content manager, open `http://localhost:8787/_emdash/api/setup
 | `pnpm preview`   | `http://localhost:8789` | The site as the live build. Its GitHub sign-in needs the secret of the GitHub App. |
 
 - When pnpm tells you to run `pnpm install`, run it.
-- `pnpm db:reset` erases your local data. Run it again for a clean start. Stop `pnpm dev` and `pnpm preview` first, or it refuses. It cannot see `pnpm dev:portless`, so stop that yourself.
+- `pnpm db:reset` erases your local data. Run it again for a clean start. Stop `pnpm dev` and `pnpm preview` first, or it refuses. It sees only a server that runs from this checkout. It cannot see `pnpm dev:portless`, or a server in another folder that uses this checkout's data, so stop those yourself.
 - To run more than one checkout at a time, run `pnpm dev:portless`. It starts both apps and gives each a name in place of a port. The first run after each boot asks for your password.
 
 ### In Codespaces or a dev container

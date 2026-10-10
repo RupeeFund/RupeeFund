@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { portsFor, portsInUse } from "./local-servers.mjs";
+import { inCheckout, listenerCwds, portsFor, portsInUse } from "./local-servers.mjs";
 
 const STATE = resolve(process.argv[2] ?? "../../.wrangler/state");
 const FIXTURES = "tests/fixtures/content";
@@ -29,11 +29,15 @@ function run(bin, args) {
 const databases = () =>
   readdirSync(D1_FILES).filter((file) => file.endsWith(".sqlite") && file !== "metadata.sqlite");
 
-const busy = await portsInUse(portsFor(STATE));
-if (busy.length > 0) {
-  process.stderr.write(
-    `A local server uses ${STATE} on port ${busy.join(" and ")}. Stop it, then run this again. Nothing changed.\n`,
-  );
+for (const port of await portsInUse(portsFor(STATE))) {
+  const cwds = await listenerCwds(port);
+  if (cwds.length > 0 && cwds.every((cwd) => cwd !== null && !inCheckout(cwd))) continue;
+  const cwd = cwds.find((one) => one === null || inCheckout(one)) ?? null;
+  const server =
+    cwd === null
+      ? `Port ${port} is in use, and this script cannot tell which folder its server runs from`
+      : `The local server in ${cwd} uses ${STATE} on port ${port}`;
+  process.stderr.write(`${server}. Stop it, then run this again. Nothing changed.\n`);
   process.exit(1);
 }
 
