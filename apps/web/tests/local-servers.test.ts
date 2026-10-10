@@ -2,7 +2,7 @@ import { copyFileSync, mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync
 import { createServer, type Server } from "node:net";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { execFileSync, spawn, type ChildProcess } from "node:child_process";
+import { execFile, execFileSync, spawn, type ChildProcess } from "node:child_process";
 import { tmpdir } from "node:os";
 import { inCheckout, listenerCwds, portsFor, portsInUse } from "../scripts/local-servers.mjs";
 
@@ -90,6 +90,15 @@ const loopbackV6 = await new Promise<boolean>((done) => {
     .listen(0, "::1", () => probe.close(() => done(true)));
 });
 
+const lsofSeesListeners = await new Promise<boolean>((done) => {
+  const probe = createServer().listen(0, "127.0.0.1", () => {
+    const { port } = probe.address() as { port: number };
+    execFile("lsof", ["-nP", `-iTCP:${port}`, "-sTCP:LISTEN", "-t"], (error, stdout) =>
+      probe.close(() => done(!error && stdout.split("\n").includes(String(process.pid)))),
+    );
+  });
+});
+
 describe("listenerCwds", () => {
   let server: Server | undefined;
   let child: ChildProcess | undefined;
@@ -98,7 +107,7 @@ describe("listenerCwds", () => {
     child?.kill();
   });
 
-  it.skipIf(process.platform === "win32")("finds the folder of the server on a port", async () => {
+  it.skipIf(!lsofSeesListeners)("finds the folder of the server on a port", async () => {
     server = createServer().listen(0, "127.0.0.1");
     await new Promise<void>((done) => {
       server!.once("listening", () => done());
@@ -107,7 +116,7 @@ describe("listenerCwds", () => {
     expect(await listenerCwds(port)).toEqual([realpathSync(process.cwd())]);
   });
 
-  it.skipIf(process.platform === "win32" || !loopbackV6)(
+  it.skipIf(!lsofSeesListeners || !loopbackV6)(
     "finds the folder of each server on a port, on each local address",
     async () => {
       server = createServer().listen(0, "127.0.0.1");
