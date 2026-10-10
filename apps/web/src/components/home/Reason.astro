@@ -1,12 +1,25 @@
 ---
 interface Props {
   title: string;
+  sprite: "seed" | "sapling" | "tree";
 }
 
-const { title } = Astro.props;
+const SIZES = {
+  seed: ["seedling", 64, 64],
+  sapling: ["sapling", 80, 96],
+  tree: ["mature-tree", 112, 120],
+} as const;
+
+const { title, sprite } = Astro.props;
+const [file, width, height] = SIZES[sprite];
 ---
 
-<div>
-  <h3 class="text-xl text-ink mb-3">{title}</h3>
-  <div class="max-w-[36rem] text-sm text-ink-2 text-pretty"><slot /></div>
-</div>
+<li class="flex flex-col overflow-hidden rounded-2xl border border-ink/10 bg-card">
+  <div class="flex h-44 items-end justify-center border-b border-ink/10 bg-brand-50 pt-6">
+    <img src={`/growth/${file}.svg`} alt="" width={width} height={height} class="-mb-px" />
+  </div>
+  <div class="p-6">
+    <h3 class="text-xl text-ink mb-3">{title}</h3>
+    <div class="text-sm text-ink-2 text-pretty"><slot /></div>
+  </div>
+</li>

@@ -49,6 +49,23 @@ describe("Home page (/)", () => {
     expect(main).toContain(">Frequently asked questions</h2>");
   });
 
+  it("names who the fund is for, then asks them to sign up", () => {
+    const groups = /<h2[^>]*>Who you are<\/h2>([\s\S]*?)<\/section>/.exec(html)?.[1] ?? "";
+    expect([...groups.matchAll(/<h3[^>]*>([^<]*)<\/h3>/g)].map((m) => m[1])).toEqual([
+      "Students",
+      "Users",
+      "Contributors",
+    ]);
+    expect(groups).toContain("Chai++ rates");
+    expect(groups).toContain("Hear when the fund opens");
+    expect(groups).toContain('href="/subscribe"');
+    expect(html.match(/id="signup-title"/g)).toHaveLength(1);
+    expect(html.indexOf(">Why join us</h2>")).toBeLessThan(html.indexOf(">Who you are</h2>"));
+    expect(html.indexOf(">Who you are</h2>")).toBeLessThan(
+      html.indexOf(">Frequently asked questions</h2>"),
+    );
+  });
+
   it("keeps the stressed words of each step in the ink colour", () => {
     expect(styles()).toMatch(/\.step-body strong ?\{[^}]*color:/);
   });

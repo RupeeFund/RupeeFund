@@ -1,0 +1,21 @@
+---
+import SignupCard from "../site/SignupCard.astro";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<section aria-labelledby="groups-title" class="wrap section-y bg-white pt-0">
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-16">
+    <div>
+      <h2 id="groups-title" class="section-title text-ink">{title}</h2>
+      <ul class="border-b border-ink/15">
+        <slot />
+      </ul>
+    </div>
+    <SignupCard class="flex flex-col items-start justify-center" />
+  </div>
+</section>

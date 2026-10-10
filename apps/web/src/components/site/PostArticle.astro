@@ -1,10 +1,9 @@
 ---
 import type { Post } from "../../content/schema.ts";
-import { SUBSCRIBE_CTA } from "./constants.ts";
 import { dayKey, longDate } from "./dates.ts";
-import Icon from "./Icon.astro";
 import PostLabel from "./PostLabel.astro";
 import Prose from "./Prose.astro";
+import SignupCard from "./SignupCard.astro";
 import { readingMinutes } from "./reading.ts";
 
 interface Props {
@@ -107,14 +106,5 @@ const updated =
       </nav>
     )
   }
-  <aside aria-labelledby="signup-title" class="mt-12 rounded-2xl bg-brand p-6 text-ink sm:p-8">
-    <h2 id="signup-title" class="text-xl mb-2">Hear when the fund opens</h2>
-    <p class="text-sm mb-6 text-pretty">
-      We send one email when the fund opens. We send monthly updates only if you ask for them.
-    </p>
-    <a href="/subscribe" class="btn btn-primary">
-      <Icon name="bell" size={18} />
-      {SUBSCRIBE_CTA}
-    </a>
-  </aside>
+  <SignupCard class="mt-12" />
 </article>

@@ -1,0 +1,23 @@
+---
+import { SUBSCRIBE_CTA } from "./constants.ts";
+import Icon from "./Icon.astro";
+
+interface Props {
+  class?: string;
+}
+---
+
+<aside
+  aria-labelledby="signup-title"
+  class:list={["rounded-2xl bg-brand p-6 text-ink sm:p-8", Astro.props.class]}
+>
+  <h2 id="signup-title" class="text-xl mb-2">Hear when the fund opens</h2>
+  <p class="text-sm mb-6 text-pretty">
+    <strong>Nothing to pay today.</strong> We send one email when the fund opens, and monthly updates
+    only if you ask for them.
+  </p>
+  <a href="/subscribe" class="btn btn-primary">
+    <Icon name="bell" size={18} />
+    {SUBSCRIBE_CTA}
+  </a>
+</aside>
