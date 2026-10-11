@@ -21,6 +21,13 @@ const FILES: Record<string, string> = {
   "web/icon-maskable-512.png": "public/icon-maskable-512.png",
   "web/logo.svg": `${UI}/logo.svg`,
   "web/logo-dark.svg": `${UI}/logo-dark.svg`,
+  "illustration/seedling.svg": "public/growth/seedling.svg",
+  "illustration/sapling.svg": "public/growth/sapling.svg",
+  "illustration/mature-tree.svg": "public/growth/mature-tree.svg",
+  "illustration/winter.svg": "public/seasons/winter.svg",
+  "illustration/summer.svg": "public/seasons/summer.svg",
+  "illustration/monsoon.svg": "public/seasons/monsoon.svg",
+  "illustration/post-monsoon.svg": "public/seasons/post-monsoon.svg",
 };
 
 const COLOR_NAME = /^[a-z0-9]+(-[a-z0-9]+)*$/;

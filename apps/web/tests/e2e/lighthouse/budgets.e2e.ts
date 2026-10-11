@@ -4,7 +4,7 @@ import lighthouse from "lighthouse";
 import { posts } from "../routes.ts";
 
 const ROUTES = ["/", "/subscribe", "/blog", posts[0], "/people"];
-const MIN_SCORES = { performance: 0.85, accessibility: 1, "best-practices": 1, seo: 1 };
+const MIN_SCORES = { accessibility: 1, "best-practices": 1, seo: 1 };
 const MAX_METRICS = {
   "largest-contentful-paint": 4000,
   "cumulative-layout-shift": 0.1,

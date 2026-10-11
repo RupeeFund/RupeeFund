@@ -9,6 +9,7 @@
   "workers_dev": false,
   "preview_urls": false,
   "assets": { "binding": "ASSETS" },
+  "cache": { "enabled": true },
   "d1_databases": [
     {
       "binding": "WAITLIST_DB",

@@ -2,6 +2,7 @@ import type { APIContext } from "astro";
 import { defineMiddleware } from "astro:middleware";
 import { env, waitUntil } from "cloudflare:workers";
 import type {} from "emdash/internal/middleware/auth";
+import { SHARED_PAGE, sharesAnswer, sharesRequest } from "./lib/cache.ts";
 import { forbidden, notFound, privately, requestPath, unavailable } from "./lib/edge.ts";
 import { ADMIN_ROLE, isMediaAsset, isMediaFile, locksSchema, mediaKey } from "./lib/guard.ts";
 import { activeUser, type Query } from "./lib/guard-store.ts";
@@ -59,7 +60,19 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
   if (isMediaAsset(path)) return privately(await next());
   if (path === "/_image") return (await signedIn(context)) ? privately(await next()) : notFound();
-  if (!isMediaFile(path)) return next();
+  if (!isMediaFile(path)) {
+    const member = locals.user !== undefined;
+    const read = { method, path, search: url.search, signedIn: member };
+    const shared = context.cache.enabled && sharesRequest(read);
+    if (shared) context.cache.set(SHARED_PAGE);
+    const response = await next();
+    if (!shared) return response;
+    if (!sharesAnswer(response)) {
+      context.cache.set(false);
+      return response;
+    }
+    return new Response(await response.arrayBuffer(), response);
+  }
   const key = mediaKey(path);
   if (key !== null && (await isPublic(query, key, stored))) return next();
   return (await signedIn(context)) ? privately(await next()) : notFound();

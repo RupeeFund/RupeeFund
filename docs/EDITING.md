@@ -18,7 +18,7 @@ The words of the home page and the people page, and the links at the top and at 
 
 If you are in two teams, you get the higher role. Your GitHub account must have a verified primary email address.
 
-You stay signed in for 8 hours. Then you sign in again. A change to your team takes effect at your next sign-in. To change your role, ask an admin.
+You stay signed in for 8 hours. Then you sign in again. The content manager does not warn you before the 8 hours end. After that, it cannot save, and you lose each change that you did not save. So save often during a long edit. A change to your team takes effect at your next sign-in. To change your role, ask an admin.
 
 ## 2. What each role can do
 
@@ -47,7 +47,7 @@ Nobody can do these things:
 1. For a post or a page, click **Preview**. The other entries have no **Preview**. Check them on the site after the publish.
 1. Click **Publish**.
 
-The site shows the change at the next page load. Check the page after each publish.
+The site shows the change at the next page load. Check the page after each publish. If the page still shows the old words after 1 minute, publish the entry again.
 
 To undo a change, open the entry, restore an earlier revision and publish it. The content manager keeps the newest 50 revisions of each entry.
 

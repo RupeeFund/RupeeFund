@@ -18,7 +18,7 @@ const route = entry && {
 
 {
   entry && route ? (
-    <Base route={route}>
+    <Base route={route} article={entry}>
       <div class="wrap section-y">
         <PostArticle post={entry} more={more} />
       </div>

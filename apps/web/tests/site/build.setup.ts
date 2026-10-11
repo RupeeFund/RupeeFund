@@ -148,6 +148,8 @@ async function call(base: string, { as, method, path, body }: Call): Promise<Ans
     hsts: null,
     body: (await res.text()).slice(0, 200),
     cache: res.headers.get("cache-control"),
+    edge: res.headers.get("cloudflare-cdn-cache-control"),
+    tags: res.headers.get("cache-tag"),
   };
 }
 
@@ -162,6 +164,7 @@ async function visit(base: string, { path, editMode }: Visit): Promise<Seen> {
     status: res.status,
     location: res.headers.get("location"),
     setCookie: res.headers.get("set-cookie"),
+    edge: res.headers.get("cloudflare-cdn-cache-control"),
     pill: html.includes("<!-- EmDash Toolbar Bootstrap -->"),
     toolbar: html.includes('id="emdash-toolbar"'),
     marks: html.match(/data-emdash-ref=/g)?.length ?? 0,
@@ -191,6 +194,8 @@ async function render(base: string): Promise<void> {
       hsts: res.headers.get("strict-transport-security"),
       body: null,
       cache: res.headers.get("cache-control"),
+      edge: res.headers.get("cloudflare-cdn-cache-control"),
+      tags: res.headers.get("cache-tag"),
     };
     const body = Buffer.from(await res.arrayBuffer());
     if (res.status >= 400) answers[route].body = body.toString("utf8").slice(0, 200);

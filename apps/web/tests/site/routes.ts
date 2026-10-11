@@ -58,6 +58,8 @@ export interface Answer {
   hsts: string | null;
   body: string | null;
   cache: string | null;
+  edge: string | null;
+  tags: string | null;
 }
 
 export const MEDIA_ROUTES: readonly string[] = PUBLISHED_MEDIA.flatMap((file) => [
@@ -173,6 +175,7 @@ export interface Seen {
   status: number;
   location: string | null;
   setCookie: string | null;
+  edge: string | null;
   pill: boolean;
   toolbar: boolean;
   marks: number;

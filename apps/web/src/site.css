@@ -1,2 +1,11 @@
 @import "@rupeefund/ui/styles.css";
 @source not "../public";
+
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./fonts/inter-rupee-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+20B9;
+}

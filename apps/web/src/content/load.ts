@@ -35,7 +35,7 @@ async function one(collection: string, slug: string): Promise<Entry | null> {
   return entry ? asEntry(entry) : null;
 }
 
-export async function blogOpen(): Promise<boolean> {
+export async function blogOpen(failed: () => void): Promise<boolean> {
   try {
     const { entries, error } = await getEmDashCollection("posts", {
       status: "published",
@@ -45,6 +45,7 @@ export async function blogOpen(): Promise<boolean> {
     return entries.length > 0;
   } catch (error) {
     console.error("Unable to check the blog for posts", error);
+    failed();
     return false;
   }
 }

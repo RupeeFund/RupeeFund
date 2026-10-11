@@ -11,6 +11,17 @@ describe("the content pages", () => {
     });
   }
 
+  it("names the fund opening, not a launch, on the privacy, terms and refunds pages", () => {
+    const launched = ["privacy", "terms", "refunds"].filter((slug) =>
+      /launch/i.test(read(`${slug}.html`)),
+    );
+    expect(launched).toEqual([]);
+  });
+
+  it("names Cloudflare Web Analytics on the privacy page", () => {
+    expect(read("privacy.html")).toContain("Cloudflare Web Analytics");
+  });
+
   it("serves each legal page the footer links to", () => {
     const legal = PAGES.filter((page) => page.kind === "legal").map((page) => page.slug);
     expect(legal).toEqual(

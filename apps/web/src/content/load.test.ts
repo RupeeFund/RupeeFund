@@ -62,24 +62,26 @@ describe("a published list", () => {
 describe("the blog", () => {
   it("is open when one post is published", async () => {
     collection.mockResolvedValueOnce(batch(fresh().posts.slice(0, 1), "next"));
-    expect(await blogOpen()).toBe(true);
+    expect(await blogOpen(() => {})).toBe(true);
     expect(collection).toHaveBeenCalledWith("posts", { status: "published", limit: 1 });
   });
 
   it("is closed when no post is published", async () => {
     collection.mockResolvedValueOnce(batch([]));
-    expect(await blogOpen()).toBe(false);
+    expect(await blogOpen(() => {})).toBe(false);
   });
 
-  it("is closed, and logged, when EmDash cannot read the posts", async () => {
+  it("is closed, logged and reported when EmDash cannot read the posts", async () => {
+    const failed = vi.fn();
     collection.mockResolvedValueOnce({
       entries: [],
       error: new Error("D1 is down"),
     } as unknown as Batch);
-    expect(await blogOpen()).toBe(false);
+    expect(await blogOpen(failed)).toBe(false);
     collection.mockRejectedValueOnce(new Error("D1 is gone"));
-    expect(await blogOpen()).toBe(false);
+    expect(await blogOpen(failed)).toBe(false);
     expect(console.error).toHaveBeenCalledTimes(2);
+    expect(failed).toHaveBeenCalledTimes(2);
   });
 });
 

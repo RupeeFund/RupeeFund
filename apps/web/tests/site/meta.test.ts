@@ -33,6 +33,31 @@ describe("sitemap", () => {
   });
 });
 
+describe("post dates", () => {
+  it("dates each post in the sitemap", () => {
+    const xml = read("sitemap.xml");
+    for (const slug of POST_SLUGS) {
+      expect(xml, `${slug} has no lastmod`).toMatch(
+        new RegExp(`<loc>https://rupeefund\\.org/blog/${slug}</loc><lastmod>\\d{4}-\\d{2}-\\d{2}T`),
+      );
+    }
+  });
+
+  it("marks each post as an article with its publish date for link previews", () => {
+    for (const slug of POST_SLUGS) {
+      const html = read(`blog/${slug}.html`);
+      expect(html, `${slug} lacks it`).toContain('<meta property="og:type" content="article">');
+      expect(html, `${slug} lacks it`).toMatch(
+        /<meta property="article:published_time" content="\d{4}-\d{2}-\d{2}T/,
+      );
+    }
+  });
+
+  it("marks the other pages as a website", () => {
+    expect(read("index.html")).toContain('<meta property="og:type" content="website">');
+  });
+});
+
 describe("robots.txt", () => {
   it("points at the sitemap", () => {
     expect(read("robots.txt")).toContain("Sitemap: https://rupeefund.org/sitemap.xml");

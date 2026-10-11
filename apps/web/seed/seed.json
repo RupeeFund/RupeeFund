@@ -443,7 +443,7 @@
                 {
                   "_type": "span",
                   "_key": "k3j",
-                  "text": "We keep this data to send you one email when the fund opens, to send you monthly updates if you tick the box, and to plan the fund. Your answers about money bind you to nothing. We take no payment. We hold no payment details. Access to your answers is limited to the people who administer the list and the services that process it.",
+                  "text": "We keep this data to send you a welcome email that asks you to confirm, one email when the fund opens, and monthly updates if you tick the box, and to plan the fund. Your answers about money bind you to nothing. We take no payment. We hold no payment details. Access to your answers is limited to the people who administer the list and the services that process it.",
                   "marks": []
                 }
               ]
@@ -471,7 +471,7 @@
                 {
                   "_type": "span",
                   "_key": "k3n",
-                  "text": "Cloudflare hosts this site and stores the list. The team can export the list to prepare the launch email. We retain entries for launch planning and notification. We have not set a fixed deletion date. If you leave the mailing list, we keep your entry, as described below.",
+                  "text": "Cloudflare hosts this site and stores the list. The team can export the list to send the welcome email and the email when the fund opens. We keep entries to plan the fund and to send these emails. We have not set a fixed deletion date. If you leave the mailing list, we keep your entry, as described below.",
                   "marks": []
                 }
               ]
@@ -546,6 +546,20 @@
                   "_type": "span",
                   "_key": "k3y",
                   "text": ".",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "kwa1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "kwa2",
+                  "text": "Cloudflare Web Analytics counts the visits to each page and measures how fast the pages load. It sets no cookie, stores nothing in your browser, and does not identify you.",
                   "marks": []
                 }
               ]
@@ -754,7 +768,7 @@
                 {
                   "_type": "span",
                   "_key": "k4s",
-                  "text": "Before launch",
+                  "text": "Before the fund opens",
                   "marks": []
                 }
               ]
@@ -768,7 +782,7 @@
                 {
                   "_type": "span",
                   "_key": "k4u",
-                  "text": "This site collects requests for a launch email and answers that help us plan the fund. Signing up creates no payment obligation, membership, voting right, or promise of a grant. We take no payments through this site at this stage. Proposed contribution amounts and funding plans can change before launch.",
+                  "text": "This site collects sign-ups for the fund's emails and answers that help us plan the fund. Signing up creates no payment obligation, membership, voting right, or promise of a grant. We take no payments through this site at this stage. Proposed contribution amounts and funding plans can change before the fund opens.",
                   "marks": []
                 }
               ]
@@ -962,7 +976,7 @@
                 {
                   "_type": "span",
                   "_key": "k5m",
-                  "text": "Before launch",
+                  "text": "Before the fund opens",
                   "marks": []
                 }
               ]
@@ -1988,7 +2002,7 @@
                 {
                   "_type": "span",
                   "_key": "k2f",
-                  "text": "We will send you ",
+                  "text": "We will send you a welcome email to confirm your sign-up, ",
                   "marks": []
                 },
                 {

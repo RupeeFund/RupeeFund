@@ -56,7 +56,7 @@ describe("Home page (/)", () => {
       "Users",
       "Contributors",
     ]);
-    expect(groups).toContain("Chai++ rates");
+    expect(groups).toContain("₹15 a month, the price of a cup of chai");
     expect(groups).toContain("Hear when the fund opens");
     expect(groups).toContain('href="/subscribe"');
     expect(html.match(/id="signup-title"/g)).toHaveLength(1);

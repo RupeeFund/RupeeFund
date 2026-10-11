@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { describe, expect, it } from "vitest";
+import { REASON_FIELDS, ROLE_FIELDS } from "../src/schema.ts";
 import { MIGRATIONS_DIR, migrationFiles } from "../src/testing.ts";
 
 const EXPECTED_TABLES = ["waitlist"];
@@ -59,6 +60,7 @@ describe("one migrations directory feeds both databases", () => {
       "0003_updates_opt_in.sql",
       "0004_audience_roles.sql",
       "0005_signup_data.sql",
+      "0006_fill_old_answers.sql",
     ]);
   });
 
@@ -349,4 +351,39 @@ describe("0005 rebuilds waitlist for the #14 data and normalises the rows", () =
       expect(() => insert.run(value)).toThrow(/CHECK constraint failed/);
     });
   }
+});
+
+function after0006(): DatabaseSync {
+  const db = after0005();
+  db.exec(readFileSync(`${MIGRATIONS_DIR}/0006_fill_old_answers.sql`, "utf8"));
+  return db;
+}
+
+describe("0006 fills each old row with the answers that the current form writes", () => {
+  it("opts in each row from before the updates box, and keeps each later answer", () => {
+    expect(byEmail(after0006(), "updates_opt_in")).toMatchObject({
+      "before@example.com": 1,
+      "rupee@example.com": 1,
+      "words@example.com": 0,
+    });
+  });
+
+  it("reads each role or reason that the old form did not ask as not ticked", () => {
+    const db = after0006();
+    for (const column of [...ROLE_FIELDS, ...REASON_FIELDS]) {
+      expect(Object.values(byEmail(db, column)), `${column}`).not.toContain(null);
+    }
+    expect(byEmail(db, "is_user")["rupee@example.com"]).toBe(1);
+  });
+
+  it("gives each old row empty text for months and the question", () => {
+    const db = after0006();
+    for (const column of ["months", "question"]) {
+      expect(Object.values(byEmail(db, column)), `${column}`).not.toContain(null);
+    }
+  });
+
+  it("keeps an amount that was not a number as NULL, because no number can be made up", () => {
+    expect(byEmail(after0006(), "amount")["words@example.com"]).toBe(null);
+  });
 });

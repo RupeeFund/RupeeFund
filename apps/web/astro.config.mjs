@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
+import { cacheCloudflare } from "@astrojs/cloudflare/cache";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
@@ -28,6 +29,7 @@ export default defineConfig({
     ttl: 8 * 60 * 60,
   },
   trailingSlash: "never",
+  cache: { provider: cacheCloudflare() },
   build: {
     format: "file",
   },
@@ -70,6 +72,9 @@ export default defineConfig({
   devToolbar: { enabled: false },
   vite: {
     cacheDir: dev ? undefined : "node_modules/.vite-build",
+    build: {
+      assetsInlineLimit: (file) => (file.endsWith(".woff2") ? false : undefined),
+    },
     plugins: [tailwindcss()],
   },
 });

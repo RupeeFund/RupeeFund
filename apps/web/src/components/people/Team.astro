@@ -19,13 +19,24 @@ const initials = (name: string) =>
 
 const PHOTO_WIDTH = 200;
 
-const sized = (url: string) => {
+const PHONE_PHOTO = 216;
+
+const PHONE_CARD_INSET = 2 * (20 + 24);
+
+const PHONE_PHOTO_SIZE = `calc((100vw - ${PHONE_CARD_INSET}px) / 3)`;
+
+const PHOTO_SIZES = `(min-width: 640px) ${PHOTO_WIDTH}px, ${PHONE_PHOTO_SIZE}`;
+
+const sized = (url: string, pixels = PHOTO_WIDTH * 2) => {
   const photo = new URL(url);
   const param = photo.hostname === "github.com" ? "size" : "s";
   photo.searchParams.delete(param === "size" ? "s" : "size");
-  photo.searchParams.set(param, String(PHOTO_WIDTH * 2));
+  photo.searchParams.set(param, String(pixels));
   return photo.href;
 };
+
+const sources = (url: string) =>
+  `${sized(url, PHONE_PHOTO)} ${PHONE_PHOTO}w, ${sized(url)} ${PHOTO_WIDTH * 2}w`;
 
 const handle = (member: Person) =>
   member.username ? `@${member.username}` : "FOSS United profile";
@@ -41,6 +52,8 @@ const handle = (member: Person) =>
           {member.photoUrl ? (
             <img
               src={sized(member.photoUrl)}
+              srcset={sources(member.photoUrl)}
+              sizes={PHOTO_SIZES}
               alt=""
               width={PHOTO_WIDTH}
               height={PHOTO_WIDTH}

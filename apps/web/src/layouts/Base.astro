@@ -22,10 +22,12 @@ import {
 
 interface Props {
   route?: RouteSeo;
+  article?: { publishedAt: string; updatedAt?: string };
 }
 
+const { article } = Astro.props;
 const seo = seoForPath(Astro.url.pathname, Astro.props.route);
-const blog = await blogOpen();
+const blog = await blogOpen(() => Astro.cache.set(false));
 
 const orgLd = {
   "@context": "https://schema.org",
@@ -63,7 +65,9 @@ const websiteLd = {
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={seo.ogTitle} />
     <meta property="og:description" content={seo.ogDescription} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={article ? "article" : "website"} />
+    {article && <meta property="article:published_time" content={article.publishedAt} />}
+    {article?.updatedAt && <meta property="article:modified_time" content={article.updatedAt} />}
     {seo.canonical && <meta property="og:url" content={seo.canonical} />}
     <meta property="og:image" content={OG_IMAGE} />
     <meta property="og:image:type" content="image/png" />

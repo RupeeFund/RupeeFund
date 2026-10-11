@@ -150,7 +150,7 @@ The list carries a flag for a question, never the question text. The list does n
 
 `/api/questions` is the one address that sends the question text. It sends a masked address and the export and unsubscribe stamps, so its table shows the same status as the records. An eye in a row of either table reveals that one address through `/api/reveal/:id`, which logs the reader. The Worker answers a reveal only if the request carries the `x-rupeefund-admin: 1` header. The dashboard script sends it. A link on another site cannot send it. So another site cannot log a reveal in the name of a reader. The dashboard writes every value through `textContent`, so a question that carries markup shows as the characters the person typed.
 
-The list carries every other column of the table: the roles, the reasons, the amount, the months, the updates choice and the dates. `/api/summary` counts the roles and the reasons. A row from before the form asked about a box holds `NULL` for that box. The dashboard shows it as "Not recorded", and it adds to no count.
+The list carries every other column of the table: the roles, the reasons, the amount, the months, the updates choice and the dates. `/api/summary` counts the roles and the reasons. Migration `0006` gives each row from before the current form the answers that the form writes now. A box that the old form did not ask holds 0. A row from before the updates box (2026-09-12) is opted in. A box holds `NULL` only when a Worker older than `0005` writes the row. The dashboard shows `NULL` as "Not recorded", and it adds to no count.
 
 `/api/summary` counts only the active rows, the rows of people who did not unsubscribe, because the figures measure interest. Two counts are the exception: all rows and the rows with a question, because the two tables list every row.
 
@@ -223,7 +223,11 @@ EmDash runs inside the site Worker. Its admin is at `rupeefund.org/_emdash/admin
 
 ### 11.1 How a page gets its content
 
-Each page reads the published entries when a request comes. `src/content/load.ts` reads them through EmDash. `src/content/entries.ts` checks each entry against `src/content/schema.ts` and gives it to the components in `src/components/site/` and `src/components/people/`. The site has no content build and no content cache, so the next page load shows a publish.
+Each page reads the published entries when a request comes. `src/content/load.ts` reads them through EmDash. `src/content/entries.ts` checks each entry against `src/content/schema.ts` and gives it to the components in `src/components/site/` and `src/components/people/`. The site has no content build.
+
+The Cloudflare edge keeps each public page, the feed and the sitemap for 1 hour. For 1 more day, it serves the old copy while the Worker makes a new one. `src/lib/cache.ts` sets these limits through the Astro route cache, with `cacheCloudflare()` and `cache.enabled` in `apps/web/wrangler.jsonc`. Each kept page has the tag of each collection. Each publish, unpublish, delete or restore in the content manager purges the tags of its collection, so the next page load shows the change. EmDash does not check the result of the purge. A failed purge, or a page that a visitor loads during the publish, can keep the old words for up to 1 hour, and for one more page load in the next day. A change to a byline purges nothing, so a new author name shows within the same time. A second publish purges again. A deploy starts with an empty cache, because the version of the Worker is part of the cache key.
+
+The edge keeps no answer for a signed-in person, no address with a query, nothing under `/_emdash` or `/auth`, no error and no file. `src/middleware.ts` reads the whole page before it answers, so a page that fails while it renders answers 500 and the edge does not keep it. A page that cannot check the blog for posts is not kept either. A browser keeps no page, and keeps a `/media` file for 5 minutes. When the edge serves a kept page, the Worker does not run, so `src/outer.ts` does not run. Thus each kept page must be the same for each visitor. With the cache on, Cloudflare bills each request for a static file as a Worker request.
 
 An entry that fails the check does not show. A list leaves it out, and the page of that entry answers 404. The log of the site Worker then gets `The site leaves out an entry:`, with the entry and the problem.
 
@@ -263,7 +267,7 @@ Two parts hold the rules. When you change one, read the other.
 
 `src/middleware.ts` refuses a write by a person below Admin to the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each change to the model from a browser session: the collections, the fields, the relations, the byline fields and the taxonomies. Only an API token changes the model (section 11.6). The middleware refuses the delete of a legal page from each person, and tells them to change the kind first. When the database does not answer, the middleware refuses the write with a 503.
 
-A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. It runs the EmDash maintenance. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A run that starts late skips the clean-up until the next day. The clean-up:
+A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. It runs the EmDash maintenance. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A run that starts late skips the clean-up until the next day. Each run logs `[scheduled] cleanup ran` or `[scheduled] cleanup skipped`, so a search of the Worker logs shows a skip. The clean-up:
 
 - removes expired sign-in challenges and tokens
 - removes uploads that did not finish, from D1 and R2

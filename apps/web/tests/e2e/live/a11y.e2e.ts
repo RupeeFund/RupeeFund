@@ -72,16 +72,16 @@ test("forced colors keep the new-tab arrow, the card edge and the step line", as
 
 const WCAG_22_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
-for (const width of [360, 1440]) {
-  test(`each page passes the WCAG 2.2 AA axe rules at ${width}px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 900 });
+for (const route of routes) {
+  test(`${route} passes the WCAG 2.2 AA axe rules at 360 and 1440px`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    for (const route of routes) {
+    for (const width of [360, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
       await page.goto(route);
       const { violations } = await new AxeBuilder({ page }).withTags(WCAG_22_AA).analyze();
       expect(
         violations.map(({ id, nodes }) => `${id}: ${nodes.map((node) => node.target).join(", ")}`),
-        route,
+        `${width}px`,
       ).toEqual([]);
     }
   });

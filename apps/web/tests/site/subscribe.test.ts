@@ -36,7 +36,19 @@ describe("Subscribe page (/subscribe)", () => {
     const confirmed = read("waitlist-confirmed.html");
     for (const page of [html, confirmed]) {
       expect(page.toLowerCase()).not.toContain("nothing else");
+      expect(page).not.toContain("email you once");
     }
+  });
+
+  it("promises a welcome email on each page that lists the emails", () => {
+    const pages = [
+      "index.html",
+      "subscribe.html",
+      "waitlist-confirmed.html",
+      "privacy.html",
+      "faq.html",
+    ];
+    expect(pages.filter((page) => !read(page).includes("welcome email"))).toEqual([]);
   });
 
   it("keeps the other amount in the amount group and the roles out of it", () => {

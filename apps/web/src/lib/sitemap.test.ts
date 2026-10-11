@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { blogPaths, sitemapXml } from "./sitemap.ts";
 
 describe("the sitemap", () => {
-  const xml = sitemapXml(["/", "/faq", "/privacy", "/waitlist-confirmed", "/404"]);
+  const xml = sitemapXml(
+    ["/", "/faq", "/privacy", "/waitlist-confirmed", "/404"].map((path) => ({ path })),
+  );
 
   it("lists each public page at its canonical address", () => {
     expect(xml).toContain("<loc>https://rupeefund.org</loc>");
@@ -24,11 +26,24 @@ describe("the sitemap", () => {
 });
 
 describe("the blog in the sitemap", () => {
-  it("lists the blog and each post when one post or more is published", () => {
-    expect(blogPaths(["hello", "again"])).toEqual(["/blog", "/blog/hello", "/blog/again"]);
+  const hello = { slug: "hello", publishedAt: "2026-10-01T10:00:00.000Z" };
+  const again = { ...hello, slug: "again", updatedAt: "2026-10-05T10:00:00.000Z" };
+
+  it("lists the blog and each post, dated by its last change", () => {
+    expect(blogPaths([hello, again])).toEqual([
+      { path: "/blog" },
+      { path: "/blog/hello", lastmod: "2026-10-01T10:00:00.000Z" },
+      { path: "/blog/again", lastmod: "2026-10-05T10:00:00.000Z" },
+    ]);
   });
 
   it("leaves out the blog when no post is published", () => {
     expect(blogPaths([])).toEqual([]);
+  });
+
+  it("writes the date of a dated page", () => {
+    expect(sitemapXml([{ path: "/blog/hello", lastmod: hello.publishedAt }])).toContain(
+      "<loc>https://rupeefund.org/blog/hello</loc><lastmod>2026-10-01T10:00:00.000Z</lastmod>",
+    );
   });
 });

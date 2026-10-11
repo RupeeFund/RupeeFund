@@ -5,9 +5,8 @@ import { blogPaths, FIXED_PATHS, sitemapXml } from "../lib/sitemap.ts";
 export const GET: APIRoute = async () => {
   const [entries, articles] = await Promise.all([pages(), posts()]);
   const paths = [
-    ...FIXED_PATHS,
-    ...entries.map(({ slug }) => `/${slug}`),
-    ...blogPaths(articles.map(({ slug }) => slug)),
+    ...[...FIXED_PATHS, ...entries.map(({ slug }) => `/${slug}`)].map((path) => ({ path })),
+    ...blogPaths(articles),
   ];
   return new Response(sitemapXml(paths), {
     headers: { "content-type": "application/xml; charset=utf-8" },

@@ -41,3 +41,17 @@ test("a tap outside the open phone menu closes it", async ({ page }) => {
   await expect(page.locator("[data-menu]")).not.toHaveAttribute("open");
   await expect(page).toHaveURL("/");
 });
+
+test("each phone menu link fills its row", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 640 });
+  await page.goto("/");
+  await page.locator("[data-menu] summary").click();
+  const nav = page.locator('nav[aria-label="Mobile"]');
+  const inner = await nav.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return el.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+  });
+  for (const link of await nav.locator("a.nav-link").all()) {
+    expect((await link.boundingBox())!.width).toBeGreaterThanOrEqual(inner);
+  }
+});

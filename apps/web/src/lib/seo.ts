@@ -61,7 +61,7 @@ const ROUTE_SEO: readonly RouteSeo[] = [
   {
     path: "/refunds",
     title: "Refunds — The Rupee Fund",
-    description: `This site takes no payments yet. What we publish before launch, and where to ask about a refund. ${INITIATIVE}.`,
+    description: `This site takes no payments yet. What we publish before the fund opens, and where to ask about a refund. ${INITIATIVE}.`,
     ogDescription: `This site takes no payments yet. Where to ask about a refund. ${INITIATIVE}.`,
     indexable: true,
   },

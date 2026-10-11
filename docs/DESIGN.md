@@ -46,7 +46,7 @@ Change the look only for a defect, for a brand rule or for a request from a main
 - **State.** Style a UI state from an attribute, for example `aria-pressed`. Do not set classes from JavaScript.
 - **Admin panel.** `apps/admin/src/admin.css` adds the styles that only the admin panel uses: the sidebar, the tables, the status marks and the chart. Take each colour from a brand token. Do not write a colour value.
 - **Season accents.** `SEASONS` in `src/components/site/constants.ts` holds them. `src/lib/launch.test.ts` keeps white text on each accent at 4.5:1.
-- **Pixel art.** The season sprites are in `apps/web/public/seasons/`, and the growth sprites (seedling, sapling, mature tree) are in `apps/web/public/growth/`. The season cards show a sprite at 48 px. The growth cards show a sprite at 4 times its grid.
+- **Pixel art.** The [Illustration section](https://brand.rupeefund.org/#illustration) of the brand guidelines gives the art rules and the palette. `pnpm brand:sync` writes the season sprites to `apps/web/public/seasons/`, and the growth sprites (seedling, sapling, mature tree) to `apps/web/public/growth/`. The season cards show a sprite at 48 px. The growth cards show a sprite at 4 times its grid.
 - **Brand files.** `pnpm brand:sync` writes them. `apps/web/scripts/brand-sync.mts` lists them. `docs/ARCHITECTURE.md` section 9 gives the rules.
 - **Visual check.** Check each visual change in a browser at 360 × 640 and at 1440 × 900. Check it with and without reduced motion.
 

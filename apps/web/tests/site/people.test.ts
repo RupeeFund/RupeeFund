@@ -21,6 +21,18 @@ describe("People page (/people)", () => {
     }
   });
 
+  it("offers each GitHub avatar at the size of a phone card too", () => {
+    const sets = [
+      ...html.matchAll(/<img src="https:\/\/github\.com\/[^"]+"[^>]*srcset="([^"]+)"/g),
+    ];
+    expect(sets).toHaveLength(PEOPLE.filter((member) => member.photoUrl).length);
+    for (const [, srcset] of sets) {
+      const widths = srcset!.split(",").map((part) => part.trim().split(" ")[1]);
+      expect(widths, `${srcset}`).toEqual(["216w", "400w"]);
+      expect(srcset).toContain("size=216");
+    }
+  });
+
   it("invites new members with a mail link", () => {
     expect(html).toMatch(/href="mailto:[^"]*subject=Joining/);
   });
