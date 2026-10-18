@@ -18,8 +18,11 @@ describe("the content pages", () => {
     expect(launched).toEqual([]);
   });
 
-  it("names Cloudflare Web Analytics on the privacy page", () => {
-    expect(read("privacy.html")).toContain("Cloudflare Web Analytics");
+  it("names Cloudflare Web Analytics under its own heading on the privacy page", () => {
+    const html = read("privacy.html");
+    const before = html.slice(0, html.indexOf("Cloudflare Web Analytics"));
+    const headings = [...before.matchAll(/<h2[^>]*>([^<]*)<\/h2>/g)].map(([, text]) => text);
+    expect(headings.at(-1)).toBe("Analytics");
   });
 
   it("serves each legal page the footer links to", () => {
