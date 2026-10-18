@@ -47,7 +47,7 @@ Urgent when: a test or a person must publish on the local preview.
 
 ## Ask each person on the list to confirm
 
-The site does not confirm an email address. When the current list reaches 100 people, send one welcome email to each person on it, also to each person who did not ask for monthly updates. The email welcomes the early members and asks each person to confirm. A confirmed person gets early access to the private community. A person who wants only the email when the fund opens, or who did not sign up, does nothing. The welcome email is the last email that they get before the fund opens.
+The site does not confirm an email address. The subscribe page, the sign-up card and the privacy page already promise the welcome email to each person who signs up. When the current list reaches 100 people, send one welcome email to each person on it, also to each person who did not ask for monthly updates. The email welcomes the early members and asks each person to confirm. A confirmed person gets early access to the private community. A person who wants only the email when the fund opens, or who did not sign up, does nothing. The welcome email is the last email that they get before the fund opens.
 
 To do:
 
@@ -58,3 +58,27 @@ To do:
 1. Add the community invite to the confirm page.
 
 Urgent when: the list holds 100 people.
+
+## The blog loads slowly
+
+On 2026-10-11, Lighthouse measured the largest image of `/blog` at 3.7 s (LCP). The page loaded 610 KB of images. Serve smaller images, for example with `srcset` and a width limit on each post image.
+
+Urgent when: the Lighthouse budget in CI fails on `/blog`.
+
+## The page cache and the private routes
+
+`cache.enabled` in `apps/web/wrangler.jsonc` adds a cache lookup to each request, also to `/_emdash`, `/auth` and `/api`, which the cache never keeps. Find out if the lookup adds time. If it does, skip those routes.
+
+Urgent when: a request to the content manager or the API becomes slow.
+
+## Test the cache when a page fails
+
+`docs/ARCHITECTURE.md` section 11.1 says that the edge does not keep a page that fails to render or a page with a failed blog check. Only manual probes cover these two cases. Add a site test for each.
+
+Urgent when: a change touches `src/lib/cache.ts` or `blogOpen`.
+
+## A byline change purges nothing
+
+A change to a byline in the content manager purges no page (`docs/ARCHITECTURE.md` section 11.1). A new author name shows only after the cache expires, within 1 hour. Purge the `posts` tag when a byline changes.
+
+Urgent when: an author name must change on the site at once.
