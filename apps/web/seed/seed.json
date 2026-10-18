@@ -443,7 +443,7 @@
                 {
                   "_type": "span",
                   "_key": "k3j",
-                  "text": "We keep this data to send you a welcome email that asks you to confirm, one email when the fund opens, and monthly updates if you tick the box, and to plan the fund. Your answers about money bind you to nothing. We take no payment. We hold no payment details. Access to your answers is limited to the people who administer the list and the services that process it.",
+                  "text": "We keep this data to send you emails: a welcome email that asks you to confirm, one email when the fund opens, and monthly updates if you tick the box. We also use it to plan the fund. Your answers about money bind you to nothing. We take no payment. We hold no payment details. Access to your answers is limited to the people who administer the list and the services that process it.",
                   "marks": []
                 }
               ]
@@ -471,7 +471,7 @@
                 {
                   "_type": "span",
                   "_key": "k3n",
-                  "text": "Cloudflare hosts this site and stores the list. The team can export the list to send the welcome email and the email when the fund opens. We keep entries to plan the fund and to send these emails. We have not set a fixed deletion date. If you leave the mailing list, we keep your entry, as described below.",
+                  "text": "Cloudflare hosts this site and stores the list. The team can export the list to send the welcome email, the email when the fund opens and the monthly updates. We keep entries to plan the fund and to send these emails. We have not set a fixed deletion date. If you leave the mailing list, we keep your entry, as described below.",
                   "marks": []
                 }
               ]
@@ -546,6 +546,20 @@
                   "_type": "span",
                   "_key": "k3y",
                   "text": ".",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "kwa3",
+              "style": "h2",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "kwa4",
+                  "text": "Analytics",
                   "marks": []
                 }
               ]
