@@ -23,6 +23,8 @@ The system shows public pages and collects a mailing list. It takes no payment a
 
 Both Workers use the waitlist database. Only the site Worker adds rows. The admin Worker writes only the export stamp, `exported_at`.
 
+The home page shows the supporters, their pledges for a season and the median monthly pledge. It reads them from the waitlist database on each render (`src/pages/index.astro`). A signup purges nothing, so the figures can be up to 1 hour old, and one more page load in the next day (section 11.1). `packages/db/src/pledges.ts` holds the query and the figures for the site and the admin panel. Below 25 supporters, or when the read fails, the page shows no figures (`src/lib/supporters.ts`).
+
 AGENTS.md maps the packages.
 
 A path in this document starts at the repository root. `src/` means `apps/web/src/`.
@@ -48,7 +50,7 @@ The next table holds the addresses for later work. No part serves them yet. Keep
 | -------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
 | `rupeefund.org/platform/*` | Voting platform | A route group in this app, or its own Worker on the same host. It uses the sign-in of the content manager. |
 | `dashboard.rupeefund.org`  | Data dashboard  | The next version of `admin.rupeefund.org`                                                                  |
-| `rupeefund.org/stats`      | Public figures  | Public pages that read totals only                                                                         |
+| `rupeefund.org/stats`      | Public figures  | Public pages that read totals only. The home page shows the first totals (section 2)                       |
 
 The one environment is `live`. Two Workers are not two environments. There is no preview URL.
 
@@ -220,11 +222,11 @@ Each page reads the published entries when a request comes. `src/content/load.ts
 
 The Cloudflare edge keeps each public page, the feed and the sitemap for 1 hour. For 1 more day, it serves the old copy while the Worker makes a new one. `src/lib/cache.ts` sets these limits through the Astro route cache, with `cacheCloudflare()` and `cache.enabled` in `apps/web/wrangler.jsonc`. Each kept page has the tag of each collection. Each publish, unpublish, delete or restore in the content manager purges the tags of its collection, so the next page load shows the change. EmDash does not check the result of the purge. A failed purge, or a page that a visitor loads during the publish, can keep the old words for up to 1 hour, and for one more page load in the next day. A change to a byline purges nothing, so a new author name shows within the same time. A second publish purges again. A deploy starts with an empty cache, because the version of the Worker is part of the cache key.
 
-The edge keeps no answer for a signed-in person, no address with a query, nothing under `/_emdash` or `/auth`, no error and no file. `src/middleware.ts` reads the whole page before it answers, so a page that fails while it renders answers 500 and the edge does not keep it. A page that cannot check the blog for posts is not kept either. A browser keeps no page, and keeps a `/media` file for 5 minutes. When the edge serves a kept page, the Worker does not run, so `src/outer.ts` does not run. Thus each kept page must be the same for each visitor. With the cache on, Cloudflare bills each request for a static file as a Worker request.
+The edge keeps no answer for a signed-in person, no address with a query, nothing under `/_emdash` or `/auth`, no error and no file. `src/middleware.ts` reads the whole page before it answers, so a page that fails while it renders answers 500 and the edge does not keep it. A page that cannot check the blog for posts, or the home page when it cannot read the supporter figures, is not kept either. A browser keeps no page, and keeps a `/media` file for 5 minutes. When the edge serves a kept page, the Worker does not run, so `src/outer.ts` does not run. Thus each kept page must be the same for each visitor. With the cache on, Cloudflare bills each request for a static file as a Worker request.
 
 An entry that fails the check does not show. A list leaves it out, and the page of that entry answers 404. The log of the site Worker then gets `The site leaves out an entry:`, with the entry and the problem.
 
-A read of the database that fails shows `src/pages/500.astro`.
+A read of the database that fails shows `src/pages/500.astro`. The one exception is the read of the supporter figures: the home page then shows no figures.
 
 ### 11.2 The public addresses
 

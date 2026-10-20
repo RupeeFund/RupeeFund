@@ -49,14 +49,6 @@ export const TOTALS_SQL = `SELECT
        COALESCE(SUM(CASE WHEN ${HAS_QUESTION} THEN 1 ELSE 0 END), 0) AS questions
      FROM waitlist`;
 
-export const AMOUNTS_SQL = `SELECT
-       amount,
-       COUNT(*) AS n
-     FROM waitlist
-     WHERE ${ACTIVE} AND amount IS NOT NULL
-     GROUP BY amount
-     ORDER BY amount`;
-
 export const DAILY_SQL = `SELECT
        date(created_at / 1000, 'unixepoch') AS day,
        COUNT(*) AS n

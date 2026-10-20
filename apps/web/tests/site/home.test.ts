@@ -23,6 +23,22 @@ describe("Home page (/)", () => {
     expect(band).not.toMatch(/<a /);
   });
 
+  it("shows the live supporter figures from the list", () => {
+    const band = html.slice(html.indexOf("Live · Updated hourly"));
+    expect([...band.matchAll(/<dd[^>]*>([^<]*)<\/dd>/g)].map((m) => m[1]?.trim())).toEqual([
+      "26",
+      "₹1,24,185",
+      "₹1,308",
+    ]);
+  });
+
+  it("asks the visitor to join the supporters in the sign-up card, not in the hero", () => {
+    const main = html.split("<main")[1] ?? "";
+    expect(main.slice(0, main.indexOf("</section>"))).not.toContain("Join 26");
+    const card = /<aside aria-labelledby="signup-title"[\s\S]*?<\/aside>/.exec(html)?.[0] ?? "";
+    expect(card).toContain("Join 26 others who have pledged.");
+  });
+
   it("shows the lede, the four steps, the three reasons and the FAQ title", () => {
     const main = html.split("<main")[1] ?? "";
     expect(main).toContain("pools your monthly contributions over UPI");
@@ -51,18 +67,18 @@ describe("Home page (/)", () => {
   });
 
   it("names who the fund is for, then asks them to sign up", () => {
-    const groups = /<h2[^>]*>Who you are<\/h2>([\s\S]*?)<\/section>/.exec(html)?.[1] ?? "";
+    const groups = /<h2[^>]*>Join if you are<\/h2>([\s\S]*?)<\/section>/.exec(html)?.[1] ?? "";
     expect([...groups.matchAll(/<h3[^>]*>([^<]*)<\/h3>/g)].map((m) => m[1])).toEqual([
-      "Students",
-      "Users",
-      "Contributors",
+      "Student",
+      "User",
+      "Contributor",
     ]);
     expect(groups).toContain("₹15 a month, the price of a cup of chai");
     expect(groups).toContain("Hear when the fund opens");
     expect(groups).toContain('href="/subscribe"');
     expect(html.match(/id="signup-title"/g)).toHaveLength(1);
-    expect(html.indexOf(">Why join us</h2>")).toBeLessThan(html.indexOf(">Who you are</h2>"));
-    expect(html.indexOf(">Who you are</h2>")).toBeLessThan(
+    expect(html.indexOf(">Why join us</h2>")).toBeLessThan(html.indexOf(">Join if you are</h2>"));
+    expect(html.indexOf(">Join if you are</h2>")).toBeLessThan(
       html.indexOf(">Frequently asked questions</h2>"),
     );
   });

@@ -1,4 +1,5 @@
 ---
+import { env } from "cloudflare:workers";
 import Group from "../components/home/Group.astro";
 import Groups from "../components/home/Groups.astro";
 import Hero from "../components/home/Hero.astro";
@@ -10,8 +11,14 @@ import Step from "../components/home/Step.astro";
 import Steps from "../components/home/Steps.astro";
 import { Content } from "../content/home.mdx";
 import Base from "../layouts/Base.astro";
+import { readSupporters } from "../lib/supporters.ts";
+
+const supporters = await readSupporters(env.WAITLIST_DB, () => Astro.cache.set(false));
 ---
 
 <Base>
-  <Content components={{ Hero, Pitch, Steps, Step, Reasons, Reason, Groups, Group, Questions }} />
+  <Content
+    supporters={supporters}
+    components={{ Hero, Pitch, Steps, Step, Reasons, Reason, Groups, Group, Questions }}
+  />
 </Base>

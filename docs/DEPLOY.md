@@ -367,6 +367,7 @@ In the code:
 - `apps/web/src/pages/waitlist-confirmed.astro`: **No payment yet**.
 - `apps/web/src/components/site/SignupCard.astro`: the heading **Hear when the fund opens** and **Nothing to pay today**.
 - `apps/web/src/lib/seo.ts`: the two descriptions of `/refunds` (**This site takes no payments yet**).
+- `apps/web/src/components/home/Supporters.astro` and `apps/web/src/components/site/SignupCard.astro`: the pledge figures (**pledged for each season**, **Join … others who have pledged**). They count the pledges on the list, not money.
 
 In the content manager (section 11), then the same words in `apps/web/seed/seed.json` and `apps/web/src/content/entries.fixture.json`:
 

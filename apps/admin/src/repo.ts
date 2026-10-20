@@ -1,8 +1,8 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import { claimPending, type ExportableRow } from "@rupeefund/db/export";
+import { AMOUNTS_SQL, type AmountRow, type Pledges, pledgesOf } from "@rupeefund/db/pledges";
 import type { ReasonField, RoleField, WaitlistRow } from "@rupeefund/db/schema";
 import {
-  AMOUNTS_SQL,
   DAILY_DAYS,
   DAILY_SQL,
   DAY_MS,
@@ -30,12 +30,6 @@ export interface Totals extends Record<RoleField | ReasonField, number> {
 export interface Tally {
   key: string;
   n: number;
-}
-
-export interface Pledges {
-  count: number;
-  sum: number;
-  median: number | null;
 }
 
 export interface Summary {
@@ -78,36 +72,9 @@ export interface AdminRepo {
   claim(at: number): Promise<ExportableRow[]>;
 }
 
-interface AmountRow {
-  amount: number;
-  n: number;
-}
-
 interface DayRow {
   day: string;
   n: number;
-}
-
-function pledgesOf(rows: AmountRow[]): Pledges {
-  let count = 0;
-  let sum = 0;
-  for (const row of rows) {
-    count += row.n;
-    sum += row.amount * row.n;
-  }
-  if (count === 0) return { count, sum, median: null };
-  const low = nth(rows, Math.floor((count - 1) / 2));
-  const high = nth(rows, Math.floor(count / 2));
-  return { count, sum, median: (low + high) / 2 };
-}
-
-function nth(rows: AmountRow[], index: number): number {
-  let seen = 0;
-  for (const row of rows) {
-    seen += row.n;
-    if (index < seen) return row.amount;
-  }
-  throw new RangeError(`no amount at ${index} of ${seen}`);
 }
 
 export function createAdminRepo(db: D1Database): AdminRepo {

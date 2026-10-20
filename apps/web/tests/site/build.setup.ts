@@ -82,6 +82,18 @@ async function ready(base: string): Promise<void> {
   throw new Error(`The preview server at ${base} did not start`);
 }
 
+function addSupporters(db: DatabaseSync): void {
+  const add = db.prepare(
+    `INSERT INTO waitlist (email, name, consent_at, source, created_at, updated_at, amount,
+       unsubscribed_at)
+     VALUES (?, 'Supporter', 0, 'subscribe', 0, 0, ?, ?)`,
+  );
+  for (let i = 0; i < 25; i++) add.run(`supporter${i}@example.com`, i < 13 ? 15 : 2600, null);
+  add.run("prank@example.com", 99_99_99_999, null);
+  add.run("left@example.com", 512, 1);
+  add.run("unsure@example.com", null, null);
+}
+
 async function addCallers(): Promise<void> {
   for (const { user, role } of BROWSERS) {
     const member = { email: `${user}@example.com`, name: user, role };
@@ -92,6 +104,10 @@ async function addCallers(): Promise<void> {
     const content = db
       .prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'ec_pages'")
       .get();
+    const waitlist = db
+      .prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'waitlist'")
+      .get();
+    if (waitlist) addSupporters(db);
     if (content) {
       const addUser = db.prepare("INSERT INTO users (id, email, role) VALUES (?, ?, ?)");
       for (const { user, role } of BROWSERS) addUser.run(user, `${user}@example.com`, role);

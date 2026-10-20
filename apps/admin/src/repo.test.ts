@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { AMOUNTS_SQL } from "@rupeefund/db/pledges";
 import { createAdminRepo, type AdminRepo } from "./repo.ts";
 import {
-  AMOUNTS_SQL,
   DAILY_DAYS,
   DAILY_SQL,
   DAY_MS,

@@ -1,0 +1,41 @@
+---
+import { grouped, rupees, type Supporters } from "../../lib/supporters.ts";
+
+interface Props {
+  supporters: Supporters | null;
+}
+
+const { supporters } = Astro.props;
+const figures = supporters && [
+  { label: "supporters", value: grouped(supporters.count) },
+  { label: "pledged for each season", value: rupees(supporters.season) },
+  { label: "median monthly pledge", value: rupees(supporters.median) },
+];
+---
+
+{
+  figures && (
+    <div class="mt-10 lg:col-span-2 lg:mt-0">
+      <p class="eyebrow mb-3 flex items-center gap-2 text-ink">
+        <span class="relative flex size-2.5" aria-hidden="true">
+          <span
+            class:list={[
+              "absolute inline-flex size-full rounded-full",
+              "bg-ink opacity-60 motion-safe:animate-ping",
+            ]}
+          />
+          <span class="relative inline-flex size-2.5 rounded-full bg-ink" />
+        </span>
+        Live · Updated hourly
+      </p>
+      <dl class="grid gap-3 sm:grid-cols-3">
+        {figures.map(({ label, value }) => (
+          <div class="card flex flex-col-reverse gap-1 p-5 sm:p-6">
+            <dt class="text-sm text-ink-2">{label}</dt>
+            <dd class="heading text-4xl tabular-nums text-ink">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
