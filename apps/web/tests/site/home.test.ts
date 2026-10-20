@@ -20,6 +20,7 @@ describe("Home page (/)", () => {
       )?.[1] ?? "";
     expect(band).toMatch(/Nearly 3(&nbsp;|\u00a0)crore developers/);
     expect(band).toMatch(/more than ₹40(&nbsp;|\u00a0)lakh every month/);
+    expect(band).not.toMatch(/<a /);
   });
 
   it("shows the lede, the four steps, the three reasons and the FAQ title", () => {
