@@ -25,16 +25,14 @@ Examples:
 
 Change the look only for a defect, for a brand rule or for a request from a maintainer. The live site is the baseline. A finding from an audit, a review or a design panel is not a request. Report it to a maintainer.
 
-- **Layout.** Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it. The components in `src/components/site/` and `src/components/people/` hold the layout of each page that the content manager fills. The section components in `src/components/home/` and `src/components/people/` hold the layout of the home page and the people page. `docs/ARCHITECTURE.md` section 11 tells where their words are. The home sections, in page order, are `Hero`, `Pitch`, `Steps` with `Step`, `Reasons` with `Reason`, `Groups` with `Group`, and `Questions`. The people sections, in page order, are `Team`, `Join` and `Foundation`.
+- **Layout.** Page layout is not a brand rule. The page files in `src/pages/` and the frames in `src/layouts/` hold it. The components in `src/components/site/` and `src/components/people/` hold the layout of each page that the content manager fills. The section components in `src/components/home/` and `src/components/people/` hold the layout of the home page and the people page. `docs/ARCHITECTURE.md` section 11 tells where their words are.
 - **Page types.** Each type of page has its own layout rule. Use the rule of the type when you add a page.
   - Home: its own grid. Only the home page uses it.
   - Signup form, `/subscribe`: the form and its aside, in two columns.
   - People and FAQ: the full frame, in one column. A list of cards can use two columns.
   - Legal pages and blog posts: long text. Put the title and the text in `reading`, one column at the centre of the frame, `max-w-measure` (48 rem) wide.
   - Blog index: in `reading`, the title, a lede and the RSS link, then one row for each post, with a line between rows. A row has the label row, the title, the excerpt and a `post-thumb` image at the right. Do not use cards.
-  - Blog post: a link back to the index, the label row, the title, the excerpt as the lede, the byline row, the lead image across the column with its caption, and the text.
   - Label row (`PostLabel.astro`): the category of the post in `eyebrow` deep green, and the season pill in the accent of the season. The post page adds the season sprite. A row on the index adds the date and the reading time.
-  - Byline row: the authors from the content manager, or "The Rupee Fund volunteers", then the date, the updated date if it is a later day, and the reading time.
   - Short notices, for example `/404`: the full frame, in one column.
 - **Styles.** `packages/ui/src/styles.css` builds the brand rules that the brand files do not hold. It holds the type scale and the classes for links, buttons, cards and forms. The site and the admin panel both use it. Reuse a class before you add one. Put a new class in that file.
 - **Headings.** `packages/ui/src/styles.css` holds three heading sizes. `display` is only for the h1 of the home page. `page-title` is the h1 of each other page of the site. `section-title` is each section h2 and the tagline of the home page. Add `heading` to a `p` that must look like a heading.
@@ -46,7 +44,7 @@ Change the look only for a defect, for a brand rule or for a request from a main
 - **State.** Style a UI state from an attribute, for example `aria-pressed`. Do not set classes from JavaScript.
 - **Admin panel.** `apps/admin/src/admin.css` adds the styles that only the admin panel uses: the sidebar, the tables, the status marks and the chart. Take each colour from a brand token. Do not write a colour value.
 - **Season accents.** `SEASONS` in `src/components/site/constants.ts` holds them. `src/lib/launch.test.ts` keeps white text on each accent at 4.5:1.
-- **Pixel art.** The [Illustration section](https://brand.rupeefund.org/#illustration) of the brand guidelines gives the art rules and the palette. `pnpm brand:sync` writes the season sprites to `apps/web/public/seasons/`, and the growth sprites (seedling, sapling, mature tree) to `apps/web/public/growth/`. The season cards show a sprite at 48 px. The growth cards show a sprite at 4 times its grid.
+- **Pixel art.** The [Illustration section](https://brand.rupeefund.org/#illustration) of the brand guidelines gives the art rules and the palette. `pnpm brand:sync` writes the season sprites to `apps/web/public/seasons/`, and the growth sprites (seedling, sapling, mature tree) to `apps/web/public/growth/`.
 - **Brand files.** `pnpm brand:sync` writes them. `apps/web/scripts/brand-sync.mts` lists them. `docs/ARCHITECTURE.md` section 9 gives the rules.
 - **Visual check.** Check each visual change in a browser at 360 × 640 and at 1440 × 900. Check it with and without reduced motion.
 

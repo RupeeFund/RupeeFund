@@ -3,13 +3,19 @@ export type WriteTarget =
   | { kind: "revision"; revision: string }
   | { kind: "media"; media: string }
   | { kind: "terms" }
-  | { kind: "taxonomy"; taxonomy: string };
+  | { kind: "taxonomy"; taxonomy: string }
+  | { kind: "mcp" };
 
 export const ADMIN_ROLE = 50;
 
 export const LEGAL_COLLECTION = "pages";
 
-export const GUARDED_COLLECTIONS = [LEGAL_COLLECTION] as const;
+export const ADMIN_COLLECTIONS = ["faq", "people"] as const;
+
+export const GUARDED_COLLECTIONS = [LEGAL_COLLECTION, ...ADMIN_COLLECTIONS] as const;
+
+export const isAdminCollection = (collection: string): boolean =>
+  (ADMIN_COLLECTIONS as readonly string[]).includes(collection);
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
@@ -39,6 +45,8 @@ const TERMS_OF = /^\/_emdash\/api\/taxonomies\/([^/]+)\/(?!terms$).+$/;
 
 const BULK_TAG = "/_emdash/api/taxonomies/bulk-tag";
 
+const MCP = "/_emdash/api/mcp";
+
 const MEDIA_FILE = /^\/(?:media|_emdash\/api\/media\/file)\/([A-Za-z0-9][A-Za-z0-9._-]*)$/;
 
 const isUnsafe = (method: string): boolean => !SAFE_METHODS.has(method.toUpperCase());
@@ -63,6 +71,7 @@ function mediaTarget(method: string, path: string): WriteTarget | null {
 export function writeTarget(method: string, path: string): WriteTarget | null {
   if (!isUnsafe(method)) return null;
   if (path === BULK_TAG) return { kind: "terms" };
+  if (within(path, MCP)) return { kind: "mcp" };
   const revision = REVISION_RESTORE.exec(path)?.[1];
   if (revision) return { kind: "revision", revision };
   const media = mediaTarget(method, path);

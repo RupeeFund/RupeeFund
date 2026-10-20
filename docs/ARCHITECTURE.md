@@ -150,18 +150,11 @@ The list carries a flag for a question, never the question text. The list does n
 
 `/api/questions` is the one address that sends the question text. It sends a masked address and the export and unsubscribe stamps, so its table shows the same status as the records. An eye in a row of either table reveals that one address through `/api/reveal/:id`, which logs the reader. The Worker answers a reveal only if the request carries the `x-rupeefund-admin: 1` header. The dashboard script sends it. A link on another site cannot send it. So another site cannot log a reveal in the name of a reader. The dashboard writes every value through `textContent`, so a question that carries markup shows as the characters the person typed.
 
-The list carries every other column of the table: the roles, the reasons, the amount, the months, the updates choice and the dates. `/api/summary` counts the roles and the reasons. Migration `0006` gives each row from before the current form the answers that the form writes now. A box that the old form did not ask holds 0. A row from before the updates box (2026-09-12) is opted in. A box holds `NULL` only when a Worker older than `0005` writes the row. The dashboard shows `NULL` as "Not recorded", and it adds to no count.
+The list carries every other column of the table. `/api/summary` counts the roles and the reasons. Migration `0006` gives each row from before the current form the answers that the form writes now. A box that the old form did not ask holds 0. A row from before the updates box (2026-09-12) is opted in. A box holds `NULL` only when a Worker older than `0005` writes the row. The dashboard shows `NULL` as "Not recorded", and it adds to no count.
 
 `/api/summary` counts only the active rows, the rows of people who did not unsubscribe, because the figures measure interest. Two counts are the exception: all rows and the rows with a question, because the two tables list every row.
 
-`/api/summary` also sends these values:
-
-- the sum and the median of the monthly amounts
-- the number of people who answered the roles and the reasons
-- the signups and the unsubscribes of the last 30 days
-- the time of the count
-
-A person who ticked no box answered. A row with `NULL` in every box of a question did not answer. The dashboard projects the date of 1000 active signups from the net growth of those 30 days.
+In the answer counts, a person who ticked no box answered. A row with `NULL` in every box of a question did not answer. The dashboard projects the date of 1000 active signups from the net growth of the last 30 days.
 
 A response that carries an address, a name, or a question sets `Cache-Control: private, no-store`. Only `/api/summary` permits a cache, because it carries counts alone.
 
@@ -262,10 +255,11 @@ Two parts hold the rules. When you change one, read the other.
 `src/plugin.ts` registers the hooks in `src/plugin/hooks.ts`:
 
 - Only an admin edits, publishes or unpublishes a legal page: a page with the kind `legal`.
+- Only an admin writes, edits, publishes or unpublishes an entry of the FAQ or the community team (`ADMIN_COLLECTIONS` in `src/lib/guard.ts`).
 - Nobody deletes a legal page. To remove one, an admin changes its kind to `page` first.
 - The content manager refuses each schedule. An entry goes live only when a person publishes it.
 
-`src/middleware.ts` refuses a write by a person below Admin to the legal pages, through each route that the hooks do not see. `src/lib/guard.ts` lists those routes: a status change with no data, a copy, a revision restore, a change to their images and a change to their terms. The middleware also refuses each change to the model from a browser session: the collections, the fields, the relations, the byline fields and the taxonomies. Only an API token changes the model (section 11.6). The middleware refuses the delete of a legal page from each person, and tells them to change the kind first. When the database does not answer, the middleware refuses the write with a 503.
+`src/middleware.ts` refuses a person below Admin each write to the FAQ and the community team, and each write to the legal pages that the hooks do not see. This includes the delete, because the delete hook does not name the person. It also refuses that person each write to the MCP server of EmDash, because its delete, restore and copy run no hook that names the person. `src/lib/guard.ts` lists the routes. The middleware also refuses each change to the model from a browser session: the collections, the fields, the relations, the byline fields and the taxonomies. Only an API token changes the model (section 11.6). The middleware refuses the delete of a legal page from each person, and tells them to change the kind first. When the database does not answer, the middleware refuses the write with a 503.
 
 A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. It runs the EmDash maintenance. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A run that starts late skips the clean-up until the next day. Each run logs `[scheduled] cleanup ran` or `[scheduled] cleanup skipped`, so a search of the Worker logs shows a skip. The clean-up:
 

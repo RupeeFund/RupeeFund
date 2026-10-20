@@ -1,4 +1,4 @@
-import { deletedEntry, LEGAL_COLLECTION, writeTarget } from "./guard.ts";
+import { deletedEntry, isAdminCollection, LEGAL_COLLECTION, writeTarget } from "./guard.ts";
 import {
   isLegalPage,
   isPublishedMedia,
@@ -15,7 +15,7 @@ interface Session {
   get(key: "user"): Promise<unknown>;
 }
 
-async function refusesEntry(
+async function isLegalEntry(
   query: Query,
   collection: string,
   entry: string | null,
@@ -23,6 +23,12 @@ async function refusesEntry(
   if (collection !== LEGAL_COLLECTION || entry === null) return false;
   return isLegalPage(query, entry);
 }
+
+const refusesEntry = async (
+  query: Query,
+  collection: string,
+  entry: string | null,
+): Promise<boolean> => isAdminCollection(collection) || isLegalEntry(query, collection, entry);
 
 export async function refusesWrite(
   query: Query,
@@ -45,6 +51,8 @@ export async function refusesWrite(
       return usesGuardedMedia(query, target.media);
     case "taxonomy":
       return taxonomyCoversGuarded(query, target.taxonomy);
+    case "mcp":
+      return true;
     case "terms": {
       const term = await termOf();
       return term !== null && (await termCoversGuarded(query, term));
@@ -58,7 +66,7 @@ export async function deletesLegalPage(
   path: string,
 ): Promise<boolean> {
   const target = deletedEntry(method, path);
-  return target !== null && refusesEntry(query, target.collection, target.entry);
+  return target !== null && isLegalEntry(query, target.collection, target.entry);
 }
 
 export async function isPublic(

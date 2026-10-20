@@ -5,7 +5,7 @@ import {
   type ContentPolicyDecision,
   type ContentPolicyEvent,
 } from "emdash";
-import { ADMIN_ROLE, LEGAL_COLLECTION } from "../lib/guard.ts";
+import { ADMIN_ROLE, isAdminCollection, LEGAL_COLLECTION } from "../lib/guard.ts";
 
 export interface Store {
   get(
@@ -36,6 +36,10 @@ export async function saveGate(
   store: Store,
 ): Promise<void> {
   if (isAdmin(event.actor)) return;
+  if (isAdminCollection(event.collection))
+    throw new ContentSaveRejectedError(
+      "Only an admin can change this. Ask an admin for the change.",
+    );
   const legal =
     event.collection === LEGAL_COLLECTION &&
     (isLegal(event.content) || (!event.isNew && (await storedIsLegal(store, event.id))));
@@ -51,8 +55,9 @@ export async function publishGate(
 ): Promise<ContentPolicyDecision> {
   if (isAdmin(event.actor)) return;
   const guarded =
-    event.collection === LEGAL_COLLECTION &&
-    (isLegal(event.content.data) || (await storedIsLegal(store, event.content.id)));
+    isAdminCollection(event.collection) ||
+    (event.collection === LEGAL_COLLECTION &&
+      (isLegal(event.content.data) || (await storedIsLegal(store, event.content.id))));
   if (!guarded) return;
   return {
     cancel: true,

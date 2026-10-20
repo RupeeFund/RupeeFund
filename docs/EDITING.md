@@ -30,8 +30,11 @@ You stay signed in for 8 hours. Then you sign in again. The content manager does
 | Change the author or the publish date of an entry                                             | No     | Yes    | Yes   |
 | Change the categories and the bylines                                                         | No     | Yes    | Yes   |
 | Edit, publish and unpublish the legal pages                                                   | No     | No     | Yes   |
+| Write, edit, publish, unpublish, delete and restore the FAQ and the community team            | No     | No     | Yes   |
 | Empty the trash, which deletes an entry for good                                              | No     | No     | Yes   |
 | Change the settings, the people of the content manager and the API tokens. Download a backup. | No     | No     | Yes   |
+
+In the first four rows, an entry is a post or a normal page.
 
 An Author can change only the entries that the Author wrote. The sample entries and the entries of other people are not yours. To change one of them, ask an Editor.
 
