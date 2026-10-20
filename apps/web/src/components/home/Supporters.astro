@@ -1,11 +1,14 @@
 ---
+import Icon from "../site/Icon.astro";
+import { SUBSCRIBE_CTA } from "../../lib/launch.ts";
 import { grouped, rupees, type Supporters } from "../../lib/supporters.ts";
 
 interface Props {
+  title: string;
   supporters: Supporters | null;
 }
 
-const { supporters } = Astro.props;
+const { title, supporters } = Astro.props;
 const figures = supporters && [
   { label: "supporters", value: grouped(supporters.count) },
   { label: "pledged for each season", value: rupees(supporters.season) },
@@ -15,8 +18,14 @@ const figures = supporters && [
 
 {
   figures && (
-    <div class="mt-10 lg:col-span-2 lg:mt-0">
-      <p class="eyebrow mb-3 flex items-center gap-2 text-ink">
+    <section
+      aria-labelledby="pledges-title"
+      class="wrap section-y bg-brand text-ink [--focus:var(--color-ink)]"
+    >
+      <h2 id="pledges-title" class="section-title">
+        {title}
+      </h2>
+      <p class="eyebrow mb-3 flex items-center gap-2">
         <span class="relative flex size-2.5" aria-hidden="true">
           <span
             class:list={[
@@ -30,12 +39,18 @@ const figures = supporters && [
       </p>
       <dl class="grid gap-3 sm:grid-cols-3">
         {figures.map(({ label, value }) => (
-          <div class="card flex flex-col-reverse gap-1 p-5 sm:p-6">
+          <div class="card flex flex-col-reverse gap-1 p-5 text-center sm:p-6">
             <dt class="text-sm text-ink-2">{label}</dt>
             <dd class="heading text-4xl tabular-nums text-ink">{value}</dd>
           </div>
         ))}
       </dl>
-    </div>
+      <div class="mt-8 flex justify-center">
+        <a href="/subscribe" class="btn btn-primary btn-lg min-h-16 px-9 text-lg">
+          <Icon name="bell" size={22} />
+          {SUBSCRIBE_CTA}
+        </a>
+      </div>
+    </section>
   )
 }

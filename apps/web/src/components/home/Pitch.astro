@@ -1,13 +1,9 @@
 ---
-import type { Supporters as Figures } from "../../lib/supporters.ts";
-import Supporters from "./Supporters.astro";
-
 interface Props {
   title: string;
-  supporters: Figures | null;
 }
 
-const { title, supporters } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <section class="wrap section-y grid items-start bg-brand text-ink lg:grid-cols-2 lg:gap-16">
@@ -17,5 +13,4 @@ const { title, supporters } = Astro.props;
       <slot />
     </div>
   </div>
-  <Supporters supporters={supporters} />
 </section>

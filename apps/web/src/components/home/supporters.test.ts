@@ -16,7 +16,10 @@ const terms = (html: string) =>
 
 describe("the supporter figures", () => {
   it("name each figure as a pledge, in the Indian grouping", async () => {
-    const html = await render({ supporters: { count: 1234, season: 567890, median: 128 } });
+    const html = await render({
+      title: "Pledges so far",
+      supporters: { count: 1234, season: 567890, median: 128 },
+    });
     expect(terms(html)).toEqual([
       ["supporters", "1,234"],
       ["pledged for each season", "₹5,67,890"],
@@ -26,7 +29,7 @@ describe("the supporter figures", () => {
   });
 
   it("show nothing without figures", async () => {
-    expect((await render({ supporters: null })).trim()).toBe("");
+    expect((await render({ title: "Pledges so far", supporters: null })).trim()).toBe("");
   });
 });
 

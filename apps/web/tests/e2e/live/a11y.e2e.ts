@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { routes } from "../routes.ts";
+import { posts, routes } from "../routes.ts";
 
 test("the skip link targets main content and is focusable", async ({ page }) => {
   await page.goto("/");
@@ -11,7 +11,7 @@ test("the skip link targets main content and is focusable", async ({ page }) => 
 });
 
 test("the sign-up card button shows an ink focus ring", async ({ page }) => {
-  await page.goto("/");
+  await page.goto(posts[0]!);
   const button = page.locator('aside[aria-labelledby="signup-title"] a');
   await button.focus();
   await expect(button).toHaveCSS("outline-color", "rgb(20, 20, 20)");

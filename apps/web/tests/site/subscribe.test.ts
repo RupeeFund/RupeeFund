@@ -41,13 +41,7 @@ describe("Subscribe page (/subscribe)", () => {
   });
 
   it("promises a welcome email on each page that lists the emails", () => {
-    const pages = [
-      "index.html",
-      "subscribe.html",
-      "waitlist-confirmed.html",
-      "privacy.html",
-      "faq.html",
-    ];
+    const pages = ["subscribe.html", "waitlist-confirmed.html", "privacy.html", "faq.html"];
     expect(pages.filter((page) => !read(page).includes("welcome email"))).toEqual([]);
   });
 

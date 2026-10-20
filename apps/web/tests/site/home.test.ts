@@ -32,11 +32,9 @@ describe("Home page (/)", () => {
     ]);
   });
 
-  it("asks the visitor to join the supporters in the sign-up card, not in the hero", () => {
-    const main = html.split("<main")[1] ?? "";
-    expect(main.slice(0, main.indexOf("</section>"))).not.toContain("Join 26");
-    const card = /<aside aria-labelledby="signup-title"[\s\S]*?<\/aside>/.exec(html)?.[0] ?? "";
-    expect(card).toContain("Join 26 others who have pledged.");
+  it("asks the visitor to sign up from the pledges", () => {
+    const pledges = /<h2[^>]*>Pledges so far<\/h2>([\s\S]*?)<\/section>/.exec(html)?.[1] ?? "";
+    expect(pledges).toMatch(/<a href="\/subscribe" class="btn btn-primary btn-lg[^"]*"/);
   });
 
   it("shows the lede, the four steps, the three reasons and the FAQ title", () => {
@@ -58,7 +56,7 @@ describe("Home page (/)", () => {
     for (const reason of [
       "Nurture new projects",
       "Encourage growing projects",
-      "Sustain well-established projects",
+      "Sustain well\u2011established projects",
     ]) {
       expect(main).toContain(`>${reason}</h3>`);
     }
@@ -66,7 +64,7 @@ describe("Home page (/)", () => {
     expect(main).toContain(">Frequently asked questions</h2>");
   });
 
-  it("names who the fund is for, then asks them to sign up", () => {
+  it("names who the fund is for, shows the pledges, then asks them to sign up", () => {
     const groups = /<h2[^>]*>Join if you are<\/h2>([\s\S]*?)<\/section>/.exec(html)?.[1] ?? "";
     expect([...groups.matchAll(/<h3[^>]*>([^<]*)<\/h3>/g)].map((m) => m[1])).toEqual([
       "Student",
@@ -74,13 +72,15 @@ describe("Home page (/)", () => {
       "Contributor",
     ]);
     expect(groups).toContain("₹15 a month, the price of a cup of chai");
-    expect(groups).toContain("Hear when the fund opens");
-    expect(groups).toContain('href="/subscribe"');
-    expect(html.match(/id="signup-title"/g)).toHaveLength(1);
-    expect(html.indexOf(">Why join us</h2>")).toBeLessThan(html.indexOf(">Join if you are</h2>"));
-    expect(html.indexOf(">Join if you are</h2>")).toBeLessThan(
-      html.indexOf(">Frequently asked questions</h2>"),
-    );
+    expect(html).not.toContain('id="signup-title"');
+    const order = [
+      ">Why join us</h2>",
+      ">Join if you are</h2>",
+      ">Pledges so far</h2>",
+      ">Frequently asked questions</h2>",
+    ].map((mark) => html.indexOf(mark));
+    expect(order.every((at) => at >= 0)).toBe(true);
+    expect(order).toEqual([...order].sort((a, b) => a - b));
   });
 
   it("keeps the stressed words of each step in the ink colour", () => {

@@ -5,6 +5,7 @@ import Groups from "../components/home/Groups.astro";
 import Hero from "../components/home/Hero.astro";
 import Pitch from "../components/home/Pitch.astro";
 import Questions from "../components/home/Questions.astro";
+import Supporters from "../components/home/Supporters.astro";
 import Reason from "../components/home/Reason.astro";
 import Reasons from "../components/home/Reasons.astro";
 import Step from "../components/home/Step.astro";
@@ -19,6 +20,17 @@ const supporters = await readSupporters(env.WAITLIST_DB, () => Astro.cache.set(f
 <Base>
   <Content
     supporters={supporters}
-    components={{ Hero, Pitch, Steps, Step, Reasons, Reason, Groups, Group, Questions }}
+    components={{
+      Hero,
+      Pitch,
+      Steps,
+      Step,
+      Reasons,
+      Reason,
+      Groups,
+      Group,
+      Questions,
+      Supporters,
+    }}
   />
 </Base>
