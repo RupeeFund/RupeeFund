@@ -154,6 +154,15 @@ describe("usesGuardedMedia", () => {
     expect(await usesGuardedMedia(query, "m-legal-draft")).toBe(true);
   });
 
+  it("finds an image that a team member links to", async () => {
+    media("m-person", "01M42TEAM0000000000000000.jpg");
+    run(
+      `UPDATE ec_people SET photo_url = '/media/01M42TEAM0000000000000000.jpg'
+       WHERE id = (SELECT id FROM ec_people LIMIT 1 OFFSET 1)`,
+    );
+    expect(await usesGuardedMedia(query, "m-person")).toBe(true);
+  });
+
   it("passes an image that no guarded entry uses, and a missing item", async () => {
     expect(await usesGuardedMedia(query, "m-post")).toBe(false);
     expect(await usesGuardedMedia(query, "m-none")).toBe(false);

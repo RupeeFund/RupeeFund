@@ -58,6 +58,9 @@ describe("writeTarget", () => {
     ["POST", "/_emdash/api/content/pages/01ABC/terms/category", "pages", "01ABC"],
     ["DELETE", "/_emdash/api/content/pages/terms/schedule", "pages", "terms"],
     ["POST", "/_emdash/api/visual-editing/content/pages/terms/publish", "pages", "terms"],
+    ["POST", "/_emdash/api/content/faq", "faq", null],
+    ["POST", "/_emdash/api/content/faq/01FAQ/publish", "faq", "01FAQ"],
+    ["DELETE", "/_emdash/api/content/people/01PER", "people", "01PER"],
   ])("finds the entry that %s %s changes", (method, path, collection, entry) => {
     expect(writeTarget(method, path)).toEqual({ kind: "entry", collection, entry });
   });
@@ -84,6 +87,10 @@ describe("writeTarget", () => {
     ["POST", "/_emdash/api/taxonomies/category/terms/blog/translations"],
   ])("finds the taxonomy whose terms %s %s changes", (method, path) => {
     expect(writeTarget(method, path)).toEqual({ kind: "taxonomy", taxonomy: "category" });
+  });
+
+  it("finds a call to the MCP server", () => {
+    expect(writeTarget("POST", "/_emdash/api/mcp")).toEqual({ kind: "mcp" });
   });
 
   it("finds a bulk tag", () => {

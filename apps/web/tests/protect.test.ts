@@ -25,6 +25,10 @@ beforeAll(() => {
     `INSERT INTO revisions (id, collection, entry_id, data)
      SELECT 'rev-post', 'posts', id, '{}' FROM ec_posts LIMIT 1`,
   );
+  db.run(
+    `INSERT INTO revisions (id, collection, entry_id, data)
+     SELECT 'rev-faq', 'faq', id, '{}' FROM ec_faq LIMIT 1`,
+  );
   db.run("UPDATE ec_pages SET kind = 'page' WHERE slug = 'code-of-conduct'");
   db.run(
     `INSERT INTO revisions (id, collection, entry_id, data)
@@ -55,6 +59,12 @@ describe("refusesWrite", () => {
     ["DELETE", "/_emdash/api/media/m-land"],
     ["DELETE", "/_emdash/api/media/providers/local/m-land"],
     ["POST", "/_emdash/api/revisions/rev-was-legal/restore"],
+    ["POST", "/_emdash/api/content/faq"],
+    ["PUT", "/_emdash/api/content/faq/why-this-fund"],
+    ["POST", "/_emdash/api/content/people/mrugesh/unpublish"],
+    ["DELETE", "/_emdash/api/content/people/mrugesh"],
+    ["POST", "/_emdash/api/revisions/rev-faq/restore"],
+    ["POST", "/_emdash/api/mcp"],
   ])("refuses %s %s", async (method, path) => {
     expect(await refusesWrite(query, method, path, noTerm)).toBe(true);
   });
@@ -100,6 +110,7 @@ describe("deletesLegalPage", () => {
     ["DELETE", "/_emdash/api/content/pages/code-of-conduct"],
     ["DELETE", "/_emdash/api/content/posts/hello"],
     ["DELETE", "/_emdash/api/content/pages/terms/lock"],
+    ["DELETE", "/_emdash/api/content/faq/why-this-fund"],
   ])("ignores %s %s", async (method, path) => {
     expect(await deletesLegalPage(query, method, path)).toBe(false);
   });

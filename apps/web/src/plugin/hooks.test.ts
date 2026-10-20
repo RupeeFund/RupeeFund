@@ -155,6 +155,38 @@ describe("the publish gate", () => {
   });
 });
 
+describe("the FAQ and the community team", () => {
+  const entry = { id: "e", data: { title: "x" } };
+  const adminOnly = "Only an admin can change this. Ask an admin for the change.";
+
+  it.each(["faq", "people"])(
+    "refuses an author or an editor who saves to %s",
+    async (collection) => {
+      for (const actor of [author, editor]) {
+        await expect(
+          saveGate({ collection, content: {}, isNew: true, actor }, store()),
+        ).rejects.toThrow(rejected(adminOnly));
+      }
+    },
+  );
+
+  it.each(["faq", "people"])("refuses an editor who publishes %s", async (collection) => {
+    expect(
+      await publishGate({ collection, content: entry, origin: api, actor: editor }, store()),
+    ).toMatchObject({ cancel: true });
+  });
+
+  it.each(["faq", "people"])("lets an admin save, publish and delete %s", async (collection) => {
+    await expect(
+      saveGate({ collection, content: {}, isNew: false, id: "e", actor: admin }, store()),
+    ).resolves.toBeUndefined();
+    expect(
+      await publishGate({ collection, content: entry, origin: api, actor: admin }, store()),
+    ).toBeUndefined();
+    expect(await deleteGate({ collection, id: "e" }, store())).toBe(undefined);
+  });
+});
+
 describe("the save gate on drafts", () => {
   it("refuses an editor's partial edit of a plain page whose draft is legal", async () => {
     await expect(
