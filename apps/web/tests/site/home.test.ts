@@ -13,13 +13,13 @@ describe("Home page (/)", () => {
     );
   });
 
-  it("cites a source for the developer figure in the band", () => {
+  it("gives the developer figure and the monthly pool in the band", () => {
     const band =
       /<h2[^>]*>From silicon to software, every project needs support<\/h2>([\s\S]*?)<\/section>/.exec(
         html,
       )?.[1] ?? "";
-    expect(band).toMatch(/2(&nbsp;|\u00a0)crore developers/);
-    expect(band).toMatch(/<a [^>]*href="https:\/\/github\.blog\/[^"]*octoverse[^"]*"/);
+    expect(band).toMatch(/Nearly 3(&nbsp;|\u00a0)crore developers/);
+    expect(band).toMatch(/more than ₹40(&nbsp;|\u00a0)lakh every month/);
   });
 
   it("shows the lede, the four steps, the three reasons and the FAQ title", () => {
