@@ -382,6 +382,6 @@ In the docs: `docs/ARCHITECTURE.md` (**It takes no payment**, **It stores no pay
 
 Some tests check the words of today. Change them with the words:
 
-- `apps/web/tests/site/home.test.ts` and `apps/web/src/components/site/render.test.ts`: **Hear when the fund opens**.
+- `apps/web/src/components/site/render.test.ts`: **Hear when the fund opens**.
 - `apps/web/tests/site/subscribe.test.ts`: **takes no payment**.
 - `apps/web/tests/site/csp.test.ts`: **names no payment origin**.

@@ -34,7 +34,7 @@ describe("Home page (/)", () => {
 
   it("asks the visitor to sign up from the pledges", () => {
     const pledges = /<h2[^>]*>Pledges so far<\/h2>([\s\S]*?)<\/section>/.exec(html)?.[1] ?? "";
-    expect(pledges).toMatch(/<a href="\/subscribe" class="btn btn-primary btn-lg[^"]*"/);
+    expect(pledges).toMatch(/<a href="\/subscribe" class="btn btn-primary btn-xl"/);
   });
 
   it("shows the lede, the four steps, the three reasons and the FAQ title", () => {

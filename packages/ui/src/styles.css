@@ -494,6 +494,11 @@
   @apply min-h-14 px-7;
 }
 
+/* A call to action that closes a section on a coloured band. */
+@utility btn-xl {
+  @apply min-h-16 px-9 text-lg;
+}
+
 /* Form submits and stacked card actions, where the button owns the row. */
 @utility btn-block {
   @apply w-full;
