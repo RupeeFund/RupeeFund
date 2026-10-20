@@ -1,3 +1,4 @@
+import { AMOUNTS_SQL, type AmountRow, pledgesOf } from "@rupeefund/db/pledges";
 import { REASON_FIELDS, ROLE_FIELDS } from "@rupeefund/db/schema";
 import { rowsOf } from "@rupeefund/db/testing";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -24,7 +25,7 @@ function rows(sql: string): Record<string, unknown>[] {
 
 describe("the local seed", () => {
   it("loads into the migrated table, so every seed value passes its CHECK", () => {
-    expect(rows("SELECT COUNT(*) AS n FROM waitlist")[0]?.n).toBeGreaterThan(100);
+    expect(rows("SELECT COUNT(*) AS n FROM waitlist")[0]?.n).toBe(75);
   });
 
   it("writes only the source the signup form sends", () => {
@@ -48,6 +49,25 @@ describe("the local seed", () => {
       `SELECT COUNT(*) AS n FROM waitlist WHERE created_at >= ${NOW - 30 * DAY}`,
     );
     expect(Number(recent?.n)).toBeGreaterThan(30);
+  });
+
+  it("gives the figures of the live list on 20 October 2026", () => {
+    const active = (column: string) =>
+      Number(rows(`SELECT SUM(${column}) AS n FROM waitlist WHERE unsubscribed_at IS NULL`)[0]?.n);
+    const [counts] = rows(
+      `SELECT COUNT(*) AS signups, COUNT(updates_opt_in) AS asked, COUNT(exported_at) AS exported,
+              SUM(created_at >= ${NOW - 30 * DAY}) AS recent
+       FROM waitlist WHERE unsubscribed_at IS NULL`,
+    );
+    expect({
+      counts,
+      pledges: pledgesOf(rows(AMOUNTS_SQL) as unknown as AmountRow[]),
+      ticks: ["updates_opt_in", ...ROLE_FIELDS, ...REASON_FIELDS].map(active),
+    }).toEqual({
+      counts: { signups: 72, asked: 72, exported: 0, recent: 64 },
+      pledges: { count: 70, sum: 23_767, median: 128 },
+      ticks: [62, 44, 39, 11, 15, 11, 16, 12],
+    });
   });
 
   it("keeps each question NULL on the seed rows from before the form asked it", () => {
