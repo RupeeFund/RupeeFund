@@ -32,6 +32,7 @@ overrides:
   source-map-js@1: ">=1.2.2 <2"
   sharp@0: ">=0.35.5 <0.36"
   smol-toml@1: ">=1.9.0 <2"
+  zod@4: ">=4.6.6 <5"
 minimumReleaseAgeExclude:
   - "@vitest/mocker@4.1.12"
   - fast-uri@3.1.9
