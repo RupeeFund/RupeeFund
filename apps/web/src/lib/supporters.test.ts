@@ -1,7 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { readSupporters, rupees, supportersOf } from "./supporters.ts";
 
 const rows = (count: number, amount = 128) => [{ amount, n: count }];
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("supportersOf", () => {
   it("hides the figures below 25 supporters", () => {
@@ -49,9 +53,11 @@ describe("readSupporters", () => {
         },
       }),
     };
+    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
     let failed = 0;
     expect(await readSupporters(db as never, () => failed++)).toBeNull();
     expect(failed).toBe(1);
+    expect(logged).toHaveBeenCalledWith("Unable to read the supporter figures", expect.any(Error));
   });
 
   it("reads the amounts of the list", async () => {

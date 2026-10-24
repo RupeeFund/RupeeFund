@@ -58,7 +58,7 @@ function settle(): Promise<void> {
 }
 
 async function revealThenOpenAnother(): Promise<(late: Response) => void> {
-  let answer = (_: Response) => {};
+  let answer: (late: Response) => void = () => {};
   const late = new Promise<Response>((done) => {
     answer = done;
   });
@@ -552,11 +552,11 @@ describe("the export", () => {
       "URL",
       Object.assign(URL, { createObjectURL: () => "blob:x", revokeObjectURL() {} }),
     );
-    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(
-      function (this: HTMLAnchorElement) {
-        saved.push(this.download);
-      },
-    );
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (
+      this: HTMLAnchorElement,
+    ) {
+      saved.push(this.download);
+    });
   });
 
   afterEach(() => {

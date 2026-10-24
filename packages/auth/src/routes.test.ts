@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { open, seal } from "./seal.ts";
 import { authRoute, cookieNames, identityOf, signOutCookie, type AuthConfig } from "./routes.ts";
 
@@ -9,6 +9,10 @@ const CONFIG: AuthConfig = {
 };
 const ORIGIN = "https://rupeefund.org";
 const { identity: IDENTITY_COOKIE, signin: SIGNIN_COOKIE } = cookieNames(ORIGIN);
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 function cookiesOf(response: Response): Map<string, string> {
   const pairs = response.headers.getSetCookie().map((line) => {
@@ -145,6 +149,7 @@ describe("authRoute", () => {
   });
 
   it("answers 502 when GitHub fails", async () => {
+    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
     const { state, cookie } = await startSignIn();
     const response = await callback(
       `code=c&state=${state}`,
@@ -152,6 +157,7 @@ describe("authRoute", () => {
       async () => new Response("", { status: 500 }),
     );
     expect(response?.status).toBe(502);
+    expect(logged).toHaveBeenCalledWith("[auth] GitHub sign-in failed:", expect.any(Error));
   });
 
   it("drops Secure on plain http for the local build", async () => {
