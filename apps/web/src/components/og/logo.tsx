@@ -15,6 +15,7 @@ export const Logo = ({ logo, logoWidth, logoHeight, clearSpace, tagline, caption
     style={{
       alignItems: "center",
       backgroundColor: colors.white,
+      boxSizing: "border-box",
       color: colors.ink,
       display: "flex",
       flexDirection: "column",
