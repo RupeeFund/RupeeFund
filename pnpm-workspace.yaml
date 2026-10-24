@@ -14,7 +14,7 @@ catalog:
   portless: ^0.15.9
   tailwindcss: ^4.3.3
   typescript: ^6.0.3
-  vitest: ^4.1.11
+  vitest: ^5.0.5
   wrangler: ^4.152.0
 
 allowBuilds:
