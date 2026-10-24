@@ -50,7 +50,7 @@
     "@types/react": "^19.3.0",
     "astro": "^7.4.2",
     "chrome-launcher": "^1.2.2",
-    "devalue": "5.9.4",
+    "devalue": "6.0.3",
     "jsdom": "catalog:",
     "lighthouse": "^13.5.0",
     "react": "^19.3.1",
