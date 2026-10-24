@@ -18,11 +18,13 @@ const TURNSTILE_SITEKEY = getSitekey();
 <Base>
   <div class="wrap section-y grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-16">
     <div class="lg:sticky lg:top-28">
-      <h1 id="subscribe-title" class="page-title text-ink mb-4">{SUBSCRIBE_HEADING}</h1>
+      <h1 id="subscribe-title" class="page-title text-ink mb-4">
+        {SUBSCRIBE_HEADING}
+      </h1>
       <p class="max-w-xl text-sm text-ink-2 text-pretty">
-        <strong class="text-ink">Nothing to pay today.</strong> Tell us roughly how much you would like
-        to give each month. It is not a commitment; it only helps us plan. We will send you a welcome
-        email to confirm your sign-up, and one email when the fund opens.
+        <strong class="text-ink">Nothing to pay today.</strong> Tell us roughly how much you would
+        like to give each month. It is not a commitment; it only helps us plan. We will send you a
+        welcome email to confirm your sign-up, and one email when the fund opens.
       </p>
     </div>
     <div class="card">
@@ -34,14 +36,18 @@ const TURNSTILE_SITEKEY = getSitekey();
         </style>
         <p id="waitlist-no-js" class="text-sm text-ink-2 text-pretty">
           The sign-up form needs JavaScript for its bot check. Turn on JavaScript and reload this
-          page, or email <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link"
-            >{REMOVAL_ADDRESS}</a
-          > and we’ll add you by hand.
+          page, or email{" "}
+          <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link">
+            {REMOVAL_ADDRESS}
+          </a>{" "}
+          and we’ll add you by hand.
         </p>
       </noscript>
       <form id="waitlist-form" aria-labelledby="subscribe-title" class="space-y-4" method="post">
         <div>
-          <label for="waitlist-name" class="field-label">Full name</label>
+          <label for="waitlist-name" class="field-label">
+            Full name
+          </label>
           <input
             id="waitlist-name"
             name="name"
@@ -55,7 +61,9 @@ const TURNSTILE_SITEKEY = getSitekey();
           <p id="waitlist-name-error" class="field-error"></p>
         </div>
         <div>
-          <label for="waitlist-email" class="field-label">Email address</label>
+          <label for="waitlist-email" class="field-label">
+            Email address
+          </label>
           <input
             id="waitlist-email"
             name="email"
@@ -70,52 +78,46 @@ const TURNSTILE_SITEKEY = getSitekey();
           <p id="waitlist-email-error" class="field-error"></p>
         </div>
         <fieldset class="min-w-0">
-          <legend class="field-label"
-            >{ROLE_LEGEND} <span class="field-optional">(optional)</span></legend
-          >
+          <legend class="field-label">
+            {ROLE_LEGEND} <span class="field-optional">(optional)</span>
+          </legend>
           <div class="space-y-2">
-            {
-              ROLE_FIELDS.map((field) => (
-                <label class="choice">
-                  <input type="checkbox" name={field} value="1" />
-                  <span>{ROLE_LABELS[field]}</span>
-                </label>
-              ))
-            }
+            {ROLE_FIELDS.map((field) => (
+              <label class="choice">
+                <input type="checkbox" name={field} value="1" />
+                <span>{ROLE_LABELS[field]}</span>
+              </label>
+            ))}
           </div>
         </fieldset>
         <fieldset class="min-w-0">
-          <legend class="field-label"
-            >{REASON_LEGEND} <span class="field-optional">(optional)</span></legend
-          >
+          <legend class="field-label">
+            {REASON_LEGEND} <span class="field-optional">(optional)</span>
+          </legend>
           <div class="space-y-2">
-            {
-              REASON_FIELDS.map((field) => (
-                <label class="choice">
-                  <input type="checkbox" name={field} value="1" />
-                  <span>{REASON_LABELS[field]}</span>
-                </label>
-              ))
-            }
+            {REASON_FIELDS.map((field) => (
+              <label class="choice">
+                <input type="checkbox" name={field} value="1" />
+                <span>{REASON_LABELS[field]}</span>
+              </label>
+            ))}
           </div>
         </fieldset>
         <fieldset class="min-w-0">
           <legend class="field-label">Monthly amount</legend>
           <div class="flex flex-wrap gap-2">
-            {
-              AMOUNT_OPTIONS.map((option) => (
-                <label class="choice flex-1">
-                  <input
-                    type="radio"
-                    name="amount"
-                    value={option}
-                    required
-                    aria-describedby="waitlist-amount-error"
-                  />
-                  <span>₹{option}</span>
-                </label>
-              ))
-            }
+            {AMOUNT_OPTIONS.map((option) => (
+              <label class="choice flex-1">
+                <input
+                  type="radio"
+                  name="amount"
+                  value={option}
+                  required
+                  aria-describedby="waitlist-amount-error"
+                />
+                <span>₹{option}</span>
+              </label>
+            ))}
             <label class="choice grow-100 basis-32">
               <input
                 id="amount-other-choice"
@@ -126,7 +128,9 @@ const TURNSTILE_SITEKEY = getSitekey();
                 aria-label="Other amount"
                 aria-describedby="waitlist-amount-error"
               />
-              <span aria-hidden="true" class="text-ink-3">₹</span>
+              <span aria-hidden="true" class="text-ink-3">
+                ₹
+              </span>
               <input
                 id="waitlist-amount-other"
                 name="amount_other"
@@ -143,9 +147,9 @@ const TURNSTILE_SITEKEY = getSitekey();
           <p id="waitlist-amount-error" class="field-error"></p>
         </fieldset>
         <div>
-          <label for="waitlist-months" class="field-label"
-            >Number of months <span class="field-optional">(optional)</span></label
-          >
+          <label for="waitlist-months" class="field-label">
+            Number of months <span class="field-optional">(optional)</span>
+          </label>
           <input
             id="waitlist-months"
             name="months"
@@ -156,9 +160,9 @@ const TURNSTILE_SITEKEY = getSitekey();
           />
         </div>
         <div>
-          <label for="waitlist-question" class="field-label"
-            >Question for the team <span class="field-optional">(optional)</span></label
-          >
+          <label for="waitlist-question" class="field-label">
+            Question for the team <span class="field-optional">(optional)</span>
+          </label>
           <input
             id="waitlist-question"
             name="question"
@@ -188,8 +192,7 @@ const TURNSTILE_SITEKEY = getSitekey();
           class="cf-turnstile flex justify-center"
           data-sitekey={TURNSTILE_SITEKEY}
           data-action={TURNSTILE_ACTION}
-        >
-        </div>
+        ></div>
         <p id="waitlist-error" class="text-xs text-error" role="alert"></p>
         <button id="waitlist-submit" type="submit" class="btn btn-primary btn-block">
           Sign up
@@ -198,10 +201,14 @@ const TURNSTILE_SITEKEY = getSitekey();
           By signing up, you agree that we may send you a welcome email to confirm your sign-up, and
           one email when the fund opens. We will send you monthly updates only if you tick the box.
           We do not take any payment now. See our{" "}
-          <a href="/privacy" class="inline-link">Privacy</a> page. To be removed at any time, email{
-            " "
-          }
-          <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link">{REMOVAL_ADDRESS}</a>.
+          <a href="/privacy" class="inline-link">
+            Privacy
+          </a>{" "}
+          page. To be removed at any time, email{" "}
+          <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link">
+            {REMOVAL_ADDRESS}
+          </a>
+          .
         </p>
       </form>
     </div>

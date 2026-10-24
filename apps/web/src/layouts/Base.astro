@@ -77,11 +77,9 @@ const websiteLd = {
     <meta name="twitter:card" content="summary_large_image" />
     {!seo.indexable && <meta name="robots" content="noindex" />}
     <script is:inline type="application/ld+json" set:html={JSON.stringify(orgLd)} />
-    {
-      seo.path === "/" && (
-        <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteLd)} />
-      )
-    }
+    {seo.path === "/" && (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteLd)} />
+    )}
   </head>
   <body class="bg-paper text-ink font-sans min-h-screen flex flex-col">
     <a

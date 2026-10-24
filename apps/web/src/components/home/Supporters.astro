@@ -16,41 +16,39 @@ const figures = supporters && [
 ];
 ---
 
-{
-  figures && (
-    <section
-      aria-labelledby="pledges-title"
-      class="wrap section-y bg-brand text-ink [--focus:var(--color-ink)]"
-    >
-      <h2 id="pledges-title" class="section-title">
-        {title}
-      </h2>
-      <p class="eyebrow mb-3 flex items-center gap-2">
-        <span class="relative flex size-2.5" aria-hidden="true">
-          <span
-            class:list={[
-              "absolute inline-flex size-full rounded-full",
-              "bg-ink opacity-60 motion-safe:animate-ping",
-            ]}
-          />
-          <span class="relative inline-flex size-2.5 rounded-full bg-ink" />
-        </span>
-        Live · Updated hourly
-      </p>
-      <dl class="grid gap-3 sm:grid-cols-3">
-        {figures.map(({ label, value }) => (
-          <div class="card flex flex-col-reverse gap-1 p-5 text-center sm:p-6">
-            <dt class="text-sm text-ink-2">{label}</dt>
-            <dd class="heading text-4xl tabular-nums text-ink">{value}</dd>
-          </div>
-        ))}
-      </dl>
-      <div class="mt-8 flex justify-center">
-        <a href="/subscribe" class="btn btn-primary btn-xl">
-          <Icon name="bell" size={22} />
-          {SUBSCRIBE_CTA}
-        </a>
-      </div>
-    </section>
-  )
-}
+{figures && (
+  <section
+    aria-labelledby="pledges-title"
+    class="wrap section-y bg-brand text-ink [--focus:var(--color-ink)]"
+  >
+    <h2 id="pledges-title" class="section-title">
+      {title}
+    </h2>
+    <p class="eyebrow mb-3 flex items-center gap-2">
+      <span class="relative flex size-2.5" aria-hidden="true">
+        <span
+          class:list={[
+            "absolute inline-flex size-full rounded-full",
+            "bg-ink opacity-60 motion-safe:animate-ping",
+          ]}
+        />
+        <span class="relative inline-flex size-2.5 rounded-full bg-ink" />
+      </span>
+      Live · Updated hourly
+    </p>
+    <dl class="grid gap-3 sm:grid-cols-3">
+      {figures.map(({ label, value }) => (
+        <div class="card flex flex-col-reverse gap-1 p-5 text-center sm:p-6">
+          <dt class="text-sm text-ink-2">{label}</dt>
+          <dd class="heading text-4xl tabular-nums text-ink">{value}</dd>
+        </div>
+      ))}
+    </dl>
+    <div class="mt-8 flex justify-center">
+      <a href="/subscribe" class="btn btn-primary btn-xl">
+        <Icon name="bell" size={22} />
+        {SUBSCRIBE_CTA}
+      </a>
+    </div>
+  </section>
+)}

@@ -21,29 +21,27 @@ const { title, seasonsTitle } = Astro.props;
     <div class="flex flex-col">
       <h2 class="section-title text-ink">{seasonsTitle}</h2>
       <ul class="flex flex-col gap-3">
-        {
-          SEASONS.map((s) => (
-            <li class="flex items-center gap-4 rounded-2xl border border-ink/10 bg-brand-50 p-4 sm:px-6">
-              <img
-                src={`/seasons/${s.spriteSlug}.svg`}
-                alt=""
-                width="48"
-                height="48"
-                class="size-12 shrink-0"
-              />
-              <div class="min-w-0 flex-1">
-                <h3 class="text-lg text-ink">{s.name}</h3>
-                <p class="text-sm text-ink-2">{s.months}</p>
-              </div>
-              <span
-                class="eyebrow shrink-0 rounded-md px-2 py-0.5 text-white"
-                style={`background-color: ${s.accent}`}
-              >
-                {s.duration}
-              </span>
-            </li>
-          ))
-        }
+        {SEASONS.map((s) => (
+          <li class="flex items-center gap-4 rounded-2xl border border-ink/10 bg-brand-50 p-4 sm:px-6">
+            <img
+              src={`/seasons/${s.spriteSlug}.svg`}
+              alt=""
+              width="48"
+              height="48"
+              class="size-12 shrink-0"
+            />
+            <div class="min-w-0 flex-1">
+              <h3 class="text-lg text-ink">{s.name}</h3>
+              <p class="text-sm text-ink-2">{s.months}</p>
+            </div>
+            <span
+              class="eyebrow shrink-0 rounded-md px-2 py-0.5 text-white"
+              style={`background-color: ${s.accent}`}
+            >
+              {s.duration}
+            </span>
+          </li>
+        ))}
       </ul>
     </div>
   </div>

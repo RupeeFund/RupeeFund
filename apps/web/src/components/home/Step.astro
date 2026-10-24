@@ -13,6 +13,8 @@ const { n, title } = Astro.props;
   </div>
   <div class="pt-0.5">
     <h3 class="step-title">{title}</h3>
-    <div class="step-body"><slot /></div>
+    <div class="step-body">
+      <slot />
+    </div>
   </div>
 </li>

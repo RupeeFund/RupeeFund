@@ -48,52 +48,57 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
       </p>
     </div>
     <ul class="flex flex-wrap justify-center gap-x-2 text-sm">
-      {
-        linksFor(FOOTER_LINKS, Astro.props.blog).map(({ href, label }) => {
-          const external = href.startsWith("https://");
-          return (
-            <li>
-              <a
-                href={href}
-                target={external ? "_blank" : undefined}
-                rel={external ? "noopener noreferrer" : undefined}
-                class="foot-link"
-              >
-                {label}
-              </a>
-            </li>
-          );
-        })
-      }
+      {linksFor(FOOTER_LINKS, Astro.props.blog).map(({ href, label }) => {
+        const external = href.startsWith("https://");
+        return (
+          <li>
+            <a
+              href={href}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noopener noreferrer" : undefined}
+              class="foot-link"
+            >
+              {label}
+            </a>
+          </li>
+        );
+      })}
     </ul>
     <div class="grid justify-items-center gap-1">
       <p class="text-lg font-semibold">
-        <a href={`mailto:${REMOVAL_ADDRESS}`} aria-label={REMOVAL_ADDRESS} class="foot-link"
-          >{REMOVAL_ADDRESS.split("@")[0]}<wbr />@{REMOVAL_ADDRESS.split("@")[1]}</a
-        >
+        <a href={`mailto:${REMOVAL_ADDRESS}`} aria-label={REMOVAL_ADDRESS} class="foot-link">
+          {REMOVAL_ADDRESS.split("@")[0]}
+          <wbr />@{REMOVAL_ADDRESS.split("@")[1]}
+        </a>
       </p>
       <div class="flex flex-wrap justify-center gap-1 text-xs">
-        {
-          SOCIALS.map((s) => (
-            <a
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`FOSS United on ${s.name} (opens in a new tab)`}
-              class="foot-link foot-icon link-plain min-w-11 justify-center"
-            >
-              <SocialIcon name={s.slug} />
-            </a>
-          ))
-        }
+        {SOCIALS.map((s) => (
+          <a
+            href={s.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`FOSS United on ${s.name} (opens in a new tab)`}
+            class="foot-link foot-icon link-plain min-w-11 justify-center"
+          >
+            <SocialIcon name={s.slug} />
+          </a>
+        ))}
       </div>
     </div>
     <div class="grid w-full justify-items-center gap-3 border-t border-white/10 pt-6 text-xs">
       <div class="flex flex-wrap justify-center gap-x-2">
-        <a href="/privacy" class="foot-link">Privacy</a>
-        <a href="/terms" class="foot-link">Terms</a>
-        <a href="/refunds" class="foot-link">Refunds</a>
-        <a href="/code-of-conduct" class="foot-link">Code of conduct</a>
+        <a href="/privacy" class="foot-link">
+          Privacy
+        </a>
+        <a href="/terms" class="foot-link">
+          Terms
+        </a>
+        <a href="/refunds" class="foot-link">
+          Refunds
+        </a>
+        <a href="/code-of-conduct" class="foot-link">
+          Code of conduct
+        </a>
       </div>
       <p>© {YEAR} The&nbsp;Rupee&nbsp;Fund, by the FOSS United community.</p>
     </div>

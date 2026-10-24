@@ -8,7 +8,9 @@ const { title } = Astro.props;
 
 <section aria-labelledby="groups-title" class="wrap section-y bg-white pt-0">
   <div class="grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
-    <h2 id="groups-title" class="section-title text-ink">{title}</h2>
+    <h2 id="groups-title" class="section-title text-ink">
+      {title}
+    </h2>
     <ul class="border-b border-ink/15">
       <slot />
     </ul>

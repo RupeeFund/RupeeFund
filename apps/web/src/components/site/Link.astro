@@ -11,5 +11,7 @@ const external = href.startsWith("https://");
   href={href}
   target={external ? "_blank" : undefined}
   rel={external ? "noopener noreferrer" : undefined}
-  class="inline-link"><slot /></a
+  class="inline-link"
 >
+  <slot />
+</a>

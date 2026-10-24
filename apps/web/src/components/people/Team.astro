@@ -43,54 +43,54 @@ const handle = (member: Person) =>
 ---
 
 <section aria-labelledby="community-team" class="mb-14">
-  <h2 id="community-team" class="text-2xl text-ink mb-3">{title}</h2>
+  <h2 id="community-team" class="text-2xl text-ink mb-3">
+    {title}
+  </h2>
   <p class="text-sm text-ink-2 text-pretty mb-6">{intro}</p>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    {
-      members.map((member) => (
-        <article class="card flex flex-col items-start gap-4 sm:flex-row">
-          {member.photoUrl ? (
-            <img
-              src={sized(member.photoUrl)}
-              srcset={sources(member.photoUrl)}
-              sizes={PHOTO_SIZES}
-              alt=""
-              width={PHOTO_WIDTH}
-              height={PHOTO_WIDTH}
-              loading="lazy"
-              decoding="async"
-              class="aspect-square w-1/3 max-w-50 shrink-0 rounded-full bg-brand-50 object-cover
+    {members.map((member) => (
+      <article class="card flex flex-col items-start gap-4 sm:flex-row">
+        {member.photoUrl ? (
+          <img
+            src={sized(member.photoUrl)}
+            srcset={sources(member.photoUrl)}
+            sizes={PHOTO_SIZES}
+            alt=""
+            width={PHOTO_WIDTH}
+            height={PHOTO_WIDTH}
+            loading="lazy"
+            decoding="async"
+            class="aspect-square w-1/3 max-w-50 shrink-0 rounded-full bg-brand-50 object-cover
                 outline -outline-offset-1 outline-black/10"
-            />
-          ) : (
-            <div
-              class="flex aspect-square w-1/3 max-w-50 shrink-0 items-center justify-center rounded-full
+          />
+        ) : (
+          <div
+            class="flex aspect-square w-1/3 max-w-50 shrink-0 items-center justify-center rounded-full
                 bg-brand-50 text-4xl font-semibold text-brand-fg"
-              aria-hidden="true"
-            >
-              {initials(member.name)}
-            </div>
-          )}
-          <div class="min-w-0 flex-1">
-            <h3 class="text-lg text-ink mb-1">{member.name}</h3>
-            {member.profileUrl ? (
-              <a
-                href={member.profileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-link bg-origin-content py-1 text-sm"
-                aria-label={`${handle(member)} — ${member.name} (opens in a new tab)`}
-              >
-                {handle(member)}
-              </a>
-            ) : (
-              "Profile link to follow."
-            )}
-            <p class="mt-3 text-sm text-ink-2 text-pretty">{member.bio ?? "Bio to follow."}</p>
+            aria-hidden="true"
+          >
+            {initials(member.name)}
           </div>
-        </article>
-      ))
-    }
+        )}
+        <div class="min-w-0 flex-1">
+          <h3 class="text-lg text-ink mb-1">{member.name}</h3>
+          {member.profileUrl ? (
+            <a
+              href={member.profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-link bg-origin-content py-1 text-sm"
+              aria-label={`${handle(member)} — ${member.name} (opens in a new tab)`}
+            >
+              {handle(member)}
+            </a>
+          ) : (
+            "Profile link to follow."
+          )}
+          <p class="mt-3 text-sm text-ink-2 text-pretty">{member.bio ?? "Bio to follow."}</p>
+        </div>
+      </article>
+    ))}
     <slot />
   </div>
 </section>
