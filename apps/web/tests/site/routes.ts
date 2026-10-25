@@ -25,6 +25,8 @@ export const ROUTES: readonly string[] = [
   ...POST_SLUGS.map((slug) => `/blog/${slug}`),
 ];
 
+export const HOME_ALIASES: readonly string[] = ["/index.html", "/.html"];
+
 export const MISSING: readonly string[] = [
   "/no-such-page",
   "/blog/no-such-post",

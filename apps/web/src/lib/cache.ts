@@ -1,6 +1,11 @@
 export const CONTENT_COLLECTIONS = ["posts", "pages", "faq", "people"];
 
-export const SHARED_PAGE = { maxAge: 60 * 60, swr: 24 * 60 * 60, tags: CONTENT_COLLECTIONS };
+const SHARED_PAGE = { maxAge: 60 * 60, swr: 24 * 60 * 60, tags: CONTENT_COLLECTIONS };
+
+const HOURLY_PAGE = { maxAge: 30 * 60, swr: 30 * 60, tags: CONTENT_COLLECTIONS };
+
+export const pageCache = (route: string): typeof SHARED_PAGE =>
+  route === "/" ? HOURLY_PAGE : SHARED_PAGE;
 
 const SHAREABLE_TYPE = /^(?:text\/html|application\/(?:rss\+)?xml)\b/;
 const UNSHARED = /\b(?:private|no-store)\b/i;

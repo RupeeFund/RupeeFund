@@ -14,6 +14,7 @@ import {
   DENIED,
   LEGAL_DELETES,
   GATED_MEDIA,
+  HOME_ALIASES,
   ANONYMOUS_CALLS,
   MEDIA_ROUTES,
   MISSING,
@@ -192,6 +193,7 @@ async function render(base: string): Promise<void> {
   const answers: Record<string, Answer> = {};
   const all = [
     ...ROUTES,
+    ...HOME_ALIASES,
     ...MISSING,
     ...MEDIA_ROUTES,
     ...GATED_MEDIA,

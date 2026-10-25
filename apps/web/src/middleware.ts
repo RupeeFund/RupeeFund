@@ -2,7 +2,7 @@ import type { APIContext } from "astro";
 import { defineMiddleware } from "astro:middleware";
 import { env, waitUntil } from "cloudflare:workers";
 import type {} from "emdash/internal/middleware/auth";
-import { SHARED_PAGE, sharesAnswer, sharesRequest } from "./lib/cache.ts";
+import { pageCache, sharesAnswer, sharesRequest } from "./lib/cache.ts";
 import { forbidden, notFound, privately, requestPath, unavailable } from "./lib/edge.ts";
 import { ADMIN_ROLE, isMediaAsset, isMediaFile, locksSchema, mediaKey } from "./lib/guard.ts";
 import { activeUser, type Query } from "./lib/guard-store.ts";
@@ -64,7 +64,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const member = locals.user !== undefined;
     const read = { method, path, search: url.search, signedIn: member };
     const shared = context.cache.enabled && sharesRequest(read);
-    if (shared) context.cache.set(SHARED_PAGE);
+    if (shared) context.cache.set(pageCache(context.routePattern));
     const response = await next();
     if (!shared) return response;
     if (!sharesAnswer(response)) {
