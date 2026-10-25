@@ -30,7 +30,7 @@ Each project skips a push that changes only files it does not use. Set these **B
 | `rupeefund-web`   | `docs/*`, `apps/admin/*`                  |
 | `rupeefund-admin` | `docs/*`, `apps/web/*`, `packages/auth/*` |
 
-Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand. It uploads whatever `apps/web/dist` holds and skips the build guards. You can run `pnpm wrangler rollback` in an incident, because it ships no new code. It also rolls back the content manager, so read section 11.4 first. For the admin Worker, run `pnpm --filter @rupeefund/admin exec wrangler rollback`.
+Pull requests go to `main`. A merge deploys nothing. Do not run `wrangler deploy` by hand: it uploads whatever `apps/web/dist` holds and skips the build guards. A rollback ships no new code, so you can use it in an incident (section 3).
 
 ## 2. How to prove a change
 
@@ -53,11 +53,11 @@ git fetch origin
 git push origin <sha>:live
 ```
 
-From the phone, run the `Promote` workflow from the Actions tab on `main`. It fast-forwards `live` to the tip of `main` and does nothing else. A second run on the same commit changes nothing.
+From the phone, run the `Promote` workflow from the Actions tab on `main`. It fast-forwards `live` to the tip of `main`.
 
 Do not force the push. `live` is always a prefix of `main`, so a promote takes a commit and everything before it. Promote often.
 
-To go back, run `pnpm wrangler rollback` and `pnpm --filter @rupeefund/admin exec wrangler rollback`. Then purge the zone cache. If the bad version changed the content database, read section 11.4. Do not delete the Worker. A deleted Worker loses its custom domain and every earlier deployment.
+The rollback also rolls back the content manager, so read section 11.4 first. To go back, run `pnpm wrangler rollback` and `pnpm --filter @rupeefund/admin exec wrangler rollback`. Then purge the zone cache. Do not delete the Worker. A deleted Worker loses its custom domain and every earlier deployment.
 
 ## 4. How to apply a migration
 
@@ -119,7 +119,7 @@ Purge the zone cache first. Then:
 pnpm live:check
 ```
 
-It checks the site, the content manager and the admin Worker. It prints one `PASS` or `FAIL` line for each check, and exits 1 on a failure. `apps/web/scripts/live-check.mts` lists the checks.
+It checks the site, the content manager and the admin Worker. It prints `PASS` or `FAIL` for each check, and exits 1 on a failure.
 
 Then complete the form one time, and read the row:
 
@@ -378,7 +378,7 @@ In the content manager (section 11), then the same words in `apps/web/seed/seed.
 - **FAQ** › `start-date`: **There is nothing to pay now** and **as soon as contributions open**.
 - **FAQ** › `your-data`: **We do not need any payment details today**.
 
-In the docs: `docs/ARCHITECTURE.md` (**It takes no payment**, **It stores no payment instrument**) and `AGENTS.md`.
+In the docs: `docs/ARCHITECTURE.md` (**It takes no payment**) and `AGENTS.md`.
 
 Some tests check the words of today. Change them with the words:
 

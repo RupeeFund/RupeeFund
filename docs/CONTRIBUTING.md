@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your help. This guide tells you where to talk, how to set up the repository, and how to open a pull request.
+Thank you for your help.
 
 The site collects a mailing list only. Do not add a way to pay or to vote.
 
@@ -26,9 +26,7 @@ pnpm dev        # serve the site and the content manager
 
 Run `pnpm db:reset` before your first `pnpm dev`. Without it, the local content database is empty.
 
-The terminal shows the address of the site, `http://localhost:8787`. When you save a file, the browser reloads. If the build fails, the terminal shows the error and the site stays as it was.
-
-To sign in to the content manager, open `http://localhost:8787/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`. This page signs you in as an admin. You need no GitHub account and no key. The site shows each publish at the next page load.
+To sign in to the content manager, open `http://localhost:8787/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`. This page signs you in as an admin, with no GitHub account and no key.
 
 | Command          | Address                 | What it serves                                                                     |
 | ---------------- | ----------------------- | ---------------------------------------------------------------------------------- |
@@ -37,7 +35,7 @@ To sign in to the content manager, open `http://localhost:8787/_emdash/api/setup
 | `pnpm preview`   | `http://localhost:8789` | The site as the live build. Its GitHub sign-in needs the secret of the GitHub App. |
 
 - When pnpm tells you to run `pnpm install`, run it.
-- `pnpm db:reset` erases your local data. Run it again for a clean start. Stop `pnpm dev` and `pnpm preview` first, or it refuses. It sees only a server that runs from this checkout. It cannot see `pnpm dev:portless`, or a server in another folder that uses this checkout's data, so stop those yourself.
+- `pnpm db:reset` erases your local data. Stop each server first. It refuses while `pnpm dev` or `pnpm preview` runs from this checkout, but it cannot see `pnpm dev:portless` or a server in another folder.
 - To run more than one checkout at a time, run `pnpm dev:portless`. It starts both apps and gives each a name in place of a port. The first run after each boot asks for your password.
 
 ### In Codespaces or a dev container
@@ -57,7 +55,7 @@ Do not commit a secret, a password or a personal email list.
 
 ## The gate
 
-The gate is the set of checks that each change must pass. It is the three commands below. Run them before you open a pull request. The browser tests need Chromium one time: `pnpm --filter @rupeefund/web exec playwright install --with-deps chromium`.
+Each change must pass the gate. Run these three commands before you open a pull request. The browser tests need Chromium one time: `pnpm --filter @rupeefund/web exec playwright install --with-deps chromium`.
 
 ```sh
 pnpm format      # format the files

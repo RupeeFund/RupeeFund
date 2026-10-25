@@ -18,7 +18,7 @@ The words of the home page and the people page, and the links at the top and at 
 
 If you are in two teams, you get the higher role. Your GitHub account must have a verified primary email address.
 
-You stay signed in for 8 hours. Then you sign in again. The content manager does not warn you before the 8 hours end. After that, it cannot save, and you lose each change that you did not save. So save often during a long edit. A change to your team takes effect at your next sign-in. To change your role, ask an admin.
+You stay signed in for 8 hours, with no warning before the end. After the end, the content manager cannot save, and you lose each unsaved change. Save often during a long edit. A change to your team takes effect at your next sign-in. To change your role, ask an admin.
 
 ## 2. What each role can do
 
@@ -36,7 +36,7 @@ You stay signed in for 8 hours. Then you sign in again. The content manager does
 
 In the first four rows, an entry is a post or a normal page.
 
-An Author can change only the entries that the Author wrote. The sample entries and the entries of other people are not yours. To change one of them, ask an Editor.
+If you are an Author, the sample entries are not yours. To change an entry that you did not write, ask an Editor.
 
 Nobody can do these things:
 
@@ -84,7 +84,7 @@ The post shows its publish date and its reading time. If you edit a post on a la
 
 The address of the post is `/blog/` and then its slug. Give each post a different slug.
 
-The blog shows on the site when one post or more is published. Then the header and the footer link to it, and search engines can list it. With no published post, the site hides these links.
+When the blog has one published post or more, the header and the footer link to the blog, and search engines can list it.
 
 ## 6. What the body can hold
 
@@ -99,16 +99,15 @@ The blog shows on the site when one post or more is published. Then the header a
 
 ## 7. Images and words
 
-- Upload each image to the media library first. Use PNG, JPEG, GIF, WebP or AVIF. Do not use SVG.
+- Upload each image to the media library first. Use PNG, JPEG, GIF, WebP or AVIF.
 - Give each image alt text that tells what the image shows.
 - Put the credit of an image in its caption.
 - Write in the Voice of the [brand guidelines](https://brand.rupeefund.org). Use plain words and short sentences.
 - Give a source for each figure.
-- Start each link with `https://`, `mailto:`, `/` or `#`.
 
 ## 8. What the site refuses
 
-The site leaves an entry out when the entry has one of these problems:
+The site leaves out the whole entry when the entry has one of these problems:
 
 - An embed, an HTML block, a gallery or a reference. Remove the block.
 - An image that is not in the media library, or an SVG image.
@@ -116,8 +115,6 @@ The site leaves an entry out when the entry has one of these problems:
 - A callout, a quote or a call to action with no text.
 - A team photo that is not on GitHub. Use the address of the GitHub profile photo.
 - A slug with a character that is not a lowercase letter, a digit or a hyphen.
-
-A post or a page that the site leaves out does not show at all.
 
 ## 9. The other pages
 

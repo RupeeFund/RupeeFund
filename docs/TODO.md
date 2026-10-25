@@ -31,9 +31,9 @@ Urgent when: an EmDash upgrade changes the `ec_posts` columns, or a test needs a
 
 ## The component tests do not load the Astro config
 
-`apps/web/vitest.components.config.ts` calls `getViteConfig` with `configFile: false`. With the Cloudflare adapter, Vitest 4 fails with `environment options are incompatible` (vitest-dev/vitest#10630, fixed in Vitest 5). Vitest 5 then fails with `There is already a server associated with the config.` (cloudflare/workers-sdk#15969, open). The analysis is in `.scratchpad/upstream/astro-vitest.md`.
+`apps/web/vitest.components.config.ts` calls `getViteConfig` with `configFile: false`. With the Cloudflare adapter, Vitest 5 fails with `There is already a server associated with the config.` (cloudflare/workers-sdk#15969, open). The analysis is in `.scratchpad/upstream/astro-vitest.md`.
 
-To do: when Vitest 5 and a `@cloudflare/vite-plugin` release with the fix are in the catalog, remove `configFile: false` and run the component tests.
+To do: when a `@cloudflare/vite-plugin` release closes the issue, remove `configFile: false` and run the component tests.
 
 Urgent when: a component test needs a setting from `astro.config.mjs`.
 
@@ -47,7 +47,7 @@ Urgent when: a test or a person must publish on the local preview.
 
 ## Ask each person on the list to confirm
 
-The site does not confirm an email address. The subscribe page, the sign-up card and the privacy page already promise the welcome email to each person who signs up. When the current list reaches 100 people, send one welcome email to each person on it, also to each person who did not ask for monthly updates. The email welcomes the early members and asks each person to confirm. A confirmed person gets early access to the private community. A person who wants only the email when the fund opens, or who did not sign up, does nothing. The welcome email is the last email that they get before the fund opens.
+The site does not confirm an email address. The subscribe page, the sign-up card and the privacy page promise a welcome email to each person who signs up. When the list reaches 100 people, send the welcome email to each person on it. Include each person who did not ask for monthly updates. The email asks each person to confirm. A confirmed person gets early access to the private community. A person who does not confirm gets no other email before the fund opens.
 
 To do:
 

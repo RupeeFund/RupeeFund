@@ -4,7 +4,7 @@
 
 The system shows public pages and collects a mailing list. It takes no payment and holds no vote. A content manager, EmDash, holds the words of the pages. Refer to section 11.
 
-`packages/db/src/schema.ts` gives what the system stores for each person. It stores no payment instrument.
+`packages/db/src/schema.ts` gives what the system stores for each person.
 
 ## 2. The parts
 
@@ -23,7 +23,7 @@ The system shows public pages and collects a mailing list. It takes no payment a
 
 Both Workers use the waitlist database. Only the site Worker adds rows. The admin Worker writes only the export stamp, `exported_at`.
 
-The home page shows the supporters, their pledges for a season and the median monthly pledge. It reads them from the waitlist database on each render (`src/pages/index.astro`). A signup purges nothing, so the figures can be up to 1 hour old, and one more page load in the next day (section 11.1). `packages/db/src/pledges.ts` holds the query and the figures for the site and the admin panel. Below 25 supporters, or when the read fails, the page shows no figures (`src/lib/supporters.ts`).
+The home page reads the supporter figures from the waitlist database (`src/lib/supporters.ts`). The edge cache keeps the home page for at most 1 hour, so the figures are at most 1 hour old (section 11.1). `packages/db/src/pledges.ts` holds the query for the site and the admin panel. Below 25 supporters, or when the read fails, the page shows no figures.
 
 AGENTS.md maps the packages.
 
@@ -52,9 +52,7 @@ The next table holds the addresses for later work. No part serves them yet. Keep
 | `dashboard.rupeefund.org`  | Data dashboard  | The next version of `admin.rupeefund.org`                                                                  |
 | `rupeefund.org/stats`      | Public figures  | Public pages that read totals only. The home page shows the first totals (section 2)                       |
 
-The one environment is `live`. Two Workers are not two environments. There is no preview URL.
-
-A second address for the site Worker keeps the live bindings and writes to the live list and the live content. So the configuration refuses a `workers.dev` address and a preview URL. The configuration does not stop a second custom domain, so do not add one. Prove a change on your own machine, against a local database.
+The one environment is `live`. A second address for the site Worker writes to the live list and the live content. So the configuration refuses a `workers.dev` address and a preview URL. Nothing refuses a second custom domain, so do not add one. Prove a change on your own machine, against a local database.
 
 ## 4. How a person joins the list
 
@@ -66,9 +64,9 @@ Each row needs a Turnstile token, and Turnstile needs JavaScript. A browser with
 
 `packages/db/migrations/` holds every migration of the waitlist database. The live database keeps its own ledger, so `wrangler d1 migrations apply` runs only the files it has not seen. `docs/DEPLOY.md` section 4 gives the rules for a new migration.
 
-`packages/db/src/schema.ts` holds the type of each table row and the values the form accepts. The site, the admin panel and the export import them from there. A migration that adds or changes a column must change that file too. `packages/db/tests/schema.test.ts` holds the two together. Its typecheck fails when the type changes alone, and its run fails when a migration changes alone.
+`packages/db/src/schema.ts` holds the type of each table row and the values the form accepts. The site, the admin panel and the export import them from there. A migration that adds or changes a column must change that file too. `packages/db/tests/schema.test.ts` fails when one changes without the other.
 
-`packages/db/migrations/` and `schema.ts` give each column. An empty answer column means the form did not ask that question when the person signed up. The migration that added the column tells when.
+An empty answer column means the form did not ask that question when the person signed up. The migration that added the column tells when.
 
 A second signup with the same email address changes nothing. The first row stands, and the person sees the normal confirmation. The form cannot prove who owns an address, so it never rewrites a row and never reveals that one exists. To change an answer or to return after a removal, a person writes to the team, and an operator edits the row by hand.
 
@@ -78,7 +76,7 @@ The content database belongs to EmDash. EmDash makes and changes its tables itse
 
 ## 6. The export
 
-The **Export** button on the dashboard and `pnpm list:export --remote` do the same thing. One `UPDATE … RETURNING` statement stamps `exported_at` on up to 500 rows. It selects rows that have no `exported_at` and no `unsubscribed_at`, and returns them as a CSV. The statement is atomic, so two exports never send the same row. `packages/db/src/export.ts` holds the statement and the CSV code for both. Each row goes out one time. A row that changes after its export does not go out again. Refer to `docs/DEPLOY.md` section 8.
+The **Export** button and `pnpm list:export --remote` run one atomic statement from `packages/db/src/export.ts`. It stamps `exported_at` on up to 500 rows with no `exported_at` and no `unsubscribed_at`, and returns them as a CSV. So each row goes out one time, and a row that changes after its export does not go out again. Refer to `docs/DEPLOY.md` section 8.
 
 ## 7. Names
 
@@ -116,7 +114,7 @@ These headers apply to `rupeefund.org` only. The admin Worker sets its own heade
 
 The committed files are the only brand input to the build. The build does not fetch from the brand repository. Do not edit these files by hand.
 
-The `Brand sync` workflow runs `pnpm brand:sync` each day. When the files differ from the brand repository, it runs `pnpm format:check`, `pnpm check` and `pnpm run build`, opens or updates the pull request from `chore/brand-sync`, and fails. The workflow needs the repository setting “Allow GitHub Actions to create and approve pull requests”. To take a brand update, review and merge that pull request. CI does not run on it, so read the check result in its description. To sync at once, run the workflow from the Actions tab.
+The `Brand sync` workflow runs `pnpm brand:sync` each day. When the files change, it runs `pnpm format:check`, `pnpm check` and `pnpm run build`, opens or updates the pull request from `chore/brand-sync`, and fails. It needs the repository setting “Allow GitHub Actions to create and approve pull requests”. CI does not run on that pull request, so read the check result in its description before you merge it. To sync at once, run the workflow from the Actions tab.
 
 To sync from a local brand checkout before it reaches `main`, set `BRAND_DIR` to the checkout and run `pnpm brand:sync`. The script then reads `exports/` in that checkout.
 
@@ -150,7 +148,7 @@ A list endpoint sends a masked address, `••••@•••••.com`. It k
 
 The list carries a flag for a question, never the question text. The list does not mask the name, because the team needs it to tell two rows apart.
 
-`/api/questions` is the one address that sends the question text. It sends a masked address and the export and unsubscribe stamps, so its table shows the same status as the records. An eye in a row of either table reveals that one address through `/api/reveal/:id`, which logs the reader. The Worker answers a reveal only if the request carries the `x-rupeefund-admin: 1` header. The dashboard script sends it. A link on another site cannot send it. So another site cannot log a reveal in the name of a reader. The dashboard writes every value through `textContent`, so a question that carries markup shows as the characters the person typed.
+`/api/questions` is the one address that sends the question text, with a masked address and the export and unsubscribe stamps. An eye in a row reveals that one address through `/api/reveal/:id`, which logs the reader. The Worker answers a reveal only with the `x-rupeefund-admin: 1` header, which a link on another site cannot send. So another site cannot log a reveal in the name of a reader. The dashboard writes every value through `textContent`, so markup in a question shows as text.
 
 The list carries every other column of the table. `/api/summary` counts the roles and the reasons. Migration `0006` gives each row from before the current form the answers that the form writes now. A box that the old form did not ask holds 0. A row from before the updates box (2026-09-12) is opted in. A box holds `NULL` only when a Worker older than `0005` writes the row. The dashboard shows `NULL` as "Not recorded", and it adds to no count.
 
@@ -226,7 +224,7 @@ The edge keeps no page for a signed-in person, no address with a query, nothing 
 
 An entry that fails the check does not show. A list leaves it out, and the page of that entry answers 404. The log of the site Worker then gets `The site leaves out an entry:`, with the entry and the problem.
 
-A read of the database that fails shows `src/pages/500.astro`. The one exception is the read of the supporter figures: the home page then shows no figures.
+A failed read of the database shows `src/pages/500.astro`, except the read of the supporter figures (section 2).
 
 ### 11.2 The public addresses
 
@@ -263,7 +261,7 @@ Two parts hold the rules. When you change one, read the other.
 
 `src/middleware.ts` refuses a person below Admin each write to the FAQ and the community team, and each write to the legal pages that the hooks do not see. This includes the delete, because the delete hook does not name the person. It also refuses that person each write to the MCP server of EmDash, because its delete, restore and copy run no hook that names the person. `src/lib/guard.ts` lists the routes. The middleware also refuses each change to the model from a browser session: the collections, the fields, the relations, the byline fields and the taxonomies. Only an API token changes the model (section 11.6). The middleware refuses the delete of a legal page from each person, and tells them to change the kind first. When the database does not answer, the middleware refuses the write with a 503.
 
-A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. It runs the EmDash maintenance. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A run that starts late skips the clean-up until the next day. Each run logs `[scheduled] cleanup ran` or `[scheduled] cleanup skipped`, so a search of the Worker logs shows a skip. The clean-up:
+A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A late run skips the clean-up until the next day. Each run logs `[scheduled] cleanup ran` or `[scheduled] cleanup skipped`. The clean-up:
 
 - removes expired sign-in challenges and tokens
 - removes uploads that did not finish, from D1 and R2

@@ -4,7 +4,7 @@ The brand guidelines at [brand.rupeefund.org](https://brand.rupeefund.org) and t
 
 This file holds only what this repository adds to them. The site is in `apps/web`, so `src/` in this file means `apps/web/src/`.
 
-The guidelines do not record each component and detail of this repository. A brand rule goes in the guidelines. A component, a layout, a state or a class that only this repository uses goes in [Change the look](#change-the-look).
+A brand rule goes in the guidelines. A component, a layout, a state or a class that only this repository uses goes in [Change the look](#change-the-look).
 
 ## Change the guidelines first
 
