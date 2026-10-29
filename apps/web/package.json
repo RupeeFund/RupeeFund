@@ -48,7 +48,7 @@
     "@tailwindcss/vite": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "^19.3.0",
-    "astro": "^7.4.2",
+    "astro": "^7.4.3",
     "chrome-launcher": "^1.2.2",
     "devalue": "6.0.3",
     "jsdom": "catalog:",
