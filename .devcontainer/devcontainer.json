@@ -1,11 +1,9 @@
 {
   "name": "rupeefund",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:26-bookworm",
   "containerEnv": {
-    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
     "WRANGLER_SEND_METRICS": "false"
   },
-  "onCreateCommand": "sudo corepack enable pnpm",
   "updateContentCommand": "pnpm install --frozen-lockfile",
   "postCreateCommand": "pnpm db:reset",
   "postAttachCommand": "cat .devcontainer/welcome.txt",

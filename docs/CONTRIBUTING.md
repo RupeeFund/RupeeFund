@@ -16,7 +16,7 @@ All work follows the [Code of Conduct](https://github.com/RupeeFund/.github/blob
 
 ## Set up
 
-You need Node 24 or later and [pnpm](https://pnpm.io/installation). You need no Cloudflare account.
+You need Node 26 or later and [pnpm](https://pnpm.io/installation). You need no Cloudflare account.
 
 ```sh
 pnpm install
