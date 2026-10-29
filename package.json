@@ -33,12 +33,12 @@
     "wrangler": "pnpm --filter @rupeefund/web exec wrangler"
   },
   "devDependencies": {
-    "oxfmt": "^0.74.0",
-    "oxlint": "^1.89.0",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
     "portless": "catalog:",
-    "prettier": "^3.9.6",
-    "prettier-plugin-astro": "^1.1.1",
-    "turbo": "^2.11.5",
+    "prettier": "^3.9.10",
+    "prettier-plugin-astro": "^1.1.2",
+    "turbo": "^2.11.10",
     "typescript": "catalog:"
   },
   "engines": {
