@@ -23,8 +23,8 @@
     "list:export": "node scripts/list-export.mts"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.4.2",
-    "@astrojs/react": "^7.1.1",
+    "@astrojs/cloudflare": "^14.4.3",
+    "@astrojs/react": "^7.1.2",
     "@emdash-cms/cloudflare": "1.3.1",
     "@portabletext/to-html": "^6.0.0",
     "emdash": "1.3.1",
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
-    "@astrojs/mdx": "^8.1.1",
+    "@astrojs/mdx": "^8.1.2",
     "@astrojs/rss": "^4.0.19",
     "@axe-core/playwright": "^4.14.0",
     "@cloudflare/workers-types": "catalog:",
