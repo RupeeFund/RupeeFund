@@ -52,7 +52,7 @@
     "chrome-launcher": "^1.2.2",
     "devalue": "6.0.3",
     "jsdom": "catalog:",
-    "lighthouse": "^13.5.0",
+    "lighthouse": "^13.6.0",
     "react": "^19.3.1",
     "satori": "^0.63.2",
     "tailwindcss": "catalog:",
