@@ -9,14 +9,13 @@ Each document has one reader. Each fact has one owner. Read the document that ow
 | [ARCHITECTURE.md](ARCHITECTURE.md) | A person or an agent who changes the system | A Worker, an address, a database, the security headers, the brand files, the admin panel or the content manager |
 | [DEPLOY.md](DEPLOY.md)             | A person whose change reaches the live site | A migration, a content field, a page address, a secret or the words about payment                               |
 | [EDITING.md](EDITING.md)           | A volunteer who edits the site              | A post, an FAQ entry or other words in the content manager                                                      |
-| [TODO.md](TODO.md)                 | A maintainer                                | A plan for new work, or a decision to defer work                                                                |
 | [AGENTS.md](../AGENTS.md)          | An agent                                    | Anything, as an agent                                                                                           |
 
 Three owners are outside this repository:
 
 - The [brand guidelines](https://brand.rupeefund.org) own each brand rule. Their source is [RupeeFund/brand](https://github.com/RupeeFund/brand).
 - The [RupeeFund/.github](https://github.com/RupeeFund/.github) repository owns the code of conduct, the security policy, the support page, and the templates for an issue and a pull request.
-- The private [RupeeFund/ops](https://github.com/RupeeFund/ops) repository holds the staff runbook and the mail setup. They give the steps that only a maintainer with admin access takes.
+- The private [RupeeFund/ops](https://github.com/RupeeFund/ops) repository holds the staff runbook, the mail setup and the to-do list. The runbook gives the steps that only a maintainer with admin access takes.
 
 ## Change the documents
 

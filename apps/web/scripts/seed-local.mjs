@@ -61,7 +61,7 @@ run("emdash", ["seed", seedFile, "-d", join(D1_FILES, content)]);
 rmSync(seedFile);
 
 const db = new DatabaseSync(join(D1_FILES, content));
-// workaround: docs/TODO.md "The seed ignores the post dates"
+// workaround: emdash seed 1.2.0 writes the seed time to both date columns (RupeeFund/ops to-do list)
 const dated = db.prepare("UPDATE ec_posts SET published_at = ?, updated_at = ? WHERE slug = ?");
 for (const [slug, { publishedAt, updatedAt }] of Object.entries(dates)) {
   dated.run(publishedAt, updatedAt, slug);
