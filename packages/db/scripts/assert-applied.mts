@@ -20,7 +20,7 @@ const missing = unapplied(readdirSync(MIGRATIONS), appliedNames(stdout));
 if (missing.length > 0) {
   process.stderr.write(
     `refusing to build: the live database has not applied ${missing.join(", ")}.\n` +
-      "Apply it first (docs/DEPLOY.md section 4).\n",
+      "Apply it first (RupeeFund/ops docs/RUNBOOK.md section 4).\n",
   );
   process.exit(1);
 }

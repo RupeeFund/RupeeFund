@@ -245,7 +245,7 @@ async function runExport() {
       typeof status === "number" && status < 500
         ? "Nothing was exported. " + trouble(err)
         : "The export may have run. Before you try again, look for an export entry in the log " +
-          "(docs/DEPLOY.md section 8).";
+          "(RupeeFund/ops docs/RUNBOOK.md section 8).";
     byId("export-error").hidden = false;
     console.error(err);
     confirm.disabled = false;

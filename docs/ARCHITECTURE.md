@@ -76,7 +76,7 @@ The content database belongs to EmDash. EmDash makes and changes its tables itse
 
 ## 6. The export
 
-The **Export** button and `pnpm list:export --remote` run one atomic statement from `packages/db/src/export.ts`. It stamps `exported_at` on up to 500 rows with no `exported_at` and no `unsubscribed_at`, and returns them as a CSV. So each row goes out one time, and a row that changes after its export does not go out again. Refer to `docs/DEPLOY.md` section 8.
+The **Export** button and `pnpm list:export --remote` run one atomic statement from `packages/db/src/export.ts`. It stamps `exported_at` on up to 500 rows with no `exported_at` and no `unsubscribed_at`, and returns them as a CSV. So each row goes out one time, and a row that changes after its export does not go out again. Refer to section 8 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md).
 
 ## 7. Names
 
@@ -206,7 +206,7 @@ The Worker logs `export` with the reader, the stamp time `at` and the count, bef
 
 The dashboard reads the count again, past the browser cache. It shows the count in a confirmation dialog. The file carries full addresses. If the file fails to save after the stamp, the page says so and names the batch time `at`. If the request fails with no answer or with a server error, the page says that the export may have run.
 
-If you lose a download after the stamp, read `at` from the log. Then follow `docs/DEPLOY.md` section 8.
+If you lose a download after the stamp, read `at` from the log. Then follow section 8 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md).
 
 ## 11. The content manager
 
@@ -236,7 +236,7 @@ A failed read of the database shows `src/pages/500.astro`, except the read of th
 - An API token opens only the routes where EmDash checks the token. The list in `src/lib/edge.ts` follows the public routes of EmDash.
 - Two EmDash routes stay open to all: the published files under `/_emdash/api/media/file/` and **Log out**.
 - A request for a page under `/_emdash/admin` with no sign-in goes to `/auth/login`. After the sign-in, the browser goes back to that page. The EmDash login page goes to `/`. Each other call with no sign-in gets 401.
-- Two WAF rules on the zone block common scanner paths and limit the requests of each address, before they start the Worker (`docs/DEPLOY.md` section 11.6).
+- Two WAF rules on the zone block common scanner paths and limit the requests of each address, before they start the Worker (section 11.6 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md)).
 
 ### 11.3 Who gets in
 
@@ -244,7 +244,7 @@ People sign in with GitHub. `src/outer.ts` serves `/auth/login` and `/auth/callb
 
 A person in no team does not get in, and EmDash makes no account. `docs/EDITING.md` section 1 gives the other sign-in rules: the role of a person in two teams, the email, and the session length.
 
-The callback sets a signed cookie for the session (`IDENTITY_SECONDS` in `packages/auth/src/routes.ts`). On each request, `src/auth/emdash.ts` gives EmDash the person in that cookie, and EmDash sets the role from it. So a team change takes effect at the next sign-in (`docs/DEPLOY.md` section 11.2).
+The callback sets a signed cookie for the session (`IDENTITY_SECONDS` in `packages/auth/src/routes.ts`). On each request, `src/auth/emdash.ts` gives EmDash the person in that cookie, and EmDash sets the role from it. So a team change takes effect at the next sign-in (section 11.2 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md)).
 
 The sessions stay in the content database (`src/auth/session-store.ts`), because EmDash writes the session on each request and KV takes one write per second to a key. `src/outer.ts` ends the session when the signed cookie is missing or not valid. **Log out** in the content manager clears both.
 
@@ -284,7 +284,7 @@ EmDash shows the drafts to a signed-in person whose browser has the edit cookie 
 Each collection has typed fields. The layout stays in code, so an editor changes the words and not the structure. To change a field, change these together:
 
 - `apps/web/seed/seed.json`, the model of a new database
-- the live database, with an API token (`docs/DEPLOY.md` section 11.5)
+- the live database, with an API token (`docs/DEPLOY.md` section 3)
 - `src/content/schema.ts` and the map in `src/content/entries.ts`
 - the component in `src/components/site/`, or `src/components/people/` for the community team
 
@@ -298,4 +298,4 @@ A post has a category, an optional season, its authors and a body. The category 
 
 ### 11.8 EmDash updates
 
-EmDash changes its own database on the first request after a deploy of a new version. There is no step to approve it. So Renovate does not merge an EmDash update by itself (`renovate.json`). `docs/DEPLOY.md` section 11.3 gives the steps for an update.
+EmDash changes its own database on the first request after a deploy of a new version. There is no step to approve it. So Renovate does not merge an EmDash update by itself (`renovate.json`). Section 11.3 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md) gives the steps for an update.
