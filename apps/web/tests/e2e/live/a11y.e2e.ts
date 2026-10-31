@@ -21,7 +21,7 @@ test("the footer email link reads as one address", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator('footer a[href^="mailto:"]')).toHaveAttribute(
     "aria-label",
-    "rupeefund@fossunited.org",
+    "hello@rupeefund.org",
   );
 });
 

@@ -628,7 +628,7 @@
                 {
                   "_key": "k47",
                   "_type": "link",
-                  "href": "mailto:rupeefund@fossunited.org"
+                  "href": "mailto:hello@rupeefund.org"
                 }
               ],
               "children": [
@@ -641,7 +641,7 @@
                 {
                   "_type": "span",
                   "_key": "k48",
-                  "text": "rupeefund@fossunited.org",
+                  "text": "hello@rupeefund.org",
                   "marks": ["k47"]
                 },
                 {
@@ -1077,7 +1077,7 @@
                 {
                   "_key": "k60",
                   "_type": "link",
-                  "href": "mailto:rupeefund@fossunited.org"
+                  "href": "mailto:hello@rupeefund.org"
                 }
               ],
               "children": [
@@ -1090,7 +1090,7 @@
                 {
                   "_type": "span",
                   "_key": "k61",
-                  "text": "rupeefund@fossunited.org",
+                  "text": "hello@rupeefund.org",
                   "marks": ["k60"]
                 },
                 {
@@ -1241,7 +1241,7 @@
                 {
                   "_key": "k6n",
                   "_type": "link",
-                  "href": "mailto:rupeefund@fossunited.org"
+                  "href": "mailto:hello@rupeefund.org"
                 }
               ],
               "children": [
@@ -1254,7 +1254,7 @@
                 {
                   "_type": "span",
                   "_key": "k6o",
-                  "text": "rupeefund@fossunited.org",
+                  "text": "hello@rupeefund.org",
                   "marks": ["k6n"]
                 },
                 {
@@ -2112,7 +2112,7 @@
                 {
                   "_key": "ki",
                   "_type": "link",
-                  "href": "mailto:rupeefund@fossunited.org?subject=Leave%20the%20list"
+                  "href": "mailto:hello@rupeefund.org?subject=Leave%20the%20list"
                 }
               ],
               "children": [

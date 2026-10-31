@@ -72,7 +72,7 @@ describe("the blog", () => {
       '<a href="https://opensource.guide/how-to-contribute/" target="_blank" rel="noopener noreferrer"',
     );
     expect(post).toContain('<a href="/faq" class="inline-link">');
-    expect(post).toContain('<a href="mailto:rupeefund@fossunited.org" class="inline-link">');
+    expect(post).toContain('<a href="mailto:hello@rupeefund.org" class="inline-link">');
   });
 
   it("publishes an RSS feed that links each post", () => {

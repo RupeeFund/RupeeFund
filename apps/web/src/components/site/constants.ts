@@ -1,6 +1,6 @@
 export const SUBSCRIBE_CTA = "I am interested";
 
-export const REMOVAL_ADDRESS = "rupeefund@fossunited.org";
+export const REMOVAL_ADDRESS = "hello@rupeefund.org";
 
 export const TAGLINE = "Lots of us, a little each month, for great projects from India";
 

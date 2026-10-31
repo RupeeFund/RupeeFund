@@ -3,7 +3,7 @@ import { faqEntry, isSafeHref, page, person, post } from "./schema.ts";
 import { validFaq, validPage, validPerson, validPost } from "./fixture.ts";
 
 describe("a safe link", () => {
-  it.each(["https://fossunited.org", "mailto:rupeefund@fossunited.org", "/privacy", "#top"])(
+  it.each(["https://fossunited.org", "mailto:hello@rupeefund.org", "/privacy", "#top"])(
     "permits %s",
     (href) => expect(isSafeHref(href)).toBe(true),
   );

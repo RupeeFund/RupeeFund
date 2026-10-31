@@ -769,7 +769,7 @@
               {
                 "_key": "l108",
                 "_type": "link",
-                "href": "mailto:rupeefund@fossunited.org"
+                "href": "mailto:hello@rupeefund.org"
               }
             ],
             "children": [
@@ -806,7 +806,7 @@
               {
                 "_key": "s109",
                 "_type": "span",
-                "text": "rupeefund@fossunited.org",
+                "text": "hello@rupeefund.org",
                 "marks": ["l108"]
               },
               {
@@ -1234,7 +1234,7 @@
               {
                 "_key": "l172",
                 "_type": "link",
-                "href": "mailto:rupeefund@fossunited.org"
+                "href": "mailto:hello@rupeefund.org"
               },
               {
                 "_key": "l175",
@@ -1252,7 +1252,7 @@
               {
                 "_key": "s173",
                 "_type": "span",
-                "text": "rupeefund@fossunited.org",
+                "text": "hello@rupeefund.org",
                 "marks": ["l172"]
               },
               {
