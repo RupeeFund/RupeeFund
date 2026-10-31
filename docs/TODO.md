@@ -82,3 +82,11 @@ Urgent when: a change touches `src/lib/cache.ts` or `blogOpen`.
 A change to a byline in the content manager purges no page (`docs/ARCHITECTURE.md` section 11.1). A new author name shows only after the cache expires, within 1 hour. Purge the `posts` tag when a byline changes.
 
 Urgent when: an author name must change on the site at once.
+
+## Name each service that gets personal data
+
+The privacy page says that Cloudflare hosts the site and stores the list. It names no other service. Zoho Mail receives the email to `hello@rupeefund.org`, and Zoho Campaigns will keep a copy of the list to send the email when the fund opens and the monthly updates. Audit each service of the platform that gets personal data. Name each one on the privacy page and in the terms.
+
+The list in Cloudflare stays the source of truth. Give another service only the data that its task needs.
+
+Urgent when: the list goes to Zoho Campaigns for the first time.
