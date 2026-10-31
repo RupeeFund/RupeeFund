@@ -2,8 +2,8 @@
 
 This is the website of The Rupee Fund, rupeefund.org. It collects a mailing list for a fund that FOSS United volunteers run. It takes no payment and holds no vote.
 
-- **Stack:** a pnpm workspace that Turborepo runs. `apps/web` holds the site Worker, and `apps/admin` the admin Worker. `packages/db` holds the D1 schema, `packages/auth` the GitHub sign-in, and `packages/ui` the shared styles and the brand files. The root `scripts/` holds the dev wrapper that the apps use. `docs/ARCHITECTURE.md` section 2 describes each part.
-- **Look:** the brand guidelines at [brand.rupeefund.org](https://brand.rupeefund.org) (source: `RupeeFund/brand`) own every brand rule. Build them. To add or change a brand rule, change the guidelines. `docs/DESIGN.md` holds the components and details that only this repository uses.
-- **Rules:** read `docs/README.md` at the start of each task. It routes each kind of change to the doc that owns it. Read that doc too. Before each commit, read `docs/CONTRIBUTING.md` again. Run its gate. Work from what you read now, not from an earlier read.
+- **Stack:** `apps/web`: the site Worker. `apps/admin`: the admin Worker. `packages/db`: the D1 schema. `packages/auth`: the GitHub sign-in. `packages/ui`: the shared styles and the brand files. `scripts/`: the dev wrapper. More in `docs/ARCHITECTURE.md` section 2.
+- **Look:** build the [brand guidelines](https://brand.rupeefund.org). Change a brand rule there. `docs/DESIGN.md` holds what only this repository uses.
+- **Rules:** for each task, read `docs/README.md` and the doc that it names. Before each commit, read `docs/CONTRIBUTING.md` again and run its gate. Work from this read, not an earlier one.
 
 Write a new rule in the doc that owns it. Keep this file a map.
