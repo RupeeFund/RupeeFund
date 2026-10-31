@@ -143,7 +143,7 @@ async function callback(
       cookie(config.origin, names.identity, identity, IDENTITY_SECONDS),
     ]);
   } catch (error) {
-    console.error("[auth] GitHub sign-in failed:", error);
+    console.error("[auth] GitHub sign-in failed:", String(error));
     return text(502, "GitHub sign-in failed. Sign in again from /auth/login.", clear);
   }
 }

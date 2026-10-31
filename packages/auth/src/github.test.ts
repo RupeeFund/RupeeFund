@@ -115,6 +115,18 @@ describe("signIn", () => {
     );
   });
 
+  it("names the error that GitHub gives", async () => {
+    await expect(run({ grant: { error: "incorrect_client_credentials" } })).rejects.toThrow(
+      "incorrect_client_credentials",
+    );
+  });
+
+  it("cuts the error of GitHub to 64 characters", async () => {
+    await expect(run({ grant: { error: "x".repeat(200) } })).rejects.toThrow(
+      new Error(`GitHub gave no access token: ${"x".repeat(64)}`),
+    );
+  });
+
   it("sends the secret and the verifier to GitHub, and the token to the API", async () => {
     const { fetcher, calls } = github({ teams: { "cms-admins": "active" } });
     await signIn("code-1", "verifier-1", REDIRECT, APP, fetcher);

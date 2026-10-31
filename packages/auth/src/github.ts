@@ -66,9 +66,13 @@ async function accessToken(
       code_verifier: verifier,
     }),
   });
-  const grant = (await response.json().catch(() => null)) as { access_token?: unknown } | null;
+  const grant = (await response.json().catch(() => null)) as {
+    access_token?: unknown;
+    error?: unknown;
+  } | null;
   if (!response.ok || typeof grant?.access_token !== "string") {
-    throw new Error("GitHub gave no access token");
+    const reason = typeof grant?.error === "string" ? grant.error : `status ${response.status}`;
+    throw new Error(`GitHub gave no access token: ${reason.slice(0, 64)}`);
   }
   return grant.access_token;
 }
@@ -93,7 +97,9 @@ export async function signIn(
   const read = async <T>(path: string): Promise<T> => {
     const response = await call(path);
     if (!response.ok) throw new Error(`GitHub answered ${response.status} for ${path}`);
-    return (await response.json()) as T;
+    return (await response.json().catch(() => {
+      throw new Error(`GitHub sent no JSON for ${path}`);
+    })) as T;
   };
 
   const user = await read<{ login: string; name: string | null }>("/user");

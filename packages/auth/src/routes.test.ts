@@ -157,7 +157,26 @@ describe("authRoute", () => {
       async () => new Response("", { status: 500 }),
     );
     expect(response?.status).toBe(502);
-    expect(logged).toHaveBeenCalledWith("[auth] GitHub sign-in failed:", expect.any(Error));
+    expect(logged).toHaveBeenCalledWith(
+      "[auth] GitHub sign-in failed:",
+      "Error: GitHub gave no access token: status 500",
+    );
+  });
+
+  it("logs the error of GitHub, and not the code or the secret", async () => {
+    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { state, cookie } = await startSignIn();
+    const response = await callback(`code=code-in-the-link&state=${state}`, cookie, async () =>
+      Response.json({ error: "bad_verification_code" }),
+    );
+    expect(response?.status).toBe(502);
+    expect(logged).toHaveBeenCalledWith(
+      "[auth] GitHub sign-in failed:",
+      "Error: GitHub gave no access token: bad_verification_code",
+    );
+    const line = logged.mock.calls.flat().join(" ");
+    expect(line).not.toContain("code-in-the-link");
+    expect(line).not.toContain(CONFIG.app.clientSecret);
   });
 
   it("drops Secure on plain http for the local build", async () => {
