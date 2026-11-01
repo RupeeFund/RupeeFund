@@ -37,7 +37,7 @@ A new page uses the layout of its type:
 - **Buttons.** Use `btn` with `btn-primary` or `btn-quiet`. Add `btn-on-white` to a quiet button on a white surface. Set the size or the state with a modifier from `packages/ui/src/styles.css`, not with utilities in the markup.
 - **Links.** Add `inline-link-ink` to an inline link on a `bg-brand` surface.
 - **State.** Style a UI state from an attribute, such as `aria-pressed`. Do not set classes from JavaScript.
-- **Admin panel.** Put the styles that only the panel uses in `apps/admin/src/admin.css`: the sidebar, the tables, the status marks and the chart. Take each colour from a brand token. Do not write a colour value.
+- **Admin panel.** Put the styles that only the panel uses in `apps/admin/src/admin.css`: the top bar, the tables, the status marks and the chart. Take each colour from a brand token. Do not write a colour value.
 - **Season accents** are `SEASONS` in `src/components/site/constants.ts`. `src/lib/launch.test.ts` checks their contrast.
 - **Pixel art and brand files.** The [Illustration section](https://brand.rupeefund.org/#illustration) gives the art rules and the palette. `pnpm brand:sync` writes the files that `apps/web/scripts/brand-sync.mts` lists, the sprites included. `docs/ARCHITECTURE.md` section 9 gives the rules.
 - **Visual check.** Check each visual change in a browser at 360 × 640 and at 1440 × 900, with and without reduced motion.

@@ -41,26 +41,11 @@ function seedMany(count: number): void {
 }
 
 describe("the list page", () => {
-  for (const [email, masked] of [
-    ["first.last@gmail.com", "••••@•••••.com"],
-    ["a@example.co.in", "••••@•••••.co.in"],
-    ["a@cs.iitb.ac.in", "••••@•••••.ac.in"],
-    ["a@mail.ibm.com", "••••@•••••.com"],
-    ["a@x.com.au", "••••@•••••.com.au"],
-    ["a@localhost", "••••@•••••"],
-    ["a@example.dev", "••••@•••••.dev"],
-    ["a@bank.sbi", "••••@•••••"],
-    ["a@corp.microsoft", "••••@•••••"],
-    ["jane.doe@example.janedoe1990", "••••@•••••"],
-    ["a@x.com.microsoft", "••••@•••••"],
-    ["a@[10.0.0.1]", "••••@•••••"],
-  ] as const) {
-    it(`shows no name, length or organisation for ${email}`, async () => {
-      fixture.seed([{ email }]);
-      const [row] = await repo.page(Number.MAX_SAFE_INTEGER);
-      expect(row?.email_masked).toBe(masked);
-    });
-  }
+  it("shows the same mask for every address, so the list reads no part of it", async () => {
+    fixture.seed([{ email: "first.last@gmail.com" }, { email: "a@example.co.in" }]);
+    const rows = await repo.page(Number.MAX_SAFE_INTEGER);
+    expect(rows.map((row) => row.email_masked)).toEqual(["••••@•••••", "••••@•••••"]);
+  });
 
   it("returns no field holding a raw address", async () => {
     seedMany(SEED_COUNT);
@@ -97,16 +82,14 @@ describe("the list page", () => {
   });
 
   it("carries every column of the 0005 schema, the address masked", async () => {
-    fixture.seed([
-      { email: "boxes@example.org", is_user: 1, is_professional: null, backs_larger: 0 },
-    ]);
+    fixture.seed([{ email: "boxes@example.org", is_user: 1, is_professional: 0, backs_larger: 0 }]);
     const [row] = await repo.page(Number.MAX_SAFE_INTEGER);
     const columns = fixture.raw.prepare("SELECT name FROM pragma_table_info('waitlist')").all();
     const expected = columns
       .map((column) => String(column.name))
       .filter((name) => name !== "email" && name !== "question");
     expect(Object.keys(row ?? {})).toEqual(expect.arrayContaining(expected));
-    expect([row?.is_user, row?.is_professional, row?.backs_larger]).toEqual([1, null, 0]);
+    expect([row?.is_user, row?.is_professional, row?.backs_larger]).toEqual([1, 0, 0]);
   });
 });
 
@@ -182,9 +165,6 @@ describe("the summary", () => {
         recent_joined: 0,
         recent_left: 0,
         updates_opt_in: 0,
-        updates_asked: 0,
-        roles_answered: 0,
-        reasons_answered: 0,
         questions: 0,
         is_user: 0,
         is_creator: 0,
@@ -204,7 +184,7 @@ describe("the summary", () => {
       { email: "a@example.org" },
       { email: "b@example.org", unsubscribed_at: 5 },
       { email: "c@example.org", exported_at: 7, question: "why?" },
-      { email: "d@example.org", updates_opt_in: null },
+      { email: "d@example.org", updates_opt_in: 0 },
     ]);
     const { totals } = await repo.summary(NOW);
     expect(totals).toEqual({
@@ -214,9 +194,6 @@ describe("the summary", () => {
       recent_joined: 0,
       recent_left: 0,
       updates_opt_in: 2,
-      updates_asked: 2,
-      roles_answered: 0,
-      reasons_answered: 0,
       questions: 1,
       is_user: 0,
       is_creator: 0,
@@ -239,7 +216,7 @@ describe("the summary", () => {
     expect(after).toEqual({ ...before, totals: { ...before.totals, total: 2, questions: 2 } });
   });
 
-  it("counts each audience role, and adds a row from before 0004 to no count", async () => {
+  it("counts each audience role, and a row with no box ticked to no count", async () => {
     fixture.seed([
       { email: "a@example.org", is_user: 1, is_creator: 1 },
       { email: "b@example.org", is_user: 1, is_student: 1, is_professional: 1 },
@@ -250,18 +227,7 @@ describe("the summary", () => {
     expect(totals).toMatchObject({ is_user: 2, is_creator: 1, is_professional: 1, is_student: 1 });
   });
 
-  it("counts the active people who answered each group, not the boxes they ticked", async () => {
-    fixture.seed([
-      { email: "a@example.org", is_user: 1, is_creator: 1, backs_nascent: 1 },
-      { email: "b@example.org", is_user: 0, is_creator: 0, is_professional: 0, is_student: 0 },
-      { email: "c@example.org" },
-      { email: "d@example.org", is_user: 1, backs_larger: 1, unsubscribed_at: 5 },
-    ]);
-    const { totals } = await repo.summary(NOW);
-    expect([totals.roles_answered, totals.reasons_answered]).toEqual([2, 1]);
-  });
-
-  it("counts each reason for joining, and a row the form never asked to no count", async () => {
+  it("counts each reason for joining, and a row with no box ticked to no count", async () => {
     fixture.seed([
       { email: "a@example.org", backs_nascent: 1, backs_larger: 1 },
       { email: "b@example.org", backs_nascent: 1, backs_growing: 0 },

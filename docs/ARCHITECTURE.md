@@ -47,7 +47,7 @@ Each row needs a Turnstile token, and Turnstile needs JavaScript. A browser with
 ## 5. The database
 
 - `docs/DEPLOY.md` section 4 gives the rules for a migration. A migration that adds or changes a column must change `packages/db/src/schema.ts` too. `packages/db/tests/schema.test.ts` fails when one changes without the other.
-- An empty answer column means the form did not ask that question at signup.
+- `amount` is NULL only on a row from before migration `0005`. `months` and `question` hold `''` when a person skips them. Migration `0006` wrote 0 and `''` into the answers of each row from before the form asked them, so on an old row 0 does not mean that the person answered no.
 - A second signup with the same email address changes nothing, and the person sees the normal confirmation. The form cannot prove who owns an address, so it never rewrites a row and never reveals that one exists. To change an answer or to return after a removal, a person writes to the team, and an operator edits the row by hand.
 - Keep the waitlist database first in `d1_databases` of `apps/web/wrangler.jsonc`. The admin Worker test compares its database with the first one there.
 - EmDash makes and changes the tables of the content database itself (section 11.8).
@@ -106,9 +106,9 @@ The panel shows the team the waitlist. Its one write is the export stamp (sectio
 
 ### 10.3 How the panel hides an address
 
-- A list endpoint sends a masked address, such as `••••@•••••.com`. SQLite builds it (`apps/admin/src/sql.ts`), so the full address never leaves the database on the list path.
+- A list endpoint sends the same mask for every address, `••••@•••••`. SQLite writes it (`apps/admin/src/sql.ts`), so the full address never leaves the database on the list path.
 - Only `/api/reveal/:id` and `/api/export` send a full address, and each logs the reader. A reveal needs the `x-rupeefund-admin: 1` header, so a link on another site cannot log a reveal in the name of a reader.
-- An answer that carries an address, a name or a question sets `Cache-Control: private, no-store`. Only `/api/summary` permits a cache.
+- The page and each handler in `apps/admin/src/routes.ts` set `Cache-Control: private, no-store`. No cache keeps a count, so each refresh reads the database.
 - Migration `0006` set `updates_opt_in = 1` on each row from before 2026-09-12. That person did not tick the box.
 - The log keeps 7 days on the Workers Paid plan. Treat it as an operations record, not as a permanent one.
 
@@ -116,7 +116,7 @@ The panel shows the team the waitlist. Its one write is the export stamp (sectio
 
 D1 bills each scanned row past the monthly allowance, and the site, the content manager and the panel share that allowance. So the panel must stay cheap. For a table of N rows, one pass reads N rows, one `GROUP BY` reads 2N, a page reads its own rows, and a reveal reads 1. One load of the dashboard reads about 5N rows.
 
-**Put no filter on a list endpoint except the `id` cursor, unless an index covers it.** `WHERE id < ?` searches the primary key, so a page reads only its own rows. A filter on a column with no index scans the table, and so does a `LIKE` that matches few rows. Put each slice in the cached `GROUP BY` queries of `/api/summary`. The one exception is `/api/questions`: migration `0005` adds the partial index `idx_waitlist_question` for it.
+**Put no filter on a list endpoint except the `id` cursor, unless an index covers it.** `WHERE id < ?` searches the primary key, so a page reads only its own rows. A filter on a column with no index scans the table, and so does a `LIKE` that matches few rows. Put each slice in the `GROUP BY` queries of `/api/summary`. The one exception is `/api/questions`: migration `0005` adds the partial index `idx_waitlist_question` for it.
 
 `apps/admin/src/repo.test.ts` reads `EXPLAIN QUERY PLAN` for each query. It fails in these conditions:
 
@@ -134,13 +134,13 @@ The panel follows the brand guidelines on light surfaces. `apps/admin/src/admin.
 
 ### 10.7 JavaScript
 
-The panel needs JavaScript. A page holds no data. The script reads each row from an API address that sends `Cache-Control: private, no-store`. A server-rendered page with rows puts personal data in the HTML, and a browser can keep that HTML in its history and its cache. Write every value through `textContent`. `apps/admin/src/pages.test.ts` fails when a page holds row data, uses a markup sink, or shows the sidebar toggle before the script runs.
+The panel needs JavaScript. A page holds no data. The script reads each row from an API address that sends `Cache-Control: private, no-store`. A server-rendered page with rows puts personal data in the HTML, and a browser can keep that HTML in its history and its cache. Write every value through `textContent`. `apps/admin/src/pages.test.ts` fails when the page holds row data or uses a markup sink. The panel is one page: a top bar with the brand mark and **Sign out**, then the numbers, the records and the questions.
 
 ### 10.8 The export
 
 `POST /api/export` is the one write. `apps/admin/src/routes.ts` gives the checks that it makes before it stamps a row. A form on another site cannot set the `x-rupeefund-admin: 1` header, and the Worker sends no CORS header, so a script on another site cannot send it.
 
-The Worker logs `export` with the reader, the stamp time `at` and the count, before it builds the file. It logs `export_denied` for each refusal. It drops the cached `/api/summary` in its own data centre. Another data centre can serve the old count for up to 60 seconds. `apps/admin/src/section-records.ts` tells the reader when an export fails.
+The Worker logs `export` with the reader, the stamp time `at` and the count, before it builds the file. It logs `export_denied` for each refusal. `apps/admin/src/section-records.ts` tells the reader when an export fails.
 
 If you lose a download after the stamp, read `at` from the log. Then follow section 8 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md).
 

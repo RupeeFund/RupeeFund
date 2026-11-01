@@ -97,8 +97,8 @@ function drawChart(series) {
 }
 
 function answered(n) {
-  if (n === 0) return "Nobody answered yet.";
-  return plural(n, "person", "people") + " answered. Each could pick more than one.";
+  if (n === 0) return "Nobody is on the list.";
+  return "Of " + plural(n, "person", "people") + " on the list. Each could pick more than one.";
 }
 
 function figure(key, value, note) {
@@ -136,12 +136,12 @@ function drawNumbers(summary) {
   figure(
     "updates_opt_in",
     count(totals.updates_opt_in),
-    share(totals.updates_opt_in, totals.updates_asked, "those asked"),
+    share(totals.updates_opt_in, totals.active),
   );
   figure("pending", count(totals.pending));
   for (const slot of all("[data-count]")) slot.textContent = String(totals[slot.dataset.count]);
-  byId("roles-base").textContent = answered(totals.roles_answered);
-  byId("reasons-base").textContent = answered(totals.reasons_answered);
+  byId("roles-base").textContent = answered(totals.active);
+  byId("reasons-base").textContent = answered(totals.active);
 
   const series = everyDay(summary.byDay, summary.asOf);
   drawChart(series);

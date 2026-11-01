@@ -31,9 +31,8 @@ const databases = () =>
 
 const busy = await portsInUse(portsFor(STATE));
 if (busy.length > 0) {
-  const ports = busy.join(" and ");
   process.stderr.write(
-    `A local server uses ${STATE} on port ${ports}. ` +
+    `A server listens on port ${busy.join(" and ")}. ` +
       "Stop it, then run this again. Nothing changed.\n",
   );
   process.exit(1);

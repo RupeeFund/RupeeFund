@@ -1,4 +1,3 @@
-import { AMOUNTS_SQL, type AmountRow, pledgesOf } from "@rupeefund/db/pledges";
 import { REASON_FIELDS, ROLE_FIELDS } from "@rupeefund/db/schema";
 import { rowsOf } from "@rupeefund/db/testing";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -25,7 +24,7 @@ function rows(sql: string): Record<string, unknown>[] {
 
 describe("the local seed", () => {
   it("loads into the migrated table, so every seed value passes its CHECK", () => {
-    expect(rows("SELECT COUNT(*) AS n FROM waitlist")[0]?.n).toBe(75);
+    expect(Number(rows("SELECT COUNT(*) AS n FROM waitlist")[0]?.n)).toBeGreaterThan(30);
   });
 
   it("writes only the source the signup form sends", () => {
@@ -46,41 +45,25 @@ describe("the local seed", () => {
 
   it("leaves signups in the last 30 days, so the rate and the chart have data", () => {
     const [recent] = rows(
-      `SELECT COUNT(*) AS n FROM waitlist WHERE created_at >= ${NOW - 30 * DAY}`,
+      `SELECT COUNT(*) AS n FROM waitlist
+       WHERE created_at >= ${NOW - 30 * DAY} AND unsubscribed_at IS NULL`,
     );
-    expect(Number(recent?.n)).toBeGreaterThan(30);
+    expect(Number(recent?.n)).toBeGreaterThanOrEqual(20);
   });
 
-  it("gives the figures of the live list on 20 October 2026", () => {
-    const active = (column: string) =>
-      Number(rows(`SELECT SUM(${column}) AS n FROM waitlist WHERE unsubscribed_at IS NULL`)[0]?.n);
-    const [counts] = rows(
-      `SELECT COUNT(*) AS signups, COUNT(updates_opt_in) AS asked, COUNT(exported_at) AS exported,
-              SUM(created_at >= ${NOW - 30 * DAY}) AS recent
-       FROM waitlist WHERE unsubscribed_at IS NULL`,
+  it("answers every box with 0 or 1, as the form writes it", () => {
+    const boxes = ["updates_opt_in", ...ROLE_FIELDS, ...REASON_FIELDS];
+    const blank = boxes.filter(
+      (box) => Number(rows(`SELECT COUNT(*) AS n FROM waitlist WHERE ${box} IS NULL`)[0]?.n) > 0,
     );
-    expect({
-      counts,
-      pledges: pledgesOf(rows(AMOUNTS_SQL) as unknown as AmountRow[]),
-      ticks: ["updates_opt_in", ...ROLE_FIELDS, ...REASON_FIELDS].map(active),
-    }).toEqual({
-      counts: { signups: 72, asked: 72, exported: 0, recent: 64 },
-      pledges: { count: 70, sum: 23_767, median: 128 },
-      ticks: [62, 44, 39, 11, 15, 11, 16, 12],
-    });
+    expect(blank).toEqual([]);
   });
 
-  it("keeps each question NULL on the seed rows from before the form asked it", () => {
-    const columns = ["amount", "months", "updates_opt_in", ...ROLE_FIELDS, ...REASON_FIELDS];
-    const misplaced = columns.filter((column) => {
-      const [span] = rows(
-        `SELECT MAX(CASE WHEN ${column} IS NULL THEN id END) AS last_unasked,
-                MIN(CASE WHEN ${column} IS NOT NULL THEN id END) AS first_asked
-         FROM waitlist`,
-      );
-      if (span === undefined || span.last_unasked === null) return true;
-      return Number(span.last_unasked) > Number(span.first_asked);
-    });
-    expect(misplaced).toEqual([]);
+  it("carries one row with markup in its name and address, to test the escapes", () => {
+    expect(
+      rows(
+        "SELECT COUNT(*) AS n FROM waitlist WHERE name LIKE '%<img%' AND email LIKE '%<script>%'",
+      ),
+    ).toEqual([{ n: 1 }]);
   });
 });

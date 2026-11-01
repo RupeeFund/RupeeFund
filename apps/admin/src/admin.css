@@ -21,64 +21,24 @@
   }
 
   .shell {
-    @apply grid min-h-dvh grid-cols-[3.5rem_minmax(0,1fr)];
+    @apply min-h-dvh;
   }
 
-  .sidebar {
-    @apply sticky top-0 z-40 flex h-dvh w-14 flex-col items-center gap-3;
-    @apply border-r border-ink/10 bg-white py-3;
+  .topbar {
+    @apply flex items-center justify-between gap-4 border-b border-ink/10 bg-white;
+    @apply px-[clamp(1rem,3vw,2.5rem)] py-3;
   }
 
-  .sidebar-mark {
+  .topbar-mark {
     @apply size-8 rounded-md;
   }
 
-  .sidebar-list {
-    @apply grid w-full gap-1 px-1.5;
-  }
-
-  .sidebar-link {
-    @apply flex min-h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium;
-    @apply text-ink-2 hover:bg-paper hover:text-ink;
-  }
-
-  .sidebar-link[aria-current="page"] {
-    @apply bg-brand-50 text-brand-900;
-    @apply forced-colors:border forced-colors:border-[Highlight];
-  }
-
-  .sidebar-end {
-    @apply mt-auto;
-  }
-
-  .sidebar-danger {
+  .topbar-signout {
     @apply text-error hover:text-error;
   }
 
-  .sidebar-label {
-    @apply sr-only;
-  }
-
-  .shell:has(#sidebar-toggle[aria-expanded="true"]) {
-    .sidebar {
-      @apply w-56 items-start px-3 shadow-card md:shadow-none;
-    }
-
-    .sidebar-list {
-      @apply px-0;
-    }
-
-    .sidebar-link {
-      @apply justify-start px-3;
-    }
-
-    .sidebar-label {
-      @apply not-sr-only;
-    }
-
-    @media (width >= 48rem) {
-      grid-template-columns: 14rem minmax(0, 1fr);
-    }
+  .topbar-signout .icon {
+    @apply size-4;
   }
 
   .chevron {

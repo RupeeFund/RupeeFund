@@ -19,7 +19,7 @@ async function boot(questions: unknown[] = [QUESTION]): Promise<void> {
     "fetch",
     vi.fn(async (path: string) => Response.json(answerFor(path, data))),
   );
-  mount("/");
+  mount();
   await vi.waitFor(() =>
     expect(document.querySelector("#main")?.getAttribute("aria-busy")).toBe("false"),
   );

@@ -4,28 +4,16 @@ import type { AdminRepo } from "./repo.ts";
 import { PAGE_SIZE } from "./sql.ts";
 import type { AdminEnv, AdminLogger, AdminVariables } from "./types.ts";
 
-export const SUMMARY_MAX_AGE = 60;
 export const NO_STORE = "private, no-store";
-
-export interface SummaryCache {
-  match(request: Request): Promise<Response | undefined>;
-  put(request: Request, response: Response): Promise<void>;
-  delete(request: Request): Promise<boolean>;
-}
 
 export interface RouteDeps {
   repo: AdminRepo;
-  cache: SummaryCache;
   log: AdminLogger;
 }
 
 type AdminContext = Context<{ Bindings: AdminEnv; Variables: AdminVariables }>;
 
 const PRIVATE = { "cache-control": NO_STORE } as const;
-
-function summaryKey(url: string): Request {
-  return new Request(new URL("/api/summary", url).toString(), { method: "GET" });
-}
 
 function parseId(raw: string | undefined): number | undefined {
   if (raw === undefined || raw.trim().length === 0) return undefined;
@@ -35,14 +23,7 @@ function parseId(raw: string | undefined): number | undefined {
 }
 
 export async function handleSummary(c: AdminContext, deps: RouteDeps): Promise<Response> {
-  const key = summaryKey(c.req.url);
-  const hit = await deps.cache.match(key);
-  if (hit !== undefined) return hit;
-
-  const summary = await deps.repo.summary(Date.now());
-  const response = c.json(summary, 200, { "cache-control": `max-age=${SUMMARY_MAX_AGE}` });
-  await deps.cache.put(key, response.clone());
-  return response;
+  return c.json(await deps.repo.summary(Date.now()), 200, PRIVATE);
 }
 
 async function pageFrom(
@@ -95,8 +76,7 @@ export async function handleReveal(c: AdminContext, deps: RouteDeps): Promise<Re
 }
 
 export async function handleExport(c: AdminContext, deps: RouteDeps): Promise<Response> {
-  const origin = c.req.header("origin");
-  if (origin !== new URL(c.req.url).origin || c.req.header(PANEL_HEADER) !== "1") {
+  if (c.req.header(PANEL_HEADER) !== "1") {
     deps.log({ event: "export_denied", reason: "cross_site" });
     return c.json({ error: "forbidden" }, 403, PRIVATE);
   }
@@ -111,7 +91,6 @@ export async function handleExport(c: AdminContext, deps: RouteDeps): Promise<Re
   const at = Date.now();
   const rows = await deps.repo.claim(at);
   deps.log({ event: "export", actor, at, count: rows.length });
-  await deps.cache.delete(summaryKey(c.req.url));
   if (rows.length === 0) return c.body(null, 204, PRIVATE);
 
   return c.body(toCsv(rows), 200, {

@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-import { DASHBOARDS } from "./chrome.ts";
 import { app } from "./index.ts";
 import { makeCtx, makeEnv } from "./testkit.ts";
 
@@ -16,7 +15,7 @@ describe("the admin Worker", () => {
   it("guards every GET route the Worker registers, page and API alike", () => {
     expect(REGISTERED).toContain("/api/questions");
     expect(REGISTERED).toContain("/api/reveal/1");
-    for (const entry of DASHBOARDS) expect(REGISTERED).toContain(entry.href);
+    expect(REGISTERED).toContain("/");
   });
 
   for (const path of GUARDED_PATHS) {
@@ -46,15 +45,13 @@ describe("the admin Worker", () => {
     expect(env.DB.queries).toEqual([]);
   });
 
-  it("serves a page for every sidebar item", async () => {
+  it("serves the waitlist page", async () => {
     const ctx = makeCtx({ email: "volunteer@example.org" });
-    for (const entry of DASHBOARDS) {
-      const res = await app.request(entry.href, {}, makeEnv(), ctx);
-      expect(res.status).toBe(200);
-      expect(res.headers.get("content-type")).toContain("text/html");
-      expect(res.headers.get("cache-control")).toBe("private, no-store");
-      expect(await res.text()).toContain(`<title>${entry.label} —`);
-    }
+    const res = await app.request("/", {}, makeEnv(), ctx);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/html");
+    expect(res.headers.get("cache-control")).toBe("private, no-store");
+    expect(await res.text()).toContain("<title>Waitlist —");
   });
 
   it("serves the one view alone, so the old records and questions pages are gone", async () => {

@@ -1,5 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { type ExportableRow, toCsv, toCsvField } from "../src/export.ts";
+import { d1Rows, type ExportableRow, toCsv, toCsvField } from "../src/export.ts";
+
+describe("the rows that wrangler d1 execute --json prints", () => {
+  it("reads the results out of the array wrangler prints", () => {
+    const stdout = JSON.stringify([{ results: [{ id: 13 }], success: true, meta: {} }]);
+    expect(d1Rows(stdout)).toEqual([{ id: 13 }]);
+  });
+
+  it("reads a bare object as well as an array", () => {
+    expect(d1Rows(JSON.stringify({ results: [{ id: 1 }] }))).toEqual([{ id: 1 }]);
+  });
+
+  it("fails when wrangler prints no rows, so a caller cannot read nothing by accident", () => {
+    expect(() => d1Rows(JSON.stringify([{ success: false }]))).toThrow(/no rows/);
+  });
+});
 
 function csvFields(line: string): string[] {
   const field = /(?:"((?:[^"]|"")*)"|([^,"]*))(,|$)/y;

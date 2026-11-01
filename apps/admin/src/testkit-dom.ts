@@ -1,5 +1,5 @@
 import type { WaitlistRow } from "@rupeefund/db/schema";
-import { render } from "./pages.ts";
+import { waitlistPage } from "./view-waitlist.ts";
 
 export type RowFixture = Omit<WaitlistRow, "email" | "question"> & {
   email_masked: string;
@@ -17,9 +17,6 @@ export const SUMMARY = {
     recent_joined: 3,
     recent_left: 0,
     updates_opt_in: 1,
-    updates_asked: 2,
-    roles_answered: 2,
-    reasons_answered: 2,
     questions: 1,
     is_user: 2,
     is_creator: 1,
@@ -38,7 +35,7 @@ export const SUMMARY = {
 
 export const ROW: RowFixture = {
   id: 7,
-  email_masked: "••••@•••••.org",
+  email_masked: "••••@•••••",
   name: HOSTILE_NAME,
   source: "subscribe",
   amount: 500,
@@ -51,7 +48,7 @@ export const ROW: RowFixture = {
   updated_at: 1_700_000_000_000,
   is_user: 1,
   is_creator: 0,
-  is_professional: null,
+  is_professional: 0,
   is_student: 1,
   backs_nascent: 1,
   backs_growing: 0,
@@ -64,7 +61,7 @@ export const HOSTILE_QUESTION =
 
 export const QUESTION = {
   id: 9,
-  email_masked: "••••@•••••.org",
+  email_masked: "••••@•••••",
   name: HOSTILE_NAME,
   question: HOSTILE_QUESTION,
   created_at: 1_700_000_000_000,
@@ -92,8 +89,8 @@ export function answerFor(path: string, data: ViewData): unknown {
   throw new Error(`unexpected path ${path}`);
 }
 
-export function parts(path: string): { body: string; code: string } {
-  const html = render(path);
+export function parts(): { body: string; code: string } {
+  const html = waitlistPage();
   const open = html.indexOf("<script>");
   return {
     body: html.slice(html.indexOf(">", html.indexOf("<body")) + 1, open),
@@ -124,8 +121,8 @@ function tracked<A extends unknown[]>(
   };
 }
 
-export function mount(path: string): void {
-  const { body, code } = parts(path);
+export function mount(): void {
+  const { body, code } = parts();
   window.matchMedia ??= () => ({ matches: false }) as MediaQueryList;
   document.body.innerHTML = body;
   new Function("setTimeout", "setInterval", code)(

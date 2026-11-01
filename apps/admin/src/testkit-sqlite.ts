@@ -76,7 +76,7 @@ export function makeSqlite(): SqliteFixture {
           row.months === undefined ? "12" : row.months,
           row.question === undefined ? "" : row.question,
           row.updates_opt_in === undefined ? 1 : row.updates_opt_in,
-          ...[...ROLE_FIELDS, ...REASON_FIELDS].map((field) => row[field] ?? null),
+          ...[...ROLE_FIELDS, ...REASON_FIELDS].map((field) => row[field] ?? 0),
           row.exported_at ?? null,
           row.unsubscribed_at ?? null,
           at,

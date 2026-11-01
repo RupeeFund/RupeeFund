@@ -1,6 +1,8 @@
+import { BATCH } from "@rupeefund/db/export";
 import type { Section } from "./chrome.ts";
 import { icon } from "./icons.ts";
 import { PANEL_HEADER } from "./routes.ts";
+import { PAGE_SIZE } from "./sql.ts";
 
 const FIELDS = [
   { id: "source", label: "Source" },
@@ -52,7 +54,6 @@ function yesNo(value) {
 
 function ticked(row, names) {
   const keys = Object.keys(names);
-  if (keys.every((key) => row[key] === null)) return "Not recorded";
   const picked = keys.filter((key) => row[key] === 1).map((key) => names[key]);
   return picked.length === 0 ? "None" : picked.join(", ");
 }
@@ -78,10 +79,10 @@ function openRecord(row) {
   byId("detail-months").textContent = answer(row.months);
   byId("detail-joined").textContent = longDay(row.created_at);
   byId("detail-consent").textContent = longDay(row.consent_at);
-  byId("detail-updates").textContent = answer(row.updates_opt_in, yesNo);
+  byId("detail-updates").textContent = yesNo(row.updates_opt_in);
   byId("detail-question").textContent = yesNo(row.has_question);
   for (const key of [...Object.keys(ROLES), ...Object.keys(REASONS)]) {
-    byId("detail-" + key).textContent = answer(row[key], yesNo);
+    byId("detail-" + key).textContent = yesNo(row[key]);
   }
   byId("detail-exported").textContent = dated(row.exported_at);
   byId("detail-unsubscribed").textContent = dated(row.unsubscribed_at);
@@ -116,7 +117,7 @@ function addRows(rows) {
       labelled("td", answer(row.months), undefined, "Months"),
       labelled("td", ticked(row, ROLES), undefined, "Roles"),
       labelled("td", ticked(row, REASONS), undefined, "Reasons"),
-      labelled("td", answer(row.updates_opt_in, yesNo), undefined, "Updates"),
+      labelled("td", yesNo(row.updates_opt_in), undefined, "Updates"),
       labelled("td", shortDate(row.created_at), "num joined", "Joined"),
       statusCell(row),
       actionCell(row),
@@ -152,7 +153,7 @@ function applyFilters() {
     loaded.length === 0
       ? "Nobody has joined the waitlist yet. New signups appear here."
       : "No loaded record matches these filters. Clear filters" +
-        (cursor === null ? "." : ", or show 50 more.");
+        (cursor === null ? "." : ", or show ${PAGE_SIZE} more.");
   rememberFilters();
 }
 
@@ -225,7 +226,7 @@ function exportCopy() {
   byId("export-copy").textContent =
     (pending === null ? "The number of people waiting is not available. " :
       plural(pending, "person waits", "people wait") + " for export. ") +
-    "The export saves up to 500 of them to a CSV file and marks them as exported, " +
+    "The export saves up to ${BATCH} of them to a CSV file and marks them as exported, " +
     "so the next export skips them. The file holds full addresses. Delete it after the import.";
 }
 
@@ -392,7 +393,7 @@ const BODY = `<section class="records card grid gap-6 sm:gap-8" aria-labelledby=
 <div class="grid justify-items-center gap-3 py-8 text-center text-ink-2" id="records-blank"
   hidden>${icon("records")}<p class="max-w-[40ch]" id="records-blank-copy"></p></div>
 <button class="btn btn-quiet btn-on-white justify-self-start" id="records-more" type="button"
-  hidden>Show 50 more</button>
+  hidden>Show ${PAGE_SIZE} more</button>
 </section>`;
 
 export const RECORDS: Section = { body: BODY, dialogs: DIALOG + EXPORT, script: SCRIPT };

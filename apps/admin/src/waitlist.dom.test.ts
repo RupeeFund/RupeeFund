@@ -17,7 +17,7 @@ function serve(fail: (path: string) => Response | undefined = () => undefined) {
 
 async function boot(): Promise<void> {
   serve();
-  mount("/");
+  mount();
   await vi.waitFor(() => expect(asked).toEqual(LOAD));
   await vi.waitFor(() =>
     expect(document.querySelector("#main")?.getAttribute("aria-busy")).toBe("false"),
@@ -32,9 +32,6 @@ async function failed(): Promise<string> {
 const press = (id: string): void => {
   document.querySelector<HTMLButtonElement>(id)?.click();
 };
-
-const toggle = (): HTMLButtonElement | null =>
-  document.querySelector<HTMLButtonElement>("#sidebar-toggle");
 
 beforeEach(() => {
   asked = [];
@@ -57,7 +54,7 @@ describe("the waitlist view", () => {
 
   it("names a way to recover when the Worker refuses, with the control to do it", async () => {
     const refuse = serve(() => new Response("nope", { status: 403 }));
-    mount("/");
+    mount();
     const shown = await failed();
     expect(shown).toMatch(/try again/i);
     expect(shown).toMatch(/sign in/i);
@@ -73,7 +70,7 @@ describe("the waitlist view", () => {
     serve((path) =>
       down && path.startsWith("/api/questions") ? new Response("nope", { status: 500 }) : undefined,
     );
-    mount("/");
+    mount();
     await failed();
     down = false;
     press("#retry");
@@ -86,7 +83,7 @@ describe("the waitlist view", () => {
 
   it("still shows the rows when the counts fail", async () => {
     serve((path) => (path === "/api/summary" ? new Response("nope", { status: 500 }) : undefined));
-    mount("/");
+    mount();
     await failed();
     await vi.waitFor(() => expect(document.querySelectorAll("#rows tr")).toHaveLength(1));
     expect(document.querySelector("#shown")?.textContent).toBe("1 loaded");
@@ -102,7 +99,7 @@ describe("the waitlist view", () => {
       return new Response("nope", { status: 503 });
     });
     vi.stubGlobal("fetch", slow);
-    mount("/");
+    mount();
     await vi.waitFor(() => expect(slow.mock.calls).toHaveLength(LOAD.length));
 
     press("#retry");
@@ -128,7 +125,7 @@ describe("the waitlist view", () => {
         return Response.json(answerFor(path, data));
       }),
     );
-    mount("/");
+    mount();
     expect(document.querySelector("#main")?.getAttribute("aria-busy")).toBe("true");
     expect(document.querySelector("#loading")?.textContent).toMatch(/loading|reading/i);
     release();
@@ -140,7 +137,7 @@ describe("the waitlist view", () => {
 
   it("blames the server, not the connection, when the Worker fails", async () => {
     serve(() => new Response("nope", { status: 500 }));
-    mount("/");
+    mount();
     const shown = await failed();
     expect(shown).toMatch(/server/i);
     expect(shown).not.toMatch(/connection|sign in/i);
@@ -153,65 +150,20 @@ describe("the waitlist view", () => {
         throw new TypeError("Failed to fetch");
       }),
     );
-    mount("/");
+    mount();
     expect(await failed()).toMatch(/connection/i);
   });
 
   it("moves focus to the page when Try again hides itself", async () => {
     let down = true;
     serve(() => (down ? new Response("nope", { status: 500 }) : undefined));
-    mount("/");
+    mount();
     await failed();
     down = false;
     const retry = document.querySelector<HTMLButtonElement>("#retry");
     retry?.focus();
     retry?.click();
     expect(document.activeElement?.id).toBe("main");
-  });
-});
-
-describe("the sidebar", () => {
-  it("starts collapsed, and the toggle widens it and tells assistive technology", async () => {
-    await boot();
-    expect(toggle()?.hidden).toBe(false);
-    expect(toggle()?.getAttribute("aria-expanded")).toBe("false");
-    press("#sidebar-toggle");
-    expect(toggle()?.getAttribute("aria-expanded")).toBe("true");
-    press("#sidebar-toggle");
-    expect(toggle()?.getAttribute("aria-expanded")).toBe("false");
-  });
-
-  it("keeps the name of each dashboard in its link while collapsed", async () => {
-    await boot();
-    const link = document.querySelector('#sidebar a[aria-current="page"]');
-    expect(link?.textContent?.trim()).toBe("Waitlist");
-  });
-
-  it("collapses on Escape and hands focus back to the toggle", async () => {
-    await boot();
-    press("#sidebar-toggle");
-    document.querySelector<HTMLElement>("#sidebar a")?.focus();
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    expect(toggle()?.getAttribute("aria-expanded")).toBe("false");
-    expect(document.activeElement).toBe(toggle());
-  });
-
-  it("stays open on an Escape from the page when it sits beside the page", async () => {
-    vi.stubGlobal("matchMedia", () => ({ matches: true }));
-    await boot();
-    press("#sidebar-toggle");
-    document.querySelector<HTMLElement>("#search")?.focus();
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    expect(toggle()?.getAttribute("aria-expanded")).toBe("true");
-    expect(document.activeElement?.id).toBe("search");
-  });
-
-  it("collapses when focus leaves the sidebar while it covers the page", async () => {
-    await boot();
-    press("#sidebar-toggle");
-    document.querySelector<HTMLElement>("#sidebar a")?.focus();
-    document.querySelector<HTMLElement>("#refresh")?.focus();
-    expect(toggle()?.getAttribute("aria-expanded")).toBe("false");
   });
 });
 
@@ -229,12 +181,11 @@ describe("the test mount", () => {
 });
 
 describe("the refresh controls", () => {
-  it("reads nothing again while auto refresh is off", async () => {
-    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
+  it("reads nothing again on its own", async () => {
+    vi.useFakeTimers({ toFake: ["setInterval", "setTimeout"] });
     await boot();
     vi.advanceTimersByTime(180_000);
     expect(asked).toEqual(LOAD);
-    expect(document.querySelector("#auto-refresh")?.getAttribute("aria-pressed")).toBe("false");
   });
 
   it("reads the counts again at once when Refresh is pressed, and leaves the rows", async () => {
@@ -244,35 +195,12 @@ describe("the refresh controls", () => {
     expect(document.querySelectorAll("#rows tr")).toHaveLength(1);
   });
 
-  it("with auto refresh on, counts down and reads the counts again at zero", async () => {
-    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
-    await boot();
-    press("#auto-refresh");
-    expect(document.querySelector("#auto-refresh")?.getAttribute("aria-pressed")).toBe("true");
-    vi.advanceTimersByTime(1000);
-    expect(document.querySelector("#auto-refresh-left")?.textContent).toBe("59s");
-    vi.advanceTimersByTime(59_000);
-    await vi.waitFor(() => expect(asked).toEqual([...LOAD, "/api/summary"]));
-    await vi.waitFor(() =>
-      expect(document.querySelector("#auto-refresh-left")?.textContent).toBe("60s"),
-    );
-  });
-
-  it("stops the countdown when auto refresh is turned off again", async () => {
-    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
-    await boot();
-    press("#auto-refresh");
-    press("#auto-refresh");
-    vi.advanceTimersByTime(120_000);
-    expect([asked, document.querySelector("#auto-refresh-left")?.textContent]).toEqual([LOAD, ""]);
-  });
-
   it("names a way to recover when a refresh fails", async () => {
     let down = false;
     serve((path) =>
       down && path === "/api/summary" ? new Response("nope", { status: 500 }) : undefined,
     );
-    mount("/");
+    mount();
     await vi.waitFor(() => expect(document.querySelectorAll("#rows tr")).toHaveLength(1));
     down = true;
     press("#refresh");
