@@ -5,7 +5,7 @@ import { CONTENT_COLLECTIONS, sharesAnswer, sharesRequest, type PageRequest } fr
 const page = (headers: Record<string, string> = {}, status = 200): Response =>
   new Response("", { status, headers: { "content-type": "text/html", ...headers } });
 
-const anonymous: PageRequest = { method: "GET", path: "/faq", search: "", signedIn: false };
+const anonymous: PageRequest = { method: "GET", path: "/faq", signedIn: false };
 
 describe("sharesRequest", () => {
   it("shares an anonymous read of a page", () => {
@@ -15,7 +15,6 @@ describe("sharesRequest", () => {
   it.each<[string, Partial<PageRequest>]>([
     ["a write", { method: "POST" }],
     ["a signed-in read", { signedIn: true }],
-    ["a URL with a query", { search: "?_preview=token" }],
     ["the content manager", { path: "/_emdash/admin" }],
     ["the sign-in routes", { path: "/auth/login" }],
   ])("keeps %s out of the shared cache", (_, change) => {

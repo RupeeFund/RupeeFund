@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { deleteGate, publishGate, saveGate, scheduleGate, type Store } from "./hooks.ts";
+import {
+  beforePublish,
+  deleteGate,
+  publishGate,
+  purgePosts,
+  saveGate,
+  scheduleGate,
+  type Store,
+} from "./hooks.ts";
 
 const author = { id: "u0", role: 30, source: "api" as const };
 const editor = { id: "u1", role: 40, source: "api" as const };
@@ -236,5 +244,85 @@ describe("the schedule gate", () => {
       cancel: true,
       reason: "The content manager does not publish at a set time. Publish the entry now.",
     });
+  });
+});
+
+describe("the byline purge", () => {
+  it("purges each kept page that shows posts, so a new byline name shows", async () => {
+    const tags: string[][] = [];
+    await purgePosts({ purge: async (options) => void tags.push(options.tags) });
+    expect(tags).toEqual([["posts"]]);
+  });
+
+  it("does nothing where the edge cache has no purge, as under astro dev", async () => {
+    await expect(purgePosts(undefined)).resolves.toBeUndefined();
+  });
+});
+
+describe("the publish check", () => {
+  const text = (body: string, href?: string) => ({
+    _type: "block",
+    _key: "a",
+    style: "normal",
+    markDefs: href ? [{ _key: "l", _type: "link", href }] : [],
+    children: [{ _type: "span", _key: "b", text: body, marks: href ? ["l"] : [] }],
+  });
+  const post = (content: unknown[]) => ({
+    id: "01P",
+    slug: "hello",
+    publishedAt: null,
+    data: { title: "Hello", excerpt: "A first post", content },
+  });
+  const faq = (data: Record<string, unknown>) => ({
+    id: "01F",
+    slug: "why",
+    data: { title: "Why?", answer: [text("Because.")], order: 1, home: 1, ...data },
+  });
+  const publish = (collection: string, content: Record<string, unknown>, actor = author) =>
+    beforePublish({ collection, content, origin: api, actor }, store());
+
+  it("lets an author publish a post the site can show, on its first publish", async () => {
+    expect(await publish("posts", post([text("Hi")]))).toBeUndefined();
+  });
+
+  it("refuses a post with an http link, and names the field as the editor shows it", async () => {
+    expect(await publish("posts", post([text("Hi"), text("See", "http://x.example")]))).toEqual({
+      cancel: true,
+      reason:
+        "Fix this before you publish. Body, item 2: Use an https:, mailto: or site-relative link.",
+    });
+  });
+
+  it("refuses an admin's FAQ entry with an empty question and an http source", async () => {
+    const sources = [{ title: "A source", url: "http://x.example" }];
+    expect(await publish("faq", faq({ title: " ", sources }), admin)).toEqual({
+      cancel: true,
+      reason:
+        "Fix this before you publish. Question: Fill this in. " +
+        "Sources, item 1, URL: Use an https:, mailto: or site-relative link.",
+    });
+  });
+
+  it("refuses a post with an embed", async () => {
+    expect(await publish("posts", post([{ _type: "iframe", _key: "z" }]))).toEqual({
+      cancel: true,
+      reason: "Fix this before you publish. Remove the embed. The site does not show it.",
+    });
+  });
+
+  it("gives an editor the admin-only reason first", async () => {
+    expect(await publish("faq", faq({ title: "" }), editor)).toEqual({
+      cancel: true,
+      reason: "Only an admin can publish or unpublish this entry. Ask an admin for the change.",
+    });
+  });
+
+  it("lets an admin unpublish an entry the site cannot show", async () => {
+    expect(
+      await publishGate(
+        { collection: "faq", content: faq({ title: "" }), origin: api, actor: admin },
+        store(),
+      ),
+    ).toBeUndefined();
   });
 });

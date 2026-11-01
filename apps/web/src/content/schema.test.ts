@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { faqEntry, isSafeHref, page, person, post } from "./schema.ts";
 import { validFaq, validPage, validPerson, validPost } from "./fixture.ts";
@@ -20,6 +21,37 @@ describe("a safe link", () => {
     "/\n/evil.example",
     "https://\u0000evil.example",
   ])("refuses %j", (href) => expect(isSafeHref(href)).toBe(false));
+});
+
+describe("the team member link fields in the content manager", () => {
+  const seed = JSON.parse(readFileSync("seed/seed.json", "utf8")) as {
+    collections: { slug: string; fields: { slug: string; validation?: { pattern?: string } }[] }[];
+  };
+  const people = seed.collections.find(({ slug }) => slug === "people");
+  const pattern = (field: string) =>
+    new RegExp(people?.fields.find(({ slug }) => slug === field)?.validation?.pattern ?? "(?!)");
+  const VALUES = [
+    "",
+    "https://github.com/asha",
+    "https://avatars.githubusercontent.com/u/1",
+    "https://fossunited.org/asha",
+    "mailto:asha@example.com",
+    "/people",
+    "#asha",
+    "//evil.example",
+    "/\\evil.example",
+    "http://github.com/asha",
+    "tel:+911234",
+  ];
+
+  it.each([
+    ["profile_url", "profileUrl"],
+    ["photo_url", "photoUrl"],
+  ] as const)("refuse the same %s values as the site", (field, key) => {
+    const site = (value: string) =>
+      value === "" || person.safeParse({ ...validPerson(), [key]: value }).success;
+    expect(VALUES.filter((value) => pattern(field).test(value))).toEqual(VALUES.filter(site));
+  });
 });
 
 const withBody = (body: unknown) => post.safeParse({ ...validPost(), body });

@@ -16,6 +16,21 @@ describe("the blog", () => {
     expect(styles()).not.toMatch(/\.row-link[^{]*\{[^}]*background-size/);
   });
 
+  it("offers each list image in small widths, so a phone loads less", () => {
+    expect(read("blog.html")).toContain(
+      'srcset="/media/01M42HTML00000000000000000.jpg?w=160 160w, ' +
+        "/media/01M42HTML00000000000000000.jpg?w=320 320w, " +
+        "/media/01M42HTML00000000000000000.jpg?w=640 640w, " +
+        "/media/01M42HTML00000000000000000.jpg?w=960 960w, " +
+        '/media/01M42HTML00000000000000000.jpg 1200w"',
+    );
+  });
+
+  it("offers each keep-reading image of a post in small widths", () => {
+    const post = read("blog/how-to-write-a-post-for-this-blog.html");
+    expect(post).toMatch(/srcset="\/media\/01M42GROUP0000000000000000\.jpg\?w=160 160w, /);
+  });
+
   it("lists the posts newest first", () => {
     const slugs = [...read("blog.html").matchAll(/href="\/blog\/([a-z0-9-]+)"/g)].map((m) => m[1]);
     expect(slugs).toEqual([

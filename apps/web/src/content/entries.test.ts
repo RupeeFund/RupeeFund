@@ -54,7 +54,7 @@ describe("a post", () => {
   ])("refuses a %s block and names it", (type, name) => {
     const entry = hello();
     content(entry).push({ _type: type, _key: "z" });
-    expect(() => toPost(entry)).toThrow(`posts/hello: remove the ${name}`);
+    expect(() => toPost(entry)).toThrow(`posts/hello: Remove the ${name}`);
   });
 
   it("refuses an image from an outside provider, because the site serves only its own", () => {

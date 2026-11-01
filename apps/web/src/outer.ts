@@ -2,8 +2,6 @@ import { defineMiddleware } from "astro:middleware";
 import { env } from "cloudflare:workers";
 import { SESSION_COOKIE, authRoute, identityOf, readCookie, signOutCookie } from "@rupeefund/auth";
 import {
-  EDIT_MODE_COOKIE,
-  editModeReset,
   isDenied,
   LOGOUT,
   notFound,
@@ -49,10 +47,6 @@ export const onRequest = defineMiddleware(async ({ url, request, session }, next
   if (!dev && identity === null && refusesAnonymous(request.method, path, accept, authorization)) {
     return withHeaders(path, notSignedIn());
   }
-  const editCookie = readCookie(request, EDIT_MODE_COOKIE) !== undefined;
-  const reset = editModeReset(request.method, url, editCookie);
-  if (reset !== null) return withHeaders(path, reset);
-
   const response = withHeaders(path, await next());
   if (path === LOGOUT && request.method === "POST") {
     response.headers.append("set-cookie", signOutCookie(origin));

@@ -1,5 +1,6 @@
 import { execSync, spawn } from "node:child_process";
 import { createHash, randomBytes } from "node:crypto";
+import { once } from "node:events";
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
 import { dirname, join, resolve } from "node:path";
@@ -12,12 +13,15 @@ import {
   ALLOWED_WRITES,
   CONTENT_MANAGER,
   DENIED,
+  FAILED_READS,
   LEGAL_DELETES,
   GATED_MEDIA,
   HOME_ALIASES,
   ANONYMOUS_CALLS,
   MEDIA_ROUTES,
   MISSING,
+  PREVIEW_LINK,
+  PUBLISHES,
   REFUSED_WRITES,
   RENDERED,
   RESIZED_MEDIA,
@@ -27,6 +31,8 @@ import {
   SIGNED_IN_READS,
   SESSION_MCP,
   SIGNED_IN_SEARCH,
+  SMALL_MEDIA,
+  TAGGED_LINK,
   TOKEN_MCP,
   TOKEN_ON_PUBLIC_ROUTE,
   TOKENS,
@@ -37,7 +43,6 @@ import {
   type Answer,
   type Call,
   type Seen,
-  type Visit,
   FORGED_MCP,
   FORGED_TOKEN,
 } from "./routes.ts";
@@ -170,17 +175,14 @@ async function call(base: string, { as, method, path, body }: Call): Promise<Ans
   };
 }
 
-async function visit(base: string, { path, editMode }: Visit): Promise<Seen> {
-  const cookies = [...signedIn(base, SESSION), ...(editMode ? ["emdash-edit-mode=true"] : [])];
+async function visit(base: string, path: string): Promise<Seen> {
   const res = await fetch(`${base}${path}`, {
     redirect: "manual",
-    headers: { cookie: cookies.join("; ") },
+    headers: { cookie: signedIn(base, SESSION).join("; ") },
   });
   const html = await res.text();
   return {
     status: res.status,
-    location: res.headers.get("location"),
-    setCookie: res.headers.get("set-cookie"),
     edge: res.headers.get("cloudflare-cdn-cache-control"),
     pill: html.includes("<!-- EmDash Toolbar Bootstrap -->"),
     toolbar: html.includes('id="emdash-toolbar"'),
@@ -188,35 +190,61 @@ async function visit(base: string, { path, editMode }: Visit): Promise<Seen> {
   };
 }
 
-async function render(base: string): Promise<void> {
+const BROKEN_READ = [
+  "ALTER TABLE ec_posts RENAME TO ec_posts_kept",
+  "CREATE VIEW ec_posts AS SELECT * FROM ec_posts_kept WHERE json('broken') IS NOT NULL",
+];
+
+const MENDED_READ = ["DROP VIEW ec_posts", "ALTER TABLE ec_posts_kept RENAME TO ec_posts"];
+
+function onContent(statements: string[]): void {
+  for (const file of readdirSync(D1_FILES).filter((name) => name.endsWith(".sqlite"))) {
+    const db = new DatabaseSync(join(D1_FILES, file));
+    const content = db
+      .prepare("SELECT 1 FROM sqlite_master WHERE name IN ('ec_posts', 'ec_posts_kept')")
+      .get();
+    if (content) for (const statement of statements) db.exec(statement);
+    db.close();
+  }
+}
+
+async function fetchRoute(base: string, route: string): Promise<{ answer: Answer; body: Buffer }> {
+  const res = await fetch(`${base}${route}`, { redirect: "manual" });
+  const body = Buffer.from(await res.arrayBuffer());
+  const answer = {
+    status: res.status,
+    type: res.headers.get("content-type"),
+    csp: res.headers.get("content-security-policy"),
+    frame: res.headers.get("x-frame-options"),
+    robots: res.headers.get("x-robots-tag"),
+    hsts: res.headers.get("strict-transport-security"),
+    body: res.status >= 400 ? body.toString("utf8").slice(0, 200) : null,
+    cache: res.headers.get("cache-control"),
+    edge: res.headers.get("cloudflare-cdn-cache-control"),
+    tags: res.headers.get("cache-tag"),
+  };
+  return { answer, body };
+}
+
+async function render(base: string): Promise<Record<string, Answer>> {
   rmSync(RENDERED, { recursive: true, force: true });
   const answers: Record<string, Answer> = {};
   const all = [
+    TAGGED_LINK,
+    PREVIEW_LINK,
     ...ROUTES,
     ...HOME_ALIASES,
     ...MISSING,
     ...MEDIA_ROUTES,
     ...GATED_MEDIA,
     ...RESIZED_MEDIA,
+    ...SMALL_MEDIA,
     ...DENIED,
     ...CONTENT_MANAGER,
   ];
   for (const route of all) {
-    const res = await fetch(`${base}${route}`, { redirect: "manual" });
-    answers[route] = {
-      status: res.status,
-      type: res.headers.get("content-type"),
-      csp: res.headers.get("content-security-policy"),
-      frame: res.headers.get("x-frame-options"),
-      robots: res.headers.get("x-robots-tag"),
-      hsts: res.headers.get("strict-transport-security"),
-      body: null,
-      cache: res.headers.get("cache-control"),
-      edge: res.headers.get("cloudflare-cdn-cache-control"),
-      tags: res.headers.get("cache-tag"),
-    };
-    const body = Buffer.from(await res.arrayBuffer());
-    if (res.status >= 400) answers[route].body = body.toString("utf8").slice(0, 200);
+    const { answer, body } = await fetchRoute(base, route);
+    answers[route] = answer;
     if (!ROUTES.includes(route)) continue;
     const file = join(RENDERED, fileFor(route));
     mkdirSync(dirname(file), { recursive: true });
@@ -225,6 +253,7 @@ async function render(base: string): Promise<void> {
   const calls = [
     ...REFUSED_WRITES,
     ...ALLOWED_WRITES,
+    ...PUBLISHES,
     ...LEGAL_DELETES,
     ...SIGNED_IN_READS,
     SESSION_SCHEMA_WRITE,
@@ -237,31 +266,13 @@ async function render(base: string): Promise<void> {
     ...ANONYMOUS_CALLS,
   ];
   for (const one of calls) answers[callName(one)] = await call(base, one);
-  writeFileSync(join(RENDERED, "answers.json"), JSON.stringify(answers, null, 2));
   const seen: Record<string, Seen> = {};
   for (const [name, one] of Object.entries(VISITS)) seen[name] = await visit(base, one);
   writeFileSync(join(RENDERED, "visits.json"), JSON.stringify(seen, null, 2));
+  return answers;
 }
 
-const VITEST_ENV = new Set(["DEV", "PROD", "SSR", "MODE", "BASE_URL", "NODE_ENV", "TEST"]);
-
-function outsideVitest(): NodeJS.ProcessEnv {
-  return Object.fromEntries(
-    Object.entries(process.env).filter(
-      ([name]) => !VITEST_ENV.has(name) && !name.startsWith("VITEST"),
-    ),
-  );
-}
-
-export default async function setup(): Promise<void> {
-  exec("astro build --outDir dist-preview", {
-    ...outsideVitest(),
-    PUBLIC_TURNSTILE_SITEKEY: TEST_SITEKEY,
-    PUBLIC_ALLOW_TEST_SITEKEY: "true",
-  });
-  exec(`node scripts/seed-local.mjs ${STATE}`);
-  await addCallers();
-  const port = await freePort();
+async function serve<T>(port: number, work: (base: string) => Promise<T>): Promise<T> {
   const base = `http://localhost:${port}`;
   const wrangler = resolve("node_modules", ".bin", WIN ? "wrangler.cmd" : "wrangler");
   const args = [
@@ -283,10 +294,49 @@ export default async function setup(): Promise<void> {
       shell: WIN,
     },
   );
+  const exited = once(server, "exit");
   try {
     await ready(base);
-    await render(base);
+    return await work(base);
   } finally {
     server.kill("SIGTERM");
+    await exited;
   }
+}
+
+async function failedReads(base: string): Promise<Record<string, Answer>> {
+  const answers: Record<string, Answer> = {};
+  for (const route of Object.values(FAILED_READS)) {
+    answers[route] = (await fetchRoute(base, route)).answer;
+  }
+  return answers;
+}
+
+const VITEST_ENV = new Set(["DEV", "PROD", "SSR", "MODE", "BASE_URL", "NODE_ENV", "TEST"]);
+
+function outsideVitest(): NodeJS.ProcessEnv {
+  return Object.fromEntries(
+    Object.entries(process.env).filter(
+      ([name]) => !VITEST_ENV.has(name) && !name.startsWith("VITEST"),
+    ),
+  );
+}
+
+export default async function setup(): Promise<void> {
+  exec("astro build --outDir dist-preview", {
+    ...outsideVitest(),
+    PUBLIC_TURNSTILE_SITEKEY: TEST_SITEKEY,
+    PUBLIC_ALLOW_TEST_SITEKEY: "true",
+  });
+  exec(`node scripts/seed-local.mjs ${STATE}`);
+  await addCallers();
+  const port = await freePort();
+  const answers = await serve(port, render);
+  onContent(BROKEN_READ);
+  try {
+    Object.assign(answers, await serve(port, failedReads));
+  } finally {
+    onContent(MENDED_READ);
+  }
+  writeFileSync(join(RENDERED, "answers.json"), JSON.stringify(answers, null, 2));
 }

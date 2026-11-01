@@ -16,7 +16,39 @@ export interface Entry {
   data: Record<string, unknown>;
 }
 
-export class ContentError extends Error {}
+export class ContentError extends Error {
+  constructor(
+    where: string,
+    readonly problem: string,
+  ) {
+    super(`${where}: ${problem}`);
+  }
+}
+
+type Labels = Readonly<Record<string, string>>;
+
+function fieldName([key, ...rest]: readonly PropertyKey[], labels: Labels): string {
+  const names = [labels[String(key)] ?? String(key)];
+  for (const part of rest) {
+    const label = labels[`${String(key)}.${String(part)}`];
+    if (typeof part === "number") names.push(`item ${part + 1}`);
+    else if (label) names.push(label);
+    else break;
+  }
+  return names.join(", ");
+}
+
+function told(issue: z.core.$ZodIssue): string {
+  if (issue.code === "custom") return issue.message;
+  if (issue.code === "invalid_union") return "The site does not show this block. Remove it.";
+  if (issue.code === "too_small" || issue.code === "invalid_type") return "Fill this in.";
+  return "Check this value.";
+}
+
+const sentence = (text: string): string => (/[.!?]$/.test(text) ? text : `${text}.`);
+
+const describe = (issues: readonly z.core.$ZodIssue[], labels: Labels): string =>
+  issues.map((issue) => `${fieldName(issue.path, labels)}: ${sentence(told(issue))}`).join(" ");
 
 const LOCAL_MEDIA = /^\/_emdash\/api\/media\/file\/([A-Za-z0-9][A-Za-z0-9._-]*)$/;
 
@@ -26,7 +58,7 @@ const isRecord = (value: unknown): value is Raw => typeof value === "object" && 
 
 function storageKey(asset: Raw, where: string): string {
   if (typeof asset.provider === "string" && asset.provider !== "local") {
-    throw new ContentError(`${where}: upload the image to the media library`);
+    throw new ContentError(where, "Upload the image to the media library.");
   }
   const meta = isRecord(asset.meta) ? asset.meta : {};
   if (typeof meta.storageKey === "string") return meta.storageKey;
@@ -34,7 +66,7 @@ function storageKey(asset: Raw, where: string): string {
     const match = typeof url === "string" ? LOCAL_MEDIA.exec(url) : null;
     if (match?.[1]) return match[1];
   }
-  throw new ContentError(`${where}: the image has no file in the media library`);
+  throw new ContentError(where, "The image has no file in the media library.");
 }
 
 function toImage(value: Raw, asset: Raw, where: string): Image {
@@ -63,7 +95,7 @@ function portableText(value: unknown, where: string): unknown {
   return value.map((block: unknown) => {
     const refused = isRecord(block) && typeof block._type === "string" && REFUSED[block._type];
     if (refused) {
-      throw new ContentError(`${where}: remove the ${refused}. The site does not show it.`);
+      throw new ContentError(where, `Remove the ${refused}. The site does not show it.`);
     }
     if (!isRecord(block) || block._type !== "image") return block;
     const asset = isRecord(block.asset) ? block.asset : {};
@@ -101,11 +133,52 @@ function season(data: Raw): { name: unknown; year: unknown } | undefined {
   return { name: data.season, year };
 }
 
-function parsed<S extends z.ZodType>(schema: S, value: unknown, where: string): z.output<S> {
+function parsed<S extends z.ZodType>(
+  schema: S,
+  value: unknown,
+  where: string,
+  labels: Labels,
+): z.output<S> {
   const result = schema.safeParse(value);
-  if (!result.success) throw new ContentError(`${where}: ${result.error.message}`);
+  if (!result.success) throw new ContentError(where, describe(result.error.issues, labels));
   return result.data;
 }
+
+const POST_LABELS: Labels = {
+  slug: "Slug",
+  title: "Title",
+  excerpt: "Excerpt",
+  image: "Cover image",
+  body: "Body",
+  season: "Season",
+  "season.year": "Season year",
+};
+
+const FAQ_LABELS: Labels = {
+  slug: "Slug",
+  question: "Question",
+  answer: "Answer",
+  sources: "Sources",
+  "sources.title": "Title",
+  "sources.url": "URL",
+};
+
+const PERSON_LABELS: Labels = {
+  slug: "Slug",
+  name: "Name",
+  bio: "Bio",
+  profileUrl: "Profile URL",
+  username: "Username",
+  photoUrl: "Photo URL",
+};
+
+const PAGE_LABELS: Labels = {
+  slug: "Slug",
+  title: "Title",
+  kind: "Kind",
+  effectiveDate: "Effective date",
+  body: "Text",
+};
 
 const orderOf = ({ data }: Entry) =>
   data.order === null || data.order === undefined ? Number.POSITIVE_INFINITY : Number(data.order);
@@ -158,6 +231,7 @@ export function toPost({ slug, data }: Entry): Post {
       authors: authors(data.bylines),
     },
     where,
+    POST_LABELS,
   );
 }
 
@@ -174,6 +248,7 @@ function toFaqEntry({ slug, data }: Entry): FaqEntry {
       sources: data.sources ?? [],
     },
     where,
+    FAQ_LABELS,
   );
 }
 
@@ -190,6 +265,7 @@ function toPerson({ slug, data }: Entry): Person {
       order: 0,
     },
     `people/${slug}`,
+    PERSON_LABELS,
   );
 }
 
@@ -205,8 +281,16 @@ export function toPage({ slug, data }: Entry): Page {
       body: portableText(data.content, where),
     },
     where,
+    PAGE_LABELS,
   );
 }
+
+export const ENTRY_CHECKS: Readonly<Record<string, (entry: Entry) => unknown>> = {
+  posts: toPost,
+  faq: toFaqEntry,
+  people: toPerson,
+  pages: toPage,
+};
 
 export const toPosts = (entries: Entry[]): Post[] => newestFirst(valid(entries, toPost));
 

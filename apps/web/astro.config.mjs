@@ -7,7 +7,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { d1, r2 } from "@emdash-cms/cloudflare";
 import emdash from "emdash/astro";
 import { fileURLToPath } from "node:url";
-import { writeSiteCard } from "./src/build/og.ts";
+import { writeSiteCard } from "./og/og.ts";
 import { SITE_NAME, SITE_URL } from "./src/lib/seo.ts";
 
 const dev = process.argv.includes("dev");
@@ -50,6 +50,7 @@ export default defineConfig({
         logo: "/logo.svg",
         favicon: "/favicon.svg",
         footerLabel: SITE_NAME,
+        hiddenNavItems: ["calendar", "comments", "import", "menus", "sections", "widgets"],
       },
       toolbar: false,
       auth: {

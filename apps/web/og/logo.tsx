@@ -1,5 +1,5 @@
 import colors from "@rupeefund/ui/colors.json";
-import { BrandMark } from "@/components/og/brand-mark";
+import { BrandMark } from "./brand-mark.tsx";
 
 export interface LogoProps {
   logo: string;

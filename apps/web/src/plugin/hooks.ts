@@ -5,6 +5,7 @@ import {
   type ContentPolicyDecision,
   type ContentPolicyEvent,
 } from "emdash";
+import { ContentError, ENTRY_CHECKS } from "../content/entries.ts";
 import { ADMIN_ROLE, isAdminCollection, LEGAL_COLLECTION } from "../lib/guard.ts";
 
 export interface Store {
@@ -63,6 +64,39 @@ export async function publishGate(
     cancel: true,
     reason: "Only an admin can publish or unpublish this entry. Ask an admin for the change.",
   };
+}
+
+function contentCheck({
+  collection,
+  content,
+}: Pick<ContentPolicyEvent, "collection" | "content">): ContentPolicyDecision {
+  const check = ENTRY_CHECKS[collection];
+  if (check === undefined) return;
+  const data = typeof content.data === "object" && content.data !== null ? content.data : {};
+  try {
+    check({
+      slug: typeof content.slug === "string" ? content.slug : "",
+      data: { ...data, publishedAt: content.publishedAt ?? new Date().toISOString() },
+    });
+  } catch (error) {
+    if (!(error instanceof ContentError)) throw error;
+    return { cancel: true, reason: `Fix this before you publish. ${error.problem}` };
+  }
+}
+
+export async function beforePublish(
+  event: Pick<ContentPolicyEvent, "collection" | "content" | "origin" | "actor">,
+  store: Store,
+): Promise<ContentPolicyDecision> {
+  return (await publishGate(event, store)) ?? contentCheck(event);
+}
+
+export interface EdgeCache {
+  purge(options: { tags: string[] }): Promise<unknown>;
+}
+
+export async function purgePosts(cache: EdgeCache | undefined): Promise<void> {
+  await cache?.purge({ tags: ["posts"] });
 }
 
 export async function deleteGate(

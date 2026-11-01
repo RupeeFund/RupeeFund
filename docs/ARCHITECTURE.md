@@ -154,21 +154,21 @@ If you lose a download after the stamp, read `at` from the log. Then follow sect
 
 ### 11.1 How a page gets its content
 
-The site has no content build. On each request, `src/content/load.ts` reads the published entries, and `src/content/entries.ts` checks each one against `src/content/schema.ts`.
+The site has no content build. On each request, `src/content/load.ts` reads the published entries, and `src/content/entries.ts` checks each one against `src/content/schema.ts`. The site leaves out an entry that fails the check. `beforePublish` in `src/plugin/hooks.ts` runs the same check, so a publish of such an entry stops with a message that names each field. An unpublish is not checked.
 
-`src/lib/cache.ts` sets how long and what the Cloudflare edge keeps. The supporter figures are at most 1 hour old. `apps/web/tests/site/cache.test.ts` checks what the edge and a browser keep. A browser keeps no page.
+`src/lib/cache.ts` sets how long and what the Cloudflare edge keeps. The supporter figures are at most 1 hour old. `apps/web/tests/site/cache.test.ts` checks what the edge and a browser keep. A browser keeps no page. The edge keeps a copy of each address with its query string, such as a newsletter link. EmDash keeps out each preview link.
 
 `src/middleware.ts` reads the whole page before it sends it, so a page that fails while it renders answers 500 (`src/pages/500.astro`). A failed read of the database also shows that page, except the read of the supporter figures.
 
-- A publish, unpublish, delete or restore purges every kept page. EmDash does not check the purge, and a byline change purges nothing, so old words can stay until the limits end. To purge again, publish again. A deploy empties the cache.
+- A publish, unpublish, delete or restore purges every kept page. A byline save or delete does the same (`byline:afterSave` and `byline:afterDelete` in `src/plugin.ts`). `astro dev` has no purge. EmDash does not check the purge, so old words can stay until the limits end. To purge again, publish again. A deploy empties the cache.
 - The edge serves a kept page without the Worker, so `src/outer.ts` does not run. Thus each kept page must be the same for each visitor.
 - With the cache on, Cloudflare bills each request for a static file as a Worker request.
 
 ### 11.2 The public addresses
 
-- `/media/<key>` and `/_emdash/api/media/file/<key>` send a file without a sign-in only when published content uses it. Else they need a signed-in, active person, and answer 404 to the others (`src/middleware.ts`). `/_image` always needs a signed-in person. `src/content/media.ts` lists the image types that `/media/<key>` sends. The check of section 11.1 refuses each other type, so an SVG with a script cannot reach a page.
+- `/media/<key>` and `/_emdash/api/media/file/<key>` send a file without a sign-in only when published content uses it. Else they need a signed-in, active person, and answer 404 to the others (`src/middleware.ts`). `/_image` always needs a signed-in person. `src/content/media.ts` lists the image types that `/media/<key>` sends. `/media/<key>?w=<width>` sends a smaller WebP copy for the widths in `MEDIA_WIDTHS` and 404 for each other width, so the count of image transforms stays small. The blog list and the keep-reading cards use these copies in `srcset`. The check of section 11.1 refuses each other type, so an SVG with a script cannot reach a page.
 - `src/outer.ts` answers 404 to each EmDash route that the site does not use, and `src/lib/edge.ts` lists them. Under `astro dev` the setup routes stay open, for the local sign-in of `docs/CONTRIBUTING.md`.
-- `src/outer.ts` answers 401 to a call to `/_emdash/api/*` with no GitHub sign-in, before EmDash starts. So a visitor cannot use the search, the comments or the other sign-in methods of EmDash, and cannot make EmDash write to the database. An API token opens only the routes where EmDash checks the token. `TOKEN_UNCHECKED` in `src/lib/edge.ts` lists the public routes of EmDash. Check that list at each EmDash update. Two routes stay open to all: `/_emdash/api/media/file/` and **Log out**.
+- `src/outer.ts` answers 401 to a call to `/_emdash/api/*` with no GitHub sign-in, before EmDash starts. So a visitor cannot use the search or the comments of EmDash, and cannot make EmDash write to the database. An API token opens only the routes where EmDash checks the token. `TOKEN_UNCHECKED` in `src/lib/edge.ts` lists the public routes of EmDash. Check that list at each EmDash update. Two routes stay open to all: `/_emdash/api/media/file/` and **Log out**.
 - Two WAF rules on the zone block common scanner paths and limit the requests of each address, before they start the Worker (section 11.6 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md)).
 
 ### 11.3 Who gets in
@@ -176,7 +176,7 @@ The site has no content build. On each request, `src/content/load.ts` reads the 
 People sign in with GitHub through `src/outer.ts` and `packages/auth`. `packages/auth/src/github.ts` maps each team of the `RupeeFund` organization to a role. A person in no team does not get in, and EmDash makes no account. `docs/EDITING.md` section 1 gives the sign-in rules.
 
 - The callback sets a signed cookie for the session (`IDENTITY_SECONDS` in `packages/auth/src/routes.ts`). On each request, `src/auth/emdash.ts` gives EmDash the person in that cookie, and EmDash sets the role from it. So a team change takes effect at the next sign-in (section 11.2 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md)).
-- The sessions stay in the content database (`src/auth/session-store.ts`), because EmDash writes the session on each request and KV takes one write per second to a key.
+- The sessions stay in the content database (`src/auth/session-store.ts`). Before 1.4, EmDash wrote the session on each request, and KV takes one write per second to a key ([emdash-cms/emdash#4001](https://github.com/emdash-cms/emdash/issues/4001)). EmDash 1.4 writes it only on a change, but keep this store: do not move the sessions to KV.
 
 ### 11.4 The rules on content
 
@@ -189,9 +189,7 @@ A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `
 
 ### 11.5 Preview
 
-The **Preview** button opens the entry at its address with a `_preview` token. `toolbar: false` turns off the EmDash edit toolbar, so a signed-in person cannot change a page by accident.
-
-EmDash shows the drafts to a signed-in person whose browser has the edit cookie `emdash-edit-mode`. So `src/outer.ts` sends each `GET` with that cookie back to the same address, and removes the cookie.
+The **Preview** button opens the entry at its address with a `_preview` token. `toolbar: false` turns off the EmDash edit toolbar, so a signed-in person cannot change a page by accident. Only that toolbar sets the edit cookie `emdash-edit-mode`, so no browser gets it.
 
 ### 11.6 The content model
 

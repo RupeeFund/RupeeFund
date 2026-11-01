@@ -27,6 +27,15 @@ export const ROUTES: readonly string[] = [
 
 export const HOME_ALIASES: readonly string[] = ["/index.html", "/.html"];
 
+export const TAGGED_LINK = "/faq?utm_source=newsletter";
+
+export const PREVIEW_LINK = "/faq?_preview=not-a-token";
+
+export const FAILED_READS = {
+  render: "/blog?read=fails",
+  blogCheck: "/faq?read=fails",
+} as const;
+
 export const MISSING: readonly string[] = [
   "/no-such-page",
   "/blog/no-such-post",
@@ -35,6 +44,7 @@ export const MISSING: readonly string[] = [
   "/media/01M42NONE0000000000000000.jpg",
   "/media/x.svg",
   "/media/a/b.jpg",
+  `/media/${PUBLISHED_MEDIA[0]}?w=100`,
   ...DRAFT_SLUGS.map((slug) => `/blog/${slug}`),
 ];
 
@@ -76,9 +86,12 @@ export const GATED_MEDIA: readonly string[] = DRAFT_MEDIA.flatMap((file) => [
   `/media/${file}`,
   `/_emdash/api/media/file/${file}`,
   resized(file),
+  `/media/${file}?w=320`,
 ]);
 
 export const RESIZED_MEDIA: readonly string[] = PUBLISHED_MEDIA.map(resized);
+
+export const SMALL_MEDIA: readonly string[] = PUBLISHED_MEDIA.map((file) => `/media/${file}?w=320`);
 
 const throwaway = (): string => `ec_pat_${randomBytes(24).toString("base64url")}`;
 
@@ -114,7 +127,55 @@ export const REFUSED_WRITES: readonly Call[] = [
 
 export const ALLOWED_WRITES: readonly Call[] = [
   { as: "admin", method: "PUT", path: "/_emdash/api/content/pages/terms" },
+  { as: "admin", method: "POST", path: "/_emdash/api/content/pages/terms/publish" },
   { as: "editor", method: "PUT", path: `/_emdash/api/content/posts/${POST_SLUGS[0]}` },
+];
+
+const [COVER] = PUBLISHED_MEDIA;
+
+const newPost = (slug: string, href: string): Call => ({
+  as: "editor",
+  method: "POST",
+  path: "/_emdash/api/content/posts",
+  body: {
+    slug,
+    data: {
+      title: "Publish check",
+      excerpt: "A post that the publish check reads",
+      featured_image: {
+        provider: "local",
+        id: COVER?.split(".")[0],
+        alt: "A cover",
+        meta: { storageKey: COVER },
+      },
+      content: [
+        {
+          _type: "block",
+          _key: "a",
+          style: "normal",
+          markDefs: [{ _key: "l", _type: "link", href }],
+          children: [{ _type: "span", _key: "b", text: "A link", marks: ["l"] }],
+        },
+      ],
+    },
+  },
+});
+
+const publish = (slug: string): Call => ({
+  as: "editor",
+  method: "POST",
+  path: `/_emdash/api/content/posts/${slug}/publish`,
+});
+
+export const SHOWN_PUBLISH = publish("publish-check-https");
+
+export const REFUSED_PUBLISH = publish("publish-check-http");
+
+export const PUBLISHES: readonly Call[] = [
+  newPost("publish-check-https", "https://x.example"),
+  SHOWN_PUBLISH,
+  newPost("publish-check-http", "http://x.example"),
+  REFUSED_PUBLISH,
 ];
 
 export const LEGAL_DELETES: readonly Call[] = [
@@ -168,15 +229,8 @@ export const SIGNED_IN_READS: readonly Call[] = [...GATED_MEDIA, ...RESIZED_MEDI
 export const fileFor = (route: string): string =>
   route === "/" ? "index.html" : /\.\w+$/.test(route) ? route.slice(1) : `${route.slice(1)}.html`;
 
-export interface Visit {
-  path: string;
-  editMode: boolean;
-}
-
 export interface Seen {
   status: number;
-  location: string | null;
-  setCookie: string | null;
   edge: string | null;
   pill: boolean;
   toolbar: boolean;
@@ -185,9 +239,8 @@ export interface Seen {
 
 export const LEGAL_PAGE = PAGES.find(({ kind }) => kind === "legal")!;
 
-export const VISITS = {
-  "an Admin on the home page": { path: "/", editMode: false },
-  "an Admin on a legal page": { path: `/${LEGAL_PAGE.slug}`, editMode: false },
-  "an Admin's edit link": { path: "/?_edit=1", editMode: false },
-  "an Admin with an old edit cookie": { path: "/", editMode: true },
-} as const satisfies Record<string, Visit>;
+export const VISITS: Readonly<Record<string, string>> = {
+  "an Admin on the home page": "/",
+  "an Admin on a legal page": `/${LEGAL_PAGE.slug}`,
+  "an Admin's edit link": "/?_edit=1",
+};

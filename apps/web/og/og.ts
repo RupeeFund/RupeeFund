@@ -2,9 +2,9 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { join } from "node:path";
 import { createElement } from "react";
-import { Logo } from "../components/og/logo.tsx";
-import { renderPng } from "../components/og/render.ts";
-import { INITIATIVE, TAGLINE } from "../lib/seo.ts";
+import { INITIATIVE, TAGLINE } from "../src/lib/seo.ts";
+import { Logo } from "./logo.tsx";
+import { renderPng } from "./render.ts";
 
 const LOGO_WIDTH = 540;
 

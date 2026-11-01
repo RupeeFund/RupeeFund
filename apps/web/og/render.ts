@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 import { Resvg } from "@resvg/resvg-js";
 import type { ReactNode } from "react";
 import satori, { type Font } from "satori";
-import { OG_HEIGHT, OG_WIDTH } from "../../lib/seo.ts";
+import { OG_HEIGHT, OG_WIDTH } from "../src/lib/seo.ts";
 
 const require = createRequire(import.meta.url);
 
