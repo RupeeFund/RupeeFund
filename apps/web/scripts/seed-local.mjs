@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
+import { experimental_readRawConfig, getPlatformProxy } from "wrangler";
 import { portsFor, portsInUse } from "./local-servers.mjs";
 
 const STATE = resolve(process.argv[2] ?? "../../.wrangler/state");
@@ -41,7 +42,38 @@ if (busy.length > 0) {
 for (const store of ["d1", "r2"])
   rmSync(join(STATE, "v3", store), { recursive: true, force: true });
 
-run("wrangler", ["d1", "execute", "DB", "--local", "--persist-to", STATE, "--command", "SELECT 1"]);
+async function seedStores() {
+  const { rawConfig } = experimental_readRawConfig({ config: "wrangler.jsonc" });
+  const { name, compatibility_date, d1_databases, r2_buckets } = rawConfig;
+  mkdirSync(STATE, { recursive: true });
+  const configPath = join(STATE, "wrangler.seed.json");
+  writeFileSync(configPath, JSON.stringify({ name, compatibility_date, d1_databases, r2_buckets }));
+  const { env, dispose } = await getPlatformProxy({
+    configPath,
+    persist: { path: join(STATE, "v3") },
+    remoteBindings: false,
+  });
+  try {
+    await env.DB.prepare("SELECT 1").run();
+    for (const file of readdirSync(join(FIXTURES, "media"))) {
+      const contentType = TYPES[extname(file).slice(1).toLowerCase()] ?? "application/octet-stream";
+      await env.MEDIA.put(file, readFileSync(join(FIXTURES, "media", file)), {
+        httpMetadata: { contentType },
+      });
+    }
+  } finally {
+    await dispose();
+    rmSync(configPath, { force: true });
+  }
+}
+
+try {
+  await seedStores();
+} catch (err) {
+  const reason = err instanceof Error ? err.message : String(err);
+  process.stderr.write(`The local D1 and R2 seed failed: ${reason}. Nothing more ran.\n`);
+  process.exit(1);
+}
 const [content, ...others] = databases();
 if (!content || others.length > 0) {
   process.stderr.write(`Expected one content database in ${D1_FILES}.\n`);
@@ -64,22 +96,6 @@ for (const [slug, { publishedAt, updatedAt }] of Object.entries(dates)) {
   dated.run(publishedAt, updatedAt, slug);
 }
 db.close();
-
-for (const file of readdirSync(join(FIXTURES, "media"))) {
-  run("wrangler", [
-    "r2",
-    "object",
-    "put",
-    `rupeefund-media/${file}`,
-    "--local",
-    "--persist-to",
-    STATE,
-    "--file",
-    join(FIXTURES, "media", file),
-    "--content-type",
-    TYPES[extname(file).slice(1).toLowerCase()] ?? "application/octet-stream",
-  ]);
-}
 
 run("wrangler", [
   "d1",
