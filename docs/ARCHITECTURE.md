@@ -202,3 +202,11 @@ The seed applies only to a new database, such as the local one that `pnpm db:res
 ### 11.8 EmDash updates
 
 EmDash changes its own database on the first request after a deploy of a new version, with no step to approve it. So Renovate does not merge an EmDash update by itself (`renovate.json`). Section 11.3 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md) gives the steps for an update.
+
+## 12. The dev container
+
+Codespaces and each local dev container start from the image `ghcr.io/rupeefund/devcontainer:latest`. `.devcontainer/Dockerfile` gives its contents.
+
+- To add a tool, add it to the Dockerfile. When the change merges, `.github/workflows/devcontainer.yml` builds the image for `amd64` and `arm64` and publishes it.
+- Keep the image small. Each new codespace downloads the full image before it starts.
+- Renovate updates the Node.js base image. The workflow then publishes a new image.

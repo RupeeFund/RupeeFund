@@ -1,6 +1,7 @@
 {
   "name": "rupeefund",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:26-bookworm",
+  "image": "ghcr.io/rupeefund/devcontainer:latest",
+  "remoteUser": "node",
   "containerEnv": {
     "WRANGLER_SEND_METRICS": "false"
   },
