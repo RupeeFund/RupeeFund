@@ -17,11 +17,11 @@ describe("the supporter figures", () => {
   it("name each figure as a pledge, in the Indian grouping", async () => {
     const html = await render({
       title: "Pledges so far",
-      supporters: { count: 1234, season: 567890, median: 128 },
+      supporters: { count: 1234, year: 567890, median: 128 },
     });
     expect(terms(html)).toEqual([
       ["supporters", "1,234"],
-      ["pledged for each season", "₹5,67,890"],
+      ["pledged each year", "₹5,67,890"],
       ["median monthly pledge", "₹128"],
     ]);
     expect(html).toContain("Live · Updated hourly");

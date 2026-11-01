@@ -11,7 +11,7 @@ interface Props {
 const { title, supporters } = Astro.props;
 const figures = supporters && [
   { label: "supporters", value: grouped(supporters.count) },
-  { label: "pledged for each season", value: rupees(supporters.season) },
+  { label: "pledged each year", value: rupees(supporters.year) },
   { label: "median monthly pledge", value: rupees(supporters.median) },
 ];
 ---

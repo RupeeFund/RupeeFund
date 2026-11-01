@@ -27,7 +27,7 @@ describe("Home page (/)", () => {
     const band = html.slice(html.indexOf("Live · Updated hourly"));
     expect([...band.matchAll(/<dd[^>]*>([^<]*)<\/dd>/g)].map((m) => m[1]?.trim())).toEqual([
       "26",
-      "₹1,24,185",
+      "₹4,96,740",
       "₹1,308",
     ]);
   });

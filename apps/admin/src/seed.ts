@@ -14,11 +14,11 @@ const NAMES = [
   "Lakshmi Pillai",
   "Manav Desai",
 ];
-const AMOUNTS = [15, 128, 128, 512, 1000];
+const AMOUNTS = [128, 15, 512, 128, 15, 128, 1000, 128, 15, 512, 250];
 const MONTHS = ["", "6", "12", "as long as it helps"];
 const QUESTIONS = ["", "", "", "How is the money allocated?", "Who audits the fund?"];
 
-const ROWS = 36;
+const ROWS = 84;
 const UNSUBSCRIBED = 3;
 const EXPORTED = 8;
 const DAY = 86_400_000;
@@ -56,7 +56,7 @@ function row(i: number, now: number): SeedRow {
     name,
     consent_at: created,
     source: "subscribe",
-    amount: i % 3 === 0 ? at(AMOUNTS, i) : null,
+    amount: i % 7 === 0 ? null : at(AMOUNTS, i),
     months: at(MONTHS, i),
     question: at(QUESTIONS, i),
     updates_opt_in: i % 4 === 0 ? 0 : 1,

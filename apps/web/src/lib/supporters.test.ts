@@ -12,7 +12,7 @@ describe("supportersOf", () => {
     expect(supportersOf(rows(24))).toBeNull();
   });
 
-  it("gives the count, the season total and the median from 25 supporters", () => {
+  it("gives the count, the yearly total and the median from 25 supporters", () => {
     expect(
       supportersOf([
         { amount: 15, n: 12 },
@@ -20,7 +20,7 @@ describe("supportersOf", () => {
       ]),
     ).toEqual({
       count: 25,
-      season: (15 * 12 + 512 * 13) * 3,
+      year: (15 * 12 + 512 * 13) * 12,
       median: 512,
     });
   });
@@ -30,8 +30,8 @@ describe("supportersOf", () => {
       supportersOf([
         { amount: 15, n: 25 },
         { amount: 99_99_99_999, n: 1 },
-      ])?.season,
-    ).toBe((15 * 25 + 10_000) * 3);
+      ])?.year,
+    ).toBe((15 * 25 + 10_000) * 12);
   });
 
   it("rounds the median to a whole rupee", () => {
@@ -65,7 +65,7 @@ describe("readSupporters", () => {
     let failed = 0;
     expect(await readSupporters(db as never, () => failed++)).toEqual({
       count: 30,
-      season: 1350,
+      year: 5400,
       median: 15,
     });
     expect(failed).toBe(0);

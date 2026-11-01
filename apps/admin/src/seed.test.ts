@@ -1,3 +1,4 @@
+import { AMOUNTS_SQL, type AmountRow, MIN_SUPPORTERS, pledgesOf } from "@rupeefund/db/pledges";
 import { REASON_FIELDS, ROLE_FIELDS } from "@rupeefund/db/schema";
 import { rowsOf } from "@rupeefund/db/testing";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -49,6 +50,11 @@ describe("the local seed", () => {
        WHERE created_at >= ${NOW - 30 * DAY} AND unsubscribed_at IS NULL`,
     );
     expect(Number(recent?.n)).toBeGreaterThanOrEqual(20);
+  });
+
+  it("pledges enough for the home page figures, at the live median of ₹128", () => {
+    const { count, median } = pledgesOf(rows(AMOUNTS_SQL) as unknown as AmountRow[]);
+    expect({ enough: count >= MIN_SUPPORTERS, median }).toEqual({ enough: true, median: 128 });
   });
 
   it("answers every box with 0 or 1, as the form writes it", () => {

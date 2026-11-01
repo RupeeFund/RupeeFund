@@ -9,6 +9,8 @@ export interface Pledges {
   median: number | null;
 }
 
+export const MIN_SUPPORTERS = 25;
+
 export const AMOUNTS_SQL = `SELECT
        amount,
        COUNT(*) AS n
