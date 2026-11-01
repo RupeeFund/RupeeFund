@@ -2,14 +2,14 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { inCheckout, listenerCwds, portsFor, portsInUse } from "./local-servers.mjs";
+import { portsFor, portsInUse } from "./local-servers.mjs";
 
 const STATE = resolve(process.argv[2] ?? "../../.wrangler/state");
 const FIXTURES = "tests/fixtures/content";
 const TYPES = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp" };
 const D1_FILES = join(STATE, "v3", "d1", "miniflare-D1DatabaseObject");
 
-// workaround: nodejs/node#21825 — a .cmd needs a shell, which searches CWD first
+// workaround: CVE-2024-27980 — Node spawns a .cmd only through a shell, which searches CWD first
 const WIN = process.platform === "win32";
 const localBin = (name) => resolve("node_modules", ".bin", WIN ? `${name}.cmd` : name);
 
@@ -29,15 +29,13 @@ function run(bin, args) {
 const databases = () =>
   readdirSync(D1_FILES).filter((file) => file.endsWith(".sqlite") && file !== "metadata.sqlite");
 
-for (const port of await portsInUse(portsFor(STATE))) {
-  const cwds = await listenerCwds(port);
-  if (cwds.length > 0 && cwds.every((cwd) => cwd !== null && !inCheckout(cwd))) continue;
-  const cwd = cwds.find((one) => one === null || inCheckout(one)) ?? null;
-  const server =
-    cwd === null
-      ? `Port ${port} is in use, and this script cannot tell which folder its server runs from`
-      : `The local server in ${cwd} uses ${STATE} on port ${port}`;
-  process.stderr.write(`${server}. Stop it, then run this again. Nothing changed.\n`);
+const busy = await portsInUse(portsFor(STATE));
+if (busy.length > 0) {
+  const ports = busy.join(" and ");
+  process.stderr.write(
+    `A local server uses ${STATE} on port ${ports}. ` +
+      "Stop it, then run this again. Nothing changed.\n",
+  );
   process.exit(1);
 }
 
@@ -61,7 +59,7 @@ run("emdash", ["seed", seedFile, "-d", join(D1_FILES, content)]);
 rmSync(seedFile);
 
 const db = new DatabaseSync(join(D1_FILES, content));
-// workaround: emdash seed 1.2.0 writes the seed time to both date columns (RupeeFund/ops to-do list)
+// workaround: emdash seed writes the seed time to both date columns (RupeeFund/ops to-do list)
 const dated = db.prepare("UPDATE ec_posts SET published_at = ?, updated_at = ? WHERE slug = ?");
 for (const [slug, { publishedAt, updatedAt }] of Object.entries(dates)) {
   dated.run(publishedAt, updatedAt, slug);

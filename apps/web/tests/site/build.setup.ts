@@ -54,7 +54,7 @@ const BROWSERS = [SESSION];
 const AUTH_SECRET = randomBytes(32).toString("base64url");
 const identities = new Map<string, string>();
 
-// workaround: nodejs/node#21825 — a .cmd needs a shell, which searches CWD first
+// workaround: CVE-2024-27980 — Node spawns a .cmd only through a shell, which searches CWD first
 const WIN = process.platform === "win32";
 
 function exec(command: string, env: NodeJS.ProcessEnv = process.env): void {
@@ -326,7 +326,6 @@ export default async function setup(): Promise<void> {
   exec("astro build --outDir dist-preview", {
     ...outsideVitest(),
     PUBLIC_TURNSTILE_SITEKEY: TEST_SITEKEY,
-    PUBLIC_ALLOW_TEST_SITEKEY: "true",
   });
   exec(`node scripts/seed-local.mjs ${STATE}`);
   await addCallers();

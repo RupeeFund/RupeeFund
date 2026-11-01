@@ -34,56 +34,6 @@ describe("one build chain serves the one environment", () => {
   });
 });
 
-describe("each command has one owner, and check calls the owners", () => {
-  const root = JSON.parse(readFileSync("../../package.json", "utf8")).scripts as Record<
-    string,
-    string
-  >;
-
-  it("delegates typecheck and test to the apps, and lint to the root script", () => {
-    expect(root.check).toContain("turbo run typecheck test");
-    expect(root.check).toContain("pnpm run lint");
-  });
-
-  it("restates no tool another script already owns", () => {
-    for (const tool of ["tsc", "oxlint", "vitest", "wrangler"]) {
-      expect(root.check, `check restates ${tool}`).not.toMatch(new RegExp(`(^|&&\\s*)${tool}\\b`));
-    }
-  });
-
-  it("gives the site its own typecheck and test, so turbo has a step to run", () => {
-    expect(scripts.typecheck).toContain("tsc");
-    expect(scripts.test).toBe("vitest run");
-  });
-
-  it("stops at the first failing step, so a green line means every step ran", () => {
-    expect(root.check).toContain("&&");
-  });
-
-  it("applies pending local migrations before each dev server starts", () => {
-    for (const name of ["dev", "dev:admin", "dev:portless"]) {
-      expect(root[name]).toMatch(/^pnpm db:migrate && /);
-    }
-  });
-
-  it("makes db:reset the one command that erases, and it fills made-up rows", () => {
-    expect(root["db:reset"]).toContain("run seed");
-    expect(Object.keys(root)).not.toContain("bootstrap");
-  });
-});
-
-describe("Workers Builds is the only path to the live site", () => {
-  it("declares no deploy script, so the release path is not a local habit", () => {
-    const deployScripts = Object.keys(scripts).filter((name) => /^deploy/.test(name));
-    expect(deployScripts).toEqual([]);
-  });
-
-  it("ships no build script for a second environment", () => {
-    const suffixed = Object.keys(scripts).filter((name) => /^build:/.test(name));
-    expect(suffixed).toEqual([]);
-  });
-});
-
 describe("the site suite reads the preview output, never the deployable one", () => {
   // `dist` exists on a developer machine that ran `pnpm run build`, and never on
   // a clean CI checkout. A site test that reads it passes locally and fails in

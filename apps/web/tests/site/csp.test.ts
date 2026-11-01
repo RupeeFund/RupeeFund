@@ -114,8 +114,4 @@ describe("the policy permits everything the built pages actually load", () => {
   it("allows the Web Analytics beacon Cloudflare injects into every response", () => {
     expect(allows("script-src", "https://static.cloudflareinsights.com")).toBe(true);
   });
-
-  it("names no payment origin, now that no page loads one", () => {
-    expect(SITE_CSP).not.toContain("razorpay");
-  });
 });

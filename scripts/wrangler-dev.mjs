@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 import { createInterface } from "node:readline";
 
-// workaround: nodejs/node#21825 — a .cmd needs a shell, which searches CWD first
+// workaround: CVE-2024-27980 — Node spawns a .cmd only through a shell, which searches CWD first
 const WIN = process.platform === "win32";
 const wrangler = resolve("node_modules", ".bin", WIN ? "wrangler.cmd" : "wrangler");
 const { PORT, PORTLESS_URL } = process.env;

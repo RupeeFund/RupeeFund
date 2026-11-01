@@ -30,7 +30,7 @@ pnpm dev
 
 - To sign in to the content manager as an admin, with no GitHub account, open `http://localhost:8787/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`.
 - When pnpm tells you to run `pnpm install`, run it.
-- `pnpm db:reset` erases your local data. Stop each server first. It refuses while `pnpm dev` or `pnpm preview` runs from this checkout, but it cannot see `pnpm dev:portless` or a server in another folder.
+- `pnpm db:reset` erases your local data. Stop each server first. It refuses while a server listens on port 8787, 8788 or 8789, from any folder. It cannot see `pnpm dev:portless`.
 - For more than one checkout at a time, run `pnpm dev:portless`. Its first run after each boot asks for your password.
 
 ### In Codespaces or a dev container
@@ -53,15 +53,15 @@ Do not commit a secret, a password or a personal email list.
 
 ## The gate
 
-Each change must pass these commands before you open a pull request. The browser tests need Chromium once: `pnpm --filter @rupeefund/web exec playwright install --with-deps chromium`.
+Each change must pass this command before you open a pull request:
 
 ```sh
-pnpm format
-pnpm check       # types, lint and tests
-pnpm test:e2e    # browser tests
+pnpm gate
 ```
 
-CI runs more steps on each pull request (`.github/workflows/ci.yml`). To run the Lighthouse budgets locally: `pnpm --filter @rupeefund/web test:lighthouse`.
+It runs `pnpm format`, then `pnpm check` (types, lint and tests), then `pnpm test:e2e` (browser tests). It stops at the first failure. The browser tests need Chromium once: `pnpm --filter @rupeefund/web exec playwright install --with-deps chromium`.
+
+CI also builds the site, audits the dependencies and starts the dev server (`.github/workflows/ci.yml`).
 
 ## Read next
 

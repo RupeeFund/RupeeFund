@@ -1,7 +1,6 @@
-import { execFile } from "node:child_process";
 import { existsSync, realpathSync } from "node:fs";
 import { connect } from "node:net";
-import { join, resolve, sep } from "node:path";
+import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const CHECKOUT = realpathSync.native(fileURLToPath(new URL("../../..", import.meta.url)));
@@ -37,24 +36,3 @@ export async function portsInUse(ports) {
   }
   return busy;
 }
-
-const lsof = (args) =>
-  new Promise((done) => {
-    execFile("lsof", args, { timeout: 5_000 }, (error, stdout) => done(error ? "" : stdout));
-  });
-
-const cwdOf = async (pid) => {
-  const line = (await lsof(["-a", "-p", pid, "-d", "cwd", "-Fn"]))
-    .split("\n")
-    .find((entry) => entry.startsWith("n"));
-  return line ? line.slice(1) : null;
-};
-
-export async function listenerCwds(port) {
-  const pids = (await lsof(["-nP", `-iTCP:${port}`, "-sTCP:LISTEN", "-t"]))
-    .split("\n")
-    .filter(Boolean);
-  return Promise.all([...new Set(pids)].map(cwdOf));
-}
-
-export const inCheckout = (cwd) => cwd === CHECKOUT || cwd.startsWith(`${CHECKOUT}${sep}`);

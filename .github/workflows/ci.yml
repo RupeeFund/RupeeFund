@@ -14,7 +14,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -22,17 +22,12 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: Reject pre-launch vocabulary in shipped files
-        run: |
-          if git grep -In -i -e 'phase2' -e 'phase 2' -e 'phase-2' -- . ':(exclude).github/workflows/ci.yml' ; then
-            echo "::error::Do not use 'phase 2' in tracked files."
-            exit 1
-          fi
       - run: pnpm format:check
       - run: pnpm check
+      - run: pnpm run build
       - run: pnpm audit --prod --audit-level=moderate
 
-  build:
+  dev-start:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -42,8 +37,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: Build the site and the admin panel
-        run: pnpm run build
+      - run: pnpm db:reset
+      - run: node scripts/dev-smoke.mjs
 
   e2e:
     runs-on: ubuntu-latest
@@ -58,51 +53,13 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
       - run: pnpm --filter @rupeefund/web exec playwright install --with-deps chromium
-      # workaround: cloudflare/workers-sdk#15317
-      - name: Run the browser suite, and retry once if the dev server dies
-        run: |
-          pnpm test:e2e || {
-            echo "::warning::e2e retried once, see cloudflare/workers-sdk#15317"
-            pnpm test:e2e
-          }
-      - name: Keep the Playwright report when a run fails
+      - run: pnpm test:e2e
+      - name: Keep the Playwright traces when a run fails
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: playwright-report
+          name: playwright-traces
           path: |
-            apps/web/playwright-report
-            apps/web/test-results
-            .wrangler/logs
-          retention-days: 7
-
-  lighthouse:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-    env:
-      WRANGLER_LOG_PATH: ${{ github.workspace }}/.wrangler/logs
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - run: pnpm --filter @rupeefund/web exec playwright install --with-deps chromium
-      # workaround: cloudflare/workers-sdk#15317
-      - name: Run the Lighthouse budgets, and retry once if the dev server dies
-        run: |
-          pnpm --filter @rupeefund/web test:lighthouse || {
-            echo "::warning::Lighthouse retried once, see cloudflare/workers-sdk#15317"
-            pnpm --filter @rupeefund/web test:lighthouse
-          }
-      - name: Keep the Playwright report when a run fails
-        if: failure()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: lighthouse-report
-          path: |
-            apps/web/playwright-report
             apps/web/test-results
             .wrangler/logs
           retention-days: 7

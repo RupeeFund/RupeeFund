@@ -6,7 +6,7 @@ const LIMIT_MS = Number(process.env.LIMIT_MS ?? 60_000);
 const URLS = [`http://127.0.0.1:${PORT}/`, `http://[::1]:${PORT}/`];
 const start = Date.now();
 
-const child = spawn("pnpm", ["-C", "apps/web", "run", "dev", "--port", PORT, "--ignore-lock"], {
+const child = spawn("pnpm", ["dev", "--port", PORT, "--ignore-lock"], {
   detached: true,
   stdio: ["ignore", "pipe", "pipe"],
 });

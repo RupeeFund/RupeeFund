@@ -6,7 +6,6 @@
   },
   "rebaseWhen": "conflicted",
   "prConcurrentLimit": 5,
-  "prCreation": "not-pending",
   "internalChecksFilter": "strict",
   "dependencyDashboard": true,
   "minimumReleaseAge": "3 days",

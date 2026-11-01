@@ -8,7 +8,7 @@
   "tasks": {
     "transit": { "dependsOn": ["^transit"] },
     "build": {
-      "dependsOn": ["transit"],
+      "dependsOn": ["^transit"],
       "outputs": ["dist/**"],
     },
     "typecheck": {

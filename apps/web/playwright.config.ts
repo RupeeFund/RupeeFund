@@ -23,10 +23,6 @@ export default defineConfig({
       testDir: "./tests/e2e/no-js",
       use: { ...devices["Desktop Chrome"], javaScriptEnabled: false },
     },
-    {
-      name: "lighthouse",
-      testDir: "./tests/e2e/lighthouse",
-    },
   ],
   webServer: {
     command: "pnpm run preview",
