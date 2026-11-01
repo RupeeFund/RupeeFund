@@ -47,6 +47,7 @@ function healthy(): Record<string, Route> {
     [`${SITE}/_image?href=/_emdash/api/media/file/x.png`]: notFound,
     [`${SITE}/media/x.png`]: notFound,
     [`${SITE}/wp-login.php`]: () => new Response("Forbidden", { status: 403 }),
+    [`${SITE}/.env`]: () => new Response("Forbidden", { status: 403 }),
     [`${SITE}/_emdash/api/mcp`]: () =>
       Response.json(
         { error: { code: "INVALID_TOKEN" } },
@@ -166,6 +167,18 @@ describe("the live check", () => {
   it("fails when a scanner path reaches the Worker", async () => {
     const routes = { ...healthy(), [`${SITE}/wp-login.php`]: notFound };
     expect(await failed(routes)).toEqual(["site blocks the scanners"]);
+  });
+
+  it("fails when a hidden file path reaches the Worker", async () => {
+    const routes = { ...healthy(), [`${SITE}/wp-login.php`]: notFound, [`${SITE}/.env`]: notFound };
+    const checks = await runChecks(SITE, ADMIN, serve(routes));
+    expect(checks.filter(({ ok }) => !ok)).toEqual([
+      {
+        name: "site blocks the scanners",
+        ok: false,
+        detail: "/wp-login.php answered 404, /.env answered 404",
+      },
+    ]);
   });
 
   it("fails when the MCP address answers an unknown token", async () => {

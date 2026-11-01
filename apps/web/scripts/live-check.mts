@@ -156,10 +156,12 @@ function probes(site: string, admin: string): [string, Probe][] {
     ],
     [
       "site blocks the scanners",
-      async (fetch) => {
-        const { status } = await fetch(`${site}/wp-login.php`, MANUAL);
-        return status === 403 ? null : `answered ${status}, not 403 from the WAF rule`;
-      },
+      (fetch) =>
+        eachAnswers(
+          fetch,
+          [`${site}/wp-login.php`, `${site}/.env`],
+          async ({ status }) => status === 403,
+        ),
     ],
     ["admin refuses the page", (fetch) => accessRedirect(fetch, `${admin}/`)],
     ["admin refuses the counts", (fetch) => accessRedirect(fetch, `${admin}/api/summary`)],
