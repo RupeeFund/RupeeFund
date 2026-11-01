@@ -33,6 +33,10 @@ describe("a resized media file", () => {
     ["100", null],
     ["1200", null],
     ["abc", null],
+    [" 320", null],
+    ["0x140", null],
+    ["3.2e2", null],
+    ["320.0", null],
     [null, null],
   ])("takes the width %s as %s, so the number of sizes stays small", (value, width) =>
     expect(mediaWidth(value)).toBe(width),

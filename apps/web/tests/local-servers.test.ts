@@ -1,10 +1,10 @@
-import { copyFileSync, mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync } from "node:fs";
 import { createServer, type Server } from "node:net";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { execFile, execFileSync, spawn, type ChildProcess } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { inCheckout, listenerCwds, portsFor, portsInUse } from "../scripts/local-servers.mjs";
+import { portsFor, portsInUse } from "../scripts/local-servers.mjs";
 
 describe("portsFor", () => {
   it("names the dev and admin ports for the dev state, and the preview port for the preview state", () => {
@@ -81,98 +81,5 @@ describe("portsInUse", () => {
       });
     });
     expect(await portsInUse([busy, free])).toEqual([busy]);
-  });
-});
-
-const loopbackV6 = await new Promise<boolean>((done) => {
-  const probe = createServer()
-    .once("error", () => done(false))
-    .listen(0, "::1", () => probe.close(() => done(true)));
-});
-
-const lsofOut = (args: string[]) =>
-  new Promise<string>((done) => {
-    execFile("lsof", args, { timeout: 5_000 }, (error, stdout) => done(error ? "" : stdout));
-  });
-
-const lsofSeesListeners = await new Promise<boolean>((done) => {
-  const probe = createServer()
-    .once("error", () => done(false))
-    .listen(0, "127.0.0.1", async () => {
-      const { port } = probe.address() as { port: number };
-      const pid = String(process.pid);
-      const pids = await lsofOut(["-nP", `-iTCP:${port}`, "-sTCP:LISTEN", "-t"]);
-      const cwd = await lsofOut(["-a", "-p", pid, "-d", "cwd", "-Fn"]);
-      probe.close(() =>
-        done(pids.split("\n").includes(pid) && cwd.split("\n").some((l) => l.startsWith("n"))),
-      );
-    });
-});
-
-describe("listenerCwds", () => {
-  let server: Server | undefined;
-  let child: ChildProcess | undefined;
-  afterEach(() => {
-    server?.close();
-    child?.kill();
-  });
-
-  it.skipIf(!lsofSeesListeners)("finds the folder of the server on a port", async () => {
-    server = createServer().listen(0, "127.0.0.1");
-    await new Promise<void>((done) => {
-      server!.once("listening", () => done());
-    });
-    const { port } = server.address() as { port: number };
-    expect(await listenerCwds(port)).toEqual([realpathSync(process.cwd())]);
-  });
-
-  it.skipIf(!lsofSeesListeners || !loopbackV6)(
-    "finds the folder of each server on a port, on each local address",
-    async () => {
-      server = createServer().listen(0, "127.0.0.1");
-      await new Promise<void>((done) => {
-        server!.once("listening", () => done());
-      });
-      const { port } = server.address() as { port: number };
-      child = spawn(
-        process.execPath,
-        [
-          "-e",
-          `require("node:net").createServer().listen(${port}, "::1", () => console.log("up"))`,
-        ],
-        { cwd: tmpdir(), stdio: ["ignore", "pipe", "inherit"] },
-      );
-      await new Promise<void>((done, fail) => {
-        child!.stdout!.once("data", () => done());
-        child!.once("error", fail);
-        child!.once("exit", (code) => fail(new Error(`The ::1 listener exited with ${code}`)));
-      });
-      expect((await listenerCwds(port)).sort()).toEqual(
-        [realpathSync(process.cwd()), realpathSync(tmpdir())].sort(),
-      );
-    },
-  );
-
-  it("finds no folder for a free port", async () => {
-    const free = await new Promise<number>((done) => {
-      const probe = createServer().listen(0, "localhost", () => {
-        const { port } = probe.address() as { port: number };
-        probe.close(() => done(port));
-      });
-    });
-    expect(await listenerCwds(free)).toEqual([]);
-  });
-});
-
-describe("inCheckout", () => {
-  it("places a server of this checkout, from any of its folders", () => {
-    for (const folder of [".", "../admin", "../.."]) {
-      expect(inCheckout(realpathSync(resolve(folder)))).toBe(true);
-    }
-  });
-
-  it("places a server of another checkout outside this one", () => {
-    expect(inCheckout("/tmp/other-checkout/apps/web")).toBe(false);
-    expect(inCheckout(`${realpathSync(resolve("../.."))}-other/apps/web`)).toBe(false);
   });
 });

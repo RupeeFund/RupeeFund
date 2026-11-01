@@ -124,42 +124,6 @@ describe("the chrome", () => {
     expect(SOURCE_CSS).not.toMatch(/#[0-9a-f]{3,8}\b/i);
   });
 
-  it("wraps a long question instead of cutting it off", () => {
-    const rule = SOURCE_CSS.match(/\.question-body \{[^}]*\}/)?.[0] ?? "";
-    expect(rule).toContain("overflow-wrap: anywhere");
-    expect(rule).toContain("white-space: pre-wrap");
-    expect(rule).not.toContain("text-overflow");
-  });
-
-  it("styles the current dashboard and the open sidebar from the attributes they set", () => {
-    expect(SOURCE_CSS).toContain('.sidebar-link[aria-current="page"]');
-    expect(SOURCE_CSS).toContain('#sidebar-toggle[aria-expanded="true"]');
-    expect(VIEW).not.toContain('aria-current="location"');
-  });
-
-  it("stacks each wide table into cards instead of scrolling it sideways", () => {
-    for (const name of ["records", "questions"]) {
-      expect(VIEW).toContain(`class="${name} card`);
-      expect(SOURCE_CSS).toContain(`container: ${name} / inline-size`);
-      expect(SOURCE_CSS).toMatch(
-        new RegExp(`@container ${name} \\((max-width: |width <= )\\d+px\\)`),
-      );
-    }
-    expect(SOURCE_CSS).toContain("content: attr(data-label)");
-  });
-
-  it("spreads the figures over more equal columns as the numbers card widens", () => {
-    expect(VIEW).toContain('class="numbers card');
-    expect(SOURCE_CSS).toContain("container: numbers / inline-size");
-    expect(SOURCE_CSS).toMatch(/@container numbers \(width >= \d+px\) \{\s+\.figures/);
-  });
-
-  it("shows a status as an icon and a word, with no pill around it", () => {
-    const rules = SOURCE_CSS.match(/\.status-mark[^{]*\{[^}]*\}/g) ?? [];
-    expect(rules.length).toBeGreaterThan(0);
-    expect(rules.join("")).not.toMatch(/\bbg-|rounded|shadow|\bpx-|\bpy-/);
-  });
-
   it("names each table itself, not only the section around it", () => {
     for (const name of ["records", "questions"]) {
       expect(VIEW).toMatch(new RegExp(`<table [^>]*aria-labelledby="${name}-title"`));

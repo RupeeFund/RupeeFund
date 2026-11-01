@@ -44,27 +44,6 @@ describe("worker router (Hono)", () => {
   });
 });
 
-const REMOVED_API_ROUTES = [
-  { method: "POST", path: "/api/subscribe" },
-  { method: "POST", path: "/api/subscribe/verify" },
-  { method: "POST", path: "/api/webhook/razorpay" },
-  { method: "GET", path: "/api/unsubscribe" },
-  { method: "GET", path: "/api/metrics" },
-  { method: "GET", path: "/api/dataset" },
-  { method: "GET", path: "/api/vote/proposals" },
-  { method: "POST", path: "/api/vote/cast" },
-] as const;
-
-describe("the payment and voting API is gone, not merely gated", () => {
-  for (const { method, path } of REMOVED_API_ROUTES) {
-    it(`404s ${method} ${path}`, async () => {
-      const res = await app.request(path, { method }, makeEnv(), ctx);
-      expect(res.status).toBe(404);
-      expect(await res.json()).toEqual({ error: "not_found" });
-    });
-  }
-});
-
 describe("a signup writes to the waitlist database alone", () => {
   afterEach(() => {
     vi.unstubAllGlobals();

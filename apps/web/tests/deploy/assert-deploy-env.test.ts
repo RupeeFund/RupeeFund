@@ -97,14 +97,6 @@ describe("the sitekey comes from the repository, so no dashboard field can be mi
       expect(code).toBe(1);
       expect(stderr).toContain(key);
     });
-
-    it(`allows the same override behind the explicit opt-in ${key}`, () => {
-      const { code } = run({
-        PUBLIC_TURNSTILE_SITEKEY: key,
-        PUBLIC_ALLOW_TEST_SITEKEY: "true",
-      });
-      expect(code).toBe(0);
-    });
   }
 });
 

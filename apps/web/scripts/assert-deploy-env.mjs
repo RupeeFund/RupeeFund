@@ -28,13 +28,10 @@ if (declared === undefined || declared.length === 0) {
 }
 
 const override = process.env.PUBLIC_TURNSTILE_SITEKEY;
-if (
-  override !== undefined &&
-  DUMMY_SITEKEYS.includes(override) &&
-  process.env.PUBLIC_ALLOW_TEST_SITEKEY !== "true"
-) {
+if (override !== undefined && DUMMY_SITEKEYS.includes(override)) {
   problems.push(
-    `PUBLIC_TURNSTILE_SITEKEY overrides the repository with the dummy TEST sitekey ${override}. Set PUBLIC_ALLOW_TEST_SITEKEY=true for a local preview, or drop the override.`,
+    `PUBLIC_TURNSTILE_SITEKEY overrides the repository with the dummy TEST sitekey ${override}. ` +
+      "Drop the override.",
   );
 }
 

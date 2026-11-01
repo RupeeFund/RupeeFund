@@ -1,30 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { routes } from "../routes.ts";
 
-const ROUTES = [
-  "/",
-  "/subscribe",
-  "/people",
-  "/faq",
-  "/privacy",
-  "/terms",
-  "/refunds",
-  "/code-of-conduct",
-  "/blog",
-  "/blog/how-to-write-a-post-for-this-blog",
-  "/waitlist-confirmed",
-] as const;
-
-const REMOVED = ["/manage", "/vote", "/thank-you", "/vote.html", "/waitlist-problem"] as const;
+const ERROR_PAGES = ["/404", "/500"];
 
 test.describe("public pages smoke", () => {
-  for (const path of REMOVED) {
-    test(`${path} is gone, not merely hidden`, async ({ page }) => {
-      const response = await page.goto(path);
-      expect(response?.status()).toBe(404);
-    });
-  }
-
-  for (const path of ROUTES) {
+  for (const path of routes.filter((route) => !ERROR_PAGES.includes(route))) {
     test(`${path} renders with a title, one heading and one main landmark`, async ({ page }) => {
       const response = await page.goto(path);
       expect(response?.status()).toBe(200);

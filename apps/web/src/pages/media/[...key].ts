@@ -23,7 +23,10 @@ export const GET: APIRoute = async ({ params, url }) => {
   const width = mediaWidth(asked);
   if (asked !== null && width === null) return notFound();
   if (width !== null) {
-    const answer = await resized(key, width).catch(() => null);
+    const answer = await resized(key, width).catch((error: unknown) => {
+      console.error(`media: resize of ${key} to ${width} failed, serving the original`, error);
+      return null;
+    });
     if (answer) return answer;
   }
   const object = await env.MEDIA.get(key);
