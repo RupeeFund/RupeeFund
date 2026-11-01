@@ -29,7 +29,6 @@ export const linksFor = (links: readonly NavLink[], blog: boolean): readonly Nav
 export type SeasonIcon = "snowflake" | "sun" | "cloud-rain" | "leaf";
 
 export interface Season {
-  spriteSlug: string;
   icon: SeasonIcon;
   name: string;
   months: string;
@@ -39,7 +38,6 @@ export interface Season {
 
 export const SEASONS: readonly Season[] = [
   {
-    spriteSlug: "winter",
     icon: "snowflake",
     name: "Winter",
     months: "Dec – Feb",
@@ -47,7 +45,6 @@ export const SEASONS: readonly Season[] = [
     accent: "#007bb2",
   },
   {
-    spriteSlug: "summer",
     icon: "sun",
     name: "Summer",
     months: "Mar – May",
@@ -55,7 +52,6 @@ export const SEASONS: readonly Season[] = [
     accent: "#a44d00",
   },
   {
-    spriteSlug: "monsoon",
     icon: "cloud-rain",
     name: "Monsoon",
     months: "Jun – Aug",
@@ -63,7 +59,6 @@ export const SEASONS: readonly Season[] = [
     accent: "#008039",
   },
   {
-    spriteSlug: "post-monsoon",
     icon: "leaf",
     name: "Post-monsoon",
     months: "Sep – Nov",

@@ -30,7 +30,7 @@ A new page uses the layout of its type:
 
 - **Layout** is not a brand rule. The pages in `src/pages/` and the frames in `src/layouts/` hold it. Content manager pages use `src/components/site/` and `src/components/people/`. The home page and the people page use the sections in `src/components/home/` and `src/components/people/`. `docs/ARCHITECTURE.md` section 11 tells where their words are.
 - **Styles.** Reuse a class from `packages/ui/src/styles.css` before you add one. Put a new class in that file.
-- **Headings.** The h1 of the home page uses `poster-figure`, sized to fill the width. `poster-page-title` is the h1 of each other page in the poster style; `page-title` is the h1 of a page not yet in it. `poster-heading` is each section h2 of the home page, except the pledges h2, which uses `poster-title`. `poster-subheading` is each section h2 of another page in the poster style, and `poster-intro` is the short text under it. Add `heading` to a `p` that must look like a heading.
+- **Headings.** The h1 of the home page uses `poster-figure`, sized to fill the width. `poster-page-title` is the h1 of each other page. `poster-heading` is each section h2 of the home page, except the pledges h2, which uses `poster-title`. `poster-subheading` is each section h2 of another page, and `poster-intro` is the short text under it. Add `heading` to a `p` that must look like a heading.
 - **Phone screens.** At 360 × 640, each home section fits the screen below the header. A row of cards that is too tall scrolls sideways with `swipe-row`.
 - **Forms.** Put `form-poster` on a form of the site. It makes each field and choice square, with a 2 px ink border. The admin panel keeps the plain `field`.
 - **Body size** is `text-sm`. The theme in `packages/ui/src/styles.css` changes the Tailwind scale.
@@ -40,7 +40,8 @@ A new page uses the layout of its type:
 - **State.** Style a UI state from an attribute, such as `aria-pressed`. Do not set classes from JavaScript.
 - **Admin panel.** Put the styles that only the panel uses in `apps/admin/src/admin.css`: the top bar, the tables, the status marks and the chart. Take each colour from a brand token. Do not write a colour value.
 - **Season accents** are `SEASONS` in `src/components/site/constants.ts`. `src/lib/launch.test.ts` checks their contrast.
-- **Pixel art and brand files.** The [Illustration section](https://brand.rupeefund.org/#illustration) gives the art rules and the palette. `pnpm brand:sync` writes the files that `apps/web/scripts/brand-sync.mts` lists, the sprites included. `docs/ARCHITECTURE.md` section 9 gives the rules.
+- **Icons.** Draw each icon in `src/components/site/Icon.astro`, as a thick line in `currentColor`. A season icon takes its season accent. Do not add pixel art.
+- **Brand files.** `pnpm brand:sync` writes the colours, the logo and the files made from the logo, as `apps/web/scripts/brand-sync.mts` lists. `docs/ARCHITECTURE.md` section 9 gives the rules.
 - **Visual check.** Check each visual change in a browser at 360 × 640 and at 1440 × 900, with and without reduced motion.
 
 ## Pages

@@ -78,11 +78,9 @@ The policy of the site permits inline scripts, because the build emits inline mo
 
 ## 9. Brand files
 
-`RupeeFund/brand` is the only source of the brand colours and files. `pnpm brand:sync` copies the files that `apps/web/scripts/brand-sync.mts` lists from `exports/` on its `main` branch. The script refuses an SVG with active content, because the site serves each SVG from its own origin. The build reads only the committed files. Do not edit them by hand.
+`RupeeFund/brand` is the only source of the brand colours, the logo and the files made from the logo. This repository owns every other image and icon. `pnpm brand:sync` copies the files that `apps/web/scripts/brand-sync.mts` lists from `exports/` on its `main` branch. The script refuses an SVG with active content, because the site serves each SVG from its own origin. The build reads only the committed files. Do not edit them by hand.
 
-- `.github/workflows/brand-sync.yml` runs the sync each day and opens a pull request for a change. It needs the repository setting “Allow GitHub Actions to create and approve pull requests”.
-- CI does not run on its pull request. Read the check result in the description before you merge it.
-- To sync at once, run the workflow from the Actions tab.
+- No job runs the sync. After a brand change reaches `main`, run `pnpm brand:sync` and commit the result.
 - To sync from a local brand checkout, set `BRAND_DIR` to it and run `pnpm brand:sync`.
 
 ## 10. The admin panel

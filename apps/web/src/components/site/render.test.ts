@@ -128,7 +128,7 @@ describe("the blog components", () => {
     const [rain] = /<path d="[^"]+"/.exec(await render(Icon, { name: "cloud-rain" })) ?? [];
     expect(rain).toBeDefined();
     expect(html).toContain(rain);
-    expect(html).not.toContain("/seasons/");
+    expect(html).not.toMatch(/src="[^"]*monsoon[^"]*"/);
     expect(html).toMatch(/class="lede[^"]*"[^>]*>First post\.</);
     expect(html).toContain("The Rupee Fund volunteers");
     expect(html).toMatch(/Updated <time[^>]*>4 October 2026</);
