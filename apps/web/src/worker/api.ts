@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { secureHeaders } from "hono/secure-headers";
 import { createRepo } from "./lib/db.ts";
 import { createTurnstile, parseHostnames } from "./lib/turnstile.ts";
-import { handleWaitlist, type WaitlistLimiter } from "./routes/waitlist.ts";
+import { handleWaitlist } from "./routes/waitlist.ts";
 import type { Env } from "./types.ts";
 
 export const app = new Hono<{ Bindings: Env }>();
@@ -23,15 +23,11 @@ app.use("/api/*", async (c, next) => {
 
 app.get("/api/health", (c) => c.json({ ok: true }));
 
-const DENY_ALL_LIMITER: WaitlistLimiter = {
-  limit: async () => ({ success: false }),
-};
-
 app.post("/api/waitlist", (c) =>
   handleWaitlist(c.req.raw, {
     repo: createRepo(c.env.WAITLIST_DB),
     now: () => Date.now(),
-    limiter: c.env.SIGNUP_LIMITER ?? DENY_ALL_LIMITER,
+    limiter: c.env.SIGNUP_LIMITER,
     verifyToken: createTurnstile(c.env.TURNSTILE_SECRET ?? "", {
       hostnames: parseHostnames(c.env.TURNSTILE_HOSTNAMES),
       action: c.env.TURNSTILE_ACTION ?? "",

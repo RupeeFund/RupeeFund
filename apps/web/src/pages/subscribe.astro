@@ -1,9 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
+import { REMOVAL_ADDRESS } from "../components/site/constants.ts";
 import {
   REASON_LABELS,
   REASON_LEGEND,
-  REMOVAL_ADDRESS,
   ROLE_LABELS,
   ROLE_LEGEND,
   SUBSCRIBE_HEADING,
@@ -186,7 +186,6 @@ const TURNSTILE_SITEKEY = getSitekey();
             autocomplete="off"
           />
         </div>
-        <input type="hidden" name="source" value="subscribe" />
         <div
           id="waitlist-turnstile"
           class="cf-turnstile flex justify-center"

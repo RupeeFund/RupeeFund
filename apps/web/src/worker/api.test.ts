@@ -7,6 +7,7 @@ import type { Env } from "./types.ts";
 function makeEnv(over: Partial<Env> = {}): Env {
   return {
     WAITLIST_DB: makeD1(),
+    SIGNUP_LIMITER: makeLimiter() as unknown as Env["SIGNUP_LIMITER"],
     ...over,
   };
 }

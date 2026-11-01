@@ -1,8 +1,6 @@
 import { TAGLINE } from "../components/site/constants.ts";
 import { SUBSCRIBE_HEADING } from "./launch.ts";
 
-export { TAGLINE };
-
 export const SITE_NAME = "The Rupee Fund";
 export const SITE_URL = "https://rupeefund.org";
 export const LOGO_IMAGE = `${SITE_URL}/icon-512.png`;

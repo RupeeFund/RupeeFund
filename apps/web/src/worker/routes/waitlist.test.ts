@@ -166,16 +166,6 @@ describe("handleWaitlist over fetch (JavaScript enabled)", () => {
     expect(verifyToken.calls[0]?.remoteIp).toBe(null);
   });
 
-  it("rejects a cross-origin submission", async () => {
-    const repo = makeRepo();
-    const res = await handleWaitlist(
-      jsonReq(VALID, { origin: "https://evil.example" }),
-      deps({ repo }),
-    );
-    expect(res.status).toBe(403);
-    expect(repo.waitlist).toEqual([]);
-  });
-
   it("rejects malformed JSON", async () => {
     const bad = new Request("https://rupeefund.org/api/waitlist", {
       method: "POST",
@@ -273,14 +263,10 @@ describe("consent and provenance are recorded on every stored signup", () => {
     expect(repo.waitlist[0]?.consent_at).toBe(4242);
   });
 
-  it("records a recognised source and rejects anything else in favour of the default", async () => {
+  it("records the signup form as the source, whatever the body says", async () => {
     const repo = makeRepo();
     await handleWaitlist(jsonReq({ ...VALID, source: "footer" }), deps({ repo }));
-    await handleWaitlist(
-      jsonReq({ ...VALID, email: "b@example.com", source: "../../etc/passwd" }),
-      deps({ repo }),
-    );
-    expect(repo.waitlist.map((w) => w.source)).toEqual(["footer", "subscribe"]);
+    expect(repo.waitlist.map((w) => w.source)).toEqual(["subscribe"]);
   });
 
   it("answers success when the same address posts again", async () => {

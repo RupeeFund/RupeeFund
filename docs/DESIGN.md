@@ -35,7 +35,6 @@ A new page uses the layout of its type:
 - **Prose.** Put the text from the content manager in `.prose`. Put each style of the HTML from `src/content/html.ts` in `packages/ui/src/styles.css`.
 - **Row links.** A blog row is one link: `row-link` on the title. Its hover shows no line, because the pointer crosses many rows.
 - **Buttons.** Use `btn` with `btn-primary` or `btn-quiet`. Add `btn-on-white` to a quiet button on a white surface. Set the size or the state with a modifier from `packages/ui/src/styles.css`, not with utilities in the markup.
-- **Links.** Add `inline-link-ink` to an inline link on a `bg-brand` surface.
 - **State.** Style a UI state from an attribute, such as `aria-pressed`. Do not set classes from JavaScript.
 - **Admin panel.** Put the styles that only the panel uses in `apps/admin/src/admin.css`: the top bar, the tables, the status marks and the chart. Take each colour from a brand token. Do not write a colour value.
 - **Season accents** are `SEASONS` in `src/components/site/constants.ts`. `src/lib/launch.test.ts` checks their contrast.

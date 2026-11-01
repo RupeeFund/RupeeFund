@@ -5,13 +5,12 @@ import {
   type ReasonField,
   ROLE_FIELDS,
   type RoleField,
-  WAITLIST_SOURCES,
   type WaitlistSource,
 } from "@rupeefund/db/schema";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const DEFAULT_WAITLIST_SOURCE: WaitlistSource = "subscribe";
+const SIGNUP_SOURCE: WaitlistSource = "subscribe";
 
 export const MAX_NAME_LENGTH = 100;
 export const MAX_EMAIL_LENGTH = 254;
@@ -31,11 +30,26 @@ export type WaitlistInput = {
 
 export type WaitlistResult = { ok: true; value: WaitlistInput } | { ok: false; errors: string[] };
 
-function toSource(value: unknown): WaitlistSource {
-  const raw = typeof value === "string" ? value.trim().toLowerCase() : "";
-  return (WAITLIST_SOURCES as readonly string[]).includes(raw)
-    ? (raw as WaitlistSource)
-    : DEFAULT_WAITLIST_SOURCE;
+function toEmail(value: unknown): string | null {
+  const raw = text(value).normalize("NFC").toLowerCase();
+  if (/[\p{Cc}\p{Cf}]/u.test(raw)) return null;
+  const at = raw.lastIndexOf("@");
+  const domain = raw.slice(at + 1);
+  if (at < 1 || /[/?#:\\[\]%]/.test(domain)) return null;
+  let host: string;
+  try {
+    host = new URL(`http://${domain}`).hostname;
+  } catch {
+    return null;
+  }
+  const email = `${raw.slice(0, at)}@${host}`;
+  return EMAIL_RE.test(email) && email.length <= MAX_EMAIL_LENGTH ? email : null;
+}
+
+function toName(value: unknown): string | null {
+  const name = text(value);
+  if (/\p{Cc}/u.test(name) || name.replace(/\p{Cf}/gu, "").trim().length === 0) return null;
+  return name.length <= MAX_NAME_LENGTH ? name : null;
 }
 
 function checkbox(value: unknown): 0 | 1 {
@@ -72,11 +86,11 @@ export function validateWaitlist(body: unknown): WaitlistResult {
   if (typeof body !== "object" || body === null) return { ok: false, errors: ["body"] };
   const b = body as Record<string, unknown>;
 
-  const name = text(b.name);
-  if (name.length === 0 || name.length > MAX_NAME_LENGTH) errors.push("name");
+  const name = toName(b.name);
+  if (name === null) errors.push("name");
 
-  const email = text(b.email).toLowerCase();
-  if (!EMAIL_RE.test(email) || email.length > MAX_EMAIL_LENGTH) errors.push("email");
+  const email = toEmail(b.email);
+  if (email === null) errors.push("email");
 
   const amount = toAmount(b);
   if (amount === null) errors.push("amount");
@@ -89,13 +103,15 @@ export function validateWaitlist(body: unknown): WaitlistResult {
 
   const updates_opt_in = checkbox(b.updates);
 
-  if (errors.length > 0 || amount === null) return { ok: false, errors };
+  if (errors.length > 0 || name === null || email === null || amount === null) {
+    return { ok: false, errors };
+  }
   return {
     ok: true,
     value: {
       name,
       email,
-      source: toSource(b.source),
+      source: SIGNUP_SOURCE,
       amount,
       months,
       question,

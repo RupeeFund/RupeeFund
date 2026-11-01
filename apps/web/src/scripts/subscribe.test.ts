@@ -1,3 +1,4 @@
+import { REASON_FIELDS, ROLE_FIELDS } from "@rupeefund/db/schema";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { errorForStatus, guardWaitlistForm, linkOtherAmount, submitWaitlist } from "./subscribe.ts";
 
@@ -64,43 +65,33 @@ describe("submitWaitlist", () => {
     (form.querySelector(selector) as HTMLInputElement).checked = true;
   };
 
-  it("sends the answers, the bot-check token and empty unticked boxes", async () => {
-    expect(await send()).toMatchObject({
+  it("sends the answers and the bot-check token once, under its own key", async () => {
+    const body = await send();
+    expect(body).toMatchObject({
       name: "Ada",
       email: "ada@example.com",
       amount: "128",
-      amount_other: "",
       months: "12+",
       question: "Who audits this?",
-      updates: "",
-      is_user: "",
-      is_creator: "",
-      is_professional: "",
-      is_student: "",
-      backs_nascent: "",
-      backs_growing: "",
-      backs_larger: "",
       turnstileToken: "tok",
     });
+    expect(body).not.toHaveProperty("cf-turnstile-response");
   });
 
-  it("sends the value of each ticked box, and only those", async () => {
+  it("sends each ticked box, and no key for a box left empty", async () => {
     const body = await send((form) => {
       tick(form, 'input[name="updates"]');
       tick(form, 'input[name="is_user"]');
       tick(form, 'input[name="is_student"]');
       tick(form, 'input[name="backs_growing"]');
     });
-    expect(body).toMatchObject({
-      updates: "1",
-      is_user: "1",
-      is_creator: "",
-      is_professional: "",
-      is_student: "1",
-      backs_nascent: "",
-      backs_growing: "1",
-      backs_larger: "",
-    });
+    const boxes = ["updates", ...ROLE_FIELDS, ...REASON_FIELDS];
+    expect(boxes.filter((box) => Object.hasOwn(body as object, box))).toEqual([
+      "updates",
+      "is_user",
+      "is_student",
+      "backs_growing",
+    ]);
   });
 
   it("sends the typed amount beside the other option, so the server can resolve it", async () => {

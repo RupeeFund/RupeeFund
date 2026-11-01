@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SEASONS } from "./launch.ts";
+import { SEASONS } from "../components/site/constants.ts";
 
 function luminance(hex: string): number {
   const [r, g, b] = [1, 3, 5].map((i) => {

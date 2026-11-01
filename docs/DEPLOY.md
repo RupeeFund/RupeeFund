@@ -52,7 +52,7 @@ A firewall rule on the zone blocks each path that starts with `/wp-` or ends wit
 
 On the day the fund takes money, change each word that says that the fund takes no payment or is not open. Then a maintainer promotes.
 
-- The code: `apps/web/src/pages/subscribe.astro`, `apps/web/src/pages/waitlist-confirmed.astro`, `apps/web/src/components/site/SignupCard.astro`, `apps/web/src/components/home/Supporters.astro` and the two `/refunds` descriptions in `apps/web/src/lib/seo.ts`. Also change the pledge words (**pledged for each season**, **Join … others who have pledged**) in `Supporters.astro` and `SignupCard.astro`. They count pledges, not money.
+- The code: `apps/web/src/pages/subscribe.astro`, `apps/web/src/pages/waitlist-confirmed.astro`, `apps/web/src/components/site/SignupCard.astro`, `apps/web/src/components/home/Supporters.astro` and the two `/refunds` descriptions in `apps/web/src/lib/seo.ts`. Also change the pledge words (**pledged for each season**) in `Supporters.astro`. They count pledges, not money.
 - The tests that check these words: `apps/web/src/components/site/render.test.ts`, `apps/web/tests/site/subscribe.test.ts` and `apps/web/tests/site/csp.test.ts`.
 - The docs: `docs/ARCHITECTURE.md` (**It takes no payment**) and `AGENTS.md`.
 - The content manager (`docs/EDITING.md`), then the same words in `apps/web/seed/seed.json` and `apps/web/src/content/entries.fixture.json`: **Pages** › `privacy`, `terms` and `refunds`, and **FAQ** › `who-runs`, `start-date` and `your-data`. In `refunds`, publish the refund contact, the claim period and the steps to cancel a recurring payment.

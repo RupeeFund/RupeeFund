@@ -1,15 +1,10 @@
 ---
-import { grouped, type Supporters } from "../../lib/supporters.ts";
 import { SUBSCRIBE_CTA } from "./constants.ts";
 import Icon from "./Icon.astro";
 
 interface Props {
   class?: string;
-  supporters?: Supporters | null;
 }
-
-const { supporters } = Astro.props;
-const joined = supporters && `Join ${grouped(supporters.count)} others who have pledged.`;
 ---
 
 <aside
@@ -22,11 +17,10 @@ const joined = supporters && `Join ${grouped(supporters.count)} others who have 
   <h2 id="signup-title" class="text-2xl mb-3">
     Hear when the fund opens
   </h2>
-  <p class:list={["text-sm text-pretty", joined ? "mb-3" : "mb-6"]}>
+  <p class="text-sm text-pretty mb-6">
     <strong>Nothing to pay today.</strong> We send a welcome email to confirm your sign-up, one
     email when the fund opens, and monthly updates only if you ask for them.
   </p>
-  {joined && <p class="text-sm mb-6 font-semibold">{joined}</p>}
   <a href="/subscribe" class="btn btn-primary">
     <Icon name="bell" size={18} />
     {SUBSCRIBE_CTA}
