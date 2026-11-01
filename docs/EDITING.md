@@ -2,6 +2,13 @@
 
 The content manager at [rupeefund.org/admin](https://rupeefund.org/admin) holds the blog, the pages, the FAQ and the community team. You change the words, not the layout. For the words of the home page and the people page, or the header and footer links, ask a maintainer.
 
+Common tasks:
+
+- Write a blog post: sections 5 and 3.
+- Fix an FAQ answer or a page: sections 9 and 3.
+- Undo a change: section 3.
+- Correct an entry that the site refuses to publish: section 8.
+
 ## 1. Sign in
 
 1. Ask an admin to add your GitHub account to a team of the `RupeeFund` organization: `cms-authors` (Author), `cms-editors` (Editor) or `cms-admins` (Admin).
@@ -21,9 +28,9 @@ Each role adds to the role before it.
 - **Editor:** do the same to the posts, normal pages and images of others. Change the author or publish date of a post or a normal page, the categories and the bylines.
 - **Admin:** edit, publish and unpublish the legal pages. Write, edit, publish, unpublish, delete and restore the FAQ and the community team. Empty the trash (a delete for good). Change the settings, the people and the API tokens. Download a backup.
 
-The sample entries are not an Author's. For an entry of another person, ask an Editor.
+The entries that came with the site belong to no Author. For an entry of another person, ask an Editor.
 
-Nobody can delete a legal page, import a site, move the site to another host, or change the fields of a collection in the content manager. An admin changes the fields with an API token.
+Nobody can delete a legal page or change the fields of a collection in the content manager. An admin changes the fields with an API token.
 
 ## 3. Publish a change
 

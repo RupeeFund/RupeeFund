@@ -37,7 +37,7 @@ pnpm dev
 
 1. Click **Open in GitHub Codespaces** in the [README](../README.md), or open a dev container.
 1. When the terminal shows the welcome text, run `pnpm dev`. A codespace opens the site in a new tab. To open it again, use port 8787 in the **Ports** tab.
-1. To sign in, add `/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin` to that address.
+1. To sign in, add the dev-bypass path from [Set up](#set-up) to that address.
 
 `pnpm dev:portless` does not work in a container.
 
