@@ -16,7 +16,7 @@ A maintainer deploys the site. The deploy steps are in the private [staff runboo
 
 ## 2. How to prove a change
 
-Prove each change on your own machine, with the gate in `docs/CONTRIBUTING.md`. No test reaches the live database. To read the local rows:
+Prove each change on your own machine, with the checks in `docs/CONTRIBUTING.md`. No test reaches the live database. To read the local rows:
 
 ```sh
 pnpm wrangler d1 execute rupeefund-waitlist --local --persist-to ../../.wrangler/state --command "SELECT email, consent_at FROM waitlist"

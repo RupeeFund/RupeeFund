@@ -45,21 +45,18 @@ pnpm dev
 
 1. Find an open issue. For a new idea, open an issue before you write code.
 1. Fork the repository and make a branch.
-1. Make your change. Run [the gate](#the-gate).
+1. Make your change. Run [the checks for your change](#check-your-change).
 1. Commit with a [Conventional Commits](https://www.conventionalcommits.org) subject, for example `fix: correct the footer link`.
 1. Open a pull request against `main`. Say what changed and how you tested it. A maintainer reviews it. A merge does not deploy anything.
 
 Do not commit a secret, a password or a personal email list.
 
-## The gate
+## Check your change
 
-Each change must pass this command before you open a pull request:
+Run these commands before you open a pull request:
 
-```sh
-pnpm gate
-```
-
-It runs `pnpm format`, then `pnpm check` (types, lint and tests), then `pnpm test:e2e` (browser tests). It stops at the first failure. The browser tests need Chromium once: `pnpm --filter @rupeefund/web exec playwright install --with-deps chromium`.
+- For each change: `pnpm format`, then `pnpm check`. `pnpm format` fixes the format of each file. `pnpm check` runs lint, types and tests.
+- When your change affects a page, a form or what the browser does: also `pnpm test:e2e`. It runs the browser tests. They need Chromium once: `pnpm --filter @rupeefund/web exec playwright install --with-deps chromium`.
 
 CI also builds the site, audits the dependencies and starts the dev server (`.github/workflows/ci.yml`).
 

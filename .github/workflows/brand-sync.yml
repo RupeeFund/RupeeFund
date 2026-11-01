@@ -19,7 +19,7 @@ jobs:
       contents: read
     outputs:
       changed: ${{ steps.diff.outputs.changed }}
-      gate: ${{ steps.gate.outputs.result }}
+      checks: ${{ steps.checks.outputs.result }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -38,8 +38,8 @@ jobs:
             git diff --cached --binary > brand.patch
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
-      - name: Run the gate on the synced files
-        id: gate
+      - name: Run the checks on the synced files
+        id: checks
         if: steps.diff.outputs.changed == 'true'
         run: |
           if pnpm format:check && pnpm check && pnpm run build; then
@@ -64,7 +64,7 @@ jobs:
       pull-requests: write
     env:
       BRANCH: chore/brand-sync
-      GATE: ${{ needs.sync.outputs.gate }}
+      CHECKS: ${{ needs.sync.outputs.checks }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -87,9 +87,9 @@ jobs:
           git push --force "$remote" "$BRANCH"
           body="Synced from https://github.com/RupeeFund/brand by the brand sync workflow.
 
-          The gate ${GATE}: ${run_url}
+          The checks ${CHECKS}: ${run_url}
 
-          CI does not run on this pull request. The gate ran format:check, check and build.
+          CI does not run on this pull request. The checks ran format:check, check and build.
           It did not run the browser tests or the audit."
           if gh pr view "$BRANCH" --json state --jq .state | grep -q OPEN; then
             gh pr edit "$BRANCH" --body "$body"
@@ -99,6 +99,6 @@ jobs:
           fi
       - name: Fail the run when the site differs from the brand
         run: |
-          echo "::error::The site differs from RupeeFund/brand. Gate: ${GATE}."
+          echo "::error::The site differs from RupeeFund/brand. Checks: ${CHECKS}."
           echo "Review and merge the brand pull request."
           exit 1

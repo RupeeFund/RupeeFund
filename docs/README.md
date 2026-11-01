@@ -4,7 +4,7 @@ Each document has one reader. Each fact has one owner. Read the document that ow
 
 | Document                           | Reader                        | Read it before you change                                                                                       |
 | ---------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Anyone who helps              | Anything: the set-up, the pull request steps, the gate                                                          |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Anyone who helps              | Anything: the set-up, the pull request steps, the checks                                                        |
 | [DESIGN.md](DESIGN.md)             | Anyone who changes a page     | A page, the blog, a style, a word or a link preview card                                                        |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Anyone who changes the system | A Worker, an address, a database, the security headers, the brand files, the admin panel or the content manager |
 | [DEPLOY.md](DEPLOY.md)             | Anyone whose change goes live | A migration, a content field, a page address, a secret or the words about payment                               |
