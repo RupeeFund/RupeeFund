@@ -2,14 +2,14 @@
 
 Each document has one reader. Each fact has one owner. Read the document that owns your change before you start.
 
-| Document                           | Reader                        | Read it before you change                                                                                       |
-| ---------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Anyone who helps              | Anything: the set-up, the pull request steps, the checks                                                        |
-| [DESIGN.md](DESIGN.md)             | Anyone who changes a page     | A page, the blog, a style, a word or a link preview card                                                        |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Anyone who changes the system | A Worker, an address, a database, the security headers, the brand files, the admin panel or the content manager |
-| [DEPLOY.md](DEPLOY.md)             | Anyone whose change goes live | A migration, a content field, a page address, a secret or the words about payment                               |
-| [EDITING.md](EDITING.md)           | A volunteer editor            | A post, an FAQ entry or other words in the content manager                                                      |
-| [AGENTS.md](../AGENTS.md)          | An agent                      | Anything, as an agent                                                                                           |
+| Document                           | Reader                        | Read it before you change                                                                                                          |
+| ---------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Anyone who helps              | Anything: the set-up, the pull request steps, the checks                                                                           |
+| [DESIGN.md](DESIGN.md)             | Anyone who changes a page     | A page, the blog, a style, a word or a link preview card                                                                           |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Anyone who changes the system | A Worker, an address, a database, the security headers, the brand files, the admin panel, the content manager or the dev container |
+| [DEPLOY.md](DEPLOY.md)             | Anyone whose change goes live | A migration, a content field, a page address, a secret or the words about payment                                                  |
+| [EDITING.md](EDITING.md)           | A volunteer editor            | A post, an FAQ entry or other words in the content manager                                                                         |
+| [AGENTS.md](../AGENTS.md)          | An agent                      | Anything, as an agent                                                                                                              |
 
 Owners outside this repository:
 
