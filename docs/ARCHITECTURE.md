@@ -34,8 +34,6 @@ Each command under `scripts` in `package.json` runs in the pnpm shell emulator. 
 - `rupeefund.org/media/<key>`: the images of the published content (section 11.2).
 - `admin.rupeefund.org`: the admin Worker, behind Cloudflare Access (section 10).
 
-Keep these addresses free for later work: `rupeefund.org/platform/*` for the voting platform, `dashboard.rupeefund.org` for the next version of `admin.rupeefund.org`, and `rupeefund.org/stats` for public totals. The home page shows the first totals (section 2). The voting platform uses the sign-in of the content manager.
-
 The one environment is `live`. Each address of the site Worker writes to the live list and the live content, so the configuration refuses a `workers.dev` address and a preview URL. Nothing refuses a second custom domain, so do not add one. Prove a change on your own machine (`docs/DEPLOY.md` section 2).
 
 ## 4. How a person joins the list
@@ -54,7 +52,7 @@ Each row needs a Turnstile token, and Turnstile needs JavaScript. A browser with
 
 ## 6. The export
 
-The **Export** button and `pnpm list:export --remote` run one atomic statement from `packages/db/src/export.ts`. It stamps and returns each row one time, so a row that changes after its export does not go out again. Refer to section 8 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md).
+The **Export** button and `pnpm list:export --remote` run one atomic statement from `packages/db/src/export.ts`. It stamps and returns each row one time, so a row that changes after its export does not go out again. Migration `0006` set `updates_opt_in = 1` on each row from before 2026-09-12, so the export says yes for a person who did not tick the box. Refer to section 8 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md).
 
 ## 7. Names
 
@@ -109,7 +107,6 @@ The panel shows the team the waitlist. Its one write is the export stamp (sectio
 - A list endpoint sends the same mask for every address, `••••@•••••`. SQLite writes it (`apps/admin/src/sql.ts`), so the full address never leaves the database on the list path.
 - Only `/api/reveal/:id` and `/api/export` send a full address, and each logs the reader. A reveal needs the `x-rupeefund-admin: 1` header, so a link on another site cannot log a reveal in the name of a reader.
 - The page and each handler in `apps/admin/src/routes.ts` set `Cache-Control: private, no-store`. No cache keeps a count, so each refresh reads the database.
-- Migration `0006` set `updates_opt_in = 1` on each row from before 2026-09-12. That person did not tick the box.
 - The log keeps 7 days on the Workers Paid plan. Treat it as an operations record, not as a permanent one.
 
 ### 10.4 The row budget
@@ -118,11 +115,7 @@ D1 bills each scanned row past the monthly allowance, and the site, the content 
 
 **Put no filter on a list endpoint except the `id` cursor, unless an index covers it.** `WHERE id < ?` searches the primary key, so a page reads only its own rows. A filter on a column with no index scans the table, and so does a `LIKE` that matches few rows. Put each slice in the `GROUP BY` queries of `/api/summary`. The one exception is `/api/questions`: migration `0005` adds the partial index `idx_waitlist_question` for it.
 
-`apps/admin/src/repo.test.ts` reads `EXPLAIN QUERY PLAN` for each query. It fails in these conditions:
-
-- The page or the reveal does not search the primary key.
-- The questions query does not use `idx_waitlist_question`.
-- The summary does not cost exactly three table passes and two groupings.
+`apps/admin/src/repo.test.ts` fails when a query breaks this rule.
 
 ### 10.5 The security headers
 
@@ -168,7 +161,7 @@ The site has no content build. On each request, `src/content/load.ts` reads the 
 
 - `/media/<key>` and `/_emdash/api/media/file/<key>` send a file without a sign-in only when published content uses it. Else they need a signed-in, active person, and answer 404 to the others (`src/middleware.ts`). `/_image` always needs a signed-in person. `src/content/media.ts` lists the image types that `/media/<key>` sends. `/media/<key>?w=<width>` sends a smaller WebP copy for the widths in `MEDIA_WIDTHS` and 404 for each other width, so the count of image transforms stays small. The blog list and the keep-reading cards use these copies in `srcset`. The check of section 11.1 refuses each other type, so an SVG with a script cannot reach a page.
 - `src/outer.ts` answers 404 to each EmDash route that the site does not use, and `src/lib/edge.ts` lists them. Under `astro dev` the setup routes stay open, for the local sign-in of `docs/CONTRIBUTING.md`.
-- `src/outer.ts` answers 401 to a call to `/_emdash/api/*` with no GitHub sign-in, before EmDash starts. So a visitor cannot use the search or the comments of EmDash, and cannot make EmDash write to the database. An API token opens only the routes where EmDash checks the token. `TOKEN_UNCHECKED` in `src/lib/edge.ts` lists the public routes of EmDash. Check that list at each EmDash update. Two routes stay open to all: `/_emdash/api/media/file/` and **Log out**.
+- `src/outer.ts` answers 401 to a call to `/_emdash/api/*` with no GitHub sign-in, before EmDash starts. So a visitor cannot use the search or the comments of EmDash, and cannot make EmDash write to the database. An API token opens only the routes where EmDash checks the token. `TOKEN_UNCHECKED` in `src/lib/edge.ts` lists the public routes of EmDash. The update steps of section 11.8 check that list. Two routes stay open to all: `/_emdash/api/media/file/` and **Log out**.
 - Two WAF rules on the zone block common scanner paths and limit the requests of each address, before they start the Worker (section 11.6 of the [staff runbook](https://github.com/RupeeFund/ops/blob/main/docs/RUNBOOK.md)).
 
 ### 11.3 Who gets in
@@ -185,7 +178,7 @@ Two parts hold the rules. When you change one, read the other. `docs/EDITING.md`
 - The hooks in `src/plugin/hooks.ts`, which `src/plugin.ts` registers. The hooks refuse each schedule, so an entry goes live only when a person publishes it.
 - `src/middleware.ts`, with the routes in `src/lib/guard.ts`. It refuses a person below Admin each write to the FAQ, the community team and the MCP server of EmDash, and each write to a legal page that the hooks do not see. This includes the delete, because the delete hook does not name the person. The delete, restore and copy of the MCP server run no hook that names the person. It refuses the delete of a legal page from each person. It refuses each change to the model from a browser session. Only an API token changes the model (section 11.6).
 
-A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A late run skips the clean-up until the next day. `src/worker/maintenance.ts` logs whether the clean-up ran or was skipped. The clean-up deletes the older revisions of an entry for good (`docs/EDITING.md` section 3). The clean-up also removes expired sign-in challenges and tokens, unfinished uploads (D1 and R2), stale media-usage rows and old R2 transfer files. It keeps the newest 10,000 rows of the 404 log. A scheduled backup runs at the same time, if an admin turns it on. One run each day is enough, because the site refuses schedules.
+A cron trigger (`triggers` in `apps/web/wrangler.jsonc`) runs `scheduled()` in `src/worker.ts` once a day at 00:00 UTC. EmDash cleans up only in a run that starts at minute 0, so keep the cron at minute 0. A late run skips the clean-up until the next day. `src/worker/maintenance.ts` logs whether the clean-up ran or was skipped. The clean-up deletes the older revisions of an entry for good (`docs/EDITING.md` section 3). A scheduled backup runs at the same time, if an admin turns it on. One run each day is enough, because the site refuses schedules.
 
 ### 11.5 Preview
 
