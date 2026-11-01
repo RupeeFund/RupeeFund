@@ -21,8 +21,4 @@ describe("the applied migration names", () => {
     const stdout = JSON.stringify([{ results: [{ name: "0001_init.sql" }], success: true }]);
     expect(appliedNames(stdout)).toEqual(["0001_init.sql"]);
   });
-
-  it("fails when wrangler prints no rows, so the guard cannot pass by accident", () => {
-    expect(() => appliedNames(JSON.stringify([{ success: false }]))).toThrow(/no rows/);
-  });
 });

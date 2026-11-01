@@ -26,6 +26,14 @@ export function claimPending(at: number): string {
      RETURNING ${COLUMNS}`;
 }
 
+export function d1Rows(stdout: string): Record<string, unknown>[] {
+  const parsed: unknown = JSON.parse(stdout);
+  const first = Array.isArray(parsed) ? parsed[0] : parsed;
+  const rows: unknown = (first as { results?: unknown } | undefined)?.results;
+  if (!Array.isArray(rows)) throw new Error("wrangler returned no rows");
+  return rows as Record<string, unknown>[];
+}
+
 export type ExportableRow = Pick<WaitlistRow, (typeof EXPORT_COLUMNS)[number]>;
 
 export function toCsvField(value: unknown): string {

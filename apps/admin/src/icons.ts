@@ -1,10 +1,8 @@
 const PATHS: Readonly<Record<string, string>> = {
   signups: "M5 20V10M12 20V4M19 20v-7",
   records: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4",
-  people: "M17 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M10 4a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7",
   chevron: "M6 9l6 6 6-6",
   arrow: "M5 12h14M13 6l6 6-6 6",
-  menu: "M4 7h16M4 12h16M4 17h16",
   close: "M6 6l12 12M18 6L6 18",
   eye:
     "M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12" +

@@ -1,5 +1,6 @@
 import type { Section } from "./chrome.ts";
 import { icon } from "./icons.ts";
+import { PAGE_SIZE } from "./sql.ts";
 
 const SCRIPT = `
 let askedCursor = null;
@@ -86,7 +87,7 @@ const BODY = `<section class="questions card grid gap-6 sm:gap-8" aria-labelledb
   hidden>${icon("question")}<p class="max-w-[40ch]">Nobody has asked a question yet. A question
 from the signup form appears here.</p></div>
 <button class="btn btn-quiet btn-on-white justify-self-start" id="questions-more" type="button"
-  hidden>Show 50 more</button>
+  hidden>Show ${PAGE_SIZE} more</button>
 </section>`;
 
 export const QUESTIONS: Section = { body: BODY, script: SCRIPT };

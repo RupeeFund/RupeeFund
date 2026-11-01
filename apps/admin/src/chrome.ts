@@ -1,15 +1,7 @@
 import { FAVICON, STYLESHEET } from "../.generated/assets.ts";
 import { icon, sprite } from "./icons.ts";
-import { PANEL_HEADER, SUMMARY_MAX_AGE } from "./routes.ts";
+import { PANEL_HEADER } from "./routes.ts";
 import { DAILY_DAYS, DAY_MS } from "./sql.ts";
-
-export interface Dashboard {
-  href: string;
-  label: string;
-  glyph: string;
-}
-
-export const DASHBOARDS: readonly Dashboard[] = [{ href: "/", label: "Waitlist", glyph: "people" }];
 
 const PRELUDE = `
 const DAY_MS = ${DAY_MS};
@@ -214,80 +206,23 @@ async function attempt() {
   if (failure !== null) fail(failure, AGAIN);
 }
 
-function startSidebar() {
-  const sidebar = byId("sidebar");
-  const toggle = byId("sidebar-toggle");
-  const wide = matchMedia("(min-width: 48rem)");
-  const open = () => toggle.getAttribute("aria-expanded") === "true";
-  const set = (on) => toggle.setAttribute("aria-expanded", String(on));
-  const covers = () => !wide.matches;
-  toggle.hidden = false;
-  toggle.addEventListener("click", () => set(!open()));
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || !open() || document.querySelector("dialog[open]") !== null) {
-      return;
-    }
-    if (!covers() && !sidebar.contains(document.activeElement)) return;
-    set(false);
-    toggle.focus();
-  });
-  sidebar.addEventListener("focusout", (event) => {
-    if (covers() && open() && !sidebar.contains(event.relatedTarget)) set(false);
-  });
-}
-
-let REFRESH = () => RUN();
-
-function live(refresh) {
-  REFRESH = refresh;
-}
-
-function startRefresh() {
+function startRefresh(refresh) {
   const button = byId("refresh");
-  if (button === null) return;
-  const auto = byId("auto-refresh");
-  const clock = byId("auto-refresh-left");
-  let left = ${SUMMARY_MAX_AGE};
-  let timer = null;
-  const show = () => {
-    clock.textContent = timer === null ? "" : left + "s";
-  };
-  async function now() {
+  button.addEventListener("click", async () => {
     if (button.hasAttribute("data-busy")) return;
     button.setAttribute("data-busy", "");
     try {
-      await REFRESH();
+      await refresh();
     } catch (err) {
-      fail(err, () => REFRESH());
+      fail(err, refresh);
     }
     button.removeAttribute("data-busy");
-    left = ${SUMMARY_MAX_AGE};
-    show();
-  }
-  function tick() {
-    if (document.hidden || button.hasAttribute("data-busy")) return;
-    left -= 1;
-    if (left <= 0) now();
-    else show();
-  }
-  button.addEventListener("click", now);
-  auto.addEventListener("click", () => {
-    if (timer === null) {
-      timer = setInterval(tick, 1000);
-    } else {
-      clearInterval(timer);
-      timer = null;
-    }
-    auto.setAttribute("aria-pressed", String(timer !== null));
-    left = ${SUMMARY_MAX_AGE};
-    show();
   });
 }
 
-function boot(run) {
+function boot(run, refresh) {
   RUN = run;
-  startSidebar();
-  startRefresh();
+  startRefresh(refresh);
   byId("retry").addEventListener("click", () => {
     attempt();
   });
@@ -295,26 +230,8 @@ function boot(run) {
 }
 `;
 
-function sidebarLinks(path: string): string {
-  return DASHBOARDS.map((entry) => {
-    const current = entry.href === path ? ' aria-current="page"' : "";
-    return (
-      `<li><a class="sidebar-link" title="${entry.label}" href="${entry.href}"${current}>` +
-      `${icon(entry.glyph)}` +
-      `<span class="sidebar-label">${entry.label}</span></a></li>`
-    );
-  }).join("");
-}
-
-function labelFor(path: string): string {
-  return DASHBOARDS.find((entry) => entry.href === path)?.label ?? "Waitlist";
-}
-
-export const REFRESH_CONTROLS = `<button class="btn btn-quiet btn-on-white refresh" id="refresh"
-  type="button">${icon("refresh")}Refresh</button>
-<button class="btn btn-quiet btn-on-white btn-toggle" id="auto-refresh" type="button"
-  aria-pressed="false">Auto refresh<span class="num" id="auto-refresh-left"
-  aria-hidden="true"></span></button>`;
+export const REFRESH_CONTROL = `<button class="btn btn-quiet btn-on-white refresh" id="refresh"
+  type="button">${icon("refresh")}Refresh</button>`;
 
 export interface Section {
   body: string;
@@ -323,35 +240,31 @@ export interface Section {
 }
 
 export interface ViewSlots {
-  path: string;
+  title: string;
   body: string;
   dialogs?: string;
   script: string;
 }
 
 export function page(view: ViewSlots): string {
-  const label = labelFor(view.path);
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>${label} — The Rupee Fund</title>
+<title>${view.title} — The Rupee Fund</title>
 <link rel="icon" type="image/svg+xml" href="${FAVICON}">
 <link rel="stylesheet" href="${STYLESHEET}">
 </head>
 <body class="shell">
 ${sprite()}
 <a class="skip" href="#main">Skip to the content</a>
-<nav class="sidebar" id="sidebar" aria-label="Admin">
-<img class="sidebar-mark" src="${FAVICON}" alt="The Rupee Fund" width="32" height="32">
-<button class="btn btn-quiet btn-on-white btn-icon" id="sidebar-toggle" type="button"
-  aria-label="Sidebar" aria-expanded="false" aria-controls="sidebar" hidden>${icon("menu")}</button>
-<ul class="sidebar-list">${sidebarLinks(view.path)}</ul>
-<ul class="sidebar-list sidebar-end"><li><a class="sidebar-link sidebar-danger" title="Sign out"
-  href="/cdn-cgi/access/logout">${icon("logout")}<span class="sidebar-label">Sign out</span></a></li></ul>
-</nav>
+<header class="topbar">
+<img class="topbar-mark" src="${FAVICON}" alt="The Rupee Fund" width="32" height="32">
+<a class="btn btn-quiet btn-on-white topbar-signout"
+  href="/cdn-cgi/access/logout">${icon("logout")}Sign out</a>
+</header>
 <p id="loading" class="sr-only" role="status">Loading…</p>
 <main class="grid min-w-0 content-start gap-6 sm:gap-8 px-[clamp(1rem,3vw,2.5rem)] py-6"
   id="main" tabindex="-1" aria-busy="true">

@@ -30,7 +30,7 @@ pnpm dev
 
 - To sign in to the content manager as an admin, with no GitHub account, open `http://localhost:8787/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`.
 - When pnpm tells you to run `pnpm install`, run it.
-- `pnpm db:reset` erases your local data. Stop each server first. It refuses while a server listens on port 8787, 8788 or 8789, from any folder. It cannot see `pnpm dev:portless`.
+- `pnpm db:reset` erases your local data. Stop each server first. It refuses while a server listens on port 8787 or 8788, from any folder. It cannot see `pnpm dev:portless`.
 - For more than one checkout at a time, run `pnpm dev:portless`. Its first run after each boot asks for your password.
 
 ### In Codespaces or a dev container

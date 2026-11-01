@@ -8,7 +8,7 @@ async function boot(summary: unknown = SUMMARY): Promise<void> {
     "fetch",
     vi.fn(async (path: string) => Response.json(answerFor(path, data))),
   );
-  mount("/");
+  mount();
   await vi.waitFor(() =>
     expect(document.querySelector("#figure-active")?.textContent).not.toBe("—"),
   );
@@ -65,12 +65,20 @@ describe("the numbers section", () => {
     ]);
   });
 
-  it("says how many people answered the roles and the reasons", async () => {
-    await boot(withTotals({ roles_answered: 2, reasons_answered: 0 }));
+  it("counts the roles and the reasons against everyone on the list", async () => {
+    await boot(withTotals({ active: 2 }));
     expect([
       document.querySelector("#roles-base")?.textContent,
       document.querySelector("#reasons-base")?.textContent,
-    ]).toEqual(["2 people answered. Each could pick more than one.", "Nobody answered yet."]);
+    ]).toEqual([
+      "Of 2 people on the list. Each could pick more than one.",
+      "Of 2 people on the list. Each could pick more than one.",
+    ]);
+  });
+
+  it("says nobody is on the list when every signup left, not that nobody joined", async () => {
+    await boot(withTotals({ total: 5, active: 0 }));
+    expect(document.querySelector("#roles-base")?.textContent).toBe("Nobody is on the list.");
   });
 
   it("projects the day of 1,000 from the net growth of the last 30 days", async () => {
@@ -126,9 +134,9 @@ describe("the numbers section", () => {
     ]);
   });
 
-  it("gives the updates share of the people the form asked", async () => {
+  it("gives the updates share of the active list", async () => {
     await boot();
-    expect(figure("updates_opt_in")).toEqual(["1", "50% of those asked"]);
+    expect(figure("updates_opt_in")).toEqual(["1", "33% of the list"]);
   });
 
   it("ends the chart today, so a quiet stretch shows as empty days", async () => {

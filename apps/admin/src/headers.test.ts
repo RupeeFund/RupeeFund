@@ -1,11 +1,7 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { ADMIN_CSP, SECURITY_HEADERS, withSecurityHeaders } from "./headers.ts";
-import { render } from "./pages.ts";
 import { callWorker } from "./testkit.ts";
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
+import { waitlistPage } from "./view-waitlist.ts";
 
 describe("the security headers", () => {
   it("names every host the shell needs, and no other", () => {
@@ -20,7 +16,7 @@ describe("the security headers", () => {
   });
 
   it("permits the inline script the shell carries", () => {
-    expect(render("/")).toContain("<script>");
+    expect(waitlistPage()).toContain("<script>");
     expect(ADMIN_CSP).toContain("script-src 'self' 'unsafe-inline'");
   });
 
@@ -60,31 +56,11 @@ describe("the Worker entry", () => {
     expect(res.headers.get("cache-control")).toBe("private, no-store");
   });
 
-  it("sets the headers on a summary answered from the cache", async () => {
-    const stored = new Map<string, Response>();
-    let served = 0;
-    vi.stubGlobal("caches", {
-      default: {
-        match: async (request: Request) => {
-          const found = stored.get(request.url);
-          if (found !== undefined) served += 1;
-          return found?.clone();
-        },
-        put: async (request: Request, response: Response) => {
-          stored.set(request.url, response);
-        },
-      },
-    });
-
-    const reader = { email: "volunteer@example.org" };
-    const miss = await callWorker("/api/summary", reader);
-    const hit = await callWorker("/api/summary", reader);
-
-    expect(miss.status).toBe(200);
-    expect(hit.status).toBe(200);
-    expect(served).toBe(1);
+  it("sets the headers on the summary", async () => {
+    const res = await callWorker("/api/summary", { email: "volunteer@example.org" });
+    expect(res.status).toBe(200);
     for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
-      expect(hit.headers.get(name)).toBe(value);
+      expect(res.headers.get(name)).toBe(value);
     }
   });
 });

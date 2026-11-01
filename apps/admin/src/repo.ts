@@ -21,9 +21,6 @@ export interface Totals extends Record<RoleField | ReasonField, number> {
   recent_joined: number;
   recent_left: number;
   updates_opt_in: number;
-  updates_asked: number;
-  roles_answered: number;
-  reasons_answered: number;
   questions: number;
 }
 

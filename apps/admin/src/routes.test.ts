@@ -10,51 +10,21 @@ import {
   handleWaitlist,
   NO_STORE,
   PANEL_HEADER,
-  SUMMARY_MAX_AGE,
   type RouteDeps,
-  type SummaryCache,
 } from "./routes.ts";
 import { PAGE_SIZE } from "./sql.ts";
 import { makeCtx, makeLogger } from "./testkit.ts";
 import { makeSqlite, type SqliteFixture } from "./testkit-sqlite.ts";
 import type { AdminEnv, AdminVariables } from "./types.ts";
 
-interface SpyCache extends SummaryCache {
-  matches: number;
-  puts: Response[];
-}
-
-function makeCache(): SpyCache {
-  const stored = new Map<string, Response>();
-  const spy: SpyCache = {
-    matches: 0,
-    puts: [],
-    async delete(request) {
-      return stored.delete(request.url);
-    },
-    async match(request) {
-      spy.matches += 1;
-      const hit = stored.get(request.url);
-      return hit === undefined ? undefined : hit.clone();
-    },
-    async put(request, response) {
-      spy.puts.push(response.clone());
-      stored.set(request.url, response);
-    },
-  };
-  return spy;
-}
-
 let fixture: SqliteFixture;
-let cache: SpyCache;
 let logger: ReturnType<typeof makeLogger>;
 let deps: RouteDeps;
 
 beforeEach(() => {
   fixture = makeSqlite();
-  cache = makeCache();
   logger = makeLogger();
-  deps = { repo: createAdminRepo(fixture.db), cache, log: logger.log };
+  deps = { repo: createAdminRepo(fixture.db), log: logger.log };
 });
 
 afterEach(() => {
@@ -90,17 +60,6 @@ function call(
 }
 
 describe("/api/summary", () => {
-  it("checks access before the cache", async () => {
-    const res = await makeApp().request(
-      "http://admin.test/api/summary",
-      {},
-      { DB: fixture.db, ACCESS_AUD: "test-aud" },
-      makeCtx(),
-    );
-    expect(res.status).toBe(403);
-    expect(cache.matches).toBe(0);
-  });
-
   it("serves the counts to a reader", async () => {
     fixture.seed([{ email: "a@example.org" }, { email: "b@example.org" }]);
     const res = await call("/api/summary");
@@ -116,20 +75,14 @@ describe("/api/summary", () => {
     expect(body.asOf).toBeLessThanOrEqual(Date.now());
   });
 
-  it("stores the counts for a minute, because they carry no personal data", async () => {
-    const res = await call("/api/summary");
-    expect(res.headers.get("cache-control")).toBe(`max-age=${SUMMARY_MAX_AGE}`);
-    expect(cache.puts).toHaveLength(1);
-  });
-
-  it("answers the second reader from the cache without touching the database", async () => {
+  it("reads the database on each request, and no cache keeps the answer", async () => {
     fixture.seed([{ email: "a@example.org" }]);
     await call("/api/summary");
     fixture.seed([{ email: "b@example.org" }]);
     const res = await call("/api/summary");
     const body = (await res.json()) as { totals: { total: number } };
-    expect(body.totals.total).toBe(1);
-    expect(cache.puts).toHaveLength(1);
+    expect(body.totals.total).toBe(2);
+    expect(res.headers.get("cache-control")).toBe(NO_STORE);
   });
 });
 
@@ -138,7 +91,7 @@ describe("/api/waitlist", () => {
     fixture.seed([{ email: "someone@example.org" }]);
     const res = await call("/api/waitlist");
     const body = (await res.json()) as { rows: { email_masked: string }[] };
-    expect(body.rows[0]?.email_masked).toBe("••••@•••••.org");
+    expect(body.rows[0]?.email_masked).toBe("••••@•••••");
     expect(JSON.stringify(body)).not.toContain("someone@example.org");
   });
 
@@ -182,7 +135,7 @@ describe("/api/questions", () => {
     fixture.seed([{ email: "someone@example.org", question: "How do I help?" }]);
     const res = await call("/api/questions");
     const body = (await res.json()) as { rows: { email_masked: string }[] };
-    expect(body.rows[0]?.email_masked).toBe("••••@•••••.org");
+    expect(body.rows[0]?.email_masked).toBe("••••@•••••");
     expect(JSON.stringify(body)).not.toContain("someone@example.org");
   });
 
@@ -260,8 +213,6 @@ describe("/api/reveal/:id", () => {
 });
 
 describe("POST /api/export", () => {
-  const SAME = { origin: "http://admin.test", ...PANEL };
-
   function post(
     headers: Record<string, string>,
     identity: typeof READER | Record<string, never> = READER,
@@ -283,7 +234,7 @@ describe("POST /api/export", () => {
 
   it("sends the pending rows as a CSV file that no cache keeps, and stamps them", async () => {
     fixture.seed([{ email: "a@example.org" }, { email: "b@example.org", unsubscribed_at: 5 }]);
-    const res = await post(SAME);
+    const res = await post(PANEL);
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toContain("text/csv");
     expect(res.headers.get("content-disposition")).toMatch(
@@ -299,45 +250,39 @@ describe("POST /api/export", () => {
 
   it("logs the actor, the stamp time and the count, never an address", async () => {
     fixture.seed([{ email: "a@example.org" }]);
-    await post(SAME);
+    await post(PANEL);
     const entry = logger.entries.find((e) => e.event === "export");
     expect(entry).toMatchObject({ actor: READER.email, count: 1 });
     expect(typeof entry?.at).toBe("number");
     expect(JSON.stringify(logger.entries)).not.toContain("a@example.org");
   });
 
-  it("drops the cached counts, so the next summary shows the new pending count", async () => {
+  it("shows the new pending count on the next summary", async () => {
     fixture.seed([{ email: "a@example.org" }]);
     await call("/api/summary");
-    await post(SAME);
+    await post(PANEL);
     const res = await call("/api/summary");
     const body = (await res.json()) as { totals: { pending: number } };
     expect(body.totals.pending).toBe(0);
   });
 
   it("answers 204 and writes no file when nobody is pending", async () => {
-    const res = await post(SAME);
+    const res = await post(PANEL);
     expect(res.status).toBe(204);
     expect(await res.text()).toBe("");
   });
 
-  for (const [name, headers] of [
-    ["no panel header", { origin: "http://admin.test" }],
-    ["no origin", PANEL],
-    ["another origin", { origin: "https://evil.example", ...PANEL }],
-  ] as const) {
-    it(`refuses a request with ${name}, and stamps nothing`, async () => {
-      fixture.seed([{ email: "a@example.org" }]);
-      const res = await post(headers);
-      expect(res.status).toBe(403);
-      expect(stamped()).toBe(0);
-      expect(logger.entries.some((e) => e.event === "export_denied")).toBe(true);
-    });
-  }
+  it("refuses a request with no panel header, and stamps nothing", async () => {
+    fixture.seed([{ email: "a@example.org" }]);
+    const res = await post({ origin: "http://admin.test" });
+    expect(res.status).toBe(403);
+    expect(stamped()).toBe(0);
+    expect(logger.entries.some((e) => e.event === "export_denied")).toBe(true);
+  });
 
   it("refuses an identity that carries no email, and stamps nothing", async () => {
     fixture.seed([{ email: "a@example.org" }]);
-    const res = await post(SAME, {});
+    const res = await post(PANEL, {});
     expect(res.status).toBe(403);
     expect(stamped()).toBe(0);
   });

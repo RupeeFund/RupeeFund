@@ -5,27 +5,20 @@ import type { AdminEnv, AdminLogger, AdminVariables } from "./types.ts";
 
 type AdminBindings = { Bindings: AdminEnv; Variables: AdminVariables };
 
-function readExecutionCtx(c: Context<AdminBindings>): unknown {
+function readAccess(c: Context<AdminBindings>): CloudflareAccessContext | undefined {
   try {
-    return c.executionCtx;
+    return (c.executionCtx as { access?: CloudflareAccessContext }).access;
   } catch {
     return undefined;
   }
 }
 
-function readAccess(source: unknown): CloudflareAccessContext | undefined {
-  if (typeof source !== "object" || source === null) return undefined;
-  const { access } = source as { access?: CloudflareAccessContext };
-  if (typeof access?.aud !== "string" || access.aud.length === 0) return undefined;
-  if (typeof access.getIdentity !== "function") return undefined;
-  return access;
-}
-
 export function requireAccess(log: AdminLogger): MiddlewareHandler<AdminBindings> {
   return createMiddleware<AdminBindings>(async (c, next) => {
-    const access = readAccess(readExecutionCtx(c));
+    const access = readAccess(c);
+    const audience = c.env.ACCESS_AUD;
     const reason =
-      access === undefined ? "missing" : access.aud !== c.env.ACCESS_AUD ? "aud" : null;
+      access === undefined ? "missing" : !audience || access.aud !== audience ? "aud" : null;
     if (access === undefined || reason !== null) {
       log({
         event: "access_denied",

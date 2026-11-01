@@ -5,6 +5,7 @@ import {
   BATCH,
   claimPending,
   COUNT_PENDING,
+  d1Rows,
   type ExportableRow,
   SELECT_PENDING,
   toCsv,
@@ -12,15 +13,7 @@ import {
 
 const DB_NAME = "rupeefund-waitlist";
 
-export type Row = Record<string, unknown>;
-
-export function parseD1Json(stdout: string): Row[] {
-  const parsed = JSON.parse(stdout);
-  const first = Array.isArray(parsed) ? parsed[0] : parsed;
-  return first?.results ?? [];
-}
-
-function query<T extends Row = Row>(sql: string, remote: boolean): T[] {
+function query<T = Record<string, unknown>>(sql: string, remote: boolean): T[] {
   const args = [
     "wrangler",
     "d1",
@@ -31,7 +24,7 @@ function query<T extends Row = Row>(sql: string, remote: boolean): T[] {
     "--command",
     sql,
   ];
-  return parseD1Json(
+  return d1Rows(
     execFileSync("pnpm", args, { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 }),
   ) as T[];
 }

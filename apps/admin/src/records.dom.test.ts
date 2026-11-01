@@ -43,7 +43,7 @@ function stubFetch(): void {
 
 async function boot(): Promise<void> {
   stubFetch();
-  mount("/");
+  mount();
   await vi.waitFor(() => expect(document.querySelectorAll("#rows tr")).toHaveLength(1));
 }
 
@@ -69,7 +69,7 @@ async function revealThenOpenAnother(): Promise<(late: Response) => void> {
       path === "/api/reveal/7" ? late : Response.json(answerFor(path, { ...viewData(), rows })),
     ),
   );
-  mount("/");
+  mount();
   await vi.waitFor(() => expect(document.querySelectorAll("#rows tr")).toHaveLength(2));
   const opens = document.querySelectorAll<HTMLButtonElement>(".row-action button");
   opens[0]?.click();
@@ -211,15 +211,13 @@ describe("the records section", () => {
     expect(document.querySelector("#detail-joined")?.textContent).toBe("14 November 2023");
   });
 
-  it("shows a NULL answer as not recorded, apart from an empty one", async () => {
-    row = { ...ROW, amount: null, months: "", updates_opt_in: null };
+  it("shows a missing amount as not recorded, apart from an empty term", async () => {
+    row = { ...ROW, amount: null, months: "" };
     await boot();
     openRecord();
     expect(
-      ["#detail-amount", "#detail-months", "#detail-updates"].map(
-        (id) => document.querySelector(id)?.textContent,
-      ),
-    ).toEqual(["Not recorded", "Not given", "Not recorded"]);
+      ["#detail-amount", "#detail-months"].map((id) => document.querySelector(id)?.textContent),
+    ).toEqual(["Not recorded", "Not given"]);
   });
 
   it("shows the term as the person typed it", async () => {
@@ -229,16 +227,8 @@ describe("the records section", () => {
     expect(document.querySelector("#detail-months")?.textContent).toBe("12+");
   });
 
-  it("says not recorded for a row the form never asked about the roles", async () => {
-    row = { ...ROW, is_user: null, is_creator: null, is_professional: null, is_student: null };
-    await boot();
-    expect(document.querySelector('#rows td[data-label="Roles"]')?.textContent).toBe(
-      "Not recorded",
-    );
-  });
-
-  it("says none for a row that was asked and ticked no role", async () => {
-    row = { ...ROW, is_user: 0, is_creator: 0, is_professional: null, is_student: 0 };
+  it("says none for a row that ticked no role", async () => {
+    row = { ...ROW, is_user: 0, is_creator: 0, is_professional: 0, is_student: 0 };
     await boot();
     expect(document.querySelector('#rows td[data-label="Roles"]')?.textContent).toBe("None");
   });
@@ -249,7 +239,7 @@ describe("the records section", () => {
     const boxes = ["is_user", "is_creator", "is_professional", "backs_larger"].map(
       (field) => document.querySelector(`#detail-${field}`)?.textContent,
     );
-    expect(boxes).toEqual(["Yes", "No", "Not recorded", "Yes"]);
+    expect(boxes).toEqual(["Yes", "No", "No", "Yes"]);
   });
 
   it("dates the export, the unsubscribe and the last change in the record", async () => {
@@ -397,7 +387,7 @@ describe("the records section", () => {
     window.history.replaceState(null, "", "/?status=unsubscribed&q=asha");
     asked = [];
     stubFetch();
-    mount("/");
+    mount();
     await vi.waitFor(() => expect(document.querySelectorAll("#rows tr")).toHaveLength(1));
     expect(document.querySelector<HTMLSelectElement>("#filter-status")?.value).toBe("unsubscribed");
     expect(document.querySelector<HTMLInputElement>("#search")?.value).toBe("asha");
@@ -416,7 +406,7 @@ describe("the records section", () => {
         return Response.json(serve(path));
       }),
     );
-    mount("/");
+    mount();
 
     document.querySelector<HTMLButtonElement>("#records-more")?.click();
     release();
@@ -437,7 +427,7 @@ describe("the records section", () => {
         ),
       ),
     );
-    mount("/");
+    mount();
     await vi.waitFor(() =>
       expect(document.querySelector<HTMLElement>("#records-blank")?.hidden).toBe(false),
     );
@@ -459,7 +449,7 @@ describe("the records section", () => {
         );
       }),
     );
-    mount("/");
+    mount();
     expect(document.querySelector<HTMLElement>("#records-more")?.hidden).toBe(true);
     release();
     await vi.waitFor(() =>
@@ -477,7 +467,7 @@ describe("the records section", () => {
         return Response.json({ rows: [{ ...ROW, id: page }], next: page === 1 ? 1 : null });
       }),
     );
-    mount("/");
+    mount();
     await vi.waitFor(() =>
       expect(document.querySelector<HTMLElement>("#records-more")?.hidden).toBe(false),
     );
@@ -516,7 +506,7 @@ describe("the records section", () => {
         return Response.json(page === 1 ? { rows: [ROW], next: 1 } : { rows: [], next: null });
       }),
     );
-    mount("/");
+    mount();
     await vi.waitFor(() =>
       expect(document.querySelector<HTMLElement>("#records-more")?.hidden).toBe(false),
     );
