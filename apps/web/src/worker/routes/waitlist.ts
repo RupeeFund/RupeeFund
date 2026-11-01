@@ -23,16 +23,6 @@ function reply(status: number, code: string): Response {
   return status === 200 ? json(200, { ok: true }) : json(status, { error: code });
 }
 
-function isSameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (origin === null) return true;
-  try {
-    return new URL(origin).origin === new URL(request.url).origin;
-  } catch {
-    return false;
-  }
-}
-
 export class BodyTooLarge extends Error {}
 
 async function readBodyWithin(request: Request, limit: number): Promise<string> {
@@ -69,8 +59,6 @@ export async function handleWaitlist(request: Request, deps: WaitlistDeps): Prom
     .toLowerCase()
     .startsWith(JSON_CONTENT_TYPE);
   if (!isJson) return reply(415, "unsupported_type");
-
-  if (!isSameOrigin(request)) return reply(403, "origin");
 
   const ip = request.headers.get("cf-connecting-ip") ?? "";
   try {

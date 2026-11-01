@@ -1,4 +1,4 @@
-import { AMOUNT_OTHER, REASON_FIELDS, ROLE_FIELDS } from "@rupeefund/db/schema";
+import { AMOUNT_OTHER } from "@rupeefund/db/schema";
 
 const TURNSTILE_FIELD = "cf-turnstile-response";
 
@@ -47,6 +47,7 @@ export async function submitWaitlist(
 
   showError(err, "");
   const fd = new FormData(form);
+  fd.delete(TURNSTILE_FIELD);
   const idleLabel = submit?.textContent ?? "";
   if (submit) {
     submit.disabled = true;
@@ -61,21 +62,7 @@ export async function submitWaitlist(
     const res = await deps.fetchImpl("/api/waitlist", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        name: String(fd.get("name") ?? ""),
-        email: String(fd.get("email") ?? ""),
-        source: String(fd.get("source") ?? ""),
-        company: String(fd.get("company") ?? ""),
-        amount: String(fd.get("amount") ?? ""),
-        amount_other: String(fd.get("amount_other") ?? ""),
-        months: String(fd.get("months") ?? ""),
-        question: String(fd.get("question") ?? ""),
-        updates: String(fd.get("updates") ?? ""),
-        ...Object.fromEntries(
-          [...ROLE_FIELDS, ...REASON_FIELDS].map((field) => [field, String(fd.get(field) ?? "")]),
-        ),
-        turnstileToken,
-      }),
+      body: JSON.stringify({ ...Object.fromEntries(fd), turnstileToken }),
     });
     if (!res.ok) {
       resetTurnstile(doc);

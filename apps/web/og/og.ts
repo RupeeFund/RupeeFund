@@ -2,7 +2,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { join } from "node:path";
 import { createElement } from "react";
-import { INITIATIVE, TAGLINE } from "../src/lib/seo.ts";
+import { TAGLINE } from "../src/components/site/constants.ts";
+import { INITIATIVE } from "../src/lib/seo.ts";
 import { Logo } from "./logo.tsx";
 import { renderPng } from "./render.ts";
 

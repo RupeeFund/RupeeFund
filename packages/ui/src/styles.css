@@ -212,12 +212,6 @@
     @apply text-brand-fg whitespace-nowrap focus-visible:rounded-sm forced-colors:underline;
   }
 
-  .inline-link-ink {
-    --color-brand: var(--color-ink);
-    --focus: var(--color-ink);
-    @apply text-ink;
-  }
-
   @media (hover: hover) {
     .inline-link:hover {
       background-size:

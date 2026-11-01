@@ -1,11 +1,10 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
-import SignupCard from "../site/SignupCard.astro";
 import Supporters from "./Supporters.astro";
 
-async function render(props: Record<string, unknown>, component: unknown = Supporters) {
+async function render(props: Record<string, unknown>) {
   const container = await AstroContainer.create();
-  return container.renderToString(component as never, { props });
+  return container.renderToString(Supporters, { props });
 }
 
 const terms = (html: string) =>
@@ -30,18 +29,5 @@ describe("the supporter figures", () => {
 
   it("show nothing without figures", async () => {
     expect((await render({ title: "Pledges so far", supporters: null })).trim()).toBe("");
-  });
-});
-
-describe("the sign-up card", () => {
-  it("asks the visitor to join the supporters", async () => {
-    const supporters = { count: 1234, season: 567890, median: 128 };
-    expect(await render({ supporters }, SignupCard)).toContain(
-      "Join 1,234 others who have pledged.",
-    );
-  });
-
-  it("leaves the line out without figures", async () => {
-    expect(await render({}, SignupCard)).not.toContain("Join");
   });
 });

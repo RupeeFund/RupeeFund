@@ -4,7 +4,7 @@ import type { WaitlistInput } from "./lib/validation.ts";
 
 export interface Env {
   WAITLIST_DB: D1Database;
-  SIGNUP_LIMITER?: RateLimit;
+  SIGNUP_LIMITER: RateLimit;
   TURNSTILE_SECRET?: string;
   TURNSTILE_HOSTNAMES?: string;
   TURNSTILE_ACTION?: string;

@@ -60,14 +60,52 @@ describe("validateWaitlist", () => {
     expect(result).toEqual({ ok: false, errors: ["email"] });
   });
 
-  it("falls back to the default source when the value is not on the allowlist", () => {
-    const result = validateWaitlist({ ...base, source: "somewhere-else" });
+  it("writes the one form as the source, whatever the body says", () => {
+    const result = validateWaitlist({ ...base, source: "footer" });
     expect(result).toMatchObject({ ok: true, value: { source: "subscribe" } });
   });
 
-  it("keeps a source that is on the allowlist", () => {
-    const result = validateWaitlist({ ...base, source: "FOOTER" });
-    expect(result).toMatchObject({ ok: true, value: { source: "footer" } });
+  it("stores one spelling for an address typed composed or decomposed", () => {
+    const composed = validateWaitlist({ ...base, email: "José@example.com" });
+    const decomposed = validateWaitlist({ ...base, email: "Jose\u0301@example.com" });
+    expect([composed, decomposed]).toMatchObject([
+      { ok: true, value: { email: "josé@example.com" } },
+      { ok: true, value: { email: "josé@example.com" } },
+    ]);
+  });
+
+  it("stores one spelling for a domain typed in Unicode or in punycode", () => {
+    const unicode = validateWaitlist({ ...base, email: "a@BÜCHER.example" });
+    const ascii = validateWaitlist({ ...base, email: "a@xn--bcher-kva.example" });
+    expect([unicode, ascii]).toMatchObject([
+      { ok: true, value: { email: "a@xn--bcher-kva.example" } },
+      { ok: true, value: { email: "a@xn--bcher-kva.example" } },
+    ]);
+  });
+
+  it("refuses a domain that a URL parser would read as a port, a path or a query", () => {
+    const refused = ["a@example.com:80", "a@example.com/x", "a@example.com?x", "a@exa%41mple.com"]
+      .map((email) => validateWaitlist({ ...base, email }))
+      .filter((result) => !result.ok);
+    expect(refused).toHaveLength(4);
+  });
+
+  it("refuses an address that carries a control or an invisible format character", () => {
+    const refused = ["a\u0000@example.com", "a\u200b@example.com", "a@exa\u202emple.com"]
+      .map((email) => validateWaitlist({ ...base, email }))
+      .filter((result) => !result.ok);
+    expect(refused).toHaveLength(3);
+  });
+
+  it("refuses a name with a control character, or only invisible characters", () => {
+    expect(
+      ["A\u0000sha", "\u200b\u200d", "\u202e"].map((name) => validateWaitlist({ ...base, name })),
+    ).toEqual(Array(3).fill({ ok: false, errors: ["name"] }));
+  });
+
+  it("keeps a joiner inside a name, because some scripts need it", () => {
+    const name = "\u0915\u094d\u200d\u0937";
+    expect(validateWaitlist({ ...base, name })).toMatchObject({ ok: true, value: { name } });
   });
 
   it("reports every failed field at once", () => {

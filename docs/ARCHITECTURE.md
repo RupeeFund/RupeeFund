@@ -48,7 +48,7 @@ Each row needs a Turnstile token, and Turnstile needs JavaScript. A browser with
 
 - `docs/DEPLOY.md` section 4 gives the rules for a migration. A migration that adds or changes a column must change `packages/db/src/schema.ts` too. `packages/db/tests/schema.test.ts` fails when one changes without the other.
 - `amount` is NULL only on a row from before migration `0005`. `months` and `question` hold `''` when a person skips them. Migration `0006` wrote 0 and `''` into the answers of each row from before the form asked them, so on an old row 0 does not mean that the person answered no.
-- A second signup with the same email address changes nothing, and the person sees the normal confirmation. The form cannot prove who owns an address, so it never rewrites a row and never reveals that one exists. To change an answer or to return after a removal, a person writes to the team, and an operator edits the row by hand.
+- The Worker stores one spelling of each address: NFC, lowercase, with the domain in punycode. A second signup with the same email address changes nothing, and the person sees the normal confirmation. The form cannot prove who owns an address, so it never rewrites a row and never reveals that one exists. To change an answer or to return after a removal, a person writes to the team, and an operator edits the row by hand.
 - Keep the waitlist database first in `d1_databases` of `apps/web/wrangler.jsonc`. The admin Worker test compares its database with the first one there.
 - EmDash makes and changes the tables of the content database itself (section 11.8).
 

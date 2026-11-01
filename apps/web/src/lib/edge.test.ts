@@ -212,6 +212,14 @@ describe("withHeaders", () => {
     expect(admin.headers.get("content-security-policy")).toBe("default-src 'self'");
   });
 
+  it("drops the server timing from a site page, which would show how the server works", () => {
+    const timed = (path: string) =>
+      withHeaders(path, new Response("x", { headers: { "server-timing": "db;dur=3" } }));
+    expect(
+      [timed("/faq"), timed("/_emdash/admin")].map((r) => r.headers.has("server-timing")),
+    ).toEqual([false, true]);
+  });
+
   it("keeps the site pages in search engines", () => {
     expect(page().headers.has("x-robots-tag")).toBe(false);
   });

@@ -113,6 +113,7 @@ export function withHeaders(path: string, response: Response): Response {
     answer.headers.set("x-robots-tag", "noindex, nofollow");
     return answer;
   }
+  answer.headers.delete("server-timing");
   if (!answer.headers.has("content-security-policy")) {
     answer.headers.set("content-security-policy", SITE_CSP);
   }
