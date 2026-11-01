@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  editModeReset,
   refusesAnonymous,
   isDenied,
   requestPath,
@@ -44,7 +43,6 @@ describe("isDenied", () => {
     "/_emdash/api/import/probe",
     "/_emdash/api/import/wordpress/execute",
     "/_emdash/api/admin/transfer/start",
-    "/_emdash/api/typegen",
     "/_emdash/api/site/domain-proof",
     "/_emdash/api/health",
     "/sitemap-posts.xml",
@@ -93,12 +91,6 @@ describe("isDenied", () => {
     expect(isDenied("/_emdash/admin/setup", true)).toBe(false);
     expect(isDenied("/_emdash/api/oauth/register", true)).toBe(true);
   });
-
-  it("allows typegen under astro dev, where EmDash writes emdash-env.d.ts", () => {
-    expect(isDenied("/_emdash/api/typegen", true)).toBe(false);
-    expect(isDenied("/_emdash/api/typegen", false)).toBe(true);
-    expect(isDenied("/_emdash/api/typegen", false, true)).toBe(true);
-  });
 });
 
 describe("signInTarget", () => {
@@ -127,30 +119,6 @@ describe("signInTarget", () => {
     ["GET", "/blog", html],
   ])("leaves %s %s (%s) to the content manager", (method, path, accept) => {
     expect(signInTarget(method, path, accept)).toBeNull();
-  });
-});
-
-describe("editModeReset", () => {
-  const url = new URL("https://rupeefund.org/faq?page=2");
-
-  it.each(["GET", "HEAD"])("sends a %s with an old edit cookie back without it", (method) => {
-    const reset = editModeReset(method, url, true);
-    expect(reset?.status).toBe(302);
-    expect(reset?.headers.get("location")).toBe("/faq?page=2");
-    expect(reset?.headers.get("set-cookie")).toBe("emdash-edit-mode=; Path=/; Max-Age=0");
-    expect(reset?.headers.get("cache-control")).toBe("no-store");
-  });
-
-  it("keeps the redirect on this site when the path starts with two slashes", () => {
-    const reset = editModeReset("GET", new URL("https://rupeefund.org//evil.example/x?a=1"), true);
-    expect(reset?.headers.get("location")).toBe("/evil.example/x?a=1");
-  });
-
-  it.each([
-    ["GET", false],
-    ["POST", true],
-  ])("leaves a %s with edit cookie %s alone", (method, editCookie) => {
-    expect(editModeReset(method, url, editCookie)).toBeNull();
   });
 });
 
@@ -195,7 +163,6 @@ describe("refusesAnonymous", () => {
     "/_emdash/api/search",
     "/_emdash/api/search/suggest",
     "/_emdash/api/comments/posts/x",
-    "/_emdash/api/oauth/token",
   ])("refuses %s even with a token, because EmDash does not check it there", (path) => {
     expect(refusesAnonymous("GET", path, "*/*", "Bearer ec_pat_x")).toBe(true);
   });

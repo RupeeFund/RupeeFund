@@ -40,7 +40,7 @@ To undo a change, restore an earlier revision and publish it. Each entry keeps i
 - Do not change the slug of a published entry. The old address then stops.
 - If you delete a category, its posts show Blog.
 
-If the site leaves out an entry or shows an error page, read section 8, correct the entry and publish again. If you cannot find the problem, tell a maintainer.
+If a publish stops, correct the fields that its message names (section 8) and publish again. If the site shows an error page, or you cannot find the problem, tell a maintainer.
 
 ## 5. Write a blog post
 
@@ -73,13 +73,13 @@ The post shows its publish date, its reading time, and the date of an edit on a 
 
 ## 8. What the site refuses
 
-The site leaves out an entry that holds:
+When you click **Publish**, the site checks the entry. If it cannot show the entry, the publish stops, and a message names each field to correct. The site cannot show:
 
-- An embed, an HTML block, a gallery or a reference. Remove it.
+- An embed, an HTML block, a gallery or a reference.
 - An SVG image, or an image outside the media library.
 - A link that does not start with `https://`, `mailto:`, `/` or `#`. Change `http://` to `https://`.
 - An empty callout, quote or call to action.
-- A team photo not on GitHub. Use the GitHub profile photo address.
+- A team photo not on GitHub.
 - A slug with a character other than a lowercase letter, a digit or a hyphen.
 
 ## 9. The other pages

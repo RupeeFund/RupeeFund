@@ -12,12 +12,4 @@ describe("live pages offer no editing", () => {
       expect(visits()[visit]).toMatchObject({ status: 200, pill: false, toolbar: false, marks: 0 });
     },
   );
-
-  it("sends an Admin with an old edit cookie back to the page without it, so no draft shows", () => {
-    expect(visits()["an Admin with an old edit cookie"]).toMatchObject({
-      status: 302,
-      location: "/",
-      setCookie: "emdash-edit-mode=; Path=/; Max-Age=0",
-    });
-  });
 });

@@ -62,7 +62,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (path === "/_image") return (await signedIn(context)) ? privately(await next()) : notFound();
   if (!isMediaFile(path)) {
     const member = locals.user !== undefined;
-    const read = { method, path, search: url.search, signedIn: member };
+    const read = { method, path, signedIn: member };
     const shared = context.cache.enabled && sharesRequest(read);
     if (shared) context.cache.set(pageCache(context.routePattern));
     const response = await next();

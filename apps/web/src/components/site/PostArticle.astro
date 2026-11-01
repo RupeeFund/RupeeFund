@@ -1,4 +1,5 @@
 ---
+import { mediaSrcset } from "../../content/media.ts";
 import type { Post } from "../../content/schema.ts";
 import { dayKey, longDate } from "./dates.ts";
 import PostLabel from "./PostLabel.astro";
@@ -85,6 +86,8 @@ const updated =
               <img
                 src={next.image.src}
                 alt=""
+                srcset={mediaSrcset(next.image.src, next.image.width)}
+                sizes="(min-width: 640px) 22rem, calc(100vw - 4rem)"
                 width={next.image.width}
                 height={next.image.height}
                 loading="lazy"

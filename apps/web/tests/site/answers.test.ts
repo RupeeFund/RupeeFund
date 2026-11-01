@@ -10,8 +10,11 @@ import {
   LEGAL_DELETES,
   MEDIA_ROUTES,
   MISSING,
+  REFUSED_PUBLISH,
   REFUSED_WRITES,
   RESIZED_MEDIA,
+  SHOWN_PUBLISH,
+  SMALL_MEDIA,
   ROUTES,
   SESSION_SCHEMA_WRITE,
   SIGNED_IN_READS,
@@ -43,6 +46,14 @@ describe("the live pages", () => {
     expect(answers()[route]).toMatchObject({
       status: 200,
       type: "image/jpeg",
+      csp: expect.stringContaining("sandbox"),
+    });
+  });
+
+  it.each(SMALL_MEDIA)("serve %s smaller, as WebP", (route) => {
+    expect(answers()[route]).toMatchObject({
+      status: 200,
+      type: "image/webp",
       csp: expect.stringContaining("sandbox"),
     });
   });
@@ -83,6 +94,19 @@ describe("the content guard", () => {
 
   it.each(ALLOWED_WRITES.map(callName))("passes %s on to the content manager", (name) => {
     expect(answers()[name]?.status).toBe(200);
+  });
+
+  it("publishes an editor's post that the site can show", () => {
+    expect(answers()[callName(SHOWN_PUBLISH)]?.status).toBe(200);
+  });
+
+  it("refuses an editor's post with an http link, and names the field", () => {
+    expect(answers()[callName(REFUSED_PUBLISH)]).toMatchObject({
+      status: 422,
+      body: expect.stringContaining(
+        "Fix this before you publish. Body, item 1: Use an https:, mailto: or site-relative link.",
+      ),
+    });
   });
 
   it.each(LEGAL_DELETES.map(callName))("refuses %s and names the way out", (name) => {

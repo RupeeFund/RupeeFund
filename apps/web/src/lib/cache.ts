@@ -14,13 +14,12 @@ const PRIVATE_TREES = /^\/(?:_emdash|auth)(?:\/|$)/;
 export interface PageRequest {
   method: string;
   path: string;
-  search: string;
   signedIn: boolean;
 }
 
-export function sharesRequest({ method, path, search, signedIn }: PageRequest): boolean {
+export function sharesRequest({ method, path, signedIn }: PageRequest): boolean {
   if (method !== "GET" && method !== "HEAD") return false;
-  return search === "" && !signedIn && !PRIVATE_TREES.test(path);
+  return !signedIn && !PRIVATE_TREES.test(path);
 }
 
 export function sharesAnswer(response: Response): boolean {

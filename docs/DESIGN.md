@@ -58,4 +58,4 @@ A new page uses the layout of its type:
 
 ## Link preview cards
 
-After the build, `src/build/og.ts` writes `/og/site.png`, the card for every page. The cards are [ogimagecn](https://ogimagecn.com) blocks in `src/components/og/`. To add a block, run `pnpm dlx shadcn@4.21.0 add @ogimagecn/<name>`. Then make its colours, type and logo agree with the brand rules.
+After the build, `apps/web/og/og.ts` writes `/og/site.png`, the card for every page. Keep the card code out of `src/`: the dev server scans `src/` and cannot load the native image renderer that the card uses.

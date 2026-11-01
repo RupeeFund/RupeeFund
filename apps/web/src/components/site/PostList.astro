@@ -1,4 +1,5 @@
 ---
+import { mediaSrcset } from "../../content/media.ts";
 import type { Post } from "../../content/schema.ts";
 import { longDate } from "./dates.ts";
 import PostLabel from "./PostLabel.astro";
@@ -49,6 +50,8 @@ const { posts } = Astro.props;
             <img
               src={post.image.src}
               alt=""
+              srcset={mediaSrcset(post.image.src, post.image.width)}
+              sizes="(min-width: 640px) 9rem, 5rem"
               width={post.image.width}
               height={post.image.height}
               loading="lazy"

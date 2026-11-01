@@ -177,7 +177,8 @@
         {
           "slug": "profile_url",
           "label": "Profile URL",
-          "type": "url"
+          "type": "url",
+          "validation": { "pattern": "^$|^(https://|mailto:|#|/(?![/\\\\]))" }
         },
         {
           "slug": "username",
@@ -187,7 +188,10 @@
         {
           "slug": "photo_url",
           "label": "Photo URL",
-          "type": "url"
+          "type": "url",
+          "validation": {
+            "pattern": "^$|^https://(github\\.com|avatars\\.githubusercontent\\.com)/"
+          }
         },
         {
           "slug": "order",

@@ -14,6 +14,6 @@
     "playwright.config.ts",
     "tests",
     "scripts",
-    "src/build"
+    "og"
   ]
 }

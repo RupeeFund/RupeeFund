@@ -1,5 +1,19 @@
 import { definePlugin, type PluginContext } from "emdash";
-import { deleteGate, publishGate, saveGate, scheduleGate, type Store } from "./plugin/hooks.ts";
+import {
+  beforePublish,
+  deleteGate,
+  publishGate,
+  purgePosts,
+  saveGate,
+  scheduleGate,
+  type EdgeCache,
+  type Store,
+} from "./plugin/hooks.ts";
+
+async function edgeCache(): Promise<EdgeCache | undefined> {
+  const { cache } = await import("cloudflare:workers");
+  return typeof cache?.purge === "function" ? cache : undefined;
+}
 
 function store(ctx: PluginContext): Store {
   const content = ctx.content;
@@ -28,6 +42,7 @@ export function createPlugin() {
       "content:revisions:read",
       "content:write",
       "hooks.content-policy:register",
+      "bylines:read",
     ],
     admin: {
       portableTextBlocks: [
@@ -81,9 +96,11 @@ export function createPlugin() {
     hooks: {
       "content:beforeSave": async (event, ctx) => saveGate(event, store(ctx)),
       "content:beforeDelete": async (event, ctx) => deleteGate(event, store(ctx)),
-      "content:beforePublish": async (event, ctx) => publishGate(event, store(ctx)),
+      "content:beforePublish": async (event, ctx) => beforePublish(event, store(ctx)),
       "content:beforeUnpublish": async (event, ctx) => publishGate(event, store(ctx)),
       "content:beforeSchedule": async () => scheduleGate(),
+      "byline:afterSave": async () => purgePosts(await edgeCache()),
+      "byline:afterDelete": async () => purgePosts(await edgeCache()),
     },
   });
 }
