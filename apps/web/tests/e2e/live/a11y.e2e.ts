@@ -61,7 +61,7 @@ test("forced colors keep the new-tab arrow, the card edge and the step line", as
     .first()
     .evaluate((link) => getComputedStyle(link, "::after").backgroundImage);
   expect(arrow).not.toBe("none");
-  await expect(page.locator(".card").first()).not.toHaveCSS("border-top-width", "0px");
+  await expect(page.locator(".sticker").first()).not.toHaveCSS("border-top-width", "0px");
   await page.goto("/");
   const line = await page
     .locator(".step")

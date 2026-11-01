@@ -9,46 +9,127 @@ interface Props {
 }
 
 const { title, supporters } = Astro.props;
-const figures = supporters && [
-  { label: "supporters", value: grouped(supporters.count) },
-  { label: "pledged each year", value: rupees(supporters.year) },
-  { label: "median monthly pledge", value: rupees(supporters.median) },
-];
+const figures = supporters && {
+  year: rupees(supporters.year),
+  side: [
+    {
+      label: "supporters",
+      value: grouped(supporters.count),
+      icon: "users" as const,
+      shape: "polygon(0 0, 100% 2px, calc(100% - 2px) 100%, 4px calc(100% - 3px))",
+    },
+    {
+      label: "median monthly pledge",
+      value: rupees(supporters.median),
+      icon: "chart" as const,
+      shape: "polygon(3px 2px, 100% 0, 100% 100%, 0 calc(100% - 3px))",
+    },
+  ],
+};
+const MAIN_SHAPE = "polygon(0 4cqi, calc(100% - 2cqi) 0, 100% calc(100% - 0.4cqi), 1cqi 100%)";
 ---
 
 {figures && (
   <section
     aria-labelledby="pledges-title"
-    class="wrap section-y bg-brand text-ink [--focus:var(--color-ink)]"
+    class:list={[
+      "wrap overflow-x-clip bg-brand py-8 text-ink sm:py-[clamp(3rem,6vh,4rem)]",
+      "[--focus:var(--color-ink)]",
+    ]}
   >
-    <h2 id="pledges-title" class="section-title">
-      {title}
-    </h2>
-    <p class="eyebrow mb-3 flex items-center gap-2">
-      <span class="relative flex size-2.5" aria-hidden="true">
-        <span
-          class:list={[
-            "absolute inline-flex size-full rounded-full",
-            "bg-ink opacity-60 motion-safe:animate-ping",
-          ]}
-        />
-        <span class="relative inline-flex size-2.5 rounded-full bg-ink" />
-      </span>
-      Live · Updated hourly
-    </p>
-    <dl class="grid gap-3 sm:grid-cols-3">
-      {figures.map(({ label, value }) => (
-        <div class="card flex flex-col-reverse gap-1 p-5 text-center sm:p-6">
-          <dt class="text-sm text-ink-2">{label}</dt>
-          <dd class="heading text-4xl tabular-nums text-ink">{value}</dd>
+    <div
+      class:list={[
+        "grid gap-x-12 gap-y-5 sm:gap-y-10",
+        "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.85fr)]",
+      ]}
+    >
+      <div class="@container lg:col-start-1 lg:row-start-1 lg:pt-4">
+        <p class="label-mono mb-3 flex items-center gap-3 text-[0.9375rem] sm:mb-5">
+          <span class="relative flex size-3" aria-hidden="true">
+            <span
+              class:list={[
+                "absolute inline-flex size-full rounded-full",
+                "bg-ink opacity-60 motion-safe:animate-ping",
+              ]}
+            />
+            <span class="relative inline-flex size-3 rounded-full bg-ink" />
+          </span>
+          Live · Updated hourly
+        </p>
+        <h2
+          id="pledges-title"
+          class="poster-title burst-after max-w-min max-sm:text-[min(4rem,16cqi)]"
+        >
+          {title}
+        </h2>
+      </div>
+
+      <dl
+        class:list={[
+          "grid grid-cols-2 gap-4 sm:gap-x-5 sm:gap-y-8",
+          "lg:col-start-2 lg:row-span-2 lg:row-start-1",
+        ]}
+      >
+        <div
+          class="sticker col-span-2 flex flex-col-reverse gap-1 px-5 pt-4 pb-5 text-center sm:px-8"
+          style={`--shape: ${MAIN_SHAPE}`}
+        >
+          <dt class="label-mono text-[clamp(0.875rem,3cqi,1.5rem)]">pledged each year</dt>
+          <dd
+            class="poster-figure mt-[3cqi] pb-[0.08em] text-[min(9rem,calc(100cqi/(var(--chars)*0.62)))]"
+            style={`--chars: ${figures.year.length}`}
+          >
+            {figures.year}
+            <span class="burst top-[5cqi] right-5 size-11 -rotate-[30deg]" aria-hidden="true" />
+          </dd>
         </div>
-      ))}
-    </dl>
-    <div class="mt-8 flex justify-center">
-      <a href="/subscribe" class="btn btn-primary btn-xl">
-        <Icon name="bell" size={22} />
-        {SUBSCRIBE_CTA}
-      </a>
+        {figures.side.map(({ label, value, icon, shape }) => (
+          <div
+            class:list={[
+              "sticker flex flex-col-reverse justify-center gap-2 px-4 py-4",
+              "sm:py-6 sm:pl-24 xl:pl-[8.25rem]",
+            ]}
+            style={`--shape: ${shape}`}
+          >
+            <dt class="label-mono text-[0.8125rem]">{label}</dt>
+            <dd
+              class:list={[
+                "poster-figure text-[min(2.5rem,calc(100cqi/(var(--chars)*0.64)))]",
+                "sm:text-[min(4rem,calc(100cqi/(var(--chars)*0.64)))]",
+              ]}
+              style={`--chars: ${value.length}`}
+            >
+              <Icon
+                name={icon}
+                size={48}
+                class:list={[
+                  "absolute top-1/2 left-3.5 size-11 -translate-y-1/2 [stroke-width:3.5]",
+                  "max-sm:hidden xl:left-7 xl:size-12",
+                ]}
+              />
+              <span
+                class:list={[
+                  "absolute inset-y-6 left-[4.75rem] w-1 bg-ink forced-colors:bg-[CanvasText]",
+                  "max-sm:hidden xl:left-[6.75rem]",
+                ]}
+                aria-hidden="true"
+              />
+              {value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <div class="relative w-fit lg:col-start-1 lg:row-start-2 lg:mb-9 lg:self-end xl:w-auto">
+        <span
+          class="burst top-1/2 -right-10 -translate-y-1/2 rotate-180 max-xl:hidden"
+          aria-hidden="true"
+        />
+        <a href="/subscribe" class="btn btn-primary btn-xl">
+          <Icon name="bell" size={22} />
+          {SUBSCRIBE_CTA}
+        </a>
+      </div>
     </div>
   </section>
 )}

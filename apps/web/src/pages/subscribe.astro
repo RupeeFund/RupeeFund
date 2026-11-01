@@ -13,21 +13,25 @@ import { MAX_MONTHS_LENGTH, MAX_QUESTION_LENGTH } from "../worker/lib/validation
 import { TURNSTILE_ACTION, getSitekey } from "../lib/turnstile.ts";
 
 const TURNSTILE_SITEKEY = getSitekey();
+const SHAPE = "polygon(0 3px, 100% 0, calc(100% - 3px) 100%, 2px calc(100% - 2px))";
 ---
 
 <Base>
-  <div class="wrap section-y grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-16">
+  <div class="wrap section-y grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16">
     <div class="lg:sticky lg:top-28">
-      <h1 id="subscribe-title" class="page-title text-ink mb-4">
+      <h1 id="subscribe-title" class="poster-page-title burst-after mb-6 text-ink">
         {SUBSCRIBE_HEADING}
       </h1>
       <p class="max-w-xl text-sm text-ink-2 text-pretty">
-        <strong class="text-ink">Nothing to pay today.</strong> Tell us roughly how much you would
-        like to give each month. It is not a commitment; it only helps us plan. We will send you a
-        welcome email to confirm your sign-up, and one email when the fund opens.
+        <strong class="mb-2 block text-2xl font-black tracking-[-0.03em] text-ink">
+          Nothing to pay today.
+        </strong>{" "}
+        Tell us roughly how much you would like to give each month. It is not a commitment; it only
+        helps us plan. We will send you a welcome email to confirm your sign-up, and one email when
+        the fund opens.
       </p>
     </div>
-    <div class="card">
+    <div class="sticker px-5 pt-6 pb-7 sm:px-9 sm:pt-8 sm:pb-9" style={`--shape: ${SHAPE}`}>
       <noscript>
         <style is:inline>
           #waitlist-form {
@@ -43,7 +47,12 @@ const TURNSTILE_SITEKEY = getSitekey();
           and we’ll add you by hand.
         </p>
       </noscript>
-      <form id="waitlist-form" aria-labelledby="subscribe-title" class="space-y-4" method="post">
+      <form
+        id="waitlist-form"
+        aria-labelledby="subscribe-title"
+        class="form-poster space-y-5"
+        method="post"
+      >
         <div>
           <label for="waitlist-name" class="field-label">
             Full name
@@ -193,7 +202,7 @@ const TURNSTILE_SITEKEY = getSitekey();
           data-action={TURNSTILE_ACTION}
         ></div>
         <p id="waitlist-error" class="text-xs text-error" role="alert"></p>
-        <button id="waitlist-submit" type="submit" class="btn btn-primary btn-block">
+        <button id="waitlist-submit" type="submit" class="btn btn-primary btn-block btn-lg">
           Sign up
         </button>
         <p class="text-xs text-ink-3 text-pretty">

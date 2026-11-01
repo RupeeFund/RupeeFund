@@ -111,6 +111,59 @@
     @apply forced-colors:border forced-colors:border-[CanvasText];
   }
 
+  .sticker {
+    --edge: 3px;
+    --shape: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    @apply relative isolate drop-shadow-[6px_6px_0_var(--color-ink)];
+    @apply sm:drop-shadow-[12px_12px_0_var(--color-ink)] sm:[--edge:4px];
+    container-type: inline-size;
+  }
+
+  .sticker::before,
+  .sticker::after {
+    @apply absolute -z-10 content-[''];
+    clip-path: var(--shape);
+  }
+
+  .sticker::before {
+    @apply inset-0 bg-ink;
+  }
+
+  .sticker::after {
+    @apply bg-card;
+    inset: var(--edge);
+  }
+
+  @media (forced-colors: active) {
+    .sticker {
+      @apply border-4 border-[CanvasText];
+      filter: none;
+    }
+
+    .sticker::before,
+    .sticker::after {
+      @apply hidden;
+    }
+  }
+
+  .burst,
+  .burst-after::after {
+    @apply hidden bg-ink sm:inline-block forced-colors:bg-[CanvasText];
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='black' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M4 12 15 4M6 20h16M4 28l11 8'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+
+  .burst {
+    @apply pointer-events-none absolute size-14;
+  }
+
+  .burst-after::after {
+    content: "";
+    width: 0.6em;
+    height: 0.6em;
+    margin-left: 0.25em;
+  }
+
   .field {
     @apply w-full min-h-11 px-3 text-sm bg-white border border-border rounded-lg;
     @apply focus:ring-2 focus:ring-brand-fg focus:border-transparent focus:outline-hidden;
@@ -132,14 +185,14 @@
     @apply border-error focus:ring-error;
   }
 
-  .choice:has([aria-invalid="true"]) {
-    @apply border-error;
-  }
-
   .choice {
     @apply flex items-center gap-2 min-h-11 px-3 rounded-lg border border-border bg-white;
     @apply text-sm cursor-pointer transition-colors duration-150 ease-out;
     @apply hover:border-brand-fg has-checked:border-brand-fg has-checked:bg-brand-50;
+  }
+
+  .choice:has([aria-invalid="true"]) {
+    @apply border-error;
   }
 
   .choice:has(:focus-visible) {
@@ -149,6 +202,18 @@
 
   .choice :focus-visible {
     outline: none;
+  }
+
+  :where(.form-poster) :is(.field, .choice) {
+    @apply rounded-none border-2 border-ink;
+  }
+
+  :where(.form-poster) .choice {
+    @apply has-checked:shadow-[3px_3px_0_var(--color-ink)];
+  }
+
+  :where(.form-poster) .field-label {
+    @apply mb-1.5 text-sm font-extrabold tracking-[-0.01em];
   }
 
   .nav-link,
@@ -221,25 +286,26 @@
   }
 
   .step {
-    @apply relative flex gap-4;
+    @apply relative flex gap-5;
   }
 
   .step:not(:last-child)::before {
-    @apply absolute left-4 top-8 -bottom-8 w-px -translate-x-1/2 bg-ink/15 content-[''];
+    @apply absolute left-6 top-12 -bottom-9 w-[3px] -translate-x-1/2 bg-ink content-[''];
     @apply forced-colors:bg-[CanvasText];
   }
 
   .step-badge {
-    @apply relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center;
-    @apply rounded-lg bg-brand;
+    @apply relative z-10 flex size-12 flex-shrink-0 items-center justify-center bg-ink;
+    @apply shadow-[4px_4px_0_var(--color-brand)];
+    @apply forced-colors:border-2 forced-colors:border-[CanvasText];
   }
 
   .step-number {
-    @apply text-sm font-semibold tabular-nums text-ink;
+    @apply text-2xl font-black tabular-nums text-white;
   }
 
   .step-title {
-    @apply mb-1 text-lg font-semibold text-ink;
+    @apply mb-1 text-2xl font-black tracking-[-0.03em] text-ink;
   }
 
   .step-body {
@@ -280,11 +346,11 @@
   }
 
   .prose h2 {
-    @apply text-xl;
+    @apply text-2xl font-black tracking-[-0.03em];
   }
 
   .prose h3 {
-    @apply text-lg;
+    @apply text-xl font-extrabold tracking-[-0.02em];
   }
 
   .prose :is(h4, h5) {
@@ -344,7 +410,7 @@
   }
 
   .prose img {
-    @apply mx-auto h-auto max-h-[80svh] max-w-full rounded-xl;
+    @apply mx-auto h-auto max-h-[80svh] max-w-full border-[3px] border-ink;
     width: min(100%, var(--width), 80svh * var(--ratio));
   }
 
@@ -353,7 +419,8 @@
   }
 
   .prose pre {
-    @apply overflow-x-auto rounded-xl bg-white p-4 font-mono text-[0.8125rem] leading-relaxed text-ink;
+    @apply overflow-x-auto border-2 border-ink bg-white p-4 font-mono text-[0.8125rem] text-ink;
+    @apply leading-relaxed;
   }
 
   .prose pre code {
@@ -361,12 +428,11 @@
   }
 
   .prose hr {
-    @apply border-ink/15;
+    @apply border-t-[3px] border-ink;
   }
 
   .prose .callout {
-    @apply rounded-xl bg-card p-4 text-ink;
-    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-ink) 10%, transparent);
+    @apply border-2 border-ink bg-card p-4 text-ink;
   }
 
   .prose .callout[data-tone="highlight"] {
@@ -399,19 +465,21 @@
   }
 
   .post-lead {
-    @apply h-auto w-full rounded-2xl;
+    @apply h-auto w-full border-[3px] border-ink;
   }
 
   .post-thumb {
-    @apply aspect-[4/3] w-20 shrink-0 rounded-lg sm:w-36 sm:rounded-xl;
+    @apply aspect-[4/3] w-20 shrink-0 border-2 border-ink sm:w-36 sm:border-[3px];
   }
 
   .faq {
-    @apply border-t border-ink/15 py-3;
+    @apply border-t-[3px] border-ink py-3 forced-colors:border-[CanvasText];
   }
 
   .faq-summary {
-    @apply min-h-12 gap-4 font-semibold text-lg text-balance cursor-pointer text-ink;
+    @apply min-h-12 gap-4 font-extrabold tracking-[-0.02em] text-balance text-ink;
+    @apply text-lg sm:text-xl;
+    @apply cursor-pointer;
     @apply flex justify-between items-center;
     @apply transition-colors duration-150 ease-out hover:text-brand-fg rounded-sm;
   }
@@ -511,12 +579,27 @@
 
 @utility section-y {
   padding-block: clamp(3.5rem, 9vh, 5.5rem);
+
+  @media (width < 40rem) {
+    padding-block: 2.5rem;
+  }
 }
 
-@utility section-title {
-  font-size: clamp(2rem, 1.667rem + 1.481vw, 3rem);
-  line-height: 1.05;
-  margin-bottom: clamp(2rem, 5vh, 3rem);
+@utility swipe-row {
+  @media (width < 40rem) {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline: calc(-1 * clamp(1.25rem, 5vw, 4rem));
+    padding: 0.25rem clamp(1.25rem, 5vw, 4rem) 1rem;
+    scroll-padding-inline: clamp(1.25rem, 5vw, 4rem);
+
+    & > * {
+      flex: 0 0 82%;
+      scroll-snap-align: start;
+    }
+  }
 }
 
 @utility page-title {
@@ -524,9 +607,61 @@
   line-height: 1.05;
 }
 
-@utility display {
-  font-size: clamp(2.25rem, 1.583rem + 2.963vw, 4.25rem);
+@utility poster-page-title {
+  font-size: clamp(2.5rem, 1.6rem + 3.6vw, 5rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+@utility poster-subheading {
+  font-size: var(--text-3xl);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  overflow-wrap: break-word;
+  hyphens: auto;
+
+  @media (width >= 40rem) {
+    font-size: var(--text-4xl);
+  }
+}
+
+@utility poster-intro {
+  font-size: clamp(1.25rem, 0.85rem + 1.6vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+@utility poster-title {
+  font-size: clamp(3rem, 26cqi, 8rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+
+@utility poster-heading {
+  font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.75rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-bottom: clamp(2rem, 5vh, 3rem);
+
+  @media (width < 40rem) {
+    margin-bottom: 1.5rem;
+  }
+}
+
+@utility poster-figure {
+  font-weight: 900;
   line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 @utility heading {
@@ -598,5 +733,12 @@
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@utility label-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }

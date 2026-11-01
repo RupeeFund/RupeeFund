@@ -6,7 +6,7 @@ describe("the content pages", () => {
   for (const page of PAGES) {
     it(`renders ${page.slug} from the content manager with its title and effective date`, () => {
       const html = read(`${page.slug}.html`);
-      expect(html).toContain(`<h1 class="page-title text-ink mb-4">${page.title}</h1>`);
+      expect(html).toContain(`<h1 class="poster-page-title mb-5 text-ink">${page.title}</h1>`);
       expect(html).toContain(`Effective date: ${page.effectiveDate}.</p>`);
     });
   }

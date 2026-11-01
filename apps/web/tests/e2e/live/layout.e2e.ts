@@ -146,8 +146,8 @@ for (const width of [320, 768, 1024, 1440, 1920]) {
   });
 }
 
-for (const width of [1024, 1180, 1440]) {
-  test(`the home page keeps the unbroken name inside its column at ${width}px`, async ({
+for (const width of [360, 1024, 1180, 1440]) {
+  test(`the home page spans the unbroken name across both columns at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -158,22 +158,37 @@ for (const width of [1024, 1180, 1440]) {
       range.selectNodeContents(el);
       return { text: range.getBoundingClientRect().width, column: el.clientWidth };
     });
-    expect(text).toBeLessThanOrEqual(column * 0.98);
+    expect(text).toBeLessThanOrEqual(column);
+    expect(text).toBeGreaterThanOrEqual(column * 0.97);
   });
 }
 
-test("the home page puts the tagline left, and the h1, the lede and the action right, at 1440px", async ({
+test("each home section fits one 360 × 640 phone screen below the header", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 640 });
+  await page.goto("/");
+  const { room, sections } = await page.evaluate(() => ({
+    room: innerHeight - document.querySelector("header")!.getBoundingClientRect().height,
+    sections: [...document.querySelectorAll("main section")].map((el) => ({
+      title: el.querySelector("h1, h2")?.textContent?.trim() ?? "",
+      height: el.getBoundingClientRect().height,
+    })),
+  }));
+  expect(sections.length).toBeGreaterThan(6);
+  for (const { title, height } of sections) expect(height, title).toBeLessThanOrEqual(room);
+});
+
+test("the home page puts the name on top, the tagline left, the action right at 1440px", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  const h1 = await page.locator("main h1").boundingBox();
-  const tagline = await page.locator("main [data-tagline]").boundingBox();
-  expect(h1?.y).toBe(tagline?.y);
-  expect((tagline?.x ?? Infinity) + (tagline?.width ?? 0)).toBeLessThan(h1?.x ?? 0);
-  for (const selector of ["main .lede", "main [data-hero-cta]"]) {
-    expect((await page.locator(selector).first().boundingBox())?.x, selector).toBe(h1?.x);
-  }
+  const box = async (selector: string) => (await page.locator(selector).first().boundingBox())!;
+  const [h1, tagline, lede, cta] = await Promise.all(
+    ["main h1", "main [data-tagline]", "main .lede", "main [data-hero-cta]"].map(box),
+  );
+  expect(h1.y + h1.height).toBeLessThanOrEqual(tagline.y);
+  expect(tagline.x + tagline.width).toBeLessThan(lede.x);
+  expect(cta.x).toBe(lede.x);
 });
 
 test("/faq keeps its questions in one column across the page at 1440px", async ({ page }) => {
@@ -260,4 +275,16 @@ test("each post image keeps its shape before the file loads", async ({ page }) =
     }
   }
   expect(images).toBeGreaterThan(0);
+});
+
+test("a page title with one long word still fits a 320px screen", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  for (const route of [posts[0]!, pages[0]!]) {
+    await page.goto(route);
+    const overflow = await page.evaluate(() => {
+      document.querySelector("main h1")!.textContent = "Internationalisation of microcontributions";
+      return document.documentElement.scrollWidth - innerWidth;
+    });
+    expect(overflow, route).toBeLessThanOrEqual(1);
+  }
 });

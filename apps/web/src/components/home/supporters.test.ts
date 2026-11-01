@@ -7,21 +7,23 @@ async function render(props: Record<string, unknown>) {
   return container.renderToString(Supporters, { props });
 }
 
+const text = (html = "") => html.replace(/<[^>]*>/g, "").trim();
+
 const terms = (html: string) =>
-  [...html.matchAll(/<dt[^>]*>([^<]*)<\/dt>\s*<dd[^>]*>([^<]*)<\/dd>/g)].map((m) => [
-    m[1]?.trim(),
-    m[2]?.trim(),
+  [...html.matchAll(/<dt[^>]*>([\s\S]*?)<\/dt>\s*<dd[^>]*>([\s\S]*?)<\/dd>/g)].map((m) => [
+    text(m[1]),
+    text(m[2]),
   ]);
 
 describe("the supporter figures", () => {
-  it("name each figure as a pledge, in the Indian grouping", async () => {
+  it("lead with the yearly total, in the Indian grouping", async () => {
     const html = await render({
       title: "Pledges so far",
       supporters: { count: 1234, year: 567890, median: 128 },
     });
     expect(terms(html)).toEqual([
-      ["supporters", "1,234"],
       ["pledged each year", "₹5,67,890"],
+      ["supporters", "1,234"],
       ["median monthly pledge", "₹128"],
     ]);
     expect(html).toContain("Live · Updated hourly");

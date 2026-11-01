@@ -18,6 +18,10 @@ const byline = post.authors.length
   : "The Rupee Fund volunteers";
 const updated =
   post.updatedAt && dayKey(post.updatedAt) > dayKey(post.publishedAt) ? post.updatedAt : undefined;
+const SHAPES = [
+  "polygon(0 2px, 100% 0, calc(100% - 3px) 100%, 2px calc(100% - 3px))",
+  "polygon(2px 0, calc(100% - 2px) 3px, 100% calc(100% - 2px), 0 100%)",
+];
 ---
 
 <article class="reading">
@@ -29,12 +33,19 @@ const updated =
   <p class="mb-5">
     <PostLabel post={post} />
   </p>
-  <h1 class="page-title text-ink">{post.title}</h1>
+  <h1 class="poster-page-title text-[clamp(2.25rem,1.5rem+2.8vw,3.75rem)] text-ink">
+    {post.title}
+  </h1>
   <p class="lede mt-5 text-ink-2 text-pretty">{post.excerpt}</p>
-  <div class="mt-6 mb-8 flex items-center gap-3 border-y border-ink/15 py-3.5">
+  <div
+    class:list={[
+      "mt-6 mb-8 flex items-center gap-3 border-y-[3px] border-ink py-3.5",
+      "forced-colors:border-[CanvasText]",
+    ]}
+  >
     <span
       aria-hidden="true"
-      class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand font-semibold text-ink"
+      class="grid size-10 shrink-0 place-items-center bg-brand text-lg font-black text-ink"
     >
       ₹
     </span>
@@ -76,12 +87,12 @@ const updated =
   </div>
   {more.length > 0 && (
     <nav aria-labelledby="more-title" class="mt-16">
-      <h2 id="more-title" class="eyebrow mb-4 text-ink-3">
+      <h2 id="more-title" class="poster-subheading mb-6 text-ink">
         Keep reading
       </h2>
-      <ul class="grid gap-4 sm:grid-cols-2">
-        {more.map((next) => (
-          <li class="relative rounded-2xl bg-white p-3">
+      <ul class="grid gap-6 sm:grid-cols-2 sm:gap-8">
+        {more.map((next, i) => (
+          <li class="sticker p-3" style={`--shape: ${SHAPES[i % SHAPES.length]}`}>
             {next.image && (
               <img
                 src={next.image.src}
@@ -91,13 +102,13 @@ const updated =
                 width={next.image.width}
                 height={next.image.height}
                 loading="lazy"
-                class="mb-3 aspect-video w-full rounded-lg object-cover"
+                class="mb-3 aspect-video w-full border-2 border-ink object-cover"
               />
             )}
             <p class="px-1">
               <PostLabel post={next} compact />
             </p>
-            <p class="px-1 pt-1 pb-1 text-lg font-semibold text-ink">
+            <p class="px-1 pt-1 pb-1 text-xl leading-tight font-black tracking-[-0.02em] text-ink">
               <a href={`/blog/${next.slug}`} class="row-link after:absolute after:inset-0">
                 {next.title}
               </a>

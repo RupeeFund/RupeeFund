@@ -30,7 +30,9 @@ A new page uses the layout of its type:
 
 - **Layout** is not a brand rule. The pages in `src/pages/` and the frames in `src/layouts/` hold it. Content manager pages use `src/components/site/` and `src/components/people/`. The home page and the people page use the sections in `src/components/home/` and `src/components/people/`. `docs/ARCHITECTURE.md` section 11 tells where their words are.
 - **Styles.** Reuse a class from `packages/ui/src/styles.css` before you add one. Put a new class in that file.
-- **Headings.** `display` is only for the h1 of the home page. `page-title` is the h1 of each other page. `section-title` is each section h2 and the home page tagline. Add `heading` to a `p` that must look like a heading.
+- **Headings.** The h1 of the home page uses `poster-figure`, sized to fill the width. `poster-page-title` is the h1 of each other page in the poster style; `page-title` is the h1 of a page not yet in it. `poster-heading` is each section h2 of the home page, except the pledges h2, which uses `poster-title`. `poster-subheading` is each section h2 of another page in the poster style, and `poster-intro` is the short text under it. Add `heading` to a `p` that must look like a heading.
+- **Phone screens.** At 360 × 640, each home section fits the screen below the header. A row of cards that is too tall scrolls sideways with `swipe-row`.
+- **Forms.** Put `form-poster` on a form of the site. It makes each field and choice square, with a 2 px ink border. The admin panel keeps the plain `field`.
 - **Body size** is `text-sm`. The theme in `packages/ui/src/styles.css` changes the Tailwind scale.
 - **Prose.** Put the text from the content manager in `.prose`. Put each style of the HTML from `src/content/html.ts` in `packages/ui/src/styles.css`.
 - **Row links.** A blog row is one link: `row-link` on the title. Its hover shows no line, because the pointer crosses many rows.

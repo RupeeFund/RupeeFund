@@ -1,27 +1,39 @@
 ---
+import Icon from "../site/Icon.astro";
+
 interface Props {
   title: string;
   sprite: "seed" | "sapling" | "tree";
 }
 
-const SIZES = {
-  seed: ["seedling", 64, 64],
-  sapling: ["sapling", 80, 96],
-  tree: ["mature-tree", 112, 120],
+const ICONS = { seed: "sprout", sapling: "tree-deciduous", tree: "trees" } as const;
+const SHAPES = {
+  seed: "polygon(0 3px, 100% 0, calc(100% - 3px) 100%, 2px calc(100% - 2px))",
+  sapling: "polygon(2px 0, calc(100% - 2px) 2px, 100% calc(100% - 3px), 0 100%)",
+  tree: "polygon(0 0, calc(100% - 3px) 3px, 100% 100%, 3px calc(100% - 3px))",
 } as const;
 
 const { title, sprite } = Astro.props;
-const [file, width, height] = SIZES[sprite];
 ---
 
-<li class="flex flex-col overflow-hidden rounded-2xl border border-ink/10 bg-card">
-  <div class="flex h-44 items-end justify-center border-b border-ink/10 bg-brand-50 pt-6">
-    <img src={`/growth/${file}.svg`} alt="" width={width} height={height} class="-mb-px" />
-  </div>
-  <div class="p-6">
-    <h3 class="text-xl text-ink mb-3">{title}</h3>
-    <div class="text-sm text-ink-2 text-pretty">
-      <slot />
-    </div>
+<li class="sticker flex flex-col p-6 sm:p-8" style={`--shape: ${SHAPES[sprite]}`}>
+  <span
+    class:list={[
+      "flex size-20 items-center justify-center bg-brand text-ink",
+      "forced-colors:border-2 forced-colors:border-[CanvasText]",
+    ]}
+  >
+    <Icon name={ICONS[sprite]} size={56} class="size-14 [stroke-width:3.25]" />
+  </span>
+  <h3
+    class:list={[
+      "mt-6 mb-3 text-[min(1.75rem,calc(100cqi/9))] leading-[1.05] font-black",
+      "tracking-[-0.03em] text-ink",
+    ]}
+  >
+    {title}
+  </h3>
+  <div class="text-sm text-pretty text-ink-2">
+    <slot />
   </div>
 </li>

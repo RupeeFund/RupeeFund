@@ -57,7 +57,9 @@ describe("the blog", () => {
 
   it("labels a post with its category, and a post with none as a blog post", () => {
     const label = (slug: string) =>
-      /<span class="eyebrow text-brand-fg">([^<]*)<\/span>/.exec(read(`blog/${slug}.html`))?.[1];
+      /<span class="label-mono text-\[0\.8125rem\] text-brand-fg">([^<]*)<\/span>/.exec(
+        read(`blog/${slug}.html`),
+      )?.[1];
     expect(label("how-open-source-gets-funded-today")).toBe("Article");
     expect(label("how-to-write-a-post-for-this-blog")).toBe("Blog");
   });

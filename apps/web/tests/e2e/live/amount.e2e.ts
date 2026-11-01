@@ -60,5 +60,9 @@ test.describe("choosing a monthly amount", () => {
       .locator("#waitlist-amount-other")
       .evaluate((el) => (el as HTMLInputElement).validity.valueMissing);
     expect(missing).toBe(true);
+    await expect(page.locator("label.choice", { has: page.locator(OTHER) })).toHaveCSS(
+      "border-top-color",
+      "rgb(198, 40, 40)",
+    );
   });
 });

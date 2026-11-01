@@ -7,10 +7,10 @@ const { title } = Astro.props;
 ---
 
 <section aria-labelledby="why-title" class="wrap section-y bg-white">
-  <h2 id="why-title" class="section-title text-ink">
+  <h2 id="why-title" class="poster-heading text-ink">
     {title}
   </h2>
-  <ol class="grid gap-6 lg:grid-cols-3 lg:gap-8">
+  <ol class="swipe-row sm:grid sm:gap-8 lg:grid-cols-3" tabindex="0" aria-labelledby="why-title">
     <slot />
   </ol>
 </section>

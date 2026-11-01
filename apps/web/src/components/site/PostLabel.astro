@@ -1,6 +1,7 @@
 ---
 import type { Post } from "../../content/schema.ts";
 import { SEASONS } from "./constants.ts";
+import Icon from "./Icon.astro";
 
 interface Props {
   post: Post;
@@ -12,20 +13,16 @@ const season = post.season && SEASONS.find((s) => s.name === post.season?.name);
 ---
 
 <span class="inline-flex flex-wrap items-center gap-x-2.5 gap-y-1">
-  <span class="eyebrow text-brand-fg">{post.category}</span>
+  <span class="label-mono text-[0.8125rem] text-brand-fg">{post.category}</span>
   {season && post.season && (
     <span class="inline-flex items-center gap-1.5">
       {!compact && (
-        <img
-          src={`/seasons/${season.spriteSlug}.svg`}
-          alt=""
-          width="20"
-          height="20"
-          class="h-5 w-5"
-        />
+        <span style={`color: ${season.accent}`}>
+          <Icon name={season.icon} size={20} class="size-5 [stroke-width:3]" />
+        </span>
       )}
       <span
-        class="eyebrow rounded-md px-1.5 text-white"
+        class="label-mono px-1.5 py-0.5 text-[0.75rem] text-white"
         style={`background-color: ${season.accent}`}
       >
         {season.name} {post.season.year}

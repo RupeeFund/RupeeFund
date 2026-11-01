@@ -10,11 +10,12 @@ interface Props {
 
 const { faq, contactAddress, homeOnly = false } = Astro.props;
 const entries = faq.filter((entry) => !homeOnly || entry.home);
+const PHONE_LIMIT = 4;
 ---
 
 <div class:list={["grid", homeOnly && "lg:grid-cols-2 lg:gap-x-16"]}>
-  {entries.map((entry) => (
-    <Faq faq={entry} />
+  {entries.map((entry, i) => (
+    <Faq faq={entry} class={homeOnly && i >= PHONE_LIMIT ? "max-sm:hidden" : undefined} />
   ))}
 
   <div class="faq">

@@ -28,8 +28,13 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
 }).format();
 ---
 
-<footer class="bg-ink text-paper [--focus:var(--color-white)] pt-16 pb-10">
-  <div class="wrap grid justify-items-center gap-10 text-center">
+<footer
+  class:list={[
+    "border-t-[10px] border-brand bg-ink pt-10 pb-8 text-paper sm:pt-16 sm:pb-10",
+    "[--focus:var(--color-white)] forced-colors:border-[CanvasText]",
+  ]}
+>
+  <div class="wrap grid justify-items-center gap-7 text-center sm:gap-10">
     <div class="grid justify-items-center gap-4">
       <a href="/" aria-label="The Rupee Fund — home" class="rounded-sm">
         <img
@@ -39,7 +44,7 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
           height="80"
           loading="lazy"
           decoding="async"
-          class="h-20 w-auto"
+          class="h-14 w-auto sm:h-20"
         />
       </a>
       <p class="max-w-[36rem] text-sm text-paper text-pretty">
@@ -47,7 +52,7 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
         Together, we back great projects from India.
       </p>
     </div>
-    <ul class="flex flex-wrap justify-center gap-x-2 text-sm">
+    <ul class="label-mono flex flex-wrap justify-center gap-x-2 text-[0.875rem]">
       {linksFor(FOOTER_LINKS, Astro.props.blog).map(({ href, label }) => {
         const external = href.startsWith("https://");
         return (
@@ -65,7 +70,7 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
       })}
     </ul>
     <div class="grid justify-items-center gap-1">
-      <p class="text-lg font-semibold">
+      <p class="text-xl font-black tracking-[-0.02em]">
         <a href={`mailto:${REMOVAL_ADDRESS}`} aria-label={REMOVAL_ADDRESS} class="foot-link">
           {REMOVAL_ADDRESS.split("@")[0]}
           <wbr />@{REMOVAL_ADDRESS.split("@")[1]}
@@ -85,7 +90,7 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
         ))}
       </div>
     </div>
-    <div class="grid w-full justify-items-center gap-3 border-t border-white/10 pt-6 text-xs">
+    <div class="grid w-full justify-items-center gap-3 border-t-2 border-white/25 pt-6 text-xs">
       <div class="flex flex-wrap justify-center gap-x-2">
         <a href="/privacy" class="foot-link">
           Privacy

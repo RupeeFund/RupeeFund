@@ -5,23 +5,25 @@ import { REMOVAL_ADDRESS } from "../components/site/constants.ts";
 
 <Base>
   <div class="wrap section-y flex flex-1 flex-col justify-center">
-    <div>
-      <h1 class="page-title text-ink mb-4">You’re on the list</h1>
-      <p class="text-sm text-ink-2 text-pretty mb-6">
-        A welcome email to confirm your sign-up. One email when the fund opens, so you can set up
-        UPI AutoPay. Monthly updates if you asked for them. No payment yet.
-      </p>
-      <p class="text-xs text-ink-3 text-pretty mb-8">
-        Changed your mind? Email{" "}
-        <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link">
-          {REMOVAL_ADDRESS}
-        </a>{" "}
-        and we’ll remove you.
-      </p>
-      <a href="/" class="btn btn-primary btn-lg">
-        {" "}
-        Back to home{" "}
-      </a>
+    <div class="grid items-start gap-y-6 lg:grid-cols-2 lg:gap-x-16">
+      <h1 class="poster-page-title burst-after text-ink">You’re on the list</h1>
+      <div class="max-w-[36rem] lg:pt-2">
+        <p class="lede mb-6 text-ink-2">
+          A welcome email to confirm your sign-up. One email when the fund opens, so you can set up
+          UPI AutoPay. Monthly updates if you asked for them. No payment yet.
+        </p>
+        <p class="text-xs text-ink-3 text-pretty mb-8">
+          Changed your mind? Email{" "}
+          <a href={`mailto:${REMOVAL_ADDRESS}`} class="inline-link">
+            {REMOVAL_ADDRESS}
+          </a>{" "}
+          and we’ll remove you.
+        </p>
+        <a href="/" class="btn btn-primary btn-lg">
+          {" "}
+          Back to home{" "}
+        </a>
+      </div>
     </div>
   </div>
 </Base>

@@ -5,16 +5,19 @@ import Icon from "./Icon.astro";
 interface Props {
   class?: string;
 }
+
+const SHAPE = "polygon(0 3px, 100% 0, calc(100% - 3px) 100%, 2px calc(100% - 2px))";
 ---
 
 <aside
   aria-labelledby="signup-title"
   class:list={[
-    "rounded-2xl bg-brand p-6 text-ink [--focus:var(--color-ink)] sm:p-8",
+    "sticker p-6 text-ink [--color-card:var(--color-brand)] [--focus:var(--color-ink)] sm:p-8",
     Astro.props.class,
   ]}
+  style={`--shape: ${SHAPE}`}
 >
-  <h2 id="signup-title" class="text-2xl mb-3">
+  <h2 id="signup-title" class="poster-subheading mb-3">
     Hear when the fund opens
   </h2>
   <p class="text-sm text-pretty mb-6">

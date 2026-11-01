@@ -26,8 +26,11 @@ export const FOOTER_LINKS: readonly NavLink[] = [
 export const linksFor = (links: readonly NavLink[], blog: boolean): readonly NavLink[] =>
   blog ? links : links.filter(({ href }) => href !== "/blog");
 
+export type SeasonIcon = "snowflake" | "sun" | "cloud-rain" | "leaf";
+
 export interface Season {
   spriteSlug: string;
+  icon: SeasonIcon;
   name: string;
   months: string;
   duration: string;
@@ -37,6 +40,7 @@ export interface Season {
 export const SEASONS: readonly Season[] = [
   {
     spriteSlug: "winter",
+    icon: "snowflake",
     name: "Winter",
     months: "Dec – Feb",
     duration: "3 months",
@@ -44,6 +48,7 @@ export const SEASONS: readonly Season[] = [
   },
   {
     spriteSlug: "summer",
+    icon: "sun",
     name: "Summer",
     months: "Mar – May",
     duration: "3 months",
@@ -51,6 +56,7 @@ export const SEASONS: readonly Season[] = [
   },
   {
     spriteSlug: "monsoon",
+    icon: "cloud-rain",
     name: "Monsoon",
     months: "Jun – Aug",
     duration: "3 months",
@@ -58,6 +64,7 @@ export const SEASONS: readonly Season[] = [
   },
   {
     spriteSlug: "post-monsoon",
+    icon: "leaf",
     name: "Post-monsoon",
     months: "Sep – Nov",
     duration: "3 months",

@@ -2,7 +2,9 @@ import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import Footer from "../Footer.astro";
 import Header from "../Header.astro";
+import { SEASONS } from "./constants.ts";
 import FaqList from "./FaqList.astro";
+import Icon from "./Icon.astro";
 import PageBody from "./PageBody.astro";
 import PostArticle from "./PostArticle.astro";
 import PostList from "./PostList.astro";
@@ -35,6 +37,10 @@ async function render(component: unknown, props: Record<string, unknown>) {
 }
 
 describe("the shared components", () => {
+  it.each(SEASONS.map((s) => [s.name, s.icon]))("draw the %s icon", async (_, name) => {
+    expect(await render(Icon, { name })).toMatch(/<svg[^>]*>\s*<(path|circle)/);
+  });
+
   it("render Portable Text as the site's HTML", async () => {
     expect(await render(Prose, { blocks: para("Hello <world>") })).toContain(
       "<p>Hello &lt;world&gt;</p>",
@@ -119,7 +125,10 @@ describe("the blog components", () => {
     });
     expect(html).toContain("Article");
     expect(html).toContain("Monsoon 2026");
-    expect(html).toContain('src="/seasons/monsoon.svg"');
+    const [rain] = /<path d="[^"]+"/.exec(await render(Icon, { name: "cloud-rain" })) ?? [];
+    expect(rain).toBeDefined();
+    expect(html).toContain(rain);
+    expect(html).not.toContain("/seasons/");
     expect(html).toMatch(/class="lede[^"]*"[^>]*>First post\.</);
     expect(html).toContain("The Rupee Fund volunteers");
     expect(html).toMatch(/Updated <time[^>]*>4 October 2026</);

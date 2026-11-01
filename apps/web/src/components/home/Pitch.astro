@@ -6,11 +6,21 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<section class="wrap section-y grid items-start bg-brand text-ink lg:grid-cols-2 lg:gap-16">
-  <h2 class="section-title lg:mb-0">{title}</h2>
-  <div class="max-w-[36rem]">
-    <div class="lede [&>p+p]:mt-4">
-      <slot />
-    </div>
+<section
+  class:list={[
+    "wrap section-y grid items-start gap-y-2 bg-brand text-ink",
+    "lg:grid-cols-2 lg:gap-x-16",
+  ]}
+>
+  <h2 class="poster-heading lg:mb-0">{title}</h2>
+  <div
+    class:list={[
+      "max-w-[38rem] text-[clamp(1.25rem,1rem+0.9vw,1.625rem)] leading-[1.45] font-medium",
+      "text-pretty lg:pt-2 [&>p+p]:mt-6",
+      "[&_strong]:block [&_strong]:text-[1.35em] [&_strong]:leading-[1.1]",
+      "[&_strong]:font-black [&_strong]:tracking-[-0.03em]",
+    ]}
+  >
+    <slot />
   </div>
 </section>

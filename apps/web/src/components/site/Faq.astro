@@ -5,15 +5,17 @@ import Prose from "./Prose.astro";
 
 interface Props {
   faq: FaqEntry;
+  class?: string;
 }
 
-const { question, answer, sources } = Astro.props.faq;
+const { faq, class: cls } = Astro.props;
+const { question, answer, sources } = faq;
 ---
 
-<details class="faq group">
+<details class:list={["faq group", cls]}>
   <summary class="faq-summary">
     <span>{question}</span>
-    <Icon name="plus" size={20} class="faq-plus" />
+    <Icon name="plus" size={24} class="faq-plus [stroke-width:3]" />
   </summary>
   <div class="faq-answer">
     <Prose blocks={answer} />

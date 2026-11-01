@@ -25,11 +25,10 @@ describe("Home page (/)", () => {
 
   it("shows the live supporter figures from the list", () => {
     const band = html.slice(html.indexOf("Live · Updated hourly"));
-    expect([...band.matchAll(/<dd[^>]*>([^<]*)<\/dd>/g)].map((m) => m[1]?.trim())).toEqual([
-      "26",
-      "₹4,96,740",
-      "₹1,308",
-    ]);
+    const values = [...band.matchAll(/<dd[^>]*>([\s\S]*?)<\/dd>/g)].map((m) =>
+      m[1]?.replace(/<[^>]*>/g, "").trim(),
+    );
+    expect(values).toEqual(["₹4,96,740", "26", "₹1,308"]);
   });
 
   it("asks the visitor to sign up from the pledges", () => {
