@@ -16,7 +16,7 @@ const FIGURES = [
 
 const ROLES = [
   { key: "is_user", label: "Users or consumers" },
-  { key: "is_creator", label: "Developers, implementers, creators or designers" },
+  { key: "is_creator", label: "Developers, creators or maintainers" },
   { key: "is_professional", label: "Professionals" },
   { key: "is_student", label: "Students" },
 ] as const;

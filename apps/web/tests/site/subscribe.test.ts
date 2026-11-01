@@ -69,7 +69,7 @@ describe("Subscribe page (/subscribe)", () => {
     ]);
     expect(boxes.map((b) => b.closest("label")?.textContent?.trim())).toEqual([
       "User or consumer",
-      "Developer, implementer, creator or designer",
+      "Developer, creator or maintainer",
       "Professional",
       "Student",
     ]);

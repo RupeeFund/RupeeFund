@@ -6,7 +6,7 @@ export const ROLE_LEGEND = "I am a";
 
 export const ROLE_LABELS: Readonly<Record<RoleField, string>> = {
   is_user: "User or consumer",
-  is_creator: "Developer, implementer, creator or designer",
+  is_creator: "Developer, creator or maintainer",
   is_professional: "Professional",
   is_student: "Student",
 };
