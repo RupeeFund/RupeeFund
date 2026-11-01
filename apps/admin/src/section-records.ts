@@ -14,7 +14,7 @@ const FIELDS = [
   { id: "updates", label: "Wants updates" },
   { id: "question", label: "Asked a question" },
   { id: "is_user", label: "User or consumer" },
-  { id: "is_creator", label: "Developer, implementer, creator or designer" },
+  { id: "is_creator", label: "Developer, creator or maintainer" },
   { id: "is_professional", label: "Professional" },
   { id: "is_student", label: "Student" },
   { id: "backs_nascent", label: "Nurture new projects" },
