@@ -1,4 +1,4 @@
-export const WAITLIST_SOURCES = ["subscribe", "landing", "footer"] as const;
+const WAITLIST_SOURCES = ["subscribe", "landing", "footer"] as const;
 export type WaitlistSource = (typeof WAITLIST_SOURCES)[number];
 
 export const AMOUNT_OPTIONS = [15, 128, 512] as const;

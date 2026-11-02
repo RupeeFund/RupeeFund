@@ -89,7 +89,7 @@ export function answerFor(path: string, data: ViewData): unknown {
   throw new Error(`unexpected path ${path}`);
 }
 
-export function parts(): { body: string; code: string } {
+function parts(): { body: string; code: string } {
   const html = waitlistPage();
   const open = html.indexOf("<script>");
   return {

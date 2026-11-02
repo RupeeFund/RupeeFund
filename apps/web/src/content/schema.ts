@@ -71,7 +71,7 @@ const textBlock = z
   })
   .refine((block) => knownMarks(block.children, block.markDefs), UNKNOWN_MARK);
 
-export const image = z.object({
+const image = z.object({
   src: mediaSrc,
   alt: z.string(),
   width: z.number().int().positive().optional(),
@@ -137,7 +137,7 @@ const callToAction = z.object({
   url: z.string().refine(isSafeHref, "Use a link to this site or an https address"),
 });
 
-export const portableText = z.array(
+const portableText = z.array(
   z.union([
     textBlock,
     imageBlock,
@@ -151,9 +151,9 @@ export const portableText = z.array(
   ]),
 );
 
-export const SEASON_NAMES = ["Winter", "Summer", "Monsoon", "Post-monsoon"] as const;
+const SEASON_NAMES = ["Winter", "Summer", "Monsoon", "Post-monsoon"] as const;
 
-export const PAGE_KINDS = ["page", "legal"] as const;
+const PAGE_KINDS = ["page", "legal"] as const;
 
 export const post = z.object({
   slug,

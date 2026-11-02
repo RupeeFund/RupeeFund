@@ -16,7 +16,7 @@ export interface AuthConfig {
 }
 
 export const SESSION_COOKIE = "astro-session";
-export const IDENTITY_SECONDS = 8 * 60 * 60;
+const IDENTITY_SECONDS = 8 * 60 * 60;
 const SIGNIN_SECONDS = 10 * 60;
 
 const REFUSED: Readonly<Record<"no-email" | "no-team", string>> = {

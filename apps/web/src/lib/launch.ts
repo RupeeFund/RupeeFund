@@ -18,5 +18,3 @@ export const REASON_LABELS: Readonly<Record<ReasonField, string>> = {
   backs_growing: "To encourage growing projects",
   backs_larger: "To sustain well-established projects",
 };
-
-export const REFUND_ADDRESS = "audit@fossunited.org";

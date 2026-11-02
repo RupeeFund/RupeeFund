@@ -9,7 +9,7 @@ const TYPES: Record<string, string> = {
   avif: "image/avif",
 };
 
-export const MEDIA_WIDTHS = [160, 320, 640, 960] as const;
+const MEDIA_WIDTHS = [160, 320, 640, 960] as const;
 
 export function mediaWidth(value: string | null): number | null {
   if (value === null || !/^\d+$/.test(value)) return null;

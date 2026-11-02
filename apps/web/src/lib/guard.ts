@@ -10,7 +10,7 @@ export const ADMIN_ROLE = 50;
 
 export const LEGAL_COLLECTION = "pages";
 
-export const ADMIN_COLLECTIONS = ["faq", "people"] as const;
+const ADMIN_COLLECTIONS = ["faq", "people"] as const;
 
 export const GUARDED_COLLECTIONS = [LEGAL_COLLECTION, ...ADMIN_COLLECTIONS] as const;
 

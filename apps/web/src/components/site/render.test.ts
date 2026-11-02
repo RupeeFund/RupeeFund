@@ -1,5 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
+import { para } from "../../content/fixture.ts";
 import Footer from "../Footer.astro";
 import Header from "../Header.astro";
 import { SEASONS } from "./constants.ts";
@@ -9,15 +10,6 @@ import PageBody from "./PageBody.astro";
 import PostArticle from "./PostArticle.astro";
 import PostList from "./PostList.astro";
 import Prose from "./Prose.astro";
-
-const para = (text: string) => [
-  {
-    _type: "block" as const,
-    style: "normal" as const,
-    markDefs: [],
-    children: [{ _type: "span" as const, text, marks: [] }],
-  },
-];
 
 const faq = [
   { slug: "a", question: "First?", answer: para("Yes."), order: 1, home: true, sources: [] },

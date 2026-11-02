@@ -9,7 +9,7 @@ import {
   type Query,
 } from "./guard-store.ts";
 
-export const SESSION_TIMEOUT_MS = 3_000;
+const SESSION_TIMEOUT_MS = 3_000;
 
 interface Session {
   get(key: "user"): Promise<unknown>;

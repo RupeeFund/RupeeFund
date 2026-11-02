@@ -23,7 +23,7 @@ function reply(status: number, code: string): Response {
   return status === 200 ? json(200, { ok: true }) : json(status, { error: code });
 }
 
-export class BodyTooLarge extends Error {}
+class BodyTooLarge extends Error {}
 
 async function readBodyWithin(request: Request, limit: number): Promise<string> {
   const declared = Number(request.headers.get("content-length") ?? "");

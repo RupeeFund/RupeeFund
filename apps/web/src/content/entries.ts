@@ -207,7 +207,7 @@ function ordered<T extends { order: number }>(entries: Entry[], map: (entry: Ent
   }));
 }
 
-export function newestFirst<T extends { publishedAt: string }>(list: readonly T[]): T[] {
+function newestFirst<T extends { publishedAt: string }>(list: readonly T[]): T[] {
   return list.toSorted((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
 }
 

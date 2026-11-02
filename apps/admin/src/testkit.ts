@@ -8,7 +8,7 @@ export interface SpyEnv extends AdminEnv {
   DB: SpyD1;
 }
 
-export function makeD1(): SpyD1 {
+function makeD1(): SpyD1 {
   const queries: string[] = [];
   const statement = {
     bind: () => statement,
