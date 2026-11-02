@@ -30,7 +30,7 @@ Each role adds to the role before it.
 
 The entries that came with the site belong to no Author. For an entry of another person, ask an Editor.
 
-Nobody can delete a legal page or change the fields of a collection in the content manager. An admin changes the fields with an API token.
+Nobody can delete a legal page or change the fields of a collection in the content manager.
 
 ## 3. Publish a change
 
