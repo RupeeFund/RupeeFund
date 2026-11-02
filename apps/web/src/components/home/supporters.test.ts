@@ -22,9 +22,9 @@ describe("the supporter figures", () => {
       supporters: { count: 1234, year: 567890, median: 128 },
     });
     expect(terms(html)).toEqual([
-      ["pledged each year", "₹5,67,890"],
-      ["supporters", "1,234"],
-      ["median monthly pledge", "₹128"],
+      ["Pledged each year", "₹5,67,890"],
+      ["Supporters", "1,234"],
+      ["Median monthly pledge", "₹128"],
     ]);
     expect(html).toContain("Live · Updated hourly");
   });

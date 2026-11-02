@@ -13,7 +13,7 @@ const season = post.season && SEASONS.find((s) => s.name === post.season?.name);
 ---
 
 <span class="inline-flex flex-wrap items-center gap-x-2.5 gap-y-1">
-  <span class="label-mono text-[0.8125rem] text-brand-fg">{post.category}</span>
+  <span class="label text-xs text-brand-fg">{post.category}</span>
   {season && post.season && (
     <span class="inline-flex items-center gap-1.5">
       {!compact && (
@@ -22,7 +22,7 @@ const season = post.season && SEASONS.find((s) => s.name === post.season?.name);
         </span>
       )}
       <span
-        class="label-mono px-1.5 py-0.5 text-[0.75rem] text-white"
+        class="label px-1.5 py-0.5 text-xs text-white"
         style={`background-color: ${season.accent}`}
       >
         {season.name} {post.season.year}

@@ -52,7 +52,7 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
         Together, we back great projects from India.
       </p>
     </div>
-    <ul class="label-mono flex flex-wrap justify-center gap-x-2 text-[0.875rem]">
+    <ul class="label flex flex-wrap justify-center gap-x-2 text-xs">
       {linksFor(FOOTER_LINKS, Astro.props.blog).map(({ href, label }) => {
         const external = href.startsWith("https://");
         return (
@@ -70,7 +70,7 @@ const YEAR = new Intl.DateTimeFormat("en-IN", {
       })}
     </ul>
     <div class="grid justify-items-center gap-1">
-      <p class="text-xl font-black tracking-[-0.02em]">
+      <p class="text-lead font-black tracking-[-0.02em]">
         <a href={`mailto:${REMOVAL_ADDRESS}`} aria-label={REMOVAL_ADDRESS} class="foot-link">
           {REMOVAL_ADDRESS.split("@")[0]}
           <wbr />@{REMOVAL_ADDRESS.split("@")[1]}

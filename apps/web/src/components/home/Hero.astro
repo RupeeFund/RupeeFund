@@ -24,15 +24,15 @@ const SHAPE = "polygon(0 3px, 100% 0, calc(100% - 4px) 100%, 3px calc(100% - 2px
   >
     <p
       class:list={[
-        "heading burst-after mb-0 text-ink",
-        "text-[clamp(1.5rem,1rem+2.6vw,3.25rem)] leading-[1.05] font-extrabold",
+        "heading burst-after mb-0 leading-[1.05] font-extrabold text-ink",
+        "text-[clamp(1.719rem,1.303rem+1.847vw,2.781rem)]",
       ]}
       data-tagline
     >
       {TAGLINE}
     </p>
     <div class="sticker px-6 pt-5 pb-6 sm:px-9 sm:pt-8 sm:pb-9" style={`--shape: ${SHAPE}`}>
-      <div class="lede text-ink-2">
+      <div class="lede text-ink-2 max-sm:text-sm">
         <slot />
       </div>
       <div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 sm:mt-6">

@@ -44,7 +44,7 @@ const { posts } = Astro.props;
                 {readingMinutes(post.body)} min read
               </span>
             </p>
-            <h2 class="mb-2 text-2xl leading-tight font-black tracking-[-0.03em] text-ink">
+            <h2 class="mb-2 text-lead leading-tight font-black tracking-[-0.03em] text-ink">
               <a href={`/blog/${post.slug}`} class="row-link after:absolute after:inset-0">
                 {post.title}
               </a>

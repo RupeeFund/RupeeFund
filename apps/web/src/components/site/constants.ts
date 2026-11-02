@@ -26,6 +26,15 @@ export const FOOTER_LINKS: readonly NavLink[] = [
 export const linksFor = (links: readonly NavLink[], blog: boolean): readonly NavLink[] =>
   blog ? links : links.filter(({ href }) => href !== "/blog");
 
+export const STICKER_SHAPES = [
+  "polygon(0 2px, 100% 0, calc(100% - 3px) 100%, 2px calc(100% - 3px))",
+  "polygon(2px 0, calc(100% - 2px) 3px, 100% calc(100% - 2px), 0 100%)",
+  "polygon(0 0, calc(100% - 3px) 2px, 100% 100%, 3px calc(100% - 2px))",
+  "polygon(3px 3px, 100% 0, calc(100% - 2px) calc(100% - 3px), 0 100%)",
+] as const;
+
+export const stickerShape = (i: number): string => STICKER_SHAPES[i % STICKER_SHAPES.length];
+
 export type SeasonIcon = "snowflake" | "sun" | "cloud-rain" | "leaf";
 
 export interface Season {

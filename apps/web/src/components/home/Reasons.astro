@@ -6,11 +6,26 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<section aria-labelledby="why-title" class="wrap section-y bg-white">
-  <h2 id="why-title" class="poster-heading text-ink">
+<section aria-labelledby="why-title" class="wrap section-y overflow-x-clip bg-white">
+  <h2 id="why-title" class="poster-heading burst-after text-ink">
     {title}
   </h2>
-  <ol class="swipe-row sm:grid sm:gap-8 lg:grid-cols-3" tabindex="0" aria-labelledby="why-title">
-    <slot />
-  </ol>
+  <div class="relative">
+    <span
+      class="burst -top-10 -right-10 z-10 size-11 -rotate-45 max-lg:hidden"
+      aria-hidden="true"
+    />
+    <ol
+      class:list={[
+        "swipe-row sm:grid sm:gap-8 lg:grid-cols-3 lg:pb-8",
+        "[&>li:nth-child(1)]:-rotate-1 [&>li:nth-child(2)]:rotate-[1.4deg]",
+        "[&>li:nth-child(3)]:-rotate-[0.6deg]",
+        "lg:[&>li:nth-child(2)]:translate-y-8 lg:[&>li:nth-child(3)]:-translate-y-3",
+      ]}
+      tabindex="0"
+      aria-labelledby="why-title"
+    >
+      <slot />
+    </ol>
+  </div>
 </section>

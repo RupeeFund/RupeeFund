@@ -1,6 +1,7 @@
 ---
 import type { Person } from "../../content/schema.ts";
 import { people } from "../../content/load.ts";
+import { stickerShape } from "../site/constants.ts";
 
 interface Props {
   title: string;
@@ -26,13 +27,6 @@ const PHONE_CARD_INSET = 2 * (20 + 24);
 const PHONE_PHOTO_SIZE = `calc((100vw - ${PHONE_CARD_INSET}px) / 3)`;
 
 const PHOTO_SIZES = `(min-width: 640px) ${PHOTO_WIDTH}px, ${PHONE_PHOTO_SIZE}`;
-
-const SHAPES = [
-  "polygon(0 2px, 100% 0, calc(100% - 3px) 100%, 2px calc(100% - 3px))",
-  "polygon(2px 0, calc(100% - 2px) 3px, 100% calc(100% - 2px), 0 100%)",
-  "polygon(0 0, calc(100% - 3px) 2px, 100% 100%, 3px calc(100% - 2px))",
-  "polygon(3px 3px, 100% 0, calc(100% - 2px) calc(100% - 3px), 0 100%)",
-];
 
 const PHOTO = "aspect-square w-1/3 max-w-50 shrink-0 border-[3px] border-ink bg-brand";
 
@@ -60,7 +54,7 @@ const handle = (member: Person) =>
     {members.map((member, i) => (
       <article
         class="sticker flex flex-col items-start gap-5 p-6 sm:flex-row sm:p-8"
-        style={`--shape: ${SHAPES[i % SHAPES.length]}`}
+        style={`--shape: ${stickerShape(i)}`}
       >
         {member.photoUrl ? (
           <img
@@ -76,14 +70,17 @@ const handle = (member: Person) =>
           />
         ) : (
           <div
-            class:list={[PHOTO, "flex items-center justify-center text-4xl font-black text-ink"]}
+            class:list={[
+              PHOTO,
+              "flex items-center justify-center text-section font-black text-ink",
+            ]}
             aria-hidden="true"
           >
             {initials(member.name)}
           </div>
         )}
         <div class="min-w-0 flex-1">
-          <h3 class="mb-1 text-2xl leading-tight font-black tracking-[-0.03em] text-ink">
+          <h3 class="mb-1 text-lead leading-tight font-black tracking-[-0.03em] text-ink">
             {member.name}
           </h3>
           {member.profileUrl ? (

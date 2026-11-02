@@ -11,7 +11,7 @@ const { title } = Astro.props;
 const questions = await faq();
 ---
 
-<section class="wrap section-y bg-paper">
-  <h2 class="poster-heading text-ink">{title}</h2>
+<section class="wrap section-y overflow-x-clip bg-paper">
+  <h2 class="poster-heading burst-after text-ink">{title}</h2>
   <FaqList faq={questions} homeOnly contactAddress={REMOVAL_ADDRESS} />
 </section>

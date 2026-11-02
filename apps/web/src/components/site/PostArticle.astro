@@ -5,6 +5,7 @@ import { dayKey, longDate } from "./dates.ts";
 import PostLabel from "./PostLabel.astro";
 import Prose from "./Prose.astro";
 import SignupCard from "./SignupCard.astro";
+import { stickerShape } from "./constants.ts";
 import { readingMinutes } from "./reading.ts";
 
 interface Props {
@@ -18,10 +19,6 @@ const byline = post.authors.length
   : "The Rupee Fund volunteers";
 const updated =
   post.updatedAt && dayKey(post.updatedAt) > dayKey(post.publishedAt) ? post.updatedAt : undefined;
-const SHAPES = [
-  "polygon(0 2px, 100% 0, calc(100% - 3px) 100%, 2px calc(100% - 3px))",
-  "polygon(2px 0, calc(100% - 2px) 3px, 100% calc(100% - 2px), 0 100%)",
-];
 ---
 
 <article class="reading">
@@ -33,7 +30,7 @@ const SHAPES = [
   <p class="mb-5">
     <PostLabel post={post} />
   </p>
-  <h1 class="poster-page-title text-[clamp(2.25rem,1.5rem+2.8vw,3.75rem)] text-ink">
+  <h1 class="poster-page-title text-[clamp(2.781rem,2.486rem+1.313vw,3.536rem)] text-ink">
     {post.title}
   </h1>
   <p class="lede mt-5 text-ink-2 text-pretty">{post.excerpt}</p>
@@ -45,7 +42,7 @@ const SHAPES = [
   >
     <span
       aria-hidden="true"
-      class="grid size-10 shrink-0 place-items-center bg-brand text-lg font-black text-ink"
+      class="grid size-10 shrink-0 place-items-center bg-brand text-lead font-black text-ink"
     >
       ₹
     </span>
@@ -92,7 +89,7 @@ const SHAPES = [
       </h2>
       <ul class="grid gap-6 sm:grid-cols-2 sm:gap-8">
         {more.map((next, i) => (
-          <li class="sticker p-3" style={`--shape: ${SHAPES[i % SHAPES.length]}`}>
+          <li class="sticker p-3" style={`--shape: ${stickerShape(i)}`}>
             {next.image && (
               <img
                 src={next.image.src}
@@ -108,7 +105,7 @@ const SHAPES = [
             <p class="px-1">
               <PostLabel post={next} compact />
             </p>
-            <p class="px-1 pt-1 pb-1 text-xl leading-tight font-black tracking-[-0.02em] text-ink">
+            <p class="px-1 pt-1 pb-1 text-lead leading-tight font-black tracking-[-0.02em] text-ink">
               <a href={`/blog/${next.slug}`} class="row-link after:absolute after:inset-0">
                 {next.title}
               </a>

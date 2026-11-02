@@ -4,24 +4,28 @@
 @theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 
-  --text-xs: 0.875rem;
+  /* The site uses xs, sm, lead, section and title, and reading for the text of a
+     post or a legal page. Above the 17px body, a computer steps by 1.618 and a
+     phone takes sizes from the 1.272 steps; each size grows between 360px and
+     1280px, and reading stops growing at 1024px. The admin panel and the
+     buttons also use lg to 2xl. */
+  --text-xs: 0.836rem;
   --text-xs--line-height: 1.5;
   --text-sm: 1.0625rem;
   --text-sm--line-height: 1.6;
-  --text-base: 1.125rem;
-  --text-base--line-height: 1.6;
   --text-lg: 1.25rem;
   --text-lg--line-height: 1.45;
   --text-xl: 1.5rem;
   --text-xl--line-height: 1.3;
   --text-2xl: 1.875rem;
   --text-2xl--line-height: 1.2;
-  --text-3xl: 2.25rem;
-  --text-3xl--line-height: 1.1;
-  --text-4xl: 2.75rem;
-  --text-4xl--line-height: 1.08;
-  --text-5xl: 3.25rem;
-  --text-5xl--line-height: 1.05;
+  --text-reading: clamp(1.0625rem, 0.906rem + 0.695vw, 1.351rem);
+  --text-lead: clamp(1.351rem, 1.207rem + 0.64vw, 1.719rem);
+  --text-lead--line-height: 1.3;
+  --text-section: clamp(2.187rem, 1.955rem + 1.033vw, 2.781rem);
+  --text-section--line-height: 1.05;
+  --text-title: clamp(2.781rem, 2.108rem + 2.99vw, 4.5rem);
+  --text-title--line-height: 0.95;
 
   --shadow-card: 0 4px 32px 0 rgba(0, 0, 0, 0.06);
 
@@ -164,6 +168,12 @@
     margin-left: 0.25em;
   }
 
+  /* A heading hangs its burst past the line end, so the burst never moves a line break.
+     Its section clips the x axis, so the burst cannot widen the page. */
+  :is(.poster-heading, strong).burst-after::after {
+    margin-right: -0.85em;
+  }
+
   .field {
     @apply w-full min-h-11 px-3 text-sm bg-white border border-border rounded-lg;
     @apply focus:ring-2 focus:ring-brand-fg focus:border-transparent focus:outline-hidden;
@@ -236,7 +246,7 @@
   .nav-link {
     --inset: 0.5rem;
     --line-y: calc(50% + 0.7em);
-    @apply inline-flex items-center min-h-11 px-1 text-[0.9375rem] font-medium text-ink rounded-sm;
+    @apply inline-flex items-center min-h-11 px-1 text-sm font-medium text-ink rounded-sm;
     @apply forced-colors:hover:underline;
   }
 
@@ -301,11 +311,11 @@
   }
 
   .step-number {
-    @apply text-2xl font-black tabular-nums text-white;
+    @apply text-lead font-black tabular-nums text-white;
   }
 
   .step-title {
-    @apply mb-1 text-2xl font-black tracking-[-0.03em] text-ink;
+    @apply mb-1 text-lead font-black tracking-[-0.03em] text-ink;
   }
 
   .step-body {
@@ -337,6 +347,10 @@
     @apply text-sm text-ink-2 text-pretty wrap-break-word;
   }
 
+  .reading .prose {
+    font-size: var(--text-reading);
+  }
+
   .prose > * + * {
     @apply mt-6;
   }
@@ -346,19 +360,19 @@
   }
 
   .prose h2 {
-    @apply text-2xl font-black tracking-[-0.03em];
+    @apply text-lead font-black tracking-[-0.03em];
   }
 
   .prose h3 {
-    @apply text-xl font-extrabold tracking-[-0.02em];
+    @apply text-[1em] font-black tracking-[-0.01em];
   }
 
   .prose :is(h4, h5) {
-    @apply text-sm font-semibold;
+    @apply text-[1em] font-semibold;
   }
 
   .prose h6 {
-    @apply eyebrow text-ink-3;
+    @apply label text-xs text-ink-3;
   }
 
   .prose > h2 {
@@ -419,7 +433,7 @@
   }
 
   .prose pre {
-    @apply overflow-x-auto border-2 border-ink bg-white p-4 font-mono text-[0.8125rem] text-ink;
+    @apply overflow-x-auto border-2 border-ink bg-white p-4 font-mono text-xs text-ink;
     @apply leading-relaxed;
   }
 
@@ -441,7 +455,7 @@
   }
 
   .prose .pull-quote blockquote {
-    @apply text-lg text-ink;
+    @apply text-lead text-ink;
   }
 
   .prose .pull-quote figcaption {
@@ -478,7 +492,7 @@
 
   .faq-summary {
     @apply min-h-12 gap-4 font-extrabold tracking-[-0.02em] text-balance text-ink;
-    @apply text-lg sm:text-xl;
+    @apply text-lead;
     @apply cursor-pointer;
     @apply flex justify-between items-center;
     @apply transition-colors duration-150 ease-out hover:text-brand-fg rounded-sm;
@@ -525,7 +539,7 @@
 
 @utility btn-primary {
   @apply bg-ink text-white shadow-[0_0_0_0_var(--color-brand)];
-  @apply hover:shadow-[0_6px_0_0_var(--color-brand)] motion-safe:hover:-translate-y-0.5;
+  @apply hover:shadow-[0_6px_0_0_var(--lift,var(--color-brand))] motion-safe:hover:-translate-y-0.5;
   @apply disabled:hover:shadow-[0_0_0_0_var(--color-brand)] disabled:hover:translate-y-0;
 }
 
@@ -536,6 +550,11 @@
 
 @utility btn-on-white {
   --quiet-hover: var(--color-paper);
+}
+
+@utility on-green {
+  --focus: var(--color-ink);
+  --lift: var(--color-white);
 }
 
 @utility btn-icon {
@@ -603,27 +622,23 @@
 }
 
 @utility poster-page-title {
-  font-size: clamp(2.5rem, 1.6rem + 3.6vw, 5rem);
+  font-size: var(--text-title);
   font-weight: 900;
-  line-height: 0.95;
+  line-height: var(--text-title--line-height);
   letter-spacing: -0.04em;
   overflow-wrap: break-word;
 }
 
 @utility poster-subheading {
-  font-size: var(--text-3xl);
+  font-size: var(--text-section);
   font-weight: 900;
-  line-height: 1.05;
+  line-height: var(--text-section--line-height);
   letter-spacing: -0.035em;
   overflow-wrap: break-word;
-
-  @media (width >= 40rem) {
-    font-size: var(--text-4xl);
-  }
 }
 
 @utility poster-intro {
-  font-size: clamp(1.25rem, 0.85rem + 1.6vw, 2.25rem);
+  font-size: var(--text-lead);
   font-weight: 500;
   line-height: 1.3;
   letter-spacing: -0.015em;
@@ -637,10 +652,11 @@
   letter-spacing: -0.04em;
 }
 
+/* A home section must fit one phone screen, so it starts one step down, at 35px. */
 @utility poster-heading {
-  font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.75rem);
+  font-size: clamp(2.187rem, 1.282rem + 4.023vw, 4.5rem);
   font-weight: 900;
-  line-height: 0.95;
+  line-height: var(--text-title--line-height);
   letter-spacing: -0.04em;
   margin-bottom: clamp(2rem, 5vh, 3rem);
 
@@ -664,8 +680,8 @@
 }
 
 @utility lede {
-  font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
-  line-height: 1.6;
+  font-size: var(--text-lead);
+  line-height: 1.45;
   text-wrap: pretty;
 }
 
@@ -723,15 +739,12 @@
 }
 
 @utility eyebrow {
-  font-size: 0.8125rem;
+  font-size: var(--text-xs);
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-@utility label-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+@utility label {
+  font-weight: 600;
 }

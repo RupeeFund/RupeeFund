@@ -13,13 +13,13 @@ const figures = supporters && {
   year: rupees(supporters.year),
   side: [
     {
-      label: "supporters",
+      label: "Supporters",
       value: grouped(supporters.count),
       icon: "users" as const,
       shape: "polygon(0 0, 100% 2px, calc(100% - 2px) 100%, 4px calc(100% - 3px))",
     },
     {
-      label: "median monthly pledge",
+      label: "Median monthly pledge",
       value: rupees(supporters.median),
       icon: "chart" as const,
       shape: "polygon(3px 2px, 100% 0, 100% 100%, 0 calc(100% - 3px))",
@@ -34,7 +34,7 @@ const MAIN_SHAPE = "polygon(0 4cqi, calc(100% - 2cqi) 0, 100% calc(100% - 0.4cqi
     aria-labelledby="pledges-title"
     class:list={[
       "wrap overflow-x-clip bg-brand py-8 text-ink sm:py-[clamp(3rem,6vh,4rem)]",
-      "[--focus:var(--color-ink)]",
+      "on-green",
     ]}
   >
     <div
@@ -44,7 +44,7 @@ const MAIN_SHAPE = "polygon(0 4cqi, calc(100% - 2cqi) 0, 100% calc(100% - 0.4cqi
       ]}
     >
       <div class="@container lg:col-start-1 lg:row-start-1 lg:pt-4">
-        <p class="label-mono mb-3 flex items-center gap-3 text-[0.9375rem] sm:mb-5">
+        <p class="label mb-3 flex items-center gap-3 text-xs sm:mb-5">
           <span class="relative flex size-3" aria-hidden="true">
             <span
               class:list={[
@@ -74,7 +74,7 @@ const MAIN_SHAPE = "polygon(0 4cqi, calc(100% - 2cqi) 0, 100% calc(100% - 0.4cqi
           class="sticker col-span-2 flex flex-col-reverse gap-1 px-5 pt-4 pb-5 text-center sm:px-8"
           style={`--shape: ${MAIN_SHAPE}`}
         >
-          <dt class="label-mono text-[clamp(0.875rem,3cqi,1.5rem)]">pledged each year</dt>
+          <dt class="label text-xs">Pledged each year</dt>
           <dd
             class="poster-figure mt-[3cqi] pb-[0.08em] text-[min(9rem,calc(100cqi/(var(--chars)*0.62)))]"
             style={`--chars: ${figures.year.length}`}
@@ -91,11 +91,11 @@ const MAIN_SHAPE = "polygon(0 4cqi, calc(100% - 2cqi) 0, 100% calc(100% - 0.4cqi
             ]}
             style={`--shape: ${shape}`}
           >
-            <dt class="label-mono text-[0.8125rem]">{label}</dt>
+            <dt class="label text-xs">{label}</dt>
             <dd
               class:list={[
-                "poster-figure text-[min(2.5rem,calc(100cqi/(var(--chars)*0.64)))]",
-                "sm:text-[min(4rem,calc(100cqi/(var(--chars)*0.64)))]",
+                "poster-figure text-[min(var(--text-section),calc(100cqi/(var(--chars)*0.64)))]",
+                "sm:text-[min(var(--text-title),calc(100cqi/(var(--chars)*0.64)))]",
               ]}
               style={`--chars: ${value.length}`}
             >
