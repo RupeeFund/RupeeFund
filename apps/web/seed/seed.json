@@ -230,7 +230,7 @@
         "status": "published",
         "data": {
           "title": "Privacy",
-          "effective_date": "25 September 2026",
+          "effective_date": "2 November 2026",
           "content": [
             {
               "_type": "block",
@@ -475,7 +475,7 @@
                 {
                   "_type": "span",
                   "_key": "k3n",
-                  "text": "Cloudflare hosts this site and stores the list. The team can export the list to send the welcome email, the email when the fund opens and the monthly updates. We keep entries to plan the fund and to send these emails. We have not set a fixed deletion date. If you leave the mailing list, we keep your entry, as described below.",
+                  "text": "Cloudflare hosts this site and stores the list. When the site sends you an email, Cloudflare sends it. The team can export the list to send the email when the fund opens and the monthly updates. Before we send the first of these, we will name here the service that sends them, with a new effective date. We keep entries to plan the fund and to send these emails. We have not set a fixed deletion date. If you leave the mailing list, we keep your entry, as described below.",
                   "marks": []
                 }
               ]
@@ -612,6 +612,34 @@
             },
             {
               "_type": "block",
+              "_key": "lp1",
+              "style": "h2",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "lp2",
+                  "text": "Email to the team",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "lp3",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "lp4",
+                  "text": "Zoho Mail receives each email that you send to hello@rupeefund.org, and keeps it with our replies. This includes a request to join the list by email, when the form cannot run in your browser, and a request to leave the list.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
               "_key": "k43",
               "style": "h2",
               "markDefs": [],
@@ -666,7 +694,7 @@
         "status": "published",
         "data": {
           "title": "Terms",
-          "effective_date": "25 September 2026",
+          "effective_date": "2 November 2026",
           "content": [
             {
               "_type": "block",
@@ -772,7 +800,7 @@
                 {
                   "_type": "span",
                   "_key": "k4q",
-                  "text": " page states how we use form submissions. Where the source differs from our local terms, our local terms apply. Later changes to the source do not change these terms automatically.",
+                  "text": " page states how we use form submissions, and what Cloudflare, Zoho Mail and GitHub receive. Where the source differs from our local terms, our local terms apply. Later changes to the source do not change these terms automatically.",
                   "marks": []
                 }
               ]
