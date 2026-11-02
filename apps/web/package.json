@@ -52,7 +52,6 @@
     "jsdom": "catalog:",
     "react": "^19.3.1",
     "satori": "^0.63.2",
-    "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "^8.3.5",
     "vitest": "catalog:",

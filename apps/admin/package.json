@@ -21,7 +21,6 @@
     "@tailwindcss/cli": "catalog:",
     "@types/node": "catalog:",
     "jsdom": "catalog:",
-    "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "wrangler": "catalog:"
