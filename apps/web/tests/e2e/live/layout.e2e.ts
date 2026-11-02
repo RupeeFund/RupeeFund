@@ -98,18 +98,26 @@ for (const width of [360, 1024, 1180, 1440]) {
   });
 }
 
-test("each home section fits one 360 × 640 phone screen below the header", async ({ page }) => {
+test("on a 360px phone, no home card list scrolls sideways", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 640 });
   await page.goto("/");
-  const { room, sections } = await page.evaluate(() => ({
-    room: innerHeight - document.querySelector("header")!.getBoundingClientRect().height,
-    sections: [...document.querySelectorAll("main section")].map((el) => ({
-      title: el.querySelector("h1, h2")?.textContent?.trim() ?? "",
-      height: el.getBoundingClientRect().height,
-    })),
-  }));
-  expect(sections.length).toBeGreaterThan(6);
-  for (const { title, height } of sections) expect(height, title).toBeLessThanOrEqual(room);
+  const lists = await page.evaluate(() =>
+    ["steps-title", "why-title"].map((id) => {
+      const ol = document.querySelector(`main ol[aria-labelledby="${id}"]`);
+      const cards = ol ? [...ol.children] : [];
+      return {
+        id,
+        cards: cards.length,
+        overflowX: ol ? getComputedStyle(ol).overflowX : "",
+        right: Math.max(...cards.map((li) => li.getBoundingClientRect().right)),
+      };
+    }),
+  );
+  for (const { id, cards, overflowX, right } of lists) {
+    expect(cards, id).toBeGreaterThan(1);
+    expect(["visible", "clip"], id).toContain(overflowX);
+    expect(right, id).toBeLessThanOrEqual(360);
+  }
 });
 
 const LEGAL_PAGES = ["/privacy", "/refunds"] as const;

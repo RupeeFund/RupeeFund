@@ -22,7 +22,7 @@ Show before you build:
 2. Let the maintainer choose one. Then write the code.
 3. Use a number from research, a guide or a review only to make the options. It is not a rule.
 
-A test checks defects only: overflow, clipped text at 320 px, contrast, focus, and a home section that does not fit a phone screen. Do not write a test that holds a look, such as a column width or a count of characters in a line.
+A test checks defects only: overflow, clipped text at 320 px, contrast, focus, and a home card list that scrolls sideways on a phone. Do not write a test that holds a look, such as a column width or a count of characters in a line.
 
 A new page uses the layout of its type:
 
@@ -47,7 +47,7 @@ A new page uses the layout of its type:
   - Buttons keep the sizes of `btn-lg` and `btn-xl`.
   - The text of a post or a legal page in `reading` uses `--text-reading`: 17 px on a phone and 21.6 px on a computer.
 - **Labels.** Put `label` and `text-xs` on a short label, such as a nav link, a tag or the name of a figure. It is Inter Semibold, in sentence case. Do not set a label of the site in capitals. The admin panel keeps `eyebrow`.
-- **Phone screens.** At 360 × 640, each home section fits the screen below the header. A row of cards that is too tall scrolls sideways with `swipe-row`.
+- **Phone screens.** On a phone, stack the steps and the reasons of the home page. Do not make a row of cards scroll sideways.
 - **Forms.** Put `form-poster` on a form of the site. It makes each field and choice square, with a 2 px ink border. The admin panel keeps the plain `field`.
 - **Body size** is `text-sm`. The theme in `packages/ui/src/styles.css` changes the Tailwind scale.
 - **Prose.** Put the text from the content manager in `.prose`. Put each style of the HTML from `src/content/html.ts` in `packages/ui/src/styles.css`.

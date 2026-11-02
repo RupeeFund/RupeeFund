@@ -604,23 +604,6 @@
   }
 }
 
-@utility swipe-row {
-  @media (width < 40rem) {
-    display: flex;
-    gap: 1.25rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    margin-inline: calc(-1 * clamp(1.25rem, 5vw, 4rem));
-    padding: 0.25rem clamp(1.25rem, 5vw, 4rem) 1rem;
-    scroll-padding-inline: clamp(1.25rem, 5vw, 4rem);
-
-    & > * {
-      flex: 0 0 82%;
-      scroll-snap-align: start;
-    }
-  }
-}
-
 @utility poster-page-title {
   font-size: var(--text-title);
   font-weight: 900;
