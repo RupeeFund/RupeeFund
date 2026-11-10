@@ -5,6 +5,6 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl git gnupg less openssh-client procps sudo \
  && rm -rf /var/lib/apt/lists/* \
  && echo 'node ALL=(root) NOPASSWD:ALL' > /etc/sudoers.d/node \
- && npm install -g pnpm@12.16.1 \
+ && npm install -g pnpm@12.18.0 \
  && npm cache clean --force
 USER node
