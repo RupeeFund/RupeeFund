@@ -33,7 +33,7 @@
     "wrangler": "pnpm --filter @rupeefund/web exec wrangler"
   },
   "devDependencies": {
-    "oxfmt": "^0.75.0",
+    "oxfmt": "^0.78.0",
     "oxlint": "^1.90.0",
     "portless": "catalog:",
     "turbo": "^2.11.10",
