@@ -1,5 +1,6 @@
+import { statSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { read, styles } from "./dist.ts";
+import { OUT, read, styles } from "./dist.ts";
 
 describe("Home page (/)", () => {
   const html = read("index.html");
@@ -61,6 +62,23 @@ describe("Home page (/)", () => {
     }
     expect(main).toContain(">Why join us</h2>");
     expect(main).toContain(">Frequently asked questions</h2>");
+  });
+
+  it("gives each season and each reason a small illustration with its size", () => {
+    const sections = ["Funding seasons", "Why join us"].map(
+      (title) => new RegExp(`<h2[^>]*>${title}</h2>([\\s\\S]*?)</section>`).exec(html)?.[1] ?? "",
+    );
+    const images = sections.flatMap((s) => [...s.matchAll(/<img [^>]*>/g)].map(([tag]) => tag));
+    expect(images).toHaveLength(7);
+    for (const tag of images) {
+      expect(tag).toMatch(/ width="\d+"/);
+      expect(tag).toMatch(/ height="\d+"/);
+      expect(tag).toMatch(/ sizes="[^"]+"/);
+      expect(tag).toContain(' alt=""');
+      const files = [...(/ srcset="([^"]+)"/.exec(tag)?.[1] ?? "").matchAll(/(\S+\.avif) \d+w/g)];
+      expect(files).toHaveLength(2);
+      for (const [, file] of files) expect(statSync(`${OUT}${file}`).size).toBeLessThan(50_000);
+    }
   });
 
   it("names who the fund is for, shows the pledges, then asks them to sign up", () => {

@@ -57,6 +57,7 @@ A new page uses the layout of its type:
 - **Admin panel.** Put the styles that only the panel uses in `apps/admin/src/admin.css`: the top bar, the tables, the status marks and the chart. Take each colour from a brand token. Do not write a colour value.
 - **Season accents** are `SEASONS` in `src/components/site/constants.ts`. `src/lib/launch.test.ts` checks their contrast.
 - **Icons.** Draw each icon in `src/components/site/Icon.astro`, as a thick line in `currentColor`. A season icon takes its season accent. Do not add pixel art.
+- **Illustrations.** Show a card illustration with `src/components/site/Illustration.astro`. Keep each one in `src/assets/illustrations/` as two AVIF files, 320 and 640 px wide, each less than 50 KB. Make them once from the source image, and do not commit the source. Do not use the Cloudflare image transform for them. For each width, run `magick <source> -fuzz 4% -trim +repage -bordercolor none -border 24 -resize <width>x -strip <name>-<width>.png`, then `avifenc -q 60 -s 4 <name>-<width>.png <name>-<width>.avif`.
 - **Brand files.** `pnpm brand:sync` writes the colours, the logo and the files made from the logo, as `apps/web/scripts/brand-sync.mts` lists. `docs/ARCHITECTURE.md` section 9 gives the rules.
 - **Visual check.** Check each visual change in a browser at 360 × 640 and at 1440 × 900, with and without reduced motion.
 

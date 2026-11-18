@@ -1,0 +1,33 @@
+---
+import type { ReasonArt, SeasonArt } from "./constants.ts";
+
+interface Props {
+  name: SeasonArt | ReasonArt;
+  sizes: string;
+  class?: string;
+}
+
+const FILES = import.meta.glob<ImageMetadata>("../../assets/illustrations/*.avif", {
+  eager: true,
+  import: "default",
+});
+
+const { name, sizes, class: className } = Astro.props;
+const [small, large] = [320, 640].map((width) => {
+  const file = FILES[`../../assets/illustrations/${name}-${width}.avif`];
+  if (!file) throw new Error(`No illustration ${name}-${width}.avif`);
+  return file;
+}) as [ImageMetadata, ImageMetadata];
+---
+
+<img
+  src={large.src}
+  srcset={`${small.src} 320w, ${large.src} 640w`}
+  sizes={sizes}
+  width={large.width}
+  height={large.height}
+  alt=""
+  loading="lazy"
+  decoding="async"
+  class={className}
+/>

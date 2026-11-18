@@ -1,34 +1,31 @@
 ---
-import Icon from "../site/Icon.astro";
+import Illustration from "../site/Illustration.astro";
+import type { ReasonArt } from "../site/constants.ts";
 
 interface Props {
   title: string;
-  sprite: "seed" | "sapling" | "tree";
+  art: ReasonArt;
 }
 
-const ICONS = { seed: "sprout", sapling: "tree-deciduous", tree: "trees" } as const;
 const SHAPES = {
-  seed: "polygon(0 3px, 100% 0, calc(100% - 3px) 100%, 2px calc(100% - 2px))",
-  sapling: "polygon(2px 0, calc(100% - 2px) 2px, 100% calc(100% - 3px), 0 100%)",
-  tree: "polygon(0 0, calc(100% - 3px) 3px, 100% 100%, 3px calc(100% - 3px))",
+  nurture: "polygon(0 3px, 100% 0, calc(100% - 3px) 100%, 2px calc(100% - 2px))",
+  grow: "polygon(2px 0, calc(100% - 2px) 2px, 100% calc(100% - 3px), 0 100%)",
+  sustain: "polygon(0 0, calc(100% - 3px) 3px, 100% 100%, 3px calc(100% - 3px))",
 } as const;
 
-const { title, sprite } = Astro.props;
+const { title, art } = Astro.props;
 ---
 
-<li class="sticker flex flex-col p-6 sm:p-8" style={`--shape: ${SHAPES[sprite]}`}>
-  <span
-    class:list={[
-      "flex size-20 items-center justify-center bg-brand text-ink",
-      "forced-colors:border-2 forced-colors:border-[CanvasText]",
-    ]}
-  >
-    <Icon name={ICONS[sprite]} size={56} class="size-14 [stroke-width:3.25]" />
-  </span>
+<li class="sticker flex flex-col p-6 sm:p-8" style={`--shape: ${SHAPES[art]}`}>
+  <Illustration
+    name={art}
+    sizes="(min-width: 64rem) 22rem, 20rem"
+    class="aspect-[4/3] max-h-60 w-full object-contain lg:max-h-none"
+  />
   <h3
     class:list={[
-      "mt-6 mb-3 text-[min(var(--text-lead),calc(100cqi/9))] leading-[1.05] font-black",
-      "tracking-[-0.03em] text-ink",
+      "mt-4 mb-3 text-[min(var(--text-lead),calc(100cqi/9))] leading-[1.05] font-black",
+      "tracking-[-0.03em] text-wrap text-ink",
     ]}
   >
     {title}

@@ -16,11 +16,11 @@ function contrast(a: string, b: string): number {
 
 describe("SEASONS", () => {
   it("split the year into four seasons of 3 months each", () => {
-    expect(SEASONS.map((s) => [s.name, s.months, s.duration])).toEqual([
-      ["Winter", "Dec – Feb", "3 months"],
-      ["Summer", "Mar – May", "3 months"],
-      ["Monsoon", "Jun – Aug", "3 months"],
-      ["Post-monsoon", "Sep – Nov", "3 months"],
+    expect(SEASONS.map((s) => [s.name, s.months])).toEqual([
+      ["Winter", "Dec – Feb"],
+      ["Summer", "Mar – May"],
+      ["Monsoon", "Jun – Aug"],
+      ["Post-monsoon", "Sep – Nov"],
     ]);
   });
 
