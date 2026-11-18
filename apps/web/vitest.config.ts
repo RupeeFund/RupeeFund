@@ -4,6 +4,11 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     fsModuleCachePath: fileURLToPath(new URL("./node_modules/.vitest-cache", import.meta.url).href),
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.ts"],
+      thresholds: { statements: 82, branches: 77, functions: 81, lines: 83 },
+    },
     projects: [
       "./vitest.components.config.ts",
       {

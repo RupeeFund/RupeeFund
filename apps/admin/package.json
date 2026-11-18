@@ -20,6 +20,7 @@
     "@rupeefund/ui": "workspace:*",
     "@tailwindcss/cli": "catalog:",
     "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
     "jsdom": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",

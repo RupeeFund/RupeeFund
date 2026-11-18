@@ -12,6 +12,7 @@ worker-configuration.d.ts
 .scratchpad/
 
 test-results
+coverage
 
 *.tsbuildinfo
 

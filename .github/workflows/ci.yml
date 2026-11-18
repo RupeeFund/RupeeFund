@@ -27,13 +27,7 @@ jobs:
           - check: typecheck
             run: pnpm typecheck
           - check: test
-            run: pnpm test
-          - check: build
-            run: pnpm run build
-          - check: audit
-            run: pnpm audit --prod --audit-level=moderate
-          - check: dev-start
-            run: pnpm db:reset && node scripts/dev-smoke.mjs
+            run: pnpm turbo run test -- --coverage
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -46,27 +40,16 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-    env:
-      WRANGLER_LOG_PATH: ${{ github.workspace }}/.wrangler/logs
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:9beb546099e11f52d62e505537914870e01a67e0e6b00ae41da4775324e73dbe
+      options: --user 1001
     steps:
+      # workaround: actions/runner#2058
+      - run: echo "WRANGLER_LOG_PATH=$GITHUB_WORKSPACE/.wrangler/logs" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: Read the Playwright version
-        id: playwright
-        run: |
-          version=$(pnpm --filter @rupeefund/web exec playwright --version)
-          echo "version=${version#Version }" >> "$GITHUB_OUTPUT"
-      - id: browser
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      - if: steps.browser.outputs.cache-hit != 'true'
-        run: pnpm --filter @rupeefund/web exec playwright install --with-deps chromium
-      - if: steps.browser.outputs.cache-hit == 'true'
-        run: pnpm --filter @rupeefund/web exec playwright install-deps chromium
       - run: pnpm test:e2e
       - name: Keep the Playwright traces when a run fails
         if: failure()
