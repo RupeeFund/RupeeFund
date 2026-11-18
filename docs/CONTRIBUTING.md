@@ -58,8 +58,6 @@ Run these commands before you open a pull request:
 - For each change: `pnpm format`, then `pnpm check`. `pnpm format` fixes the format of each file. `pnpm check` runs lint, types and tests.
 - When your change affects a page, a form or what the browser does: also `pnpm test:e2e`. It runs the browser tests. They need Chromium once: `pnpm --filter @rupeefund/web exec playwright install --with-deps chromium`.
 
-CI also builds the site, audits the dependencies and starts the dev server (`.github/workflows/ci.yml`).
-
 ## Read next
 
 The [documentation index](README.md) names the document that owns your change.
