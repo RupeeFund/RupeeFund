@@ -35,13 +35,33 @@ jobs:
       - uses: ./.github/actions/setup
       - run: ${{ matrix.run }}
 
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.lock.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Read the locked @playwright/test version
+        id: lock
+        run: |
+          version=$(sed -n "s/^  '@playwright\/test@\([0-9.]*\)':$/\1/p" pnpm-lock.yaml | sort -u)
+          test -n "$version"
+          test "$(printf '%s\n' "$version" | wc -l)" -eq 1
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
   e2e:
+    needs: playwright
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
     container:
-      image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:9beb546099e11f52d62e505537914870e01a67e0e6b00ae41da4775324e73dbe
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright.outputs.version }}-noble
       options: --user 1001
     steps:
       # workaround: actions/runner#2058
