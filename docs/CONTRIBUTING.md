@@ -58,6 +58,8 @@ Run these commands before you open a pull request:
 - For each change: `pnpm format`, then `pnpm check`. `pnpm format` fixes the format of each file. `pnpm check` runs lint, types and tests.
 - When your change affects a page, a form or what the browser does: also `pnpm test:e2e`. It runs the browser tests. They need Chromium once: `pnpm --filter @rupeefund/web exec playwright install --with-deps chromium`.
 
+CI also measures the test coverage of each package that has tests. It fails when the coverage falls below the floor in the `vitest.config.ts` of that package. To see the coverage before you push, run `pnpm turbo run test -- --coverage`. When you add tests, you can raise the floor to the new numbers, rounded down.
+
 ## Read next
 
 The [documentation index](README.md) names the document that owns your change.

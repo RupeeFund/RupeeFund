@@ -5,6 +5,11 @@ export default defineConfig({
   test: {
     fsModuleCachePath: fileURLToPath(new URL("./node_modules/.vitest-cache", import.meta.url).href),
     silent: "passed-only",
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.ts"],
+      thresholds: { statements: 96, branches: 97, functions: 88, lines: 97 },
+    },
     projects: [
       {
         test: {

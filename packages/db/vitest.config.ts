@@ -6,5 +6,10 @@ export default defineConfig({
     name: "db",
     fsModuleCachePath: fileURLToPath(new URL("./node_modules/.vitest-cache", import.meta.url).href),
     include: ["tests/**/*.test.ts"],
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.ts"],
+      thresholds: { statements: 74, branches: 75, functions: 60, lines: 74 },
+    },
   },
 });
