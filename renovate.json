@@ -10,6 +10,9 @@
   "dependencyDashboard": true,
   "minimumReleaseAge": "3 days",
   "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "vulnerabilityAlerts": {
+    "minimumReleaseAge": "3 days"
+  },
   "customManagers": [
     {
       "description": "The dev container image installs the pnpm of packageManager in package.json.",

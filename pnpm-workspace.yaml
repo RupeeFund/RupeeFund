@@ -26,6 +26,7 @@ allowBuilds:
 shellEmulator: true
 engineStrict: true
 verifyDepsBeforeRun: error
+minimumReleaseAge: 4320
 overrides:
   undici@7: ">=7.30.1 <8"
   fflate@0.7: ">=0.7.5 <0.9"
