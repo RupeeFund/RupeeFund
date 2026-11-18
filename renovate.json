@@ -9,7 +9,10 @@
   "internalChecksFilter": "strict",
   "dependencyDashboard": true,
   "minimumReleaseAge": "3 days",
-  "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "minimumReleaseAgeBehaviour": "timestamp-required",
+  "vulnerabilityAlerts": {
+    "minimumReleaseAge": "3 days"
+  },
   "customManagers": [
     {
       "description": "The dev container image installs the pnpm of packageManager in package.json.",
@@ -35,11 +38,6 @@
       "description": "@astrojs/cloudflare pulls in @cloudflare/vite-plugin, which needs a recent wrangler as a peer. Update them in one pull request.",
       "groupName": "Astro and Wrangler",
       "matchPackageNames": ["astro", "@astrojs/**", "wrangler"]
-    },
-    {
-      "description": "The e2e job runs in the Playwright image, whose browsers must match @playwright/test. Keep this rule after the GitHub Actions rule, which also matches the image.",
-      "groupName": "Playwright",
-      "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"]
     },
     {
       "description": "EmDash migrates the content database on the first request after a deploy. Ship each bump on purpose, with the steps in section 11.3 of the staff runbook, RupeeFund/ops docs/RUNBOOK.md.",
