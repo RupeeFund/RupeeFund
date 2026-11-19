@@ -91,8 +91,8 @@ describe("Home page (/)", () => {
     expect(groups).toContain("₹15 a month, the price of a cup of chai");
     expect(html).not.toContain('id="signup-title"');
     const order = [
-      ">Why join us</h2>",
       ">Join if you are</h2>",
+      ">Why join us</h2>",
       ">Pledges so far</h2>",
       ">Frequently asked questions</h2>",
     ].map((mark) => html.indexOf(mark));
