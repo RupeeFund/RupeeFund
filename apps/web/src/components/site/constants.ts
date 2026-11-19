@@ -37,41 +37,45 @@ export const stickerShape = (i: number): string => STICKER_SHAPES[i % STICKER_SH
 
 export type SeasonIcon = "snowflake" | "sun" | "cloud-rain" | "leaf";
 
+export type SeasonArt = "winter" | "summer" | "monsoon" | "post-monsoon";
+
+export type ReasonArt = "nurture" | "grow" | "sustain";
+
 export interface Season {
   icon: SeasonIcon;
+  art: SeasonArt;
   name: string;
   months: string;
-  duration: string;
   accent: string;
 }
 
 export const SEASONS: readonly Season[] = [
   {
     icon: "snowflake",
+    art: "winter",
     name: "Winter",
     months: "Dec – Feb",
-    duration: "3 months",
     accent: "#007bb2",
   },
   {
     icon: "sun",
+    art: "summer",
     name: "Summer",
     months: "Mar – May",
-    duration: "3 months",
     accent: "#a44d00",
   },
   {
     icon: "cloud-rain",
+    art: "monsoon",
     name: "Monsoon",
     months: "Jun – Aug",
-    duration: "3 months",
     accent: "#008039",
   },
   {
     icon: "leaf",
+    art: "post-monsoon",
     name: "Post-monsoon",
     months: "Sep – Nov",
-    duration: "3 months",
     accent: "#b229ad",
   },
 ];
